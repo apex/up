@@ -1,0 +1,8 @@
+.envrc
+node_modules/
+.shards/
+lib
+vendor/
+testing
+up-proxy
+!cmd/up-proxy

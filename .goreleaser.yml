@@ -1,0 +1,13 @@
+build:
+  main: cmd/polls/main.go
+  binary: polls
+  goos:
+    - darwin
+    - linux
+    - windows
+    - freebsd
+    - netbsd
+    - openbsd
+  goarch:
+    - amd64
+    - 386

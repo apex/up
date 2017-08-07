@@ -1,0 +1,6 @@
+{
+  "type": "static",
+  "logs": {
+    "enable": false
+  }
+}

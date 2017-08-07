@@ -1,0 +1,12 @@
+{
+  "type": "static",
+  "logs": {
+    "enable": false
+  },
+  "redirects": {
+    "/docs/:product/guides/:guide": {
+      "location": "/help/:product/:guide",
+      "status": 302
+    }
+  }
+}
