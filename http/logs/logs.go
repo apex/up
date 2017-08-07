@@ -49,6 +49,8 @@ func New(c *up.Config, next http.Handler) (http.Handler, error) {
 		next.ServeHTTP(res, r)
 
 		c := ctx.WithFields(log.Fields{
+			"stage":    r.Header.Get("X-Stage"),
+			"id":       r.Header.Get("X-Request-Id"),
 			"method":   r.Method,
 			"path":     r.URL.Path,
 			"query":    r.URL.Query().Encode(),

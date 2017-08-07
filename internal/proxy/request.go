@@ -24,8 +24,6 @@ func NewRequest(e *Input) (*http.Request, error) {
 	}
 	u.RawQuery = q.Encode()
 
-	// url.UserPassword(username, password)
-
 	// base64 encoded body
 	body := e.Body
 	if e.IsBase64Encoded {
@@ -49,6 +47,10 @@ func NewRequest(e *Input) (*http.Request, error) {
 	for k, v := range e.Headers {
 		req.Header.Set(k, v)
 	}
+
+	// custom fields
+	req.Header.Set("X-Request-Id", e.RequestContext.RequestID)
+	req.Header.Set("X-Stage", e.RequestContext.Stage)
 
 	// host
 	req.URL.Host = req.Header.Get("Host")

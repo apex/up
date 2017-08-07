@@ -10,9 +10,9 @@ import (
 // Plugin returns a log context for the given plugin name.
 func Plugin(name string) log.Interface {
 	return log.WithFields(log.Fields{
-		"app_name":    os.Getenv("AWS_LAMBDA_FUNCTION_NAME"),
-		"app_region":  os.Getenv("AWS_REGION"),
-		"app_version": os.Getenv("AWS_LAMBDA_FUNCTION_VERSION"),
-		"plugin":      name,
+		"app":     os.Getenv("AWS_LAMBDA_FUNCTION_NAME"),
+		"region":  os.Getenv("AWS_REGION"),
+		"version": os.Getenv("AWS_LAMBDA_FUNCTION_VERSION"),
+		"plugin":  name,
 	})
 }
