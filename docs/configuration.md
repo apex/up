@@ -345,10 +345,26 @@ Up supports redirects and URL rewriting via the `redirects` object, which maps p
     }
   }
 }
-
 ```
 
 In the previous example `/blog` will redirect to a different site, while `/docs/ping/guides/alerting` will redirect to `/help/ping/alerting`. Finally `/store/ferrets` and nested paths such as `/store/ferrets/tobi` will redirect to `/shop/ferrets/tobi` and so on.
+
+A common use-case for rewrites is for SPAs or Single Page Apps, where you want to serve the `index.html` file regardless of the path. The other common requirement for SPAs is that you of course can serve scripts and styles, so by default if a file is found, it will not be rewritten to `location`.
+
+```json
+{
+  "name": "app",
+  "type": "static",
+  "redirects": {
+    "/*": {
+      "location": "/",
+      "status": 200
+    }
+  }
+}
+```
+
+Note that more specific target paths take precedence over those which are less specific, for example `/blog` will win over and `/*`.
 
 ## Cross-Origin Resource Sharing
 
