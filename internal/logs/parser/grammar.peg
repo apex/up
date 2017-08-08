@@ -53,10 +53,10 @@ RelationalExpr
 
 EqualityExpr
   <- RelationalExpr (
-      EQEQ RelationalExpr     { p.AddBinary(ast.EQ) }
-    / NE RelationalExpr       { p.AddBinary(ast.NE) }
-    / EQ RelationalExpr       { p.AddBinary(ast.EQ) }
-    / CONTAINS RelationalExpr { p.AddBinaryContains()   }
+      EQEQ RelationalExpr     { p.AddBinary(ast.EQ)   }
+    / NE RelationalExpr       { p.AddBinary(ast.NE)   }
+    / EQ RelationalExpr       { p.AddBinary(ast.EQ)   }
+    / CONTAINS RelationalExpr { p.AddBinaryContains() }
   )*
 
 LogicalAndExpr <-
