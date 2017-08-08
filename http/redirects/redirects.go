@@ -72,11 +72,14 @@ func New(c *up.Config, next http.Handler) (http.Handler, error) {
 			return
 		}
 
+		// destination path
+		path := rule.URL(r.URL.Path)
+
 		// forced rewrite
 		if rule.IsRewrite() && rule.Force {
-			ctx.WithField("dest", r.URL.Path).Info("forced rewrite")
+			ctx.WithField("dest", path).Info("forced rewrite")
 			r.Header.Set("X-Original-Path", r.URL.Path)
-			r.URL.Path = rule.URL(r.URL.Path)
+			r.URL.Path = path
 			next.ServeHTTP(w, r)
 			return
 		}
@@ -87,17 +90,17 @@ func New(c *up.Config, next http.Handler) (http.Handler, error) {
 			next.ServeHTTP(res, r)
 
 			if res.ignore {
-				ctx.WithField("dest", r.URL.Path).Info("rewrite")
+				ctx.WithField("dest", path).Info("rewrite")
 				r.Header.Set("X-Original-Path", r.URL.Path)
-				r.URL.Path = rule.URL(r.URL.Path)
+				r.URL.Path = path
 				next.ServeHTTP(w, r)
 			}
 			return
 		}
 
 		// redirect
-		ctx.WithField("dest", r.URL.Path).Info("redirect")
-		w.Header().Set("Location", rule.URL(r.URL.Path))
+		ctx.WithField("dest", path).Info("redirect")
+		w.Header().Set("Location", path)
 		w.Header().Set("Content-Type", "text/plain; charset=utf-8")
 		w.WriteHeader(rule.Status)
 		fmt.Fprintln(w, http.StatusText(rule.Status))
