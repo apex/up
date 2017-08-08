@@ -26,7 +26,7 @@ import (
 	"github.com/apex/up/internal/util"
 )
 
-const version = "0.0.1"
+const version = "master"
 
 func main() {
 	trap()
