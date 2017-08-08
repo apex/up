@@ -169,8 +169,6 @@ These become available to you via `process.env.API_FEATURES_FOO`, `os.Getenv("AP
 The following environment variables are provided by Up:
 
 - `PORT` – port number such as "3000"
-- `UP_PORT` – alias of `PORT`
-- `UP_ADDR` – host and port number such as "127.0.0.1:3000"
 
 ## Header Injection
 

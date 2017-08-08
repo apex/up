@@ -152,8 +152,6 @@ retry:
 func (p *Proxy) environment() []string {
 	return []string{
 		env("PORT", p.port),
-		env("UP_PORT", p.port),
-		env("UP_ADDR", fmt.Sprintf("127.0.0.1:%d", p.port)),
 		env("UP_RESTARTS", p.restarts),
 	}
 }
