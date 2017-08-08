@@ -1,6 +1,6 @@
 build:
-  main: cmd/polls/main.go
-  binary: polls
+  main: cmd/up/main.go
+  binary: up
   goos:
     - darwin
     - linux
