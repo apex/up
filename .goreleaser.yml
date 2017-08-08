@@ -1,13 +1,25 @@
-build:
-  main: cmd/polls/main.go
-  binary: polls
-  goos:
-    - darwin
-    - linux
-    - windows
-    - freebsd
-    - netbsd
-    - openbsd
-  goarch:
-    - amd64
-    - 386
+builds:
+ - main: cmd/up/main.go
+   binary: up
+   goos:
+     - darwin
+     - linux
+     - windows
+     - freebsd
+     - netbsd
+     - openbsd
+   goarch:
+     - amd64
+     - 386
+ - main: cmd/up-proxy/main.go
+   binary: up-proxy
+   goos:
+     - darwin
+     - linux
+     - windows
+     - freebsd
+     - netbsd
+     - openbsd
+   goarch:
+     - amd64
+     - 386
