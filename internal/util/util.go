@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"net/http"
 	"os"
+	"strings"
 
 	"github.com/apex/up/internal/colors"
 	"github.com/pascaldekloe/name"
@@ -93,4 +94,18 @@ func Fatal(err error) {
 // IsJSON returns true if the msg looks like json.
 func IsJSON(s string) bool {
 	return len(s) > 1 && s[0] == '{' && s[len(s)-1] == '}'
+}
+
+// IsNotFound checks if err is not nil and represents a missing resource.
+func IsNotFound(err error) bool {
+	switch {
+	case err == nil:
+		return false
+	case strings.Contains(err.Error(), "does not exist"):
+		return true
+	case strings.Contains(err.Error(), "not found"):
+		return true
+	default:
+		return false
+	}
 }

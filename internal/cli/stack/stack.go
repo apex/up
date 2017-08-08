@@ -12,7 +12,9 @@ import (
 
 func init() {
 	cmd := root.Command("stack", "Stack resource management.")
-	cmd.Example(`up stack`, "Create or update the configured resources.")
+	cmd.Example(`up stack`, "Show resource status.")
+	cmd.Example(`up stack delete`, "Delete resources.")
+	cmd.Example(`up stack delete -w`, "Delete resources and wait for completion.")
 	delete(cmd)
 	show(cmd)
 }
@@ -45,10 +47,9 @@ func delete(cmd *kingpin.CmdClause) {
 	})
 }
 
-// TODO: rename? decide on conventions
-// TODO: make the default?
+// TODO: rename status, info, show? decide on conventions
 func show(cmd *kingpin.CmdClause) {
-	c := cmd.Command("show", "Show the status of the stack.").Hidden()
+	c := cmd.Command("show", "Show the status of the stack.").Default()
 
 	c.Action(func(_ *kingpin.ParseContext) error {
 		stats.Track("Show Stack", nil)

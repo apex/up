@@ -2,7 +2,6 @@ package stack
 
 import (
 	"encoding/json"
-	"strings"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -11,6 +10,7 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/apex/up"
+	"github.com/apex/up/internal/util"
 	"github.com/apex/up/platform/event"
 )
 
@@ -106,6 +106,33 @@ func (s *Stack) Delete(wait bool) error {
 	return nil
 }
 
+// Show resources.
+func (s *Stack) Show() error {
+	defer s.events.Time("platform.stack.show", nil)()
+
+	stack, err := s.getStack()
+	if err != nil {
+		return errors.Wrap(err, "fetching stack")
+	}
+
+	s.events.Emit("platform.stack.show.stack", event.Fields{
+		"stack": stack,
+	})
+
+	events, err := s.getLatestEvents()
+	if err != nil {
+		return errors.Wrap(err, "fetching latest events")
+	}
+
+	for _, e := range events {
+		s.events.Emit("platform.stack.show.event", event.Fields{
+			"event": e,
+		})
+	}
+
+	return nil
+}
+
 // report events.
 func (s *Stack) report(state string) error {
 	hit := make(map[string]bool)
@@ -118,7 +145,7 @@ func (s *Stack) report(state string) error {
 	for range time.Tick(time.Second) {
 		stack, err := s.getStack()
 
-		if isNotFound(err) {
+		if util.IsNotFound(err) {
 			return nil
 		}
 
@@ -134,7 +161,7 @@ func (s *Stack) report(state string) error {
 
 		events, err := s.getEvents()
 
-		if isNotFound(err) {
+		if util.IsNotFound(err) {
 			return nil
 		}
 
@@ -236,9 +263,4 @@ func (s *Stack) getEventsByState(state State) (v []*cloudformation.StackEvent, e
 	}
 
 	return
-}
-
-// isNotFound returns true if there is an error and it represents a missing resoruce.
-func isNotFound(err error) bool {
-	return err != nil && strings.Contains(err.Error(), "does not exist")
 }

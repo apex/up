@@ -22,7 +22,7 @@ import (
 
 // TODO: platform-specific reporting should live in the platform
 // TODO: typed events would be nicer.. refactor event names
-// TODO: refactor, ugly :)
+// TODO: refactor, this is a hot mess :D
 
 // Text outputs human friendly textual reporting.
 func Text(events <-chan *event.Event) {
@@ -134,6 +134,30 @@ func (r *reporter) Start() {
 			case "platform.stack.delete.complete":
 				term.ClearAll()
 				term.ShowCursor()
+			case "platform.stack.show", "platform.stack.show.complete":
+				fmt.Printf("\n")
+			case "platform.stack.show.stack":
+				s := e.Fields["stack"].(*cloudformation.Stack)
+				fmt.Printf("  %s: %s\n", colors.Purple("status"), stack.Status(*s.StackStatus))
+				if reason := s.StackStatusReason; reason != nil {
+					fmt.Printf("  %s: %s\n", colors.Purple("reason"), *reason)
+				}
+				fmt.Printf("\n")
+			case "platform.stack.show.event":
+				event := e.Fields["event"].(*cloudformation.StackEvent)
+				kind := *event.ResourceType
+				status := stack.Status(*event.ResourceStatus)
+				color := colors.Purple
+				if status.State() == stack.Failure {
+					color = colors.Red
+				}
+				fmt.Printf("  %s\n", color(kind))
+				fmt.Printf("  %s: %v\n", color("id"), *event.LogicalResourceId)
+				fmt.Printf("  %s: %s\n", color("status"), status)
+				if reason := event.ResourceStatusReason; reason != nil {
+					fmt.Printf("  %s: %s\n", color("reason"), *reason)
+				}
+				fmt.Printf("\n")
 			}
 
 			r.prevTime = time.Now()

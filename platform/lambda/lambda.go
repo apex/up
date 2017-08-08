@@ -209,12 +209,12 @@ func (p *Platform) DeleteStack(region string, wait bool) error {
 	}
 
 	log.Debug("deleting function")
-	if err := p.deleteFunction(region); err != nil && !isNotFound(err) {
+	if err := p.deleteFunction(region); err != nil && !util.IsNotFound(err) {
 		return errors.Wrap(err, "deleting function")
 	}
 
 	log.Debug("deleting role")
-	if err := p.deleteRole(region); err != nil && !isNotFound(err) {
+	if err := p.deleteRole(region); err != nil && !util.IsNotFound(err) {
 		return errors.Wrap(err, "deleting role")
 	}
 
@@ -223,7 +223,7 @@ func (p *Platform) DeleteStack(region string, wait bool) error {
 
 // ShowStack implementation.
 func (p *Platform) ShowStack(region string) error {
-	return nil
+	return stack.New(p.config, p.events, region).Show()
 }
 
 // deploy to the given region.
@@ -245,7 +245,7 @@ func (p *Platform) deploy(region, stage string) (version string, err error) {
 		FunctionName: &p.config.Name,
 	})
 
-	if isNotFound(err) {
+	if util.IsNotFound(err) {
 		defer p.events.Time("platform.function.create", fields)
 		return p.createFunction(c, a, stage)
 	}
@@ -478,12 +478,6 @@ func (p *Platform) removeProxy() error {
 	os.Remove("_proxy.js")
 	os.Remove("byline.js")
 	return nil
-}
-
-// isNotFound returns true if it's a "function not found" error.
-func isNotFound(err error) bool {
-	// TODO: move these to util
-	return err != nil && strings.Contains(err.Error(), "not found")
 }
 
 // isCreatingRole returns true if the role has not been created.
