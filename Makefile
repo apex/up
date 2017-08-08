@@ -1,18 +1,4 @@
 
-# Build generated files (parser & up-proxy).
-build:
-	@go generate ./...
-.PHONY: build
-
-cloc:
-	@cloc -exclude-dir=vendor,node_modules .
-.PHONY: cloc
-
-# Release binaries to GitHub.
-release:
-	@goreleaser --rm-dist --config .goreleaser.yml
-.PHONY: release
-
 # Run all tests.
 test:
 	@go test -cover ./...
@@ -26,7 +12,21 @@ test.setup:
 	@dep ensure
 .PHONY: test.setup
 
-# Output to-do items per file.
+# Show source statistics.
+cloc:
+	@cloc -exclude-dir=vendor,node_modules .
+.PHONY: cloc
+
+# Release binaries to GitHub.
+release:
+	@echo "==> Generating proxy"
+	@go generate ./internal/proxy/...
+	@echo "==> Releasing"
+	@goreleaser --rm-dist --config .goreleaser.yml
+	@echo "==> Complete"
+.PHONY: release
+
+# Show to-do items per file.
 todo:
 	@grep \
 		--exclude-dir=vendor \
