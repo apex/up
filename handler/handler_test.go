@@ -10,10 +10,6 @@ import (
 	"github.com/tj/assert"
 )
 
-// TODO: tests integration of each middleware
-// TODO: tests for POST etc
-// TODO: tests for larger response bodies
-
 func TestNode(t *testing.T) {
 	os.Chdir("testdata/node")
 	defer os.Chdir("../..")
