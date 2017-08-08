@@ -19,6 +19,7 @@ type Rule struct {
 	Path     string `json:"path"`
 	Location string `json:"location"`
 	Status   int    `json:"status"`
+	Force    bool   `json:"force"`
 	names    map[string]bool
 	dynamic  bool
 	sub      string

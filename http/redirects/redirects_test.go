@@ -49,6 +49,11 @@ func TestRedirects(t *testing.T) {
 					Location: "/products/:brand",
 					Status:   301,
 				},
+				"/settings/*": {
+					Location: "/admin/:splat",
+					Status:   200,
+					Force:    true,
+				},
 			},
 		}
 
@@ -62,8 +67,12 @@ func TestRedirects(t *testing.T) {
 				fmt.Fprintln(w, "products")
 			case strings.Contains(r.URL.Path, "/docs"):
 				fmt.Fprintf(w, "docs %s", r.URL.Path)
-			case strings.Contains(r.URL.Path, "/brand"):
+			case strings.HasPrefix(r.URL.Path, "/brand"):
 				fmt.Fprintf(w, "shop %s", r.URL.Path)
+			case strings.HasPrefix(r.URL.Path, "/setting"):
+				fmt.Fprintf(w, "settings %s", r.URL.Path)
+			case strings.HasPrefix(r.URL.Path, "/admin"):
+				fmt.Fprintf(w, "admin %s", r.URL.Path)
 			default:
 				http.NotFound(w, r)
 			}
@@ -176,5 +185,15 @@ func test(t *testing.T, h http.Handler) {
 
 		assert.Equal(t, 301, res.Code)
 		assert.Equal(t, "Moved Permanently\n", res.Body.String())
+	})
+
+	t.Run("forced rewrite", func(t *testing.T) {
+		res := httptest.NewRecorder()
+		req := httptest.NewRequest("GET", "/settings/login", nil)
+
+		h.ServeHTTP(res, req)
+
+		assert.Equal(t, 200, res.Code)
+		assert.Equal(t, "admin /admin/login", res.Body.String())
 	})
 }

@@ -72,6 +72,15 @@ func New(c *up.Config, next http.Handler) (http.Handler, error) {
 			return
 		}
 
+		// forced rewrite
+		if rule.IsRewrite() && rule.Force {
+			ctx.WithField("dest", r.URL.Path).Info("forced rewrite")
+			r.Header.Set("X-Original-Path", r.URL.Path)
+			r.URL.Path = rule.URL(r.URL.Path)
+			next.ServeHTTP(w, r)
+			return
+		}
+
 		// rewrite
 		if rule.IsRewrite() {
 			res := &rewrite{ResponseWriter: w}

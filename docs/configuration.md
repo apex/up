@@ -362,6 +362,22 @@ A common use-case for rewrites is for SPAs or Single Page Apps, where you want t
 }
 ```
 
+If you wish to force the rewrite regardless of a file existing, set `force` to `true` as shown here:
+
+```json
+{
+  "name": "app",
+  "type": "static",
+  "redirects": {
+    "/*": {
+      "location": "/",
+      "status": 200,
+      "force": true
+    }
+  }
+}
+```
+
 Note that more specific target paths take precedence over those which are less specific, for example `/blog` will win over and `/*`.
 
 ## Cross-Origin Resource Sharing
