@@ -56,10 +56,22 @@
   revision = "2f8dfbc7dbbff5dd1d391ed91482c24df243b2d3"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/c4milo/unpackit"
+  packages = ["."]
+  revision = "4ed373e9ef1c895fe04468d813cb628902d89a0a"
+
+[[projects]]
   name = "github.com/davecgh/go-spew"
   packages = ["spew"]
   revision = "346938d642f2ec3594ed81d874461961cd0faa76"
   version = "v1.1.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/dsnet/compress"
+  packages = [".","bzip2","bzip2/internal/sais","internal","internal/errors","internal/prefix"]
+  revision = "0ae8e136a5df9e3caf6c0f69983608b07438411b"
 
 [[projects]]
   branch = "master"
@@ -84,6 +96,24 @@
   packages = ["."]
   revision = "d3de07a94d22b4a0972deb4b96d790c2c0ce8333"
   version = "v1.28.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/golang/protobuf"
+  packages = ["proto"]
+  revision = "1909bc2f63dc92bb931deace8b8312c4db72d12f"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/google/go-github"
+  packages = ["github"]
+  revision = "44e0413e5b74655281275e8c90cff2b27d9673a1"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/google/go-querystring"
+  packages = ["query"]
+  revision = "53e6ce116135b80d037921a7fdd5138cf32d7a8a"
 
 [[projects]]
   branch = "master"
@@ -131,6 +161,12 @@
   name = "github.com/klauspost/crc32"
   packages = ["."]
   revision = "cb6bfca970f6908083f26f39a79009d608efd5cd"
+  version = "v1.1"
+
+[[projects]]
+  name = "github.com/klauspost/pgzip"
+  packages = ["."]
+  revision = "0bf5dcad4ada2814c3c00f996a982270bb81a506"
   version = "v1.1"
 
 [[projects]]
@@ -254,10 +290,22 @@
   version = "v1.1.0"
 
 [[projects]]
+  name = "github.com/tj/go-update"
+  packages = ["."]
+  revision = "8831a6e7cfe17e95cc0e3cffdb541518e5985927"
+  version = "v1.0.0"
+
+[[projects]]
   name = "github.com/tj/kingpin"
   packages = ["."]
   revision = "754e6e5fd3c95d0f26f0890982c66bfa7c032c3f"
   version = "v2.4.2"
+
+[[projects]]
+  name = "github.com/ulikunitz/xz"
+  packages = [".","internal/hash","internal/xlog","lzma"]
+  revision = "0c6b41e72360850ca4f98dc341fd999726ea007f"
+  version = "v0.5.4"
 
 [[projects]]
   branch = "master"
@@ -273,13 +321,25 @@
 
 [[projects]]
   branch = "master"
+  name = "golang.org/x/net"
+  packages = ["context"]
+  revision = "167db312be3be3d239e24dbe0ab099ab5b9aa783"
+
+[[projects]]
+  branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix","windows"]
   revision = "d8f5ea21b9295e315e612b4bcf4bedea93454d4d"
 
+[[projects]]
+  name = "google.golang.org/appengine"
+  packages = [".","internal","internal/app_identity","internal/base","internal/datastore","internal/log","internal/modules","internal/remote_api"]
+  revision = "150dc57a1b433e64154302bdc40b6bb8aefa313a"
+  version = "v1.0.0"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "bbee38fcd2fe05dac566d53aa7b6d08acbc28bc1e1d4b624993719dea04ef287"
+  inputs-digest = "37e2f6afe22e2654290641594c5cdd64868c866c9daf822d2b4addcff2097818"
   solver-name = "gps-cdcl"
   solver-version = 1
