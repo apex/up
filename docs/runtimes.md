@@ -57,3 +57,7 @@ The `clean` hook becomes:
 ```
 $ rm server
 ```
+
+## Static
+
+When an `index.html` file is detected the project is assumed to be static.
