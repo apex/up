@@ -30,7 +30,7 @@ func ClearHeader(h http.Header) {
 	}
 }
 
-// ManagedByUp string.
+// ManagedByUp appends "Managed by Up".
 func ManagedByUp(s string) string {
 	if s == "" {
 		return "Managed by Up."
@@ -59,7 +59,7 @@ func ReadFileJSON(path string, v interface{}) error {
 	return nil
 }
 
-// Camelcase .....
+// Camelcase string with optional args.
 func Camelcase(s string, v ...interface{}) string {
 	return name.CamelCase(fmt.Sprintf(s, v...), true)
 }
