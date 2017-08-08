@@ -61,7 +61,7 @@ func init() {
 		}
 
 		term.ClearAll()
-		fmt.Printf("\n  Updated to %s to %s :)\n", version, latest.Version)
+		fmt.Printf("\n  Updated %s to %s :)\n", version, latest.Version)
 
 		return nil
 	})
