@@ -10,8 +10,6 @@ import (
 	"github.com/tj/go/term"
 )
 
-// TODO: refactor to just check EOF
-
 // reader wrapping a progress bar.
 type reader struct {
 	io.ReadCloser
