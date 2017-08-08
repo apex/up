@@ -1,0 +1,106 @@
+
+# Gopkg.toml example
+#
+# Refer to https://github.com/golang/dep/blob/master/docs/Gopkg.toml.md
+# for detailed Gopkg.toml documentation.
+#
+# required = ["github.com/user/thing/cmd/thing"]
+# ignored = ["github.com/user/project/pkgX", "bitbucket.org/user/project/pkgA/pkgY"]
+#
+# [[constraint]]
+#   name = "github.com/user/project"
+#   version = "1.0.0"
+#
+# [[constraint]]
+#   name = "github.com/user/project2"
+#   branch = "dev"
+#   source = "github.com/myfork/project2"
+#
+# [[override]]
+#  name = "github.com/x/y"
+#  version = "2.4.0"
+
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/apex/go-apex"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/apex/log"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/aybabtme/rgbterm"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/dustin/go-humanize"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/facebookgo/freeport"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/fanyang01/radix"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/jpillora/backoff"
+
+[[constraint]]
+  name = "github.com/mattn/go-isatty"
+  version = "0.0.2"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/pascaldekloe/name"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/pkg/browser"
+
+[[constraint]]
+  name = "github.com/pkg/errors"
+  version = "0.8.0"
+
+[[constraint]]
+  name = "github.com/rs/cors"
+  version = "1.2.0"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/timewasted/go-accept-headers"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/tj/assert"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/tj/go-archive"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/tj/go-cli-analytics"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/tj/go-headers"
+
+[[constraint]]
+  branch = "master"
+  name = "github.com/tj/go-progress"
+
+[[constraint]]
+  name = "github.com/tj/go-prompt"
+  version = "1.3.0"
+
+[[constraint]]
+  name = "github.com/tj/go-spin"
+  version = "1.1.0"
+
+[[constraint]]
+  name = "github.com/tj/kingpin"
+  version = "2.4.0"
