@@ -30,7 +30,7 @@ Updated as of July 2017 based on public information. Some services offer a restr
 
 <details>
   <summary>Is this a hosted service?</summary>
-  <p>There are no plans for a hosted version. Up lets you deploy applications to your own AWS account for isolation, security, and longevity, don't worry about a startup going out of business.</p>
+  <p>There are currently no plans for a hosted version. Up lets you deploy applications to your own AWS account for isolation, security, and longevity, don't worry about a startup going out of business.</p>
 </details>
 
 <details>
@@ -60,7 +60,7 @@ Updated as of July 2017 based on public information. Some services offer a restr
 
 <details>
   <summary>Can I donate?</summary>
-  <p>I'm glad you asked! Yes you can, head over to the <a href="https://opencollective.com/apex">OpenCollective</a> page. Any donations are greatly appreciated and help me focus more on Up's implementation, documentation, and examples.</p>
+  <p>Yes you can! Head over to the <a href="https://opencollective.com/apex">OpenCollective</a> page. Any donations are greatly appreciated and help me focus more on Up's implementation, documentation, and examples. If you're using the free OSS version for personal or commercial use please consider giving back.</p>
 </details>
 
 ## Community
