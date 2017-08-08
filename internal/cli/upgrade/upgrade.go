@@ -15,7 +15,7 @@ import (
 )
 
 func init() {
-	cmd := root.Command("upgrade", "Update to the latest release of Up.")
+	cmd := root.Command("upgrade", "Install the latest release of Up.")
 	cmd.Action(func(_ *kingpin.ParseContext) error {
 		version := root.Cmd.GetVersion()
 		defer util.Pad()()
