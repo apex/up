@@ -209,12 +209,12 @@ func (p *Platform) DeleteStack(region string, wait bool) error {
 	}
 
 	log.Debug("deleting function")
-	if err := p.deleteFunction(); err != nil && !isNotFound(err) {
+	if err := p.deleteFunction(region); err != nil && !isNotFound(err) {
 		return errors.Wrap(err, "deleting function")
 	}
 
 	log.Debug("deleting role")
-	if err := p.deleteRole(); err != nil && !isNotFound(err) {
+	if err := p.deleteRole(region); err != nil && !isNotFound(err) {
 		return errors.Wrap(err, "deleting role")
 	}
 
@@ -341,8 +341,9 @@ func (p *Platform) updateFunction(c *lambda.Lambda, stage string) (version strin
 }
 
 // deleteFunction deletes the lambda function.
-func (p *Platform) deleteFunction() error {
-	c := lambda.New(session.New(aws.NewConfig()))
+func (p *Platform) deleteFunction(region string) error {
+	// TODO: sessions all over... refactor
+	c := lambda.New(session.New(aws.NewConfig().WithRegion(region)))
 
 	_, err := c.DeleteFunction(&lambda.DeleteFunctionInput{
 		FunctionName: &p.config.Name,
@@ -406,9 +407,9 @@ func (p *Platform) createRole() error {
 }
 
 // deleteRole deletes the role and policy.
-func (p *Platform) deleteRole() error {
+func (p *Platform) deleteRole(region string) error {
 	name := fmt.Sprintf("%s-api-function", p.config.Name)
-	c := iam.New(session.New(aws.NewConfig()))
+	c := iam.New(session.New(aws.NewConfig().WithRegion(region)))
 
 	_, err := c.DeleteRolePolicy(&iam.DeleteRolePolicyInput{
 		RoleName:   &name,
@@ -481,6 +482,7 @@ func (p *Platform) removeProxy() error {
 
 // isNotFound returns true if it's a "function not found" error.
 func isNotFound(err error) bool {
+	// TODO: move these to util
 	return err != nil && strings.Contains(err.Error(), "not found")
 }
 

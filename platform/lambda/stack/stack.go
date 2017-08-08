@@ -118,7 +118,7 @@ func (s *Stack) report(state string) error {
 	for range time.Tick(time.Second) {
 		stack, err := s.getStack()
 
-		if err != nil && strings.Contains(err.Error(), "does not exist") {
+		if isNotFound(err) {
 			return nil
 		}
 
@@ -133,6 +133,11 @@ func (s *Stack) report(state string) error {
 		}
 
 		events, err := s.getEvents()
+
+		if isNotFound(err) {
+			return nil
+		}
+
 		if err != nil {
 			return errors.Wrap(err, "fetching events")
 		}
@@ -231,4 +236,9 @@ func (s *Stack) getEventsByState(state State) (v []*cloudformation.StackEvent, e
 	}
 
 	return
+}
+
+// isNotFound returns true if there is an error and it represents a missing resoruce.
+func isNotFound(err error) bool {
+	return err != nil && strings.Contains(err.Error(), "does not exist")
 }
