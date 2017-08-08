@@ -4,6 +4,14 @@ test:
 	@go test -cover ./...
 .PHONY: test
 
+# Test setup for CI.
+test.setup:
+	@echo "==> Install dep"
+	@go get github.com/golang/dep/cmd/dep
+	@echo "==> Install dependencies"
+	@dep ensure
+.PHONY: test.setup
+
 # Generate files.
 generate:
 	@go generate ./...
