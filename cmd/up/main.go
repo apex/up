@@ -18,6 +18,7 @@ import (
 	_ "github.com/apex/up/internal/cli/run"
 	_ "github.com/apex/up/internal/cli/stack"
 	_ "github.com/apex/up/internal/cli/start"
+	_ "github.com/apex/up/internal/cli/upgrade"
 	_ "github.com/apex/up/internal/cli/url"
 	_ "github.com/apex/up/internal/cli/version"
 
