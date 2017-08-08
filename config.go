@@ -127,7 +127,6 @@ func (c *Config) Default() error {
 		os.Setenv("AWS_PROFILE", c.Profile)
 	}
 
-	// TODO: detect
 	// default type to server
 	if c.Type == "" {
 		c.Type = "server"
@@ -147,6 +146,8 @@ func (c *Config) Default() error {
 		c.Proxy.Command = "node app.js"
 	case util.Exists("app.py"):
 		c.Proxy.Command = "python app.py"
+	case util.Exists("index.html"):
+		c.Type = "static"
 	}
 
 	// default .name

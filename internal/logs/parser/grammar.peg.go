@@ -2931,13 +2931,13 @@ func (p *parser) Init() {
 		nil,
 		/* 80 Action17 <- <{ p.AddBinary(ast.LT) }> */
 		nil,
-		/* 81 Action18 <- <{ p.AddBinary(ast.EQ) }> */
+		/* 81 Action18 <- <{ p.AddBinary(ast.EQ)   }> */
 		nil,
-		/* 82 Action19 <- <{ p.AddBinary(ast.NE) }> */
+		/* 82 Action19 <- <{ p.AddBinary(ast.NE)   }> */
 		nil,
-		/* 83 Action20 <- <{ p.AddBinary(ast.EQ) }> */
+		/* 83 Action20 <- <{ p.AddBinary(ast.EQ)   }> */
 		nil,
-		/* 84 Action21 <- <{ p.AddBinaryContains()   }> */
+		/* 84 Action21 <- <{ p.AddBinaryContains() }> */
 		nil,
 		/* 85 Action22 <- <{ p.AddBinary(ast.AND) }> */
 		nil,
