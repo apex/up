@@ -22,7 +22,7 @@ func TestConfig_Name(t *testing.T) {
 		}
 
 		assert.NoError(t, c.Default(), "default")
-		assert.EqualError(t, c.Validate(), `.name: must contain only alphanumeric characters and '-'`)
+		assert.EqualError(t, c.Validate(), `.name "my app": must contain only alphanumeric characters and '-'`)
 	})
 }
 

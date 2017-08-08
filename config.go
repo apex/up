@@ -90,7 +90,7 @@ type Config struct {
 // Validate implementation.
 func (c *Config) Validate() error {
 	if err := validate.Name(c.Name); err != nil {
-		return errors.Wrap(err, ".name")
+		return errors.Wrapf(err, ".name %q", c.Name)
 	}
 
 	if err := validate.List(c.Type, []string{"static", "server"}); err != nil {
