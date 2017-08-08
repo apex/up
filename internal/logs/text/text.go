@@ -22,10 +22,10 @@ type colorFunc func(string) string
 
 // omit fields.
 var omit = map[string]bool{
-	"app":        true,
-	"app_name":   true,
-	"app_region": true,
-	"plugin":     true,
+	"app":    true,
+	"region": true,
+	"plugin": true,
+	"stage":  true,
 }
 
 // Colors mapping.
