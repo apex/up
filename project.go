@@ -103,8 +103,8 @@ func (p *Project) deploy(stage string) error {
 }
 
 // Logs for the project.
-func (p *Project) Logs(query string) platform.Logs {
-	return p.platform.Logs(query)
+func (p *Project) Logs(region, query string) platform.Logs {
+	return p.platform.Logs(region, query)
 }
 
 // URL returns the endpoint.

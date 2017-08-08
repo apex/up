@@ -31,6 +31,7 @@ import (
 // Logs implementation.
 type Logs struct {
 	platform *Platform
+	region   string
 	query    string
 	follow   bool
 	since    time.Time
@@ -39,7 +40,7 @@ type Logs struct {
 }
 
 // NewLogs returns a new logs tailer.
-func NewLogs(p *Platform, query string) platform.Logs {
+func NewLogs(p *Platform, region, query string) platform.Logs {
 	r, w := io.Pipe()
 
 	if query != "" {
@@ -53,6 +54,7 @@ func NewLogs(p *Platform, query string) platform.Logs {
 
 	l := &Logs{
 		platform: p,
+		region:   region,
 		query:    query,
 		Reader:   r,
 		w:        w,
@@ -80,9 +82,8 @@ func (l *Logs) start() {
 	// TODO: apply backoff instead of PollInterval
 	group := "/aws/lambda/" + l.platform.config.Name
 
-	// TODO: pass region
 	config := logs.Config{
-		Service:       cloudwatchlogs.New(session.New(aws.NewConfig())),
+		Service:       cloudwatchlogs.New(session.New(aws.NewConfig().WithRegion(l.region))),
 		StartTime:     l.since,
 		PollInterval:  2 * time.Second,
 		Follow:        l.follow,

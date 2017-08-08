@@ -5,6 +5,8 @@ import (
 	"time"
 )
 
+// TODO: these interfaces suck, clean them up ;)
+
 // Logs is the interface for viewing logs.
 type Logs interface {
 	Follow()
@@ -23,7 +25,7 @@ type Interface interface {
 
 	// Logs returns an interface for working
 	// with logging data.
-	Logs(query string) Logs
+	Logs(region, query string) Logs
 
 	// URL returns the endpoitn for the given
 	// region and stage combination, or an

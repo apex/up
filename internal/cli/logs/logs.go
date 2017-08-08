@@ -48,7 +48,9 @@ func init() {
 			"since":        s.Round(time.Second),
 		})
 
-		logs := root.Project.Logs(q)
+		// TODO: region flag
+		region := root.Config.Regions[0]
+		logs := root.Project.Logs(region, q)
 		logs.Since(time.Now().Add(-s))
 
 		if *follow {

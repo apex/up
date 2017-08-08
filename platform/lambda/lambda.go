@@ -174,8 +174,8 @@ func (p *Platform) Deploy(stage string) error {
 }
 
 // Logs implementation.
-func (p *Platform) Logs(query string) platform.Logs {
-	return NewLogs(p, query)
+func (p *Platform) Logs(region, query string) platform.Logs {
+	return NewLogs(p, region, query)
 }
 
 // URL returns the stage url.
