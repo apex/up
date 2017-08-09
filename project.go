@@ -139,3 +139,13 @@ func (p *Project) ShowStack(region string) error {
 
 	return p.platform.ShowStack(region)
 }
+
+// ShowMetrics implementation.
+func (p *Project) ShowMetrics(region, stage string) error {
+	defer p.events.Time("metrics", event.Fields{
+		"region": region,
+		"stage":  stage,
+	})()
+
+	return p.platform.ShowMetrics(region, stage)
+}

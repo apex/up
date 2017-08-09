@@ -5,31 +5,17 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudwatch"
-	"github.com/aws/aws-sdk-go/service/cloudwatch/cloudwatchiface"
 )
-
-// DefaultClient is the default client used for cloudwatch.
-var DefaultClient = cloudwatch.New(session.New(aws.NewConfig()))
 
 // Metrics helper.
 type Metrics struct {
-	client cloudwatchiface.CloudWatchAPI
-	in     cloudwatch.GetMetricStatisticsInput
+	in cloudwatch.GetMetricStatisticsInput
 }
 
 // New metrics.
 func New() *Metrics {
-	return &Metrics{
-		client: DefaultClient,
-	}
-}
-
-// Client sets the client.
-func (m *Metrics) Client(c cloudwatchiface.CloudWatchAPI) *Metrics {
-	m.client = c
-	return m
+	return &Metrics{}
 }
 
 // Namespace sets the namespace.
@@ -66,9 +52,9 @@ func (m *Metrics) Dimension(name, value string) *Metrics {
 	return m
 }
 
-// Period sets the period.
-func (m *Metrics) Period(minutes int64) *Metrics {
-	m.in.Period = &minutes
+// Period sets the period in seconds.
+func (m *Metrics) Period(seconds int) *Metrics {
+	m.in.Period = aws.Int64(int64(seconds))
 	return m
 }
 
@@ -79,12 +65,7 @@ func (m *Metrics) TimeRange(start, end time.Time) *Metrics {
 	return m
 }
 
-// Input returns the API input.
-func (m *Metrics) Input() *cloudwatch.GetMetricStatisticsInput {
+// Params returns the API input.
+func (m *Metrics) Params() *cloudwatch.GetMetricStatisticsInput {
 	return &m.in
-}
-
-// Get metrics.
-func Get(m *Metrics) (*cloudwatch.GetMetricStatisticsOutput, error) {
-	return m.client.GetMetricStatistics(m.Input())
 }

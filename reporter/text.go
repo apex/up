@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strconv"
 	"time"
 
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -69,7 +70,7 @@ func (r *reporter) complete(name, value string, d time.Duration) {
 
 // log line
 func (r *reporter) log(name, value string) {
-	fmt.Printf("\r %30s %s\n", colors.Purple(name+":"), value)
+	fmt.Printf("\r %35s %s\n", colors.Purple(name+":"), value)
 }
 
 // Start handling events.
@@ -158,6 +159,10 @@ func (r *reporter) Start() {
 					fmt.Printf("  %s: %s\n", color("reason"), *reason)
 				}
 				fmt.Printf("\n")
+			case "metrics", "metrics.complete":
+				fmt.Printf("\n")
+			case "metrics.value":
+				r.log(e.String("name"), strconv.Itoa(e.Int("value")))
 			}
 
 			r.prevTime = time.Now()
