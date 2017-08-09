@@ -19,8 +19,6 @@ cloc:
 
 # Release binaries to GitHub.
 release:
-	@echo "==> Generating proxy"
-	@go generate ./internal/proxy/...
 	@echo "==> Releasing"
 	@goreleaser --rm-dist --config .goreleaser.yml
 	@echo "==> Complete"
