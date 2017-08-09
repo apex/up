@@ -40,7 +40,6 @@ func init() {
 	Cmd.Example(`up run build`, "Run build command manually.")
 	Cmd.Example(`up help logs`, "Show help and examples for a sub-command.")
 
-	config := Cmd.Flag("config", "Override the config file.").Default("up.json").String()
 	region := Cmd.Flag("region", "Override the region.").Short('r').String()
 	workdir := Cmd.Flag("chdir", "Change working directory.").Default(".").Short('C').String()
 	verbose := Cmd.Flag("verbose", "Enable verbose log output.").Short('v').Bool()
@@ -53,7 +52,7 @@ func init() {
 			log.SetLevel(log.DebugLevel)
 		}
 
-		c, err := up.ReadConfig(*config)
+		c, err := up.ReadConfig("up.json")
 		if err != nil {
 			return errors.Wrap(err, "reading config")
 		}
