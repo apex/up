@@ -29,7 +29,7 @@ type CORS struct {
 	AllowCredentials bool `json:"allow_credentials"`
 
 	// MaxAge indicates how long (in seconds) the results of a preflight request
-	// can be cached
+	// can be cached.
 	MaxAge int `json:"max_int"`
 
 	// Debugging flag adds additional output to debug server side CORS issues

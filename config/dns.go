@@ -3,11 +3,11 @@ package config
 import (
 	"encoding/json"
 
-	"github.com/pkg/errors"
 	"github.com/apex/up/internal/validate"
+	"github.com/pkg/errors"
 )
 
-// dns record types.
+// recordTypes is a list of valid record types.
 var recordTypes = []string{
 	"ALIAS",
 	"A",
