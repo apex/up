@@ -514,3 +514,7 @@ Up can provision free SSL certificates for your domains by providing a `certs` a
 Note that upon provisioning free SSL certificates AWS will send you a verification email to ensure that you own the domain name.
 
 You can read more about this process on the [Validate Domain Ownership](http://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate.html) page.
+
+## Custom Domains
+
+Custom domain mapping is not _yet_ supported. For now you can visit `/apigateway` in the AWS console, click "Custom Domain Names", and map your stage(s). Note that Cloudfront can take up to 30 minutes to provision (unfortunately). Better solutions are coming.
