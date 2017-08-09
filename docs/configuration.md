@@ -85,6 +85,8 @@ Currently Lambda supports the following regions:
 - **eu-west-2** – EU (London)
 - **sa-east-1** – South America (São Paulo)
 
+**WARNING**: multi-region support won't be complete until https://github.com/apex/up/issues/134 is closed.
+
 ## Lambda Settings
 
 The following Lambda-specific settings are available:
