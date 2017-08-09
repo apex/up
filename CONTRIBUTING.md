@@ -40,7 +40,7 @@ $ make test
 
 ## Layout
 
-Although Up is not provided as a library, it is structured primarily as if it was for organizational purposes. The project layout is loosely:
+Although Up is not provided as a library it is structured as if it was, for organizational purposes. The project layout is loosely:
 
 - *.go – Primary API
 - [reporter](reporter) – Event based CLI reporting
@@ -49,7 +49,15 @@ Although Up is not provided as a library, it is structured primarily as if it wa
 - [http](http) – HTTP middleware for up-proxy
 - [handler](handler) – HTTP middleware aggregate, effectively the entire proxy
 - [docs](docs) – Documentation used to generate the static site
-- [config](config) – Configuration structures and validation for up.json
+- [config](config) – Configuration structures and validation for `up.json`
 - [cmd](cmd) – Commands, where `up` is the CLI and `up-proxy` is serving requests in production
 
-Note that this is just a first past, and the code / layout will be refactored.
+Note that this is just a first past, and the code / layout will be refactored. View [Godoc](http://godoc.org/github.com/apex/up) for more details of the internals.
+
+## Proxy
+
+One oddity is that the `up-proxy` is baked into `up`. Yes there's a binary within the binary :) – this is so `up` can inject the proxy before deploying your function to Lambda.
+
+The proxy accepts AWS Lambda events from API Gateway, translates them to HTTP, and sends a request to your application, then translates it back to an event that API Gateway understands.
+
+Reverse proxy features such as URL rewriting, gzip compression, script injection, error pages and others are also provided in `up-proxy`.
