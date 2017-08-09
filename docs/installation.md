@@ -5,7 +5,7 @@ title: Installation
 Up can be installed via pre-compiled binaries, head over to the [Releases](https://github.com/apex/up/releases) page. For example for Mac OS use:
 
 ```
-$ curl -#L https://github.com/apex/up/releases/download/v0.1.2/up_0.1.2_darwin_amd64.tar.gz | tar -zx -C /usr/local/bin
+$ curl -#L https://github.com/apex/up/releases/download/v0.1.3/up_0.1.3_darwin_amd64.tar.gz | tar -zx -C /usr/local/bin
 ```
 
 Verify installation with:
