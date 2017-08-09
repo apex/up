@@ -364,6 +364,12 @@ func (p *Platform) createRole() error {
 		RoleName: &name,
 	})
 
+	// network or permission error
+	if err != nil && !util.IsNotFound(err) {
+		return errors.Wrap(err, "fetching role")
+	}
+
+	// use the existing role
 	if err == nil {
 		arn := *existing.Role.Arn
 		log.Debugf("using existing role %s", arn)

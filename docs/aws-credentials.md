@@ -59,6 +59,7 @@ Below is a policy for [AWS Identity and Access Management](https://aws.amazon.co
         "iam:CreateRole",
         "iam:DeleteRole",
         "iam:DeleteRolePolicy",
+        "iam:GetRole",
         "iam:PassRole",
         "iam:PutRolePolicy"
       ],
