@@ -43,6 +43,7 @@ func init() {
 	region := Cmd.Flag("region", "Override the region.").Short('r').String()
 	workdir := Cmd.Flag("chdir", "Change working directory.").Default(".").Short('C').String()
 	verbose := Cmd.Flag("verbose", "Enable verbose log output.").Short('v').Bool()
+	configFile := Cmd.Flag("file", "Override the config file").Default("up.json").Short('d').String()
 
 	Cmd.PreAction(func(_ *kingpin.ParseContext) error {
 		os.Chdir(*workdir)
@@ -52,7 +53,7 @@ func init() {
 			log.SetLevel(log.DebugLevel)
 		}
 
-		c, err := up.ReadConfig("up.json")
+		c, err := up.ReadConfig(*configFile)
 		if err != nil {
 			return errors.Wrap(err, "reading config")
 		}
