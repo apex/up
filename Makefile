@@ -20,7 +20,7 @@ cloc:
 # Release binaries to GitHub.
 release:
 	@echo "==> Releasing"
-	@goreleaser --rm-dist --config .goreleaser.yml
+	@goreleaser --rm-dist -p 1 --config .goreleaser.yml
 	@echo "==> Complete"
 .PHONY: release
 
