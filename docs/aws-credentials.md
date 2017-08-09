@@ -32,3 +32,47 @@ You may store the profile name in the `up.json` file itself as shown in the foll
   "profile": "myapp"
 }
 ```
+
+## Minimum IAM Policy
+
+Below is a policy for [AWS Identity and Access Management](https://aws.amazon.com/iam/) which provides the minimum privileges needed to use Up to manage your resources. Note that this may change as features are added to Up, so you may have to adjust the policy.
+
+```json
+{
+  "Version": "2012-10-17",
+  "Statement": [
+    {
+      "Action": [
+        "cloudformation:CreateStack",
+        "cloudformation:DeleteStack",
+        "cloudformation:DescribeStackEvents",
+        "cloudformation:DescribeStacks",
+        "cloudwatch:GetMetricStatistics",
+        "iam:AttachRolePolicy",
+        "iam:CreatePolicy",
+        "iam:CreateRole",
+        "iam:DeleteRole",
+        "iam:DeleteRolePolicy",
+        "iam:PassRole",
+        "iam:PutRolePolicy",
+        "lambda:CreateAlias",
+        "lambda:CreateFunction",
+        "lambda:DeleteFunction",
+        "lambda:GetAlias",
+        "lambda:GetFunction",
+        "lambda:GetFunctionConfiguration",
+        "lambda:InvokeFunction",
+        "lambda:ListAliases",
+        "lambda:ListFunctions",
+        "lambda:ListVersionsByFunction",
+        "lambda:UpdateAlias",
+        "lambda:UpdateFunctionCode",
+        "lambda:UpdateFunctionConfiguration",
+        "logs:FilterLogEvents"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    }
+  ]
+}
+```
