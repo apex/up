@@ -45,8 +45,8 @@ func (s *stat) Value() int {
 // stats to fetch.
 var stats = []*stat{
 	{"Requests", "Count", "Sum", nil},
-	{"Avg Latency", "Latency", "Average", nil},
 	{"Min Latency", "Latency", "Minimum", nil},
+	{"Avg Latency", "Latency", "Average", nil},
 	{"Max Latency", "Latency", "Maximum", nil},
 	{"Client Errors", "4XXError", "Sum", nil},
 	{"Server Errors", "5XXError", "Sum", nil},

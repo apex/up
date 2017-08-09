@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"strconv"
 	"time"
 
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -162,7 +161,12 @@ func (r *reporter) Start() {
 			case "metrics", "metrics.complete":
 				fmt.Printf("\n")
 			case "metrics.value":
-				r.log(e.String("name"), strconv.Itoa(e.Int("value")))
+				switch n := e.String("name"); n {
+				case "Avg Latency", "Min Latency", "Max Latency":
+					r.log(n, fmt.Sprintf("%dms", e.Int("value")))
+				default:
+					r.log(n, fmt.Sprintf("%d", e.Int("value")))
+				}
 			}
 
 			r.prevTime = time.Now()
