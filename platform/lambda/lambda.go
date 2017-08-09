@@ -128,15 +128,15 @@ func (p *Platform) Build() error {
 
 // Deploy implementation.
 func (p *Platform) Deploy(stage string) error {
-	errc := make(chan error)
+	regions := p.config.Regions
+	errc := make(chan error, len(regions))
 
 	if err := p.createRole(); err != nil {
 		return errors.Wrap(err, "iam")
 	}
 
-	for _, region := range p.config.Regions {
-		region := region
-		go func() {
+	for _, r := range regions {
+		go func(region string) {
 			version, err := p.deploy(region, stage)
 
 			if err == nil {
@@ -145,23 +145,17 @@ func (p *Platform) Deploy(stage string) error {
 			}
 
 			if err != errFirstDeploy {
-				select {
-				case errc <- errors.Wrap(err, region):
-				default:
-				}
+				errc <- errors.Wrap(err, region)
 				return
 			}
 
 			if err := p.CreateStack(region, version); err != nil {
-				select {
-				case errc <- errors.Wrap(err, region):
-				default:
-				}
+				errc <- errors.Wrap(err, region)
 				return
 			}
 
 			errc <- nil
-		}()
+		}(r)
 	}
 
 	for range p.config.Regions {
