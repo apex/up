@@ -33,9 +33,9 @@ You may store the profile name in the `up.json` file itself as shown in the foll
 }
 ```
 
-## Minimum IAM Policy
+## IAM Policy for Up CLI
 
-Below is a policy for [AWS Identity and Access Management](https://aws.amazon.com/iam/) which provides the minimum privileges needed to use Up to manage your resources. Note that this may change as features are added to Up, so you may have to adjust the policy.
+Below is a policy for [AWS Identity and Access Management](https://aws.amazon.com/iam/) which provides Up access to manage your resources.
 
 ```json
 {
@@ -106,3 +106,5 @@ Below is a policy for [AWS Identity and Access Management](https://aws.amazon.co
   ]
 }
 ```
+
+Note that this may change as features are added to Up, so you may have to adjust the policy.
