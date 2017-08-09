@@ -67,7 +67,7 @@ func (w *ResponseWriter) WriteHeader(status int) {
 
 // End the request.
 func (w *ResponseWriter) End() Output {
-	w.out.IsBase64Encoded = !isText(w.header.Get("Content-Type"))
+	w.out.IsBase64Encoded = isBinary(w.header)
 
 	if w.out.IsBase64Encoded {
 		w.out.Body = base64.StdEncoding.EncodeToString(w.buf.Bytes())
@@ -78,8 +78,21 @@ func (w *ResponseWriter) End() Output {
 	return w.out
 }
 
-// isText returns true if the content type represents textual data.
-func isText(kind string) bool {
+// isBinary returns true if the response reprensents binary.
+func isBinary(h http.Header) bool {
+	if !isTextMime(h.Get("Content-Type")) {
+		return true
+	}
+
+	if h.Get("Content-Encoding") == "gzip" {
+		return true
+	}
+
+	return false
+}
+
+// isTextMime returns true if the content type represents textual data.
+func isTextMime(kind string) bool {
 	// TODO: refactor textual mime type stuff
 	switch {
 	case strings.HasSuffix(kind, "svg+xml"):

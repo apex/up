@@ -12,6 +12,7 @@ import (
 	"github.com/apex/up"
 	"github.com/apex/up/http/cors"
 	"github.com/apex/up/http/errorpages"
+	"github.com/apex/up/http/gzip"
 	"github.com/apex/up/http/headers"
 	"github.com/apex/up/http/inject"
 	"github.com/apex/up/http/logs"
@@ -69,6 +70,8 @@ func New() (http.Handler, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "initializing redirects")
 	}
+
+	h = gzip.New(c, h)
 
 	h, err = logs.New(c, h)
 	if err != nil {

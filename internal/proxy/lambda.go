@@ -9,8 +9,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-// TODO: recover() from panic and log / 500
-
 // NewHandler returns an apex.Handler.
 func NewHandler(h http.Handler) apex.Handler {
 	return apex.HandlerFunc(func(event json.RawMessage, ctx *apex.Context) (interface{}, error) {
@@ -26,7 +24,6 @@ func NewHandler(h http.Handler) apex.Handler {
 			return nil, errors.Wrap(err, "creating new request from event")
 		}
 
-		// TODO: use same writer utility as rest?
 		res := NewResponse()
 		h.ServeHTTP(res, req)
 		return res.End(), nil

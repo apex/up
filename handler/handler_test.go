@@ -5,7 +5,6 @@ import (
 	"net/http/httptest"
 	"os"
 	"testing"
-	"time"
 
 	"github.com/tj/assert"
 )
@@ -26,12 +25,13 @@ func TestNode(t *testing.T) {
 	assert.NotEmpty(t, actual.Get("Date"), "date")
 	actual.Del("Date")
 
-	expected := make(http.Header)
-	expected.Add("X-Powered-By", "up")
-	expected.Add("X-Foo", "bar")
-	expected.Add("Content-Length", "11")
-	expected.Add("Content-Type", "text/plain; charset=utf-8")
-	assert.Equal(t, expected, actual)
+	header := make(http.Header)
+	header.Add("X-Powered-By", "up")
+	header.Add("X-Foo", "bar")
+	header.Add("Content-Length", "11")
+	header.Add("Content-Type", "text/plain; charset=utf-8")
+	header.Add("Vary", "Accept-Encoding")
+	assert.Equal(t, header, actual)
 }
 
 func TestStatic(t *testing.T) {
@@ -44,21 +44,20 @@ func TestStatic(t *testing.T) {
 	res := httptest.NewRecorder()
 	req := httptest.NewRequest("GET", "/", nil)
 
-	start := time.Now()
 	h.ServeHTTP(res, req)
-	t.Logf("latency = %s", time.Since(start))
 
 	actual := res.Header()
 	assert.NotEmpty(t, actual.Get("Last-Modified"), "last-modified")
 	actual.Del("Last-Modified")
 
-	expected := make(http.Header)
-	expected.Add("X-Powered-By", "up")
-	expected.Add("Content-Length", "12")
-	expected.Add("Content-Type", "text/html; charset=utf-8")
-	expected.Add("Accept-Ranges", "bytes")
+	header := make(http.Header)
+	header.Add("X-Powered-By", "up")
+	header.Add("Content-Length", "12")
+	header.Add("Content-Type", "text/html; charset=utf-8")
+	header.Add("Accept-Ranges", "bytes")
+	header.Add("Vary", "Accept-Encoding")
 
-	assert.Equal(t, expected, actual)
+	assert.Equal(t, header, actual)
 }
 
 func TestHandler_conditionalGet(t *testing.T) {
