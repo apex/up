@@ -1,8 +1,8 @@
 ![](https://dl.dropboxusercontent.com/u/6396913/Apex/Up/Readme/title-fs8.png)
 
-Up deploys infinitely scalable serverless apps, APIs, and static websites in seconds, all on your own infrastructure so you can get back to writing code.
+Up deploys infinitely scalable serverless apps, APIs, and static websites in seconds, so you can get back to working on what makes your project unique.
 
-Up currently supports Node.js, Golang, Python, Crystal, and static sites out of the box. Up is provider-agnostic, however AWS Lambda and API Gateway are the first targets, you can think of Up as a Heroku-like user experience for a fraction of the price, with the security and flexibility of AWS.
+Up currently supports Node.js, Golang, Python, Crystal, and static sites out of the box. Up is provider-agnostic, supporting AWS Lambda and API Gateway as the first targets. You can think of Up as self-hosted Heroku style user experience for a fraction of the price, with the security, flexibility, and scalability of AWS.
 
 Check out the [documentation](docs), [examples](https://github.com/apex/up-examples), or chat with us in [Slack](https://apex-dev.azurewebsites.net/).
 
@@ -49,8 +49,8 @@ Updated as of July 2017 based on public information. Some services offer a restr
 </details>
 
 <details>
-  <summary>Do I have to manage instances or container counts?</summary>
-  <p>Nope! Up scales to fit your traffic on-demand, you don't have to do anything beyond deploying your code.</p>
+  <summary>How does it scale?</summary>
+  <p>Up scales to fit your traffic on-demand, you don't have to do anything beyond deploying your code. There's no restriction on the number of concurrent instances, apps, custom domains and so on.</p>
 </details>
 
 <details>
