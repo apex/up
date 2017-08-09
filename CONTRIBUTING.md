@@ -37,3 +37,19 @@ $ dep ensure
 ```
 $ make test
 ```
+
+## Layout
+
+Although Up is not provided as a library, it is structured primarily as if it was for organizational purposes. The project layout is loosely:
+
+- *.go – Primary API
+- [reporter](reporter) – Event based CLI reporting
+- [platform](platform) – Platform specifics (AWS Lambda, Azure, Google, etc)
+- [internal](internal) – Internal utilities and lower level tooling
+- [http](http) – HTTP middleware for up-proxy
+- [handler](handler) – HTTP middleware aggregate, effectively the entire proxy
+- [docs](docs) – Documentation used to generate the static site
+- [config](config) – Configuration structures and validation for up.json
+- [cmd](cmd) – Commands, where `up` is the CLI and `up-proxy` is serving requests in production
+
+Note that this is just a first past, and the code / layout will be refactored.
