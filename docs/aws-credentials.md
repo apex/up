@@ -47,31 +47,61 @@ Below is a policy for [AWS Identity and Access Management](https://aws.amazon.co
         "cloudformation:DeleteStack",
         "cloudformation:DescribeStackEvents",
         "cloudformation:DescribeStacks",
-        "cloudwatch:GetMetricStatistics",
+        "cloudwatch:GetMetricStatistics"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    },
+    {
+      "Action": [
         "iam:AttachRolePolicy",
         "iam:CreatePolicy",
         "iam:CreateRole",
         "iam:DeleteRole",
         "iam:DeleteRolePolicy",
         "iam:PassRole",
-        "iam:PutRolePolicy",
+        "iam:PutRolePolicy"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    },
+    {
+      "Action": [
         "lambda:CreateAlias",
         "lambda:CreateFunction",
         "lambda:DeleteFunction",
+        "lambda:AddPermission",
+        "lambda:RemovePermission",
         "lambda:GetAlias",
         "lambda:GetFunction",
         "lambda:GetFunctionConfiguration",
+        "lambda:DeleteAlias",
         "lambda:InvokeFunction",
         "lambda:ListAliases",
         "lambda:ListFunctions",
         "lambda:ListVersionsByFunction",
         "lambda:UpdateAlias",
         "lambda:UpdateFunctionCode",
-        "lambda:UpdateFunctionConfiguration",
+        "lambda:UpdateFunctionConfiguration"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    },
+    {
+      "Action": [
         "logs:FilterLogEvents"
       ],
       "Effect": "Allow",
       "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "apigateway:*"
+      ],
+      "Resource": [
+        "arn:aws:apigateway:*::/*"
+      ]
     }
   ]
 }
