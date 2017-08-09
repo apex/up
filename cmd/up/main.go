@@ -48,6 +48,7 @@ func main() {
 	util.Fatal(err)
 }
 
+// run the cli.
 func run() error {
 	stats.SetProperties(map[string]interface{}{
 		"os":      runtime.GOOS,
