@@ -53,14 +53,14 @@ var stats = []*stat{
 }
 
 // ShowMetrics implementation.
-func (p *Platform) ShowMetrics(region, stage string) error {
+func (p *Platform) ShowMetrics(region, stage string, start time.Time) error {
 	s := session.New(aws.NewConfig().WithRegion(region))
 	c := cloudwatch.New(s)
 
 	errc := make(chan error, len(stats))
 	var wg sync.WaitGroup
 
-	d := time.Hour * 24
+	d := time.Now().Sub(start)
 	period := int(d / time.Second)
 
 	for _, s := range stats {

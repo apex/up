@@ -3,6 +3,7 @@ package up
 import (
 	"os"
 	"os/exec"
+	"time"
 
 	"github.com/apex/log"
 	"github.com/pkg/errors"
@@ -141,11 +142,12 @@ func (p *Project) ShowStack(region string) error {
 }
 
 // ShowMetrics implementation.
-func (p *Project) ShowMetrics(region, stage string) error {
+func (p *Project) ShowMetrics(region, stage string, start time.Time) error {
 	defer p.events.Time("metrics", event.Fields{
 		"region": region,
 		"stage":  stage,
+		"start":  start,
 	})()
 
-	return p.platform.ShowMetrics(region, stage)
+	return p.platform.ShowMetrics(region, stage, start)
 }

@@ -37,5 +37,5 @@ type Interface interface {
 	DeleteStack(region string, wait bool) error
 	ShowStack(region string) error
 
-	ShowMetrics(region, stage string) error
+	ShowMetrics(region, stage string, start time.Time) error
 }
