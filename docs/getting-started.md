@@ -34,6 +34,12 @@ Or copy it to the clipboard:
 $ up url --copy
 ```
 
+Or test with curl:
+
+```
+$ curl `up url`
+```
+
 That's it! You've deployed a basic Up application. Note that the first deploy may take a minute to set up the resources required. To delete it and its resources, use the following command:
 
 ```
