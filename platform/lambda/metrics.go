@@ -16,10 +16,11 @@ import (
 // TODO: move the metrics pkg to tj/aws
 
 type stat struct {
-	Name   string
-	Metric string
-	Stat   string
-	point  *cloudwatch.Datapoint
+	Namespace string
+	Name      string
+	Metric    string
+	Stat      string
+	point     *cloudwatch.Datapoint
 }
 
 // Value returns the metric value.
@@ -42,20 +43,16 @@ func (s *stat) Value() int {
 	}
 }
 
-// apiStats to fetch.
-var apiStats = []*stat{
-	{"Requests", "Count", "Sum", nil},
-	{"Min Latency", "Latency", "Minimum", nil},
-	{"Avg Latency", "Latency", "Average", nil},
-	{"Max Latency", "Latency", "Maximum", nil},
-	{"Client Errors", "4XXError", "Sum", nil},
-	{"Server Errors", "5XXError", "Sum", nil},
-}
-
-// funcStats to fetch.
-var funcStats = []*stat{
-	{"Lambda Errors", "Errors", "Sum", nil},
-	{"Lambda Throttles", "Throttles", "Sum", nil},
+// stats to fetch.
+var stats = []*stat{
+	{"AWS/ApiGateway", "Requests", "Count", "Sum", nil},
+	{"AWS/ApiGateway", "Min Latency", "Latency", "Minimum", nil},
+	{"AWS/ApiGateway", "Avg Latency", "Latency", "Average", nil},
+	{"AWS/ApiGateway", "Max Latency", "Latency", "Maximum", nil},
+	{"AWS/ApiGateway", "Client Errors", "4XXError", "Sum", nil},
+	{"AWS/ApiGateway", "Server Errors", "5XXError", "Sum", nil},
+	{"AWS/Lambda", "Lambda Errors", "Errors", "Sum", nil},
+	{"AWS/Lambda", "Lambda Throttles", "Throttles", "Sum", nil},
 }
 
 // ShowMetrics implementation.
@@ -63,51 +60,30 @@ func (p *Platform) ShowMetrics(region, stage string, start time.Time) error {
 	s := session.New(aws.NewConfig().WithRegion(region))
 	c := cloudwatch.New(s)
 
-	count := len(apiStats) + len(funcStats)
-	errc := make(chan error, count)
+	errc := make(chan error, len(stats))
 	var wg sync.WaitGroup
-	wg.Add(count)
+	wg.Add(len(stats))
 
 	d := time.Now().Sub(start)
 	period := int(d / time.Second)
 
-	for _, s := range apiStats {
+	for _, s := range stats {
 		go func(s *stat) {
 			defer wg.Done()
 
 			m := metrics.New().
-				Namespace("AWS/ApiGateway").
-				Dimension("ApiName", p.config.Name).
-				Dimension("Stage", stage).
+				Namespace(s.Namespace).
 				TimeRange(time.Now().Add(-d), time.Now()).
 				Period(period).
 				Stat(s.Stat).
 				Metric(s.Metric)
 
-			res, err := c.GetMetricStatistics(m.Params())
-			if err != nil {
-				errc <- err
-				return
+			switch s.Namespace {
+			case "AWS/ApiGateway":
+				m = m.Dimension("ApiName", p.config.Name).Dimension("Stage", stage)
+			case "AWS/Lambda":
+				m = m.Dimension("FunctionName", p.config.Name).Dimension("Alias", stage)
 			}
-
-			if len(res.Datapoints) > 0 {
-				s.point = res.Datapoints[0]
-			}
-		}(s)
-	}
-
-	for _, s := range funcStats {
-		go func(s *stat) {
-			defer wg.Done()
-
-			m := metrics.New().
-				Namespace("AWS/Lambda").
-				Dimension("FunctionName", p.config.Name).
-				Dimension("Alias", stage).
-				TimeRange(time.Now().Add(-d), time.Now()).
-				Period(period).
-				Stat(s.Stat).
-				Metric(s.Metric)
 
 			res, err := c.GetMetricStatistics(m.Params())
 			if err != nil {
@@ -129,7 +105,7 @@ func (p *Platform) ShowMetrics(region, stage string, start time.Time) error {
 	default:
 	}
 
-	for _, s := range append(apiStats, funcStats...) {
+	for _, s := range stats {
 		p.events.Emit("metrics.value", event.Fields{
 			"name":  s.Name,
 			"value": s.Value(),
