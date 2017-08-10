@@ -25,9 +25,8 @@ Commands:
   deploy          Deploy the project.
   logs            Show log output.
   run             Run a hook.
-  stack update    Create or update configured resources.
+  stack           Show the status of the stack.
   stack delete    Delete configured resources.
-  stack show      Show the status of the stack.
   start           Start development server.
   url             Show, open, or copy a stage endpoint.
 
@@ -113,7 +112,7 @@ $ up config
 
 ## logs
 
-Show or tail log output with optional query for filtering. 
+Show or tail log output with optional query for filtering.
 
 ```
  Usage:
@@ -243,5 +242,36 @@ Examples:
 
   Start development server on port 5000.
   $ up start --address :5000
+
+```
+
+## stack
+
+Stack resource management.
+
+```
+Usage:
+
+  up stack <command> [<args> ...]
+
+Flags:
+
+  -h, --help           Output usage information.
+  -r, --region=REGION  Override the region.
+  -C, --chdir="."      Change working directory.
+  -v, --verbose        Enable verbose log output.
+      --version        Show application version.
+
+Subcommands:
+  stack delete    Delete configured resources.
+  stack show      Show status of resources.
+
+Examples:
+
+  Show status of the stack resources.
+  $ up stack
+
+  Delete the stack resources.
+  $ up stack delete
 
 ```
