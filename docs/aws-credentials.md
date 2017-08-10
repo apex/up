@@ -43,11 +43,17 @@ Below is a policy for [AWS Identity and Access Management](https://aws.amazon.co
   "Statement": [
     {
       "Action": [
-        "cloudformation:CreateStack",
-        "cloudformation:DeleteStack",
-        "cloudformation:DescribeStackEvents",
-        "cloudformation:DescribeStacks",
-        "cloudwatch:GetMetricStatistics"
+        "route53:*"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    },
+    {
+      "Action": [
+        "cloudformation:Create*",
+        "cloudformation:Update*",
+        "cloudformation:Delete*",
+        "cloudformation:Describe*"
       ],
       "Effect": "Allow",
       "Resource": "*"
@@ -68,31 +74,34 @@ Below is a policy for [AWS Identity and Access Management](https://aws.amazon.co
     },
     {
       "Action": [
-        "lambda:CreateAlias",
-        "lambda:CreateFunction",
-        "lambda:DeleteFunction",
+        "lambda:Create*",
+        "lambda:Delete*",
+        "lambda:Get*",
+        "lambda:List*",
+        "lambda:Update*",
         "lambda:AddPermission",
         "lambda:RemovePermission",
-        "lambda:GetAlias",
-        "lambda:GetFunction",
-        "lambda:GetFunctionConfiguration",
-        "lambda:DeleteAlias",
-        "lambda:InvokeFunction",
-        "lambda:ListAliases",
-        "lambda:ListFunctions",
-        "lambda:ListVersionsByFunction",
-        "lambda:UpdateAlias",
-        "lambda:UpdateFunctionCode",
-        "lambda:UpdateFunctionConfiguration"
+        "lambda:InvokeFunction"
       ],
       "Effect": "Allow",
       "Resource": "*"
     },
     {
       "Action": [
+        "logs:Create*",
+        "logs:Put*",
+        "logs:Test*",
+        "logs:Describe*",
         "logs:FilterLogEvents"
       ],
       "Effect": "Allow",
+      "Resource": "*"
+    },
+    {
+      "Effect": "Allow",
+      "Action": [
+        "cloudwatch:Get*"
+      ],
       "Resource": "*"
     },
     {
