@@ -6,6 +6,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/tj/kingpin"
 
+	"github.com/apex/log"
 	"github.com/apex/up/internal/cli/root"
 	"github.com/apex/up/internal/stats"
 	"github.com/apex/up/internal/util"
@@ -38,11 +39,20 @@ func init() {
 			"has_logs":             !c.Logs.Disable,
 		})
 
-		go stats.Client.Flush()
+		done := make(chan bool)
+
+		go func() {
+			defer close(done)
+			if err := stats.Client.Flush(); err != nil {
+				log.WithError(err).Warn("flushing analytics")
+			}
+		}()
 
 		if err := p.Deploy(*stage); err != nil {
 			return err
 		}
+
+		<-done
 
 		return nil
 	})
