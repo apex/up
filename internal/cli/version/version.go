@@ -12,7 +12,7 @@ import (
 func init() {
 	cmd := root.Command("version", "Show version.")
 	cmd.Action(func(_ *kingpin.ParseContext) error {
-		stats.Track("Version", nil)
+		stats.Track("Show Version", nil)
 		fmt.Println(root.Cmd.GetVersion())
 		return nil
 	})
