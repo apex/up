@@ -3,6 +3,7 @@ package stack
 import (
 	"fmt"
 
+	"github.com/pkg/errors"
 	"github.com/tj/go-prompt"
 	"github.com/tj/kingpin"
 
@@ -30,20 +31,23 @@ func delete(cmd *kingpin.CmdClause) {
 	wait := c.Flag("wait", "Wait for deletion to complete.").Short('w').Bool()
 
 	c.Action(func(_ *kingpin.ParseContext) error {
-		name := root.Config.Name
+		c, p, err := root.Init()
+		if err != nil {
+			return errors.Wrap(err, "initializing")
+		}
 
 		stats.Track("Delete Stack", map[string]interface{}{
 			"force": *force,
 			"wait":  *wait,
 		})
 
-		if !*force && !prompt.Confirm("  Really destroy the stack %q?  ", name) {
+		if !*force && !prompt.Confirm("  Really destroy the stack %q?  ", c.Name) {
 			fmt.Println("aborting")
 			return nil
 		}
 
 		// TODO: multi-region
-		return root.Project.DeleteStack(root.Config.Regions[0], *wait)
+		return p.DeleteStack(c.Regions[0], *wait)
 	})
 }
 
@@ -52,9 +56,14 @@ func show(cmd *kingpin.CmdClause) {
 	c := cmd.Command("show", "Show status of resources.").Default()
 
 	c.Action(func(_ *kingpin.ParseContext) error {
+		c, p, err := root.Init()
+		if err != nil {
+			return errors.Wrap(err, "initializing")
+		}
+
 		stats.Track("Show Stack", nil)
 
 		// TODO: multi-region
-		return root.Project.ShowStack(root.Config.Regions[0])
+		return p.ShowStack(c.Regions[0])
 	})
 }

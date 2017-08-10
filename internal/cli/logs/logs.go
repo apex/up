@@ -7,6 +7,7 @@ import (
 
 	"github.com/apex/up/internal/cli/root"
 	"github.com/apex/up/internal/stats"
+	"github.com/pkg/errors"
 	"github.com/tj/kingpin"
 )
 
@@ -34,6 +35,11 @@ func init() {
 	since := cmd.Flag("since", "Show logs since duration (30s, 5m, 2h, 1h30m).").Short('s').Default("5m").Duration()
 
 	cmd.Action(func(_ *kingpin.ParseContext) error {
+		c, p, err := root.Init()
+		if err != nil {
+			return errors.Wrap(err, "initializing")
+		}
+
 		q := *query
 		s := *since
 
@@ -49,15 +55,18 @@ func init() {
 		})
 
 		// TODO: region flag
-		region := root.Config.Regions[0]
-		logs := root.Project.Logs(region, q)
+		region := c.Regions[0]
+		logs := p.Logs(region, q)
 		logs.Since(time.Now().Add(-s))
 
 		if *follow {
 			logs.Follow()
 		}
 
-		_, err := io.Copy(os.Stdout, logs)
-		return err
+		if _, err := io.Copy(os.Stdout, logs); err != nil {
+			return errors.Wrap(err, "writing logs")
+		}
+
+		return nil
 	})
 }

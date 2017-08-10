@@ -3,6 +3,7 @@ package deploy
 import (
 	"time"
 
+	"github.com/pkg/errors"
 	"github.com/tj/kingpin"
 
 	"github.com/apex/up/internal/cli/root"
@@ -17,10 +18,13 @@ func init() {
 	cmd.Example(`up deploy production`, "Deploy the project to the production stage.")
 
 	cmd.Action(func(_ *kingpin.ParseContext) error {
+		c, p, err := root.Init()
+		if err != nil {
+			return errors.Wrap(err, "initializing")
+		}
+
 		start := time.Now()
 		defer util.Pad()()
-
-		c := root.Config
 
 		stats.Track("Deploy", map[string]interface{}{
 			"duration":             time.Since(start) / time.Millisecond,
@@ -36,7 +40,7 @@ func init() {
 
 		go stats.Client.Flush()
 
-		if err := root.Project.Deploy(*stage); err != nil {
+		if err := p.Deploy(*stage); err != nil {
 			return err
 		}
 

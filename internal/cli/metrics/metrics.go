@@ -3,6 +3,7 @@ package metrics
 import (
 	"time"
 
+	"github.com/pkg/errors"
 	"github.com/tj/kingpin"
 
 	"github.com/apex/up/internal/cli/root"
@@ -18,7 +19,12 @@ func init() {
 	since := cmd.Flag("since", "Show logs since duration (30s, 5m, 2h, 1h30m).").Short('s').Default("24h").Duration()
 
 	cmd.Action(func(_ *kingpin.ParseContext) error {
-		region := root.Config.Regions[0]
+		c, p, err := root.Init()
+		if err != nil {
+			return errors.Wrap(err, "initializing")
+		}
+
+		region := c.Regions[0]
 
 		stats.Track("Metrics", map[string]interface{}{
 			"stage": *stage,
@@ -26,6 +32,6 @@ func init() {
 		})
 
 		start := time.Now().Add(-*since)
-		return root.Project.ShowMetrics(region, *stage, start)
+		return p.ShowMetrics(region, *stage, start)
 	})
 }

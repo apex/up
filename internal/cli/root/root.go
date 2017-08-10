@@ -21,13 +21,8 @@ var Cmd = kingpin.New("up", "")
 // Command registers a command.
 var Command = Cmd.Command
 
-// Project is the project, populated
-// before running any commands.
-var Project *up.Project
-
-// Config is the project config, populate
-// before running any commands.
-var Config *up.Config
+// Init function.
+var Init func() (*up.Config, *up.Project, error)
 
 func init() {
 	log.SetHandler(cli.Default)
@@ -44,7 +39,7 @@ func init() {
 	workdir := Cmd.Flag("chdir", "Change working directory.").Default(".").Short('C').String()
 	verbose := Cmd.Flag("verbose", "Enable verbose log output.").Short('v').Bool()
 
-	Cmd.PreAction(func(_ *kingpin.ParseContext) error {
+	Cmd.PreAction(func(ctx *kingpin.ParseContext) error {
 		os.Chdir(*workdir)
 
 		if *verbose {
@@ -52,23 +47,26 @@ func init() {
 			log.SetLevel(log.DebugLevel)
 		}
 
-		c, err := up.ReadConfig("up.json")
-		if err != nil {
-			return errors.Wrap(err, "reading config")
-		}
+		Init = func() (*up.Config, *up.Project, error) {
+			c, err := up.ReadConfig("up.json")
+			if err != nil {
+				return nil, nil, errors.Wrap(err, "reading config")
+			}
 
-		if *region != "" {
-			c.Regions = []string{*region}
-		}
+			if *region != "" {
+				c.Regions = []string{*region}
+			}
 
-		events := make(event.Events)
-		Config = c
-		Project = up.New(c, events).WithPlatform(lambda.New(c, events))
+			events := make(event.Events)
+			p := up.New(c, events).WithPlatform(lambda.New(c, events))
 
-		if *verbose {
-			go reporter.Discard(events)
-		} else {
-			go reporter.Text(events)
+			if *verbose {
+				go reporter.Discard(events)
+			} else {
+				go reporter.Text(events)
+			}
+
+			return c, p, nil
 		}
 
 		return nil

@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	"github.com/pkg/browser"
+	"github.com/pkg/errors"
 	"github.com/tj/go/clipboard"
 	"github.com/tj/kingpin"
 
@@ -26,7 +27,12 @@ func init() {
 	copy := cmd.Flag("copy", "Copy endpoint to the clipboard.").Short('c').Bool()
 
 	cmd.Action(func(_ *kingpin.ParseContext) error {
-		region := root.Config.Regions[0]
+		c, p, err := root.Init()
+		if err != nil {
+			return errors.Wrap(err, "initializing")
+		}
+
+		region := c.Regions[0]
 
 		stats.Track("URL", map[string]interface{}{
 			"region": region,
@@ -35,7 +41,7 @@ func init() {
 			"copy":   *copy,
 		})
 
-		url, err := root.Project.URL(region, *stage)
+		url, err := p.URL(region, *stage)
 		if err != nil {
 			return err
 		}
