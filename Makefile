@@ -20,7 +20,7 @@ cloc:
 # Release binaries to GitHub.
 release:
 	@echo "==> Releasing"
-	@goreleaser --rm-dist -p 1 --config .goreleaser.yml
+	@goreleaser --rm-dist -config .goreleaser.yml
 	@echo "==> Complete"
 .PHONY: release
 
@@ -34,15 +34,12 @@ todo:
 		-nRo -E ' TODO:.*|SkipNow' .
 .PHONY: todo
 
-# Binary size.
+# Show size of imports.
 size:
-	@go build -o up cmd/up/main.go
-	@go build -o up-proxy cmd/up-proxy/main.go
-	@du -h up up-proxy
-	@$(MAKE) clean
+	@curl -sL https://gist.githubusercontent.com/tj/04e0965e23da00ca33f101e5b2ed4ed4/raw/9aa16698b2bc606cf911219ea540972edef05c4b/gistfile1.txt | bash
 .PHONY: size
 
 # Clean.
 clean:
-	@rm -fr up up-proxy dist
+	@rm -fr dist
 .PHONY: clean
