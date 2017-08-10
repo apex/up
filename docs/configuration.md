@@ -518,3 +518,20 @@ You can read more about this process on the [Validate Domain Ownership](http://d
 ## Custom Domains
 
 Custom domain mapping is not _yet_ supported. For now you can visit `/apigateway` in the AWS console, click "Custom Domain Names", and map your stage(s). Note that Cloudfront can take up to 30 minutes to provision (unfortunately). Better solutions are coming.
+
+## Ignoring Files
+
+Up supports gitignore style pattern matching for omitting files from deployment. The following files are loaded in sequence:
+
+- .gitignore
+- .npmignore
+- .upignore
+
+An example `.upignore` to omit markdown and `.go` source files might look like this:
+
+```
+*.md
+*.go
+```
+
+Patterns can be negated with `!`. To get a better idea of which files are being filtered or added, use `up -v` when deploying.
