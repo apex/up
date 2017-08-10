@@ -3,6 +3,7 @@ package upgrade
 import (
 	"fmt"
 	"runtime"
+	"time"
 
 	"github.com/pkg/errors"
 	"github.com/tj/go-update"
@@ -11,6 +12,7 @@ import (
 
 	"github.com/apex/up/internal/cli/root"
 	"github.com/apex/up/internal/progressreader"
+	"github.com/apex/up/internal/stats"
 	"github.com/apex/up/internal/util"
 )
 
@@ -18,6 +20,7 @@ func init() {
 	cmd := root.Command("upgrade", "Install the latest release of Up.")
 	cmd.Action(func(_ *kingpin.ParseContext) error {
 		version := root.Cmd.GetVersion()
+		start := time.Now()
 		defer util.Pad()()
 
 		// update polls(1) from tj/gh-polls on github
@@ -62,6 +65,12 @@ func init() {
 
 		term.ClearAll()
 		fmt.Printf("\n  Updated %s to %s :)\n", version, latest.Version)
+
+		stats.Track("Upgrade", map[string]interface{}{
+			"from":     version,
+			"to":       latest.Version,
+			"duration": time.Since(start).Round(time.Millisecond),
+		})
 
 		return nil
 	})
