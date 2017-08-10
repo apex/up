@@ -247,7 +247,9 @@ Examples:
 
 ## stack
 
-Stack resource management.
+Stack resource management. The stack is essentially all of the resources powering your app, which is configured by Up on the first deploy.
+
+At any time if you'd like to delete the application simply run `$ up stack delete`. To view the status and potential errors use `$ up stack`.
 
 ```
 Usage:
