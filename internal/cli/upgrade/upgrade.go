@@ -21,7 +21,10 @@ func init() {
 	cmd.Action(func(_ *kingpin.ParseContext) error {
 		version := root.Cmd.GetVersion()
 		start := time.Now()
+
 		defer util.Pad()()
+		term.HideCursor()
+		defer term.ShowCursor()
 
 		// update polls(1) from tj/gh-polls on github
 		p := &update.Project{
