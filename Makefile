@@ -1,4 +1,9 @@
 
+# Build all files.
+build:
+	@go generate ./...
+.PHONY: build
+
 # Run all tests.
 test:
 	@go test -cover ./...
