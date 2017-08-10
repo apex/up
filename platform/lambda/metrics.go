@@ -42,8 +42,8 @@ func (s *stat) Value() int {
 	}
 }
 
-// stats to fetch.
-var stats = []*stat{
+// apiStats to fetch.
+var apiStats = []*stat{
 	{"Requests", "Count", "Sum", nil},
 	{"Min Latency", "Latency", "Minimum", nil},
 	{"Avg Latency", "Latency", "Average", nil},
@@ -52,19 +52,26 @@ var stats = []*stat{
 	{"Server Errors", "5XXError", "Sum", nil},
 }
 
+// funcStats to fetch.
+var funcStats = []*stat{
+	{"Lambda Errors", "Errors", "Sum", nil},
+	{"Lambda Throttles", "Throttles", "Sum", nil},
+}
+
 // ShowMetrics implementation.
 func (p *Platform) ShowMetrics(region, stage string, start time.Time) error {
 	s := session.New(aws.NewConfig().WithRegion(region))
 	c := cloudwatch.New(s)
 
-	errc := make(chan error, len(stats))
+	count := len(apiStats) + len(funcStats)
+	errc := make(chan error, count)
 	var wg sync.WaitGroup
+	wg.Add(count)
 
 	d := time.Now().Sub(start)
 	period := int(d / time.Second)
 
-	for _, s := range stats {
-		wg.Add(1)
+	for _, s := range apiStats {
 		go func(s *stat) {
 			defer wg.Done()
 
@@ -72,6 +79,31 @@ func (p *Platform) ShowMetrics(region, stage string, start time.Time) error {
 				Namespace("AWS/ApiGateway").
 				Dimension("ApiName", p.config.Name).
 				Dimension("Stage", stage).
+				TimeRange(time.Now().Add(-d), time.Now()).
+				Period(period).
+				Stat(s.Stat).
+				Metric(s.Metric)
+
+			res, err := c.GetMetricStatistics(m.Params())
+			if err != nil {
+				errc <- err
+				return
+			}
+
+			if len(res.Datapoints) > 0 {
+				s.point = res.Datapoints[0]
+			}
+		}(s)
+	}
+
+	for _, s := range funcStats {
+		go func(s *stat) {
+			defer wg.Done()
+
+			m := metrics.New().
+				Namespace("AWS/Lambda").
+				Dimension("FunctionName", p.config.Name).
+				Dimension("Alias", stage).
 				TimeRange(time.Now().Add(-d), time.Now()).
 				Period(period).
 				Stat(s.Stat).
@@ -97,7 +129,7 @@ func (p *Platform) ShowMetrics(region, stage string, start time.Time) error {
 	default:
 	}
 
-	for _, s := range stats {
+	for _, s := range append(apiStats, funcStats...) {
 		p.events.Emit("metrics.value", event.Fields{
 			"name":  s.Name,
 			"value": s.Value(),
