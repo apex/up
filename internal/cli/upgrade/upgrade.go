@@ -42,7 +42,7 @@ func init() {
 
 		// no updates
 		if len(releases) == 0 {
-			fmt.Printf("\n  No updates required, you're good :)\n")
+			fmt.Printf("  No updates required, you're good :)\n")
 			return nil
 		}
 
