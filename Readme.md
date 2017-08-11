@@ -4,7 +4,7 @@ Up deploys infinitely scalable serverless apps, APIs, and static websites in sec
 
 Up currently supports Node.js, Golang, Python, Crystal, and static sites out of the box. Up is provider-agnostic, supporting AWS Lambda and API Gateway as the first targets. You can think of Up as self-hosted Heroku style user experience for a fraction of the price, with the security, flexibility, and scalability of AWS.
 
-Check out the [documentation](docs), [examples](https://github.com/apex/up-examples), or chat with us in [Slack](https://apex-dev.azurewebsites.net/). **Caution**: Up is still very early in development, if you have no AWS experience you may want to hold off for a future release.
+Check out the [documentation](docs), [examples](https://github.com/apex/up-examples), or chat with us in [Slack](https://apex-dev.azurewebsites.net/). Up is still very early in development, if you have no AWS experience you may want to hold off for a future release.
 
 ![](https://dl.dropboxusercontent.com/u/6396913/Apex/Up/Readme/screen-koa-fs8.png)
 
