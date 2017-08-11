@@ -50,6 +50,13 @@ Below is a policy for [AWS Identity and Access Management](https://aws.amazon.co
     },
     {
       "Action": [
+        "acm:*"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    },
+    {
+      "Action": [
         "cloudformation:Create*",
         "cloudformation:Update*",
         "cloudformation:Delete*",
