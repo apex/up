@@ -34,6 +34,11 @@ Updated as of July 2017 based on public information. Some services offer a restr
 </details>
 
 <details>
+  <summary>What platforms does Up support?</summary>
+  <p>Currently AWS via API Gateway and Lambda are supported, this is the focus until Up is nearing feature completion, after which additional providers such as GCP and Azure will be added.</p>
+</details>
+
+<details>
   <summary>Why isn't Up licensed MIT?</summary>
   <p>Up is licensed in such a way that myself as an independent developer can continue to improve the product and provide support. Commercial customers receive access to a premium version of Up with additional features, priority support for bugfixes, and of course knowing that the project will stick around! Up saves your team countless hours maintaining infrastructure and custom tooling, so you can get back to what makes your company and products unique.</p>
 </details>
