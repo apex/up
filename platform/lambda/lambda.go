@@ -19,6 +19,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/apigateway"
 	"github.com/aws/aws-sdk-go/service/iam"
 	"github.com/aws/aws-sdk-go/service/lambda"
+	humanize "github.com/dustin/go-humanize"
 	"github.com/pkg/errors"
 
 	"github.com/apex/up"
@@ -33,6 +34,14 @@ import (
 
 // errFirstDeploy is returned from .deploy() when a function is created.
 var errFirstDeploy = errors.New("first deploy")
+
+const (
+	// maxZipSize is the max zip size supported by Lambda (50MiB).
+	maxZipSize = 50 << 20
+
+	// maxCodeSize is the max code size supported by Lambda (250MiB).
+	maxCodeSize = 250 << 20
+)
 
 // assume policy for the lambda function.
 var apiGatewayAssumePolicy = `{
@@ -123,6 +132,18 @@ func (p *Platform) Build() error {
 		"size_compressed":   p.zip.Len(),
 		"duration":          time.Since(start),
 	})
+
+	if p.zip.Len() > maxZipSize {
+		size := humanize.Bytes(uint64(p.zip.Len()))
+		max := humanize.Bytes(uint64(maxZipSize))
+		return errors.Errorf("zip is %s, exceeding Lambda's limit of %s", size, max)
+	}
+
+	if stats.SizeUncompressed > maxCodeSize {
+		size := humanize.Bytes(uint64(stats.SizeUncompressed))
+		max := humanize.Bytes(uint64(maxCodeSize))
+		return errors.Errorf("zip contents is %s, exceeding Lambda's limit of %s", size, max)
+	}
 
 	return nil
 }
