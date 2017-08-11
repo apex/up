@@ -4,4 +4,4 @@
 - [Getting Started](getting-started.md) – Get started with deployments
 - [Configuration](configuration.md) – Configuration reference for up.json
 - [Runtimes](runtimes.md) – Runtime specifics
-- [Commabds](commands.md) – Command reference
+- [Commands](commands.md) – Command reference
