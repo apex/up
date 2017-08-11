@@ -28,7 +28,7 @@ func delete(cmd *kingpin.CmdClause) {
 	c.Example(`up stack delete --async`, "Don't wait for deletion to complete.")
 	c.Example(`up stack delete -fa`, "Force asynchronous deletion.")
 
-	force := c.Flag("force", "Force deletion without prompt.").Short('f').Bool()
+	force := c.Flag("force", "Skip the confirmation prompt.").Short('f').Bool()
 	async := c.Flag("async", "Perform deletion asynchronously.").Short('a').Bool()
 
 	c.Action(func(_ *kingpin.ParseContext) error {
