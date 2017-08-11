@@ -9,6 +9,7 @@ import (
 	"io/ioutil"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/apex/apex/shim"
@@ -129,7 +130,10 @@ func (p *Platform) Build() error {
 // Deploy implementation.
 func (p *Platform) Deploy(stage string) error {
 	regions := p.config.Regions
-	errc := make(chan error, len(regions))
+	errc := make(chan error, 1)
+	done := make(chan bool)
+	var wg sync.WaitGroup
+	wg.Add(len(regions))
 
 	if err := p.createRole(); err != nil {
 		return errors.Wrap(err, "iam")
@@ -137,34 +141,42 @@ func (p *Platform) Deploy(stage string) error {
 
 	for _, r := range regions {
 		go func(region string) {
-			version, err := p.deploy(region, stage)
+			defer wg.Done()
 
+			version, err := p.deploy(region, stage)
 			if err == nil {
-				errc <- nil
 				return
 			}
 
 			if err != errFirstDeploy {
-				errc <- errors.Wrap(err, region)
+				select {
+				case errc <- errors.Wrap(err, region):
+				default:
+				}
 				return
 			}
 
 			if err := p.CreateStack(region, version); err != nil {
-				errc <- errors.Wrap(err, region)
+				select {
+				case errc <- errors.Wrap(err, region):
+				default:
+				}
 				return
 			}
-
-			errc <- nil
 		}(r)
 	}
 
-	for range p.config.Regions {
-		if e := <-errc; e != nil {
-			return e
-		}
-	}
+	go func() {
+		wg.Wait()
+		close(done)
+	}()
 
-	return nil
+	select {
+	case e := <-errc:
+		return e
+	case <-done:
+		return nil
+	}
 }
 
 // Logs implementation.
