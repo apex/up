@@ -18,7 +18,7 @@ func (l *Lambda) Default() error {
 	}
 
 	if l.Timeout == 0 {
-		l.Timeout = 5
+		l.Timeout = 15
 	}
 
 	return nil

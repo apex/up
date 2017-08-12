@@ -92,7 +92,7 @@ Currently Lambda supports the following regions:
 The following Lambda-specific settings are available:
 
 - `memory` – Function memory in mb (Default `128`, Min `128`, Max `1536`)
-- `timeout` – Function timeout in seconds (Default `5`, Min `1`, Max `300`)
+- `timeout` – Function timeout in seconds (Default `15`, Min `1`, Max `300`)
 
 For example:
 
