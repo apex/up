@@ -6,3 +6,4 @@ vendor/
 testing
 up-proxy
 !cmd/up-proxy
+dist
