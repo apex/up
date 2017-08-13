@@ -74,6 +74,6 @@ Updated as of July 2017 based on public information. Some services offer a restr
 - [Example applications](https://github.com/apex/up-examples) for Up
 - [Slack](https://apex-dev.azurewebsites.net/) to chat with apex(1) and up(1) community members
 - [Blog](https://blog.apex.sh/) to follow release posts, tips and tricks
-- [Wiki](https://github.com/apex/up/wiki) for article listings and so on
+- [Wiki](https://github.com/apex/up/wiki) for article listings, database suggestions, etc
 
 <a href="https://apex.sh"><img src="http://tjholowaychuk.com:6000/svg/sponsor"></a>
