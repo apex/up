@@ -341,7 +341,9 @@ func nodejs(c *Config) error {
 
 // python config.
 func python(c *Config) {
-	c.Proxy.Command = "python app.py"
+	if c.Proxy.Command == "" {
+		c.Proxy.Command = "python app.py"
+	}
 
 	// Only add build & clean hooks if a requiremnts.txt exists
 	if !util.Exists("requirements.txt") {
