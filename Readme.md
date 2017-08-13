@@ -65,7 +65,7 @@ Updated as of July 2017 based on public information. Some services offer a restr
 
 <details>
   <summary>Can I donate?</summary>
-  <p>Yes you can! Head over to the <a href="https://opencollective.com/apex-up">OpenCollective</a> page. Any donations are greatly appreciated and help me focus more on Up's implementation, documentation, and examples. If you're using the free OSS version for personal or commercial use please consider giving back.</p>
+  <p>Yes you can! Head over to the <a href="https://opencollective.com/apex-up">OpenCollective</a> page. Any donations are greatly appreciated and help me focus more on Up's implementation, documentation, and examples. If you're using the free OSS version for personal or commercial use please consider giving back, even a few bucks buys a coffee :).</p>
 </details>
 
 ## Community
@@ -74,5 +74,6 @@ Updated as of July 2017 based on public information. Some services offer a restr
 - [Example applications](https://github.com/apex/up-examples) for Up
 - [Slack](https://apex-dev.azurewebsites.net/) to chat with apex(1) and up(1) community members
 - [Blog](https://blog.apex.sh/) to follow release posts, tips and tricks
+- [Wiki](https://github.com/apex/up/wiki) for article listings and so on
 
 <a href="https://apex.sh"><img src="http://tjholowaychuk.com:6000/svg/sponsor"></a>
