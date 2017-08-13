@@ -145,7 +145,7 @@ func (c *Config) Default() error {
 	case util.Exists("app.js"):
 		c.Proxy.Command = "node app.js"
 	case util.Exists("app.py"):
-		c.Proxy.Command = "python app.py"
+		python(c)
 	case util.Exists("index.html"):
 		c.Type = "static"
 	}
@@ -337,4 +337,32 @@ func nodejs(c *Config) error {
 	}
 
 	return nil
+}
+
+// python config.
+func python(c *Config) {
+	if c.Proxy.Command == "" {
+		c.Proxy.Command = "python app.py"
+	}
+
+	// Only add build & clean hooks if a requiremnts.txt exists
+	if !util.Exists("requirements.txt") {
+		return
+	}
+
+	// Set PYTHONPATH env
+	if c.Environment == nil {
+		c.Environment = config.Environment{}
+	}
+	c.Environment["PYTHONPATH"] = ".pypath/"
+
+	// Copy libraries into .pypath/
+	if c.Hooks.Build == "" {
+		c.Hooks.Build = `mkdir -p .pypath/ && pip install -r requirements.txt -t .pypath/`
+	}
+
+	// Clean .pypath/
+	if c.Hooks.Clean == "" {
+		c.Hooks.Clean = `rm -r .pypath/`
+	}
 }
