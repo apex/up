@@ -9,7 +9,7 @@ usage() {
 $this: download go binaries for apex/up
 
 Usage: $this [-b] bindir [version]
-  -b sets bindir or installation directory, default "./bin"
+  -b sets bindir or installation directory, default "/usr/local/bin"
    [version] is a version number from
    https://github.com/apex/up/releases
    If version is missing, then an attempt to find the latest will be found.
@@ -22,7 +22,7 @@ EOF
 }
 
 parse_args() {
-  #BINDIR is ./bin unless set be ENV
+  #BINDIR is /usr/local/bin unless set be ENV
   # over-ridden by flag below
 
   BINDIR=${BINDIR:-/usr/local/bin}
