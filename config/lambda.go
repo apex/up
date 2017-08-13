@@ -14,7 +14,7 @@ type Lambda struct {
 // Default implementation.
 func (l *Lambda) Default() error {
 	if l.Memory == 0 {
-		l.Memory = 128
+		l.Memory = 512
 	}
 
 	if l.Timeout == 0 {
