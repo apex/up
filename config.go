@@ -345,7 +345,7 @@ func python(c *Config) {
 		c.Proxy.Command = "python app.py"
 	}
 
-	// Only add build & clean hooks if a requiremnts.txt exists
+	// Only add build & clean hooks if a requirements.txt exists
 	if !util.Exists("requirements.txt") {
 		return
 	}
