@@ -16,6 +16,30 @@ http.createServer((req, res) => {
 
 ```
 
+You will need to also provide a minimal `package.json` with a `start` script. When `up` detects a `package.json`
+manifest it assumes a `nodejs` runtime. 
+
+```json
+{
+  "name": "app",
+  "version": "1.0.0",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+  },
+}
+```
+
+Finally you can also create a `up.json` file to select the AWS `up` profile, which resides in the `~/.aws/credentials`
+file.
+
+```json
+{
+  "name": "app",
+  "profile": "up"
+}
+```
+
 Deploy it to the development stage:
 
 ```
