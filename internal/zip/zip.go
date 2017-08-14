@@ -11,6 +11,21 @@ import (
 	"github.com/tj/go-archive"
 )
 
+var transform = archive.TransformFunc(func(r io.Reader, i os.FileInfo) (io.Reader, os.FileInfo) {
+	switch i.Name() {
+	case "main", "server":
+		i = archive.Info{
+			Name:     i.Name(),
+			Size:     i.Size(),
+			Mode:     i.Mode() | 0555,
+			Modified: i.ModTime(),
+			Dir:      i.IsDir(),
+		}.FileInfo()
+	}
+
+	return r, i
+})
+
 // Build the given `dir`.
 func Build(dir string) (io.ReadCloser, *archive.Stats, error) {
 	gitignore, err := read(".gitignore")
@@ -44,7 +59,9 @@ func Build(dir string) (io.ReadCloser, *archive.Stats, error) {
 	}
 
 	buf := new(bytes.Buffer)
-	zip := archive.NewZip(buf).WithFilter(filter)
+	zip := archive.NewZip(buf).
+		WithFilter(filter).
+		WithTransform(transform)
 
 	if err := zip.Open(); err != nil {
 		return nil, nil, errors.Wrap(err, "opening")
