@@ -18,10 +18,6 @@ type Relay struct {
 
 // Default implementation.
 func (r *Relay) Default() error {
-	if r.Command == "" {
-		r.Command = "./server"
-	}
-
 	if err := r.Backoff.Default(); err != nil {
 		return errors.Wrap(err, ".backoff")
 	}

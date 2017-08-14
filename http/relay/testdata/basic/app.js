@@ -1,7 +1,5 @@
-#!/usr/bin/env node
-
 const http = require('http')
-const port = parseInt(process.env.PORT, 10)
+const port = process.env.PORT
 
 http.createServer((req, res) => {
   if (req.url.indexOf('/echo') == 0) {
@@ -50,6 +48,4 @@ http.createServer((req, res) => {
 
   res.setHeader('Content-Type', 'text/plain')
   res.end('Hello World')
-}).listen(port, '127.0.0.1', _ => {
-  console.log('listening')
-})
+}).listen(port)

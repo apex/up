@@ -6,8 +6,8 @@ import (
 	"net/http/httptest"
 	"testing"
 
-	"github.com/tj/assert"
 	"github.com/apex/up"
+	"github.com/tj/assert"
 )
 
 var hello = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

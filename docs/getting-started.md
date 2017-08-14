@@ -8,11 +8,11 @@ For example create a new directory with the following `app.js` file:
 
 ```js
 const http = require('http')
-const port = ~~process.env.PORT
+const { PORT = 3000 } = process.env
 
 http.createServer((req, res) => {
   res.end('Hello World from Node.js\n')
-}).listen(port)
+}).listen(PORT)
 ```
 
 Let Up know which ~/.aws/credentials to use, note that you may also define "myapp" to the "profile" property in `up.json`.

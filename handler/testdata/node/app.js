@@ -1,7 +1,5 @@
-#!/usr/bin/env node
-
 const http = require('http')
-const port = ~~process.env.PORT
+const port = process.env.PORT
 
 http.createServer((req, res) => {
   res.setHeader('X-Foo', 'bar')
