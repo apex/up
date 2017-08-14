@@ -4,6 +4,19 @@ build:
 	@go generate ./...
 .PHONY: build
 
+# Install the build locally
+install:
+	@go install ./...
+	@echo "==> Installed up ${GOPATH}/bin/up"
+.PHONY: install
+
+# Install the development dependencies
+install.deps:
+	@go get -u github.com/jteeuwen/go-bindata/...
+	@go get -u github.com/pointlander/peg/...
+	@echo "==> Install all development dependencies"
+.PHONY: install_dev_deps
+
 # Run all tests.
 test:
 	@go test -cover ./...

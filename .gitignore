@@ -7,3 +7,4 @@ testing
 up-proxy
 !cmd/up-proxy
 dist
+.idea
