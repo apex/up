@@ -384,7 +384,7 @@ func (p *Platform) createRole() error {
 	s := session.New(aws.NewConfig())
 	c := iam.New(s)
 
-	name := fmt.Sprintf("%s-api-function", p.config.Name)
+	name := fmt.Sprintf("%s-function", p.config.Name)
 	desc := util.ManagedByUp("")
 
 	if s := p.config.Lambda.Role; s != "" {
@@ -441,7 +441,7 @@ func (p *Platform) createRole() error {
 
 // deleteRole deletes the role and policy.
 func (p *Platform) deleteRole(region string) error {
-	name := fmt.Sprintf("%s-api-function", p.config.Name)
+	name := fmt.Sprintf("%s-function", p.config.Name)
 	c := iam.New(session.New(aws.NewConfig().WithRegion(region)))
 
 	_, err := c.DeleteRolePolicy(&iam.DeleteRolePolicyInput{
