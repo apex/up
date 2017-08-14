@@ -95,6 +95,12 @@ func New(c *up.Config, next http.Handler) (http.Handler, error) {
 		return nil, errors.Wrap(err, "loading error pages")
 	}
 
+	// skip unless errorpage files are present
+	// or explicitly enabled in up.json
+	if len(pages) == 1 && !c.ErrorPages.Enable {
+		return next, nil
+	}
+
 	h := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		mime, _ := accept.Negotiate(r.Header.Get("Accept"), "text/html")
 
