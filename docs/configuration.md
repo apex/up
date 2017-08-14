@@ -533,4 +533,29 @@ An example `.upignore` to omit markdown and `.go` source files might look like t
 *.go
 ```
 
-Patterns can be negated with `!`. To get a better idea of which files are being filtered or added, use `up -v` when deploying.
+Patterns can be negated with `!`.
+
+To get a better idea of which files are being filtered or added, use `up -v` when deploying, and you may also find it useful to `grep` in some cases:
+
+```
+$ up -v 2>&1 | grep filtered
+DEBU filtered .babelrc – 25
+DEBU filtered .git – 408
+DEBU filtered .gitignore – 13
+DEBU filtered node_modules/ansi-regex/readme.md – 1749
+DEBU filtered node_modules/ansi-styles/readme.md – 1448
+DEBU filtered node_modules/binary-extensions/readme.md – 751
+DEBU filtered node_modules/chalk/readme.md – 6136
+```
+
+Note that patterns are matched much like `.gitignore`, so if you have the following `.upignore` contents even `node_modules/debug/src/index.js` will be ignored since it contains `src`.
+
+```
+src
+```
+
+You can be more specific with a leading `./`:
+
+```
+./src
+```
