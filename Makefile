@@ -4,18 +4,18 @@ build:
 	@go generate ./...
 .PHONY: build
 
-# Install the build locally
+# Install from source.
 install:
 	@go install ./...
 	@echo "==> Installed up ${GOPATH}/bin/up"
 .PHONY: install
 
-# Install the development dependencies
+# Install the development dependencies.
 install.deps:
 	@go get -u github.com/jteeuwen/go-bindata/...
 	@go get -u github.com/pointlander/peg/...
 	@echo "==> Install all development dependencies"
-.PHONY: install_dev_deps
+.PHONY: install.deps
 
 # Run all tests.
 test:

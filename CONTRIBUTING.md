@@ -10,6 +10,7 @@ The following are optional:
 
 - Install [pointlander/peg](https://github.com/pointlander/peg) if you're working on the log grammar
 - Install [jteeuwen/go-bindata](https://github.com/jteeuwen/go-bindata) if you need to bake `up-proxy` into `up`
+- Or run `make install.deps` to grab these tools
 
 ## Setup
 
