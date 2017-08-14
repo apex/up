@@ -9,7 +9,6 @@ import (
 
 	"github.com/apex/log"
 	jsonlog "github.com/apex/log/handlers/json"
-	"github.com/pkg/errors"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -23,9 +22,7 @@ import (
 	"github.com/apex/up/platform/lambda/logs"
 )
 
-// TODO: refactor ./logs package
 // TODO: move formatting logic outside of platform, reader interface
-// TODO: duration flag
 // TODO: optionally expand fields
 
 // Logs implementation.
@@ -43,13 +40,9 @@ type Logs struct {
 func NewLogs(p *Platform, region, query string) platform.Logs {
 	r, w := io.Pipe()
 
-	if query != "" {
-		n, err := parser.Parse(query)
-		if err != nil {
-			panic(errors.Wrap(err, "parsing query")) // TODO: delegate
-		}
-		query = n.String()
-		log.Debugf("compiled query %s", query)
+	query, err := parseQuery(query)
+	if err != nil {
+		w.CloseWithError(err)
 	}
 
 	l := &Logs{
@@ -129,4 +122,18 @@ func (l *Logs) start() {
 	}
 
 	l.w.Close()
+}
+
+// parseQuery parses and converts the query to a CW friendly syntax.
+func parseQuery(s string) (string, error) {
+	if s == "" {
+		return s, nil
+	}
+
+	n, err := parser.Parse(s)
+	if err != nil {
+		return "", err
+	}
+
+	return n.String(), nil
 }
