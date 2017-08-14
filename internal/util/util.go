@@ -77,6 +77,18 @@ func NewProgressInt(total int) *progress.Bar {
 	return b
 }
 
+// NewInlineProgressInt with the given total.
+func NewInlineProgressInt(total int) *progress.Bar {
+	b := progress.NewInt(total)
+	b.Template(`{{.Bar}} {{.Percent | printf "%0.0f"}}% {{.Text}}`)
+	b.Width = 15
+	b.StartDelimiter = colors.Gray("|")
+	b.EndDelimiter = colors.Gray("|")
+	b.Filled = colors.Purple("█")
+	b.Empty = colors.Gray(" ")
+	return b
+}
+
 // Pad helper.
 func Pad() func() {
 	println()

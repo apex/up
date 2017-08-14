@@ -107,7 +107,7 @@ func (r *reporter) Start() {
 			case "platform.function.create":
 				inlineProgress = true
 			case "platform.stack.create":
-				bar = util.NewProgressInt(e.Int("resources"))
+				bar = util.NewInlineProgressInt(e.Int("resources"))
 				r.pending("stack", bar.String())
 			case "platform.stack.delete":
 				bar = util.NewProgressInt(e.Int("resources"))
