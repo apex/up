@@ -13,7 +13,12 @@ const port = ~~process.env.PORT
 http.createServer((req, res) => {
   res.end('Hello World from Node.js\n')
 }).listen(port)
+```
 
+Let Up know which ~/.aws/credentials to use, note that you may also define "myapp" to the "profile" property in `up.json`.
+
+```
+$ export AWS_PROFILE=myapp
 ```
 
 Deploy it to the development stage:
