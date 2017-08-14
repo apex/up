@@ -16,6 +16,21 @@ http.createServer((req, res) => {
 
 ```
 
+You will also need to provide a minimal `up.json`, that specifies the proxy command to execute as well as any other
+configuration items you need to override. In this instance we are going to specify the name of the application, the
+AWS profile it should use, which must be configured in `~/.aws/credentials` and the command it should run to start the
+server.
+
+```json
+{
+  "name": "hello",
+  "profile": "up",
+  "proxy": {
+    "command": "node ./app.js"
+  }
+}
+```
+
 Deploy it to the development stage:
 
 ```
