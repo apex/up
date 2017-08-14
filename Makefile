@@ -19,7 +19,7 @@ install.deps:
 
 # Run all tests.
 test:
-	@go test -cover ./...
+	@TEST=1 go test -cover ./...
 .PHONY: test
 
 # Test setup for CI.
