@@ -1,4 +1,13 @@
 
+v0.1.10 / 2017-08-15
+====================
+
+  * add default of ./server back for when source is omitted (main.go for example)
+  * add `**` .upignore support
+  * add forced inclusion of Up's required files
+  * add support for omitting `node_modules` when using Browserify or Webpack
+  * update go-archive for gitignore parity improvements
+
 v0.1.9 / 2017-08-14
 ===================
 
