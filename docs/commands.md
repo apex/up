@@ -219,7 +219,9 @@ Examples:
 
 ## start
 
-Start development server.
+Start development server. The development server runs the same proxy that is used in production for serving, so you can test a static site or application locally with the same feature-set.
+
+Currently `up start` does not work with cross-compiled languages such as Go or Crystal.
 
 ```
 Usage:
