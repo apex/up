@@ -291,10 +291,6 @@ func ReadConfig(path string) (*Config, error) {
 
 // golang config.
 func golang(c *Config) {
-	if c.Proxy.Command == "" {
-		c.Proxy.Command = "./server"
-	}
-
 	if c.Hooks.Build == "" {
 		c.Hooks.Build = `GOOS=linux GOARCH=amd64 go build -o server *.go`
 	}
@@ -306,10 +302,6 @@ func golang(c *Config) {
 
 // crystal config.
 func crystal(c *Config) {
-	if c.Proxy.Command == "" {
-		c.Proxy.Command = "./server"
-	}
-
 	if c.Hooks.Build == "" {
 		c.Hooks.Build = `docker run --rm -v $(PWD):/src -w /src tjholowaychuk/up-crystal crystal build --link-flags -static -o server main.cr`
 	}
