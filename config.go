@@ -117,12 +117,6 @@ func (c *Config) Validate() error {
 		return errors.Wrap(err, ".inject")
 	}
 
-	if os.Getenv("TEST") == "" {
-		if c.Type == "server" && c.Proxy.Command == "" {
-			return errors.New("this directory does not look like a project")
-		}
-	}
-
 	return nil
 }
 
