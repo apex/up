@@ -1,4 +1,12 @@
 
+v0.1.9 / 2017-08-14
+===================
+
+  * add -modtime 0
+  * add smaller progress bar for initial stack
+  * revert "add error when a dir does not look like a valid project. Closes #197"
+    * caused an issue if you ignore *.go for example, not robust enough
+
 v0.1.8 / 2017-08-14
 ===================
 
