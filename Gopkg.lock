@@ -68,10 +68,22 @@
   revision = "4ed373e9ef1c895fe04468d813cb628902d89a0a"
 
 [[projects]]
+  branch = "master"
+  name = "github.com/danwakefield/fnmatch"
+  packages = ["."]
+  revision = "cbb64ac3d964b81592e64f957ad53df015803288"
+
+[[projects]]
   name = "github.com/davecgh/go-spew"
   packages = ["spew"]
   revision = "346938d642f2ec3594ed81d874461961cd0faa76"
   version = "v1.1.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/denormal/go-gitignore"
+  packages = ["."]
+  revision = "40de3d33f668ddbbd085106ba0bbf5e415709879"
 
 [[projects]]
   branch = "master"
@@ -189,12 +201,6 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/monochromegane/go-gitignore"
-  packages = ["."]
-  revision = "38717d0a108ca0e5af632cd6845ca77d45b50729"
-
-[[projects]]
-  branch = "master"
   name = "github.com/pascaldekloe/name"
   packages = ["."]
   revision = "c5487bbadce34f41e69ec6f3e5712496a2c15025"
@@ -262,8 +268,8 @@
 [[projects]]
   name = "github.com/tj/go-archive"
   packages = ["."]
-  revision = "5141e9b86199dc11757e8bbd78b70b9e89795c04"
-  version = "v1.0.0"
+  revision = "620d4ac08dcde19d96bf6812e60a75c981df403c"
+  version = "v1.0.1"
 
 [[projects]]
   branch = "master"
@@ -346,6 +352,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "89f79024e84535271827b677a6249ad4910b4068aebd99f1de4b5c1eede2dddc"
+  inputs-digest = "7bc3a3bccb1794e772c8cf759f1ee2ccdd39a81874eef4997ef6380af99da680"
   solver-name = "gps-cdcl"
   solver-version = 1
