@@ -50,8 +50,9 @@ func Build(dir string) (io.ReadCloser, *archive.Stats, error) {
 		gitignore,
 		strings.NewReader("\n"),
 		npmignore,
-		strings.NewReader("\n!node_modules\n"),
-		upignore)
+		strings.NewReader("\n"),
+		upignore,
+		strings.NewReader("\n!main\n!_proxy.js\n!byline.js\n!up.json\n"))
 
 	filter, err := archive.FilterPatterns(r)
 	if err != nil {
