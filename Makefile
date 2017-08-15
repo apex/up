@@ -1,31 +1,33 @@
 
+GO ?= go
+
 # Build all files.
 build:
-	@go generate ./...
+	@$(GO) generate ./...
 .PHONY: build
 
 # Install from source.
 install:
-	@go install ./...
+	@$(GO) install ./...
 	@echo "==> Installed up ${GOPATH}/bin/up"
 .PHONY: install
 
 # Install the development dependencies.
 install.deps:
-	@go get -u github.com/jteeuwen/go-bindata/...
-	@go get -u github.com/pointlander/peg/...
+	@$(GO) get -u github.com/jteeuwen/go-bindata/...
+	@$(GO) get -u github.com/pointlander/peg/...
 	@echo "==> Install all development dependencies"
 .PHONY: install.deps
 
 # Run all tests.
 test:
-	@go test -cover ./...
+	@$(GO) test -cover ./...
 .PHONY: test
 
 # Test setup for CI.
 test.setup:
 	@echo "==> Install dep"
-	@go get github.com/golang/dep/cmd/dep
+	@$(GO) get github.com/golang/dep/cmd/dep
 	@echo "==> Install dependencies"
 	@dep ensure
 .PHONY: test.setup
