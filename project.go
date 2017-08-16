@@ -1,6 +1,7 @@
 package up
 
 import (
+	"fmt"
 	"os"
 	"os/exec"
 	"time"
@@ -59,7 +60,12 @@ func (p *Project) RunHook(name string) error {
 	})()
 
 	cmd := exec.Command("sh", "-c", command)
-	cmd.Env = append(os.Environ(), "PATH=node_modules/.bin:"+os.Getenv("PATH"))
+	cmd.Env = os.Environ()
+	for k, v := range p.config.Environment {
+		cmd.Env = append(cmd.Env, fmt.Sprintf("%s=%s", k, v))
+	}
+	cmd.Env = append(cmd.Env, "PATH=node_modules/.bin:"+os.Getenv("PATH"))
+
 	b, err := cmd.CombinedOutput()
 	if err != nil {
 		return errors.New(string(b))
