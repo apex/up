@@ -20,9 +20,13 @@ func init() {
 	addr := cmd.Flag("address", "Address for server.").Default(":3000").String()
 
 	cmd.Action(func(_ *kingpin.ParseContext) error {
-		_, _, err := root.Init()
+		_, p, err := root.Init()
 		if err != nil {
 			return errors.Wrap(err, "initializing")
+		}
+
+		if err := p.Build(); err != nil {
+			return errors.Wrap(err, "building")
 		}
 
 		stats.Track("Start", map[string]interface{}{
