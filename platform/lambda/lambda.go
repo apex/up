@@ -9,7 +9,6 @@ import (
 	"io/ioutil"
 	"os"
 	"strings"
-	"sync"
 	"time"
 
 	"github.com/apex/apex/shim"
@@ -20,6 +19,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/iam"
 	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/dustin/go-humanize"
+	"github.com/golang/sync/errgroup"
 	"github.com/pkg/errors"
 
 	"github.com/apex/up"
@@ -80,7 +80,6 @@ var logWritePolicy = `{
 	]
 }`
 
-// TODO: concurrency option
 // TODO: aggregate progress report for N regions or distinct progress bars
 // TODO: refactor with another region-scoped struct to clean this up
 
@@ -151,53 +150,33 @@ func (p *Platform) Build() error {
 // Deploy implementation.
 func (p *Platform) Deploy(stage string) error {
 	regions := p.config.Regions
-	errc := make(chan error, 1)
-	done := make(chan bool)
-	var wg sync.WaitGroup
-	wg.Add(len(regions))
+	var g errgroup.Group
 
 	if err := p.createRole(); err != nil {
 		return errors.Wrap(err, "iam")
 	}
 
 	for _, r := range regions {
-		go func(region string) {
-			defer wg.Done()
-
+		region := r
+		g.Go(func() error {
 			version, err := p.deploy(region, stage)
 			if err == nil {
-				return
+				return nil
 			}
 
 			if err != errFirstDeploy {
-				select {
-				case errc <- errors.Wrap(err, region):
-				default:
-				}
-				return
+				return errors.Wrap(err, region)
 			}
 
 			if err := p.CreateStack(region, version); err != nil {
-				select {
-				case errc <- errors.Wrap(err, region):
-				default:
-				}
-				return
+				return errors.Wrap(err, region)
 			}
-		}(r)
+
+			return nil
+		})
 	}
 
-	go func() {
-		wg.Wait()
-		close(done)
-	}()
-
-	select {
-	case e := <-errc:
-		return e
-	case <-done:
-		return nil
-	}
+	return g.Wait()
 }
 
 // Logs implementation.
