@@ -121,3 +121,11 @@ func IsNotFound(err error) bool {
 		return false
 	}
 }
+
+// Env returns a slice from environment variable map.
+func Env(m map[string]string) (env []string) {
+	for k, v := range m {
+		env = append(env, fmt.Sprintf("%s=%s", k, v))
+	}
+	return
+}

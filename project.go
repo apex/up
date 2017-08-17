@@ -1,7 +1,6 @@
 package up
 
 import (
-	"fmt"
 	"os"
 	"os/exec"
 	"time"
@@ -9,6 +8,7 @@ import (
 	"github.com/apex/log"
 	"github.com/pkg/errors"
 
+	"github.com/apex/up/internal/util"
 	"github.com/apex/up/platform"
 	"github.com/apex/up/platform/event"
 )
@@ -61,9 +61,7 @@ func (p *Project) RunHook(name string) error {
 
 	cmd := exec.Command("sh", "-c", command)
 	cmd.Env = os.Environ()
-	for k, v := range p.config.Environment {
-		cmd.Env = append(cmd.Env, fmt.Sprintf("%s=%s", k, v))
-	}
+	cmd.Env = append(cmd.Env, util.Env(p.config.Environment)...)
 	cmd.Env = append(cmd.Env, "PATH=node_modules/.bin:"+os.Getenv("PATH"))
 
 	b, err := cmd.CombinedOutput()
