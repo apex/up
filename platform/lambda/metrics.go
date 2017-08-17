@@ -1,12 +1,12 @@
 package lambda
 
 import (
-	"sync"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudwatch"
+	"github.com/golang/sync/errgroup"
 
 	"github.com/apex/up/internal/metrics"
 	"github.com/apex/up/platform/event"
@@ -59,18 +59,14 @@ var stats = []*stat{
 func (p *Platform) ShowMetrics(region, stage string, start time.Time) error {
 	s := session.New(aws.NewConfig().WithRegion(region))
 	c := cloudwatch.New(s)
-
-	errc := make(chan error, len(stats))
-	var wg sync.WaitGroup
-	wg.Add(len(stats))
+	var g errgroup.Group
 
 	d := time.Now().Sub(start)
 	period := int(d / time.Second)
 
 	for _, s := range stats {
-		go func(s *stat) {
-			defer wg.Done()
-
+		s := s
+		g.Go(func() error {
 			m := metrics.New().
 				Namespace(s.Namespace).
 				TimeRange(time.Now().Add(-d), time.Now()).
@@ -87,22 +83,19 @@ func (p *Platform) ShowMetrics(region, stage string, start time.Time) error {
 
 			res, err := c.GetMetricStatistics(m.Params())
 			if err != nil {
-				errc <- err
-				return
+				return err
 			}
 
 			if len(res.Datapoints) > 0 {
 				s.point = res.Datapoints[0]
 			}
-		}(s)
+
+			return nil
+		})
 	}
 
-	wg.Wait()
-
-	select {
-	case err := <-errc:
+	if err := g.Wait(); err != nil {
 		return err
-	default:
 	}
 
 	for _, s := range stats {
