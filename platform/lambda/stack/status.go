@@ -106,9 +106,9 @@ func (s Status) State() State {
 	switch s {
 	case CreateFailed, UpdateFailed, DeleteFailed, RollbackFailed, Failed:
 		return Failure
-	case CreateInProgress, UpdateInProgress, DeleteInProgress, RollbackInProgress, CreatePending, UpdateRollbackCompleteCleanup, UpdateRollbackInProgress:
+	case CreateInProgress, UpdateInProgress, DeleteInProgress, RollbackInProgress, CreatePending, UpdateRollbackInProgress:
 		return Pending
-	case CreateComplete, UpdateComplete, DeleteComplete, DeleteSkipped, RollbackComplete, UpdateCompleteCleanup:
+	case CreateComplete, UpdateComplete, DeleteComplete, DeleteSkipped, RollbackComplete, UpdateCompleteCleanup, UpdateRollbackCompleteCleanup:
 		return Success
 	default:
 		panic(fmt.Sprintf("unhandled state %q", string(s)))
