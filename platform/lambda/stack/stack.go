@@ -287,6 +287,11 @@ func (s *Stack) report(state string) error {
 			return nil
 		}
 
+		if util.IsThrottled(err) {
+			time.Sleep(3 * time.Second)
+			continue
+		}
+
 		if err != nil {
 			return errors.Wrap(err, "fetching stack")
 		}
@@ -301,6 +306,11 @@ func (s *Stack) report(state string) error {
 
 		if util.IsNotFound(err) {
 			return nil
+		}
+
+		if util.IsThrottled(err) {
+			time.Sleep(3 * time.Second)
+			continue
 		}
 
 		if err != nil {

@@ -16,6 +16,8 @@ import (
 func init() {
 	cmd := root.Command("stack", "Stack resource management.")
 	cmd.Example(`up stack`, "Show status of the stack resources.")
+	cmd.Example(`up stack plan`, "Show resource changes.")
+	cmd.Example(`up stack apply`, "Apply resource changes.")
 	cmd.Example(`up stack delete`, "Delete the stack resources.")
 	plan(cmd)
 	apply(cmd)
@@ -25,7 +27,7 @@ func init() {
 
 func plan(cmd *kingpin.CmdClause) {
 	c := cmd.Command("plan", "Plan configuration changes.")
-	c.Example(`up stack plan`, "Plan changes to configuration.")
+	c.Example(`up stack plan`, "Show changes planned.")
 
 	c.Action(func(_ *kingpin.ParseContext) error {
 		c, p, err := root.Init()
@@ -42,7 +44,7 @@ func plan(cmd *kingpin.CmdClause) {
 
 func apply(cmd *kingpin.CmdClause) {
 	c := cmd.Command("apply", "Apply configuration changes.")
-	c.Example(`up stack apply`, "Apply changes to configuration.")
+	c.Example(`up stack apply`, "Apply the changes of the previous plan.")
 
 	c.Action(func(_ *kingpin.ParseContext) error {
 		c, p, err := root.Init()
