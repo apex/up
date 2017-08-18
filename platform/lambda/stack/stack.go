@@ -9,12 +9,18 @@ import (
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/pkg/errors"
 
+	"github.com/apex/log"
 	"github.com/apex/up"
 	"github.com/apex/up/internal/util"
 	"github.com/apex/up/platform/event"
 )
 
-// TODO: refactor New's hackiness
+// TODO: refactor a lot
+// TODO: backoff
+// TODO: profile changeset name and description flags
+
+// defaultChangeset name.
+var defaultChangeset = "changes"
 
 // Stack represents a single CloudFormation stack.
 type Stack struct {
@@ -131,6 +137,138 @@ func (s *Stack) Show() error {
 	}
 
 	return nil
+}
+
+// Plan changes.
+func (s *Stack) Plan() error {
+	c := s.config
+	tmpl := template(c)
+	name := c.Name
+
+	b, err := json.MarshalIndent(tmpl, "", "  ")
+	if err != nil {
+		return errors.Wrap(err, "marshaling")
+	}
+
+	defer s.events.Time("platform.stack.plan", nil)
+
+	// TODO: don't change deployments
+
+	log.Debug("deleting changeset")
+	_, err = s.client.DeleteChangeSet(&cloudformation.DeleteChangeSetInput{
+		StackName:     &name,
+		ChangeSetName: &defaultChangeset,
+	})
+
+	if err != nil {
+		return errors.Wrap(err, "deleting changeset")
+	}
+
+	log.Debug("creating changeset")
+	_, err = s.client.CreateChangeSet(&cloudformation.CreateChangeSetInput{
+		StackName:     &name,
+		ChangeSetName: &defaultChangeset,
+		TemplateBody:  aws.String(string(b)),
+		Capabilities:  aws.StringSlice([]string{"CAPABILITY_NAMED_IAM"}),
+		ChangeSetType: aws.String("UPDATE"),
+		Description:   aws.String("Managed by Up."), // TODO: flag?
+		Parameters: []*cloudformation.Parameter{
+			{
+				ParameterKey:   aws.String("Name"),
+				ParameterValue: &name,
+			},
+			{
+				ParameterKey:   aws.String("FunctionName"),
+				ParameterValue: &name,
+			},
+			{
+				ParameterKey:   aws.String("FunctionVersion"),
+				ParameterValue: aws.String("104"),
+			},
+		},
+	})
+
+	if err != nil {
+		return errors.Wrap(err, "creating changeset")
+	}
+
+	var next *string
+
+	for {
+		log.Debug("describing changeset")
+		res, err := s.client.DescribeChangeSet(&cloudformation.DescribeChangeSetInput{
+			StackName:     &name,
+			ChangeSetName: &defaultChangeset,
+			NextToken:     next,
+		})
+
+		if err != nil {
+			return errors.Wrap(err, "describing changeset")
+		}
+
+		status := Status(*res.Status)
+
+		if status.State() == Failure {
+			if _, err := s.client.DeleteChangeSet(&cloudformation.DeleteChangeSetInput{
+				StackName:     &name,
+				ChangeSetName: &defaultChangeset,
+			}); err != nil {
+				return errors.Wrap(err, "deleting changeset")
+			}
+
+			return errors.New(*res.StatusReason)
+		}
+
+		if !status.IsDone() {
+			log.Debug("waiting for completion")
+			time.Sleep(750 * time.Millisecond)
+			continue
+		}
+
+		for _, c := range res.Changes {
+			s.events.Emit("platform.stack.plan.change", event.Fields{
+				"change": c,
+			})
+		}
+
+		next = res.NextToken
+
+		if next == nil {
+			break
+		}
+	}
+
+	return nil
+}
+
+// Apply changes.
+func (s *Stack) Apply() error {
+	c := s.config
+	name := c.Name
+
+	res, err := s.client.DescribeChangeSet(&cloudformation.DescribeChangeSetInput{
+		StackName:     &name,
+		ChangeSetName: &defaultChangeset,
+	})
+
+	if err != nil {
+		return errors.Wrap(err, "describing changeset")
+	}
+
+	defer s.events.Time("platform.stack.apply", event.Fields{
+		"changes": len(res.Changes),
+	})()
+
+	_, err = s.client.ExecuteChangeSet(&cloudformation.ExecuteChangeSetInput{
+		StackName:     &name,
+		ChangeSetName: &defaultChangeset,
+	})
+
+	if err != nil {
+		return errors.Wrap(err, "executing changeset")
+	}
+
+	return s.report("update")
 }
 
 // report events.
@@ -263,4 +401,21 @@ func (s *Stack) getEventsByState(state State) (v []*cloudformation.StackEvent, e
 	}
 
 	return
+}
+
+// hasChange returns true if id matches a physical or logical id.
+func hasChange(id string, changes []*cloudformation.Change) bool {
+	for _, c := range changes {
+		cid := *c.ResourceChange.LogicalResourceId
+
+		if s := c.ResourceChange.PhysicalResourceId; s != nil {
+			cid = *s
+		}
+
+		if cid == id {
+			return true
+		}
+	}
+
+	return false
 }

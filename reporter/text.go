@@ -114,7 +114,7 @@ func (r *reporter) Start() {
 				term.HideCursor()
 				io.WriteString(os.Stdout, term.CenterLine(bar.String()))
 			case "platform.stack.create.event":
-				bar.ValueInt(countEventsByState(events, stack.CreateComplete))
+				bar.ValueInt(countEventsByStatus(events, stack.CreateComplete))
 				events = append(events, e.Fields["event"].(*cloudformation.StackEvent))
 				if inlineProgress {
 					r.pending("stack", bar.String())
@@ -123,7 +123,7 @@ func (r *reporter) Start() {
 				}
 			case "platform.stack.delete.event":
 				events = append(events, e.Fields["event"].(*cloudformation.StackEvent))
-				bar.ValueInt(countEventsByState(events, stack.DeleteComplete))
+				bar.ValueInt(countEventsByStatus(events, stack.DeleteComplete))
 				io.WriteString(os.Stdout, term.CenterLine(bar.String()))
 			case "platform.stack.create.complete":
 				if inlineProgress {
@@ -158,6 +158,23 @@ func (r *reporter) Start() {
 					fmt.Printf("  %s: %s\n", color("reason"), *reason)
 				}
 				fmt.Printf("\n")
+			case "stack.plan":
+				fmt.Printf("\n")
+			// case "platform.stack.apply":
+			// 	bar = util.NewProgressInt(e.Int("changes"))
+			// case "platform.stack.apply.complete":
+			// 	term.ClearAll()
+			// 	term.ShowCursor()
+			case "platform.stack.plan.change":
+				// TODO: real thing... output props... diff
+				change := e.Fields["change"].(*cloudformation.Change)
+				c := change.ResourceChange
+				fmt.Printf("  %s %s\n", *c.Action, *c.ResourceType)
+				fmt.Printf("    id: %s\n", *c.LogicalResourceId)
+				if c.Replacement != nil {
+					fmt.Printf("    replace: %s\n", *c.Replacement)
+				}
+				fmt.Printf("\n")
 			case "metrics", "metrics.complete":
 				fmt.Printf("\n")
 			case "metrics.value":
@@ -174,8 +191,8 @@ func (r *reporter) Start() {
 	}
 }
 
-// countEventsByState returns the number of events with the given state.
-func countEventsByState(events []*cloudformation.StackEvent, desired stack.Status) (n int) {
+// countEventsByStatus returns the number of events with the given state.
+func countEventsByStatus(events []*cloudformation.StackEvent, desired stack.Status) (n int) {
 	for _, e := range events {
 		status := stack.Status(*e.ResourceStatus)
 
@@ -184,6 +201,23 @@ func countEventsByState(events []*cloudformation.StackEvent, desired stack.Statu
 		}
 
 		if status == desired {
+			n++
+		}
+	}
+
+	return
+}
+
+// countEventsComplete returns the number of completed or failed events.
+func countEventsComplete(events []*cloudformation.StackEvent) (n int) {
+	for _, e := range events {
+		status := stack.Status(*e.ResourceStatus)
+
+		if *e.ResourceType == "AWS::CloudFormation::Stack" {
+			continue
+		}
+
+		if status.IsDone() {
 			n++
 		}
 	}

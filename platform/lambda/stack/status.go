@@ -24,6 +24,12 @@ var statusMap = map[Status]string{
 	RollbackInProgress: "Rolling back",
 	RollbackFailed:     "Failed to rollback",
 	RollbackComplete:   "Rollback complete",
+
+	CreatePending:                 "Create pending",
+	Failed:                        "Failed",
+	UpdateCompleteCleanup:         "Update complete cleanup in progress",
+	UpdateRollbackCompleteCleanup: "Update rollback complete cleanup in progress",
+	UpdateRollbackInProgress:      "Update rollback in progress",
 }
 
 // State represents a generalized stack event state.
@@ -43,6 +49,8 @@ type Status string
 const (
 	Unknown Status = "unknown"
 
+	// stack
+
 	CreateInProgress = "CREATE_IN_PROGRESS"
 	CreateFailed     = "CREATE_FAILED"
 	CreateComplete   = "CREATE_COMPLETE"
@@ -59,6 +67,14 @@ const (
 	RollbackInProgress = "ROLLBACK_IN_PROGRESS"
 	RollbackFailed     = "ROLLBACK_FAILED"
 	RollbackComplete   = "ROLLBACK_COMPLETE"
+
+	// changeset
+
+	CreatePending                 = "CREATE_PENDING"
+	Failed                        = "FAILED"
+	UpdateCompleteCleanup         = "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS"
+	UpdateRollbackCompleteCleanup = "UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS"
+	UpdateRollbackInProgress      = "UPDATE_ROLLBACK_IN_PROGRESS"
 )
 
 // String returns the human representation.
@@ -88,13 +104,13 @@ func (s Status) Color(v string) string {
 // State returns a generalized state.
 func (s Status) State() State {
 	switch s {
-	case CreateFailed, UpdateFailed, DeleteFailed, RollbackFailed:
+	case CreateFailed, UpdateFailed, DeleteFailed, RollbackFailed, Failed:
 		return Failure
-	case CreateInProgress, UpdateInProgress, DeleteInProgress, RollbackInProgress:
+	case CreateInProgress, UpdateInProgress, DeleteInProgress, RollbackInProgress, CreatePending, UpdateCompleteCleanup, UpdateRollbackCompleteCleanup, UpdateRollbackInProgress:
 		return Pending
 	case CreateComplete, UpdateComplete, DeleteComplete, DeleteSkipped, RollbackComplete:
 		return Success
 	default:
-		panic(fmt.Sprintf("unhandled state %q", s))
+		panic(fmt.Sprintf("unhandled state %q", string(s)))
 	}
 }

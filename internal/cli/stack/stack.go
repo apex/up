@@ -17,8 +17,44 @@ func init() {
 	cmd := root.Command("stack", "Stack resource management.")
 	cmd.Example(`up stack`, "Show status of the stack resources.")
 	cmd.Example(`up stack delete`, "Delete the stack resources.")
+	plan(cmd)
+	apply(cmd)
 	delete(cmd)
 	show(cmd)
+}
+
+func plan(cmd *kingpin.CmdClause) {
+	c := cmd.Command("plan", "Plan configuration changes.")
+	c.Example(`up stack plan`, "Plan changes to configuration.")
+
+	c.Action(func(_ *kingpin.ParseContext) error {
+		c, p, err := root.Init()
+		if err != nil {
+			return errors.Wrap(err, "initializing")
+		}
+
+		// stats.Track("Plan Stack", nil)
+
+		// TODO: multi-region
+		return p.PlanStack(c.Regions[0])
+	})
+}
+
+func apply(cmd *kingpin.CmdClause) {
+	c := cmd.Command("apply", "Apply configuration changes.")
+	c.Example(`up stack apply`, "Apply changes to configuration.")
+
+	c.Action(func(_ *kingpin.ParseContext) error {
+		c, p, err := root.Init()
+		if err != nil {
+			return errors.Wrap(err, "initializing")
+		}
+
+		// stats.Track("Plan Stack", nil)
+
+		// TODO: multi-region
+		return p.ApplyStack(c.Regions[0])
+	})
 }
 
 func delete(cmd *kingpin.CmdClause) {

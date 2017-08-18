@@ -232,6 +232,16 @@ func (p *Platform) ShowStack(region string) error {
 	return stack.New(p.config, p.events, region).Show()
 }
 
+// PlanStack implementation.
+func (p *Platform) PlanStack(region string) error {
+	return stack.New(p.config, p.events, region).Plan()
+}
+
+// ApplyStack implementation.
+func (p *Platform) ApplyStack(region string) error {
+	return stack.New(p.config, p.events, region).Apply()
+}
+
 // deploy to the given region.
 func (p *Platform) deploy(region, stage string) (version string, err error) {
 	fields := event.Fields{

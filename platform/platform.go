@@ -36,6 +36,8 @@ type Interface interface {
 	CreateStack(region, version string) error
 	DeleteStack(region string, wait bool) error
 	ShowStack(region string) error
+	PlanStack(region string) error
+	ApplyStack(region string) error
 
 	ShowMetrics(region, stage string, start time.Time) error
 }

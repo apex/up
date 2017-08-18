@@ -60,7 +60,8 @@ Below is a policy for [AWS Identity and Access Management](https://aws.amazon.co
         "cloudformation:Create*",
         "cloudformation:Update*",
         "cloudformation:Delete*",
-        "cloudformation:Describe*"
+        "cloudformation:Describe*",
+        "cloudformation:ExecuteChangeSet"
       ],
       "Effect": "Allow",
       "Resource": "*"

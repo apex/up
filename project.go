@@ -155,3 +155,21 @@ func (p *Project) ShowMetrics(region, stage string, start time.Time) error {
 
 	return p.platform.ShowMetrics(region, stage, start)
 }
+
+// PlanStack implementation.
+func (p *Project) PlanStack(region string) error {
+	defer p.events.Time("stack.plan", event.Fields{
+		"region": region,
+	})()
+
+	return p.platform.PlanStack(region)
+}
+
+// ApplyStack implementation.
+func (p *Project) ApplyStack(region string) error {
+	defer p.events.Time("stack.apply", event.Fields{
+		"region": region,
+	})()
+
+	return p.platform.ApplyStack(region)
+}
