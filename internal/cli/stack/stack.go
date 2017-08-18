@@ -35,7 +35,7 @@ func plan(cmd *kingpin.CmdClause) {
 			return errors.Wrap(err, "initializing")
 		}
 
-		// stats.Track("Plan Stack", nil)
+		stats.Track("Plan Stack", nil)
 
 		// TODO: multi-region
 		return p.PlanStack(c.Regions[0])
@@ -52,7 +52,7 @@ func apply(cmd *kingpin.CmdClause) {
 			return errors.Wrap(err, "initializing")
 		}
 
-		// stats.Track("Plan Stack", nil)
+		stats.Track("Apply Stack", nil)
 
 		// TODO: multi-region
 		return p.ApplyStack(c.Regions[0])
