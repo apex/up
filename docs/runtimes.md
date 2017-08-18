@@ -37,7 +37,7 @@ $ mkdir -p .pypath/ && pip install -r requirements.txt -t .pypath/
 The server run by the proxy becomes:
 
 ```
-$ python app.js
+$ python app.py
 ```
 
 ## Golang
