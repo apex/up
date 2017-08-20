@@ -8,6 +8,12 @@ Up can be installed via pre-compiled binaries, head over to the [Releases](https
 $ curl -sfL https://raw.githubusercontent.com/apex/up/master/install.sh | sh
 ```
 
+Or via NPM with:
+
+```
+$ npm i -g up
+```
+
 Verify installation with:
 
 ```
@@ -18,4 +24,10 @@ Later when you want to update `up` to the latest version use the following comma
 
 ```
 $ up upgrade
+```
+
+If you hit permission issues, you may need to run the following, as `up` is installed to `/usr/local/bin/up` by default.
+
+```
+$ sudo chown -R $(whoami) /usr/local/
 ```
