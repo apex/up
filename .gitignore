@@ -8,3 +8,4 @@ up-proxy
 !cmd/up-proxy
 dist
 .idea
+.vscode

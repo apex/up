@@ -1,6 +1,7 @@
 package up
 
 import (
+	"os"
 	"testing"
 
 	"github.com/tj/assert"
@@ -62,6 +63,17 @@ func TestConfig_Type(t *testing.T) {
 }
 
 func TestConfig_Regions(t *testing.T) {
+	t.Run("valid multiple", func(t *testing.T) {
+		c := Config{
+			Name:    "api",
+			Type:    "server",
+			Regions: []string{"us-west-2", "us-east-1"},
+		}
+
+		assert.NoError(t, c.Default(), "default")
+		assert.NoError(t, c.Validate(), "validate")
+	})
+
 	t.Run("valid multiple", func(t *testing.T) {
 		c := Config{
 			Name:    "api",
@@ -136,4 +148,47 @@ func TestConfig_Regions(t *testing.T) {
   • sa-east-1
   • ca-central-1`)
 	})
+}
+
+func TestConfig_defaultRegions(t *testing.T) {
+	t.Run("regions from config", func(t *testing.T) {
+		regions := []string{"us-west-2", "us-east-1"}
+		c := Config{
+			Name:    "api",
+			Type:    "server",
+			Regions: regions,
+		}
+
+		assert.NoError(t, c.defaultRegions(), "defaultRegions")
+		assert.Equal(t, regions, c.Regions, "should read regions from config")
+	})
+
+	t.Run("regions from AWS_REGION", func(t *testing.T) {
+		region := "sa-east-1"
+		os.Setenv("AWS_REGION", region)
+		defer os.Setenv("AWS_REGION", "")
+		c := Config{
+			Name: "api",
+			Type: "server",
+		}
+
+		assert.NoError(t, c.defaultRegions(), "defaultRegions")
+		assert.Equal(t, 1, len(c.Regions), "regions should have length 1")
+		assert.Equal(t, region, c.Regions[0], "should read regions from AWS_REGION")
+	})
+
+	t.Run("regions from AWS_DEFAULT_REGION", func(t *testing.T) {
+		region := "sa-east-1"
+		os.Setenv("AWS_DEFAULT_REGION", region)
+		defer os.Setenv("AWS_DEFAULT_REGION", "")
+		c := Config{
+			Name: "api",
+			Type: "server",
+		}
+
+		assert.NoError(t, c.defaultRegions(), "defaultRegions")
+		assert.Equal(t, 1, len(c.Regions), "regions should have length 1")
+		assert.Equal(t, region, c.Regions[0], "should read regions from AWS_DEFAULT_REGION")
+	})
+
 }
