@@ -52,6 +52,41 @@ Examples:
 
 ```
 
+## deploy
+
+Deploy the project, by default to the "development" stage. Note that running `up` and `up deploy` are identical, however for staging and production you must run `up deploy <stage>`.
+
+```
+
+  Usage:
+
+    up deploy [<stage>]
+
+  Flags:
+
+    -h, --help           Output usage information.
+    -r, --region=REGION  Override the region.
+    -C, --chdir="."      Change working directory.
+    -v, --verbose        Enable verbose log output.
+        --version        Show application version.
+
+  Args:
+
+    [<stage>]  Target stage name.
+
+  Examples:
+
+    Deploy the project to the development stage.
+    $ up deploy
+
+    Deploy the project to the staging stage.
+    $ up deploy staging
+
+    Deploy the project to the production stage.
+    $ up deploy production
+
+```
+
 ## config
 
 Validate and output configuration with defaults applied.
