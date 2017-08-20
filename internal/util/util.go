@@ -81,7 +81,7 @@ func NewProgressInt(total int) *progress.Bar {
 func NewInlineProgressInt(total int) *progress.Bar {
 	b := progress.NewInt(total)
 	b.Template(`{{.Bar}} {{.Percent | printf "%0.0f"}}% {{.Text}}`)
-	b.Width = 15
+	b.Width = 20
 	b.StartDelimiter = colors.Gray("|")
 	b.EndDelimiter = colors.Gray("|")
 	b.Filled = colors.Purple("█")

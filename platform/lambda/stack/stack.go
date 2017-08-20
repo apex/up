@@ -2,6 +2,7 @@ package stack
 
 import (
 	"encoding/json"
+	"strings"
 	"time"
 
 	"github.com/aws/aws-sdk-go/aws"
@@ -18,6 +19,7 @@ import (
 // TODO: refactor a lot
 // TODO: backoff
 // TODO: profile changeset name and description flags
+// TODO: flags for changeset name / description
 
 // defaultChangeset name.
 var defaultChangeset = "changes"
@@ -76,8 +78,8 @@ func (s *Stack) Create(version string) error {
 		return errors.Wrap(err, "creating stack")
 	}
 
-	if err := s.report("create"); err != nil {
-		return errors.Wrap(err, "reporting events")
+	if err := s.report(resourceStateFromTemplate(tmpl, CreateComplete)); err != nil {
+		return errors.Wrap(err, "reporting")
 	}
 
 	stack, err := s.getStack()
@@ -104,7 +106,8 @@ func (s *Stack) Delete(wait bool) error {
 	}
 
 	if wait {
-		if err := s.report("delete"); err != nil {
+		tmpl := template(s.config)
+		if err := s.report(resourceStateFromTemplate(tmpl, DeleteComplete)); err != nil {
 			return errors.Wrap(err, "reporting")
 		}
 	}
@@ -171,7 +174,7 @@ func (s *Stack) Plan() error {
 		TemplateBody:  aws.String(string(b)),
 		Capabilities:  aws.StringSlice([]string{"CAPABILITY_NAMED_IAM"}),
 		ChangeSetType: aws.String("UPDATE"),
-		Description:   aws.String("Managed by Up."), // TODO: flag?
+		Description:   aws.String("Managed by Up."),
 		Parameters: []*cloudformation.Parameter{
 			{
 				ParameterKey:   aws.String("Name"),
@@ -183,7 +186,7 @@ func (s *Stack) Plan() error {
 			},
 			{
 				ParameterKey:   aws.String("FunctionVersion"),
-				ParameterValue: aws.String("104"),
+				ParameterValue: aws.String("113"), // TODO: correct
 			},
 		},
 	})
@@ -251,6 +254,10 @@ func (s *Stack) Apply() error {
 		ChangeSetName: &defaultChangeset,
 	})
 
+	if isNotFound(err) {
+		return errors.Errorf("changeset does not exist, run `up stack plan` first")
+	}
+
 	if err != nil {
 		return errors.Wrap(err, "describing changeset")
 	}
@@ -268,16 +275,19 @@ func (s *Stack) Apply() error {
 		return errors.Wrap(err, "executing changeset")
 	}
 
-	return s.report("update")
+	if err := s.report(resourceStateFromChanges(res.Changes)); err != nil {
+		return errors.Wrap(err, "reporting")
+	}
+
+	return nil
 }
 
-// report events.
-func (s *Stack) report(state string) error {
-	hit := make(map[string]bool)
-	tmpl := template(s.config)
-
-	defer s.events.Time("platform.stack."+state, event.Fields{
-		"resources": len(tmpl["Resources"].(Map)),
+// report events with a map of desired stats from logical or physical id,
+// any resources not mapped are ignored as they do not contribute to changes.
+func (s *Stack) report(states map[string]Status) error {
+	defer s.events.Time("platform.stack.report", event.Fields{
+		"total":    len(states),
+		"complete": 0,
 	})()
 
 	for range time.Tick(time.Second) {
@@ -302,31 +312,25 @@ func (s *Stack) report(state string) error {
 			return nil
 		}
 
-		events, err := s.getEvents()
-
-		if util.IsNotFound(err) {
-			return nil
-		}
+		res, err := s.client.DescribeStackResources(&cloudformation.DescribeStackResourcesInput{
+			StackName: &s.config.Name,
+		})
 
 		if util.IsThrottled(err) {
-			time.Sleep(3 * time.Second)
+			time.Sleep(time.Second * 3)
 			continue
 		}
 
 		if err != nil {
-			return errors.Wrap(err, "fetching events")
+			return errors.Wrap(err, "describing stack resources")
 		}
 
-		for _, e := range events {
-			if hit[*e.EventId] {
-				continue
-			}
-			hit[*e.EventId] = true
+		complete := len(resourcesCompleted(res.StackResources, states))
 
-			s.events.Emit("platform.stack."+state+".event", event.Fields{
-				"event": e,
-			})
-		}
+		s.events.Emit("platform.stack.report.event", event.Fields{
+			"total":    len(states),
+			"complete": complete,
+		})
 	}
 
 	return nil
@@ -396,36 +400,93 @@ func (s *Stack) getEvents() (events []*cloudformation.StackEvent, err error) {
 	return
 }
 
-// getEventsByState returns events by state.
-func (s *Stack) getEventsByState(state State) (v []*cloudformation.StackEvent, err error) {
-	events, err := s.getEvents()
-	if err != nil {
-		return
+// resourceStateFromTemplate returns a map of the logical ids from template t, to status s.
+func resourceStateFromTemplate(t Map, s Status) map[string]Status {
+	r := t["Resources"].(Map)
+	m := make(map[string]Status)
+
+	for id := range r {
+		m[id] = s
 	}
 
-	for _, e := range events {
-		s := Status(*e.ResourceStatus)
-		if s.State() == state {
-			v = append(v, e)
-		}
-	}
-
-	return
+	return m
 }
 
-// hasChange returns true if id matches a physical or logical id.
-func hasChange(id string, changes []*cloudformation.Change) bool {
+// TODO: ignore deletes since they're in cleanup phase?
+
+// resourceStateFromChanges returns a map of statuses from a changeset.
+func resourceStateFromChanges(changes []*cloudformation.Change) map[string]Status {
+	m := make(map[string]Status)
+
 	for _, c := range changes {
-		cid := *c.ResourceChange.LogicalResourceId
+		var state Status
+		var id string
 
 		if s := c.ResourceChange.PhysicalResourceId; s != nil {
-			cid = *s
+			id = *s
 		}
 
-		if cid == id {
-			return true
+		if id == "" {
+			id = *c.ResourceChange.LogicalResourceId
+		}
+
+		switch a := *c.ResourceChange.Action; a {
+		case "Add":
+			state = CreateComplete
+		case "Modify":
+			state = UpdateComplete
+		case "Remove":
+			state = DeleteComplete
+		default:
+			panic(errors.Errorf("unhandled Action %q", a))
+		}
+
+		m[id] = state
+	}
+
+	return m
+}
+
+// resourcesCompleted returns a map of the completed resources. When the resource is not
+// present in states, it is ignored as no changes are expected.
+func resourcesCompleted(resources []*cloudformation.StackResource, states map[string]Status) map[string]*cloudformation.StackResource {
+	m := make(map[string]*cloudformation.StackResource)
+
+	for _, r := range resources {
+		var expected Status
+		var id string
+
+		// try physical id first, this is necessary as
+		// replacement of a logical id will cause the id
+		// to appear twice (once for Add once for Remove).
+		if s := r.PhysicalResourceId; s != nil {
+			if _, ok := states[*s]; ok {
+				id = *s
+			}
+		}
+
+		// try logical id
+		if s := *r.LogicalResourceId; id == "" {
+			if _, ok := states[s]; ok {
+				id = s
+			}
+		}
+
+		// expected state
+		if id != "" {
+			expected = states[id]
+		}
+
+		// matched expected state
+		if expected == Status(*r.ResourceStatus) {
+			m[id] = r
 		}
 	}
 
-	return false
+	return m
+}
+
+// isNotFound returns true if the error indicates a missing changeset.
+func isNotFound(err error) bool {
+	return err != nil && strings.Contains(err.Error(), "ChangeSetNotFound")
 }

@@ -78,7 +78,6 @@ func (r *reporter) Start() {
 	defer tick.Stop()
 
 	var bar *progress.Bar
-	var events []*cloudformation.StackEvent
 	var inlineProgress bool
 
 	for {
@@ -106,34 +105,38 @@ func (r *reporter) Start() {
 				r.complete("deploy", "complete", e.Duration("duration"))
 			case "platform.function.create":
 				inlineProgress = true
-			case "platform.stack.create":
-				bar = util.NewInlineProgressInt(e.Int("resources"))
-				r.pending("stack", bar.String())
-			case "platform.stack.delete":
-				bar = util.NewProgressInt(e.Int("resources"))
-				term.HideCursor()
-				io.WriteString(os.Stdout, term.CenterLine(bar.String()))
-			case "platform.stack.create.event":
-				bar.ValueInt(countEventsByStatus(events, stack.CreateComplete))
-				events = append(events, e.Fields["event"].(*cloudformation.StackEvent))
+			case "stack.create":
+				inlineProgress = true
+			case "platform.stack.report":
 				if inlineProgress {
+					bar = util.NewInlineProgressInt(e.Int("total"))
 					r.pending("stack", bar.String())
 				} else {
+					bar = util.NewProgressInt(e.Int("total"))
 					io.WriteString(os.Stdout, term.CenterLine(bar.String()))
 				}
-			case "platform.stack.delete.event":
-				events = append(events, e.Fields["event"].(*cloudformation.StackEvent))
-				bar.ValueInt(countEventsByStatus(events, stack.DeleteComplete))
-				io.WriteString(os.Stdout, term.CenterLine(bar.String()))
-			case "platform.stack.create.complete":
+			case "platform.stack.report.event":
+				if inlineProgress {
+					bar.ValueInt(e.Int("complete"))
+					r.pending("stack", bar.String())
+				} else {
+					bar.ValueInt(e.Int("complete"))
+					io.WriteString(os.Stdout, term.CenterLine(bar.String()))
+				}
+			case "platform.stack.report.complete":
 				if inlineProgress {
 					r.complete("stack", "complete", e.Duration("duration"))
 				} else {
 					term.ClearAll()
+					term.ShowCursor()
 				}
-			case "platform.stack.delete.complete":
-				term.ClearAll()
-				term.ShowCursor()
+			// case "platform.stack.delete":
+			// 	bar = util.NewProgressInt(e.Int("resources"))
+			// 	term.HideCursor()
+			// 	io.WriteString(os.Stdout, term.CenterLine(bar.String()))
+			// case "platform.stack.complete":
+			// 	term.ClearAll()
+			// 	term.ShowCursor()
 			case "platform.stack.show", "platform.stack.show.complete":
 				fmt.Printf("\n")
 			case "platform.stack.show.stack":

@@ -7,6 +7,7 @@ import (
 )
 
 func TestStatus_String(t *testing.T) {
+	assert.Equal(t, "Unknown", Status("").String())
 	assert.Equal(t, "Creating", Status("CREATE_IN_PROGRESS").String())
 	assert.Equal(t, "Deleting", Status("DELETE_IN_PROGRESS").String())
 	assert.Equal(t, "Failed to update", Status("UPDATE_FAILED").String())

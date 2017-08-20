@@ -8,6 +8,8 @@ import (
 
 // status map for humanization.
 var statusMap = map[Status]string{
+	Unknown: "Unknown",
+
 	CreateInProgress: "Creating",
 	CreateFailed:     "Failed to create",
 	CreateComplete:   "Created",
@@ -21,15 +23,17 @@ var statusMap = map[Status]string{
 	UpdateFailed:     "Failed to update",
 	UpdateComplete:   "Updated",
 
+	UpdateCompleteCleanup:         "Update complete cleanup in progress",
+	UpdateRollbackCompleteCleanup: "Update rollback complete cleanup in progress",
+	UpdateRollbackInProgress:      "Update rollback in progress",
+	UpdateRollbackComplete:        "Update rollback complete",
+
 	RollbackInProgress: "Rolling back",
 	RollbackFailed:     "Failed to rollback",
 	RollbackComplete:   "Rollback complete",
 
-	CreatePending:                 "Create pending",
-	Failed:                        "Failed",
-	UpdateCompleteCleanup:         "Update complete cleanup in progress",
-	UpdateRollbackCompleteCleanup: "Update rollback complete cleanup in progress",
-	UpdateRollbackInProgress:      "Update rollback in progress",
+	CreatePending: "Create pending",
+	Failed:        "Failed",
 }
 
 // State represents a generalized stack event state.
@@ -47,13 +51,12 @@ type Status string
 
 // Statuses available.
 const (
-	Unknown Status = "unknown"
-
-	// stack
+	Unknown Status = ""
 
 	CreateInProgress = "CREATE_IN_PROGRESS"
 	CreateFailed     = "CREATE_FAILED"
 	CreateComplete   = "CREATE_COMPLETE"
+	CreatePending    = "CREATE_PENDING"
 
 	DeleteInProgress = "DELETE_IN_PROGRESS"
 	DeleteFailed     = "DELETE_FAILED"
@@ -64,17 +67,16 @@ const (
 	UpdateFailed     = "UPDATE_FAILED"
 	UpdateComplete   = "UPDATE_COMPLETE"
 
+	UpdateRollbackInProgress      = "UPDATE_ROLLBACK_IN_PROGRESS"
+	UpdateRollbackComplete        = "UPDATE_ROLLBACK_COMPLETE"
+	UpdateRollbackCompleteCleanup = "UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS"
+	UpdateCompleteCleanup         = "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS"
+
 	RollbackInProgress = "ROLLBACK_IN_PROGRESS"
 	RollbackFailed     = "ROLLBACK_FAILED"
 	RollbackComplete   = "ROLLBACK_COMPLETE"
 
-	// changeset
-
-	CreatePending                 = "CREATE_PENDING"
-	Failed                        = "FAILED"
-	UpdateCompleteCleanup         = "UPDATE_COMPLETE_CLEANUP_IN_PROGRESS"
-	UpdateRollbackCompleteCleanup = "UPDATE_ROLLBACK_COMPLETE_CLEANUP_IN_PROGRESS"
-	UpdateRollbackInProgress      = "UPDATE_ROLLBACK_IN_PROGRESS"
+	Failed = "FAILED"
 )
 
 // String returns the human representation.
@@ -108,7 +110,7 @@ func (s Status) State() State {
 		return Failure
 	case CreateInProgress, UpdateInProgress, DeleteInProgress, RollbackInProgress, CreatePending, UpdateRollbackInProgress:
 		return Pending
-	case CreateComplete, UpdateComplete, DeleteComplete, DeleteSkipped, RollbackComplete, UpdateCompleteCleanup, UpdateRollbackCompleteCleanup:
+	case CreateComplete, UpdateComplete, DeleteComplete, DeleteSkipped, RollbackComplete, UpdateCompleteCleanup, UpdateRollbackCompleteCleanup, UpdateRollbackComplete:
 		return Success
 	default:
 		panic(fmt.Sprintf("unhandled state %q", string(s)))
