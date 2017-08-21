@@ -16,6 +16,7 @@ import (
 	"github.com/apex/up/internal/util"
 	"github.com/apex/up/internal/validate"
 	"github.com/apex/up/platform/lambda/regions"
+	"github.com/aws/aws-sdk-go/aws/session"
 )
 
 // TODO: refactor defaulting / validation with slices
@@ -218,15 +219,23 @@ func (c *Config) defaultRegions() error {
 		return nil
 	}
 
-	if s := os.Getenv("AWS_REGION"); s != "" {
-		log.Debugf("region from AWS_REGION %q", s)
-		c.Regions = append(c.Regions, s)
+	s, err := session.NewSessionWithOptions(session.Options{
+		SharedConfigState: session.SharedConfigEnable,
+	})
+
+	if err != nil {
+		return errors.Wrap(err, "creating session")
+	}
+
+	if r := *s.Config.Region; r != "" {
+		log.Debugf("region from aws shared config %q", r)
+		c.Regions = append(c.Regions, r)
 		return nil
 	}
 
-	s := "us-west-2"
-	log.Debugf("region defaulted to %q", s)
-	c.Regions = append(c.Regions, s)
+	r := "us-west-2"
+	log.Debugf("region defaulted to %q", r)
+	c.Regions = append(c.Regions, r)
 	return nil
 }
 
