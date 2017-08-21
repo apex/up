@@ -39,6 +39,12 @@ Updated as of July 2017 based on public information. Some services offer a restr
 </details>
 
 <details>
+  <summary>Why run HTTP servers in Lambda?</summary>
+  <p>You might be thinking this defeats the purpose of Lambda, and you'd be right, however most people just want to use the tools they know and love. Up lets you develop locally as you normally would, Lambda for hosting is only an implementation detail.</p>
+  <p>Node, Golang, and many others are currently not overly suitable for FaaS, as node_modules can easily grow to be many MB, and a baseline Go binary is ~3MB, managing hundreds or thousands of these hinders productivity.</p>
+</details>
+
+<details>
   <summary>Why isn't Up licensed MIT?</summary>
   <p>Up is licensed in such a way that myself as an independent developer can continue to improve the product and provide support. Commercial customers receive access to a premium version of Up with additional features, priority support for bugfixes, and of course knowing that the project will stick around! Up saves your team countless hours maintaining infrastructure and custom tooling, so you can get back to what makes your company and products unique.</p>
 </details>
