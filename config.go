@@ -226,7 +226,7 @@ func (c *Config) defaultRegions() error {
 		return err
 	}
 	if len(*s.Config.Region) > 0 {
-		log.Debugf("region from AWS_REGION %q", s)
+		log.Debugf("region from aws shared config %q", s)
 		c.Regions = append(c.Regions, *s.Config.Region)
 		return nil
 	}
