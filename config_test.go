@@ -196,21 +196,6 @@ func TestConfig_defaultRegions(t *testing.T) {
 		assert.NoError(t, c.Validate(), "validate")
 	})
 
-	t.Run("regions from AWS_DEFAULT_REGION", func(t *testing.T) {
-		region := "sa-east-1"
-		os.Setenv("AWS_DEFAULT_REGION", region)
-		defer os.Setenv("AWS_DEFAULT_REGION", "")
-		c := Config{
-			Name: "api",
-			Type: "server",
-		}
-
-		assert.NoError(t, c.defaultRegions(), "defaultRegions")
-		assert.Equal(t, 1, len(c.Regions), "regions should have length 1")
-		assert.Equal(t, region, c.Regions[0], "should read regions from AWS_DEFAULT_REGION")
-		assert.NoError(t, c.Validate(), "validate")
-	})
-
 	t.Run("regions from shared config with default profile", func(t *testing.T) {
 		content := `
 		[default]
