@@ -1,4 +1,12 @@
 
+v0.1.11 / 2017-08-22
+====================
+
+  * add support for regions defined in `~/.aws/config`
+  * add `up stack plan` and `up stack apply` support. Closes #115
+  * add environment variables to hooks when performing builds etc
+  * fix support for implicit `app.js` when `package.json` is present without a `start` script defined
+
 v0.1.10 / 2017-08-15
 ====================
 
