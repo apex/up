@@ -329,18 +329,21 @@ func nodejs(c *Config) error {
 		} `json:"scripts"`
 	}
 
+	// read package.json
 	if err := util.ReadFileJSON("package.json", &pkg); err != nil {
 		return err
 	}
 
-	// start script
-	if s := pkg.Scripts.Start; s != "" {
-		c.Proxy.Command = s
-	} else {
-		return errors.New(`the "start" script must be present in package.json`)
+	// use "start" script unless explicitly defined in up.json
+	if c.Proxy.Command == "" {
+		if s := pkg.Scripts.Start; s == "" {
+			c.Proxy.Command = "node app.js"
+		} else {
+			c.Proxy.Command = s
+		}
 	}
 
-	// build script
+	// use "build" script unless explicitly defined in up.json
 	if c.Hooks.Build == "" {
 		c.Hooks.Build = pkg.Scripts.Build
 	}
