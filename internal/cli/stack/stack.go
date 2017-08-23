@@ -22,7 +22,7 @@ func init() {
 	plan(cmd)
 	apply(cmd)
 	delete(cmd)
-	show(cmd)
+	status(cmd)
 }
 
 func plan(cmd *kingpin.CmdClause) {
@@ -94,9 +94,8 @@ func delete(cmd *kingpin.CmdClause) {
 	})
 }
 
-// TODO: rename status, info, show? decide on conventions
-func show(cmd *kingpin.CmdClause) {
-	c := cmd.Command("show", "Show status of resources.").Default()
+func status(cmd *kingpin.CmdClause) {
+	c := cmd.Command("status", "Show status of resources.").Default()
 
 	c.Action(func(_ *kingpin.ParseContext) error {
 		c, p, err := root.Init()
