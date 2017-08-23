@@ -1,4 +1,11 @@
 
+v0.1.12 / 2017-08-23
+=====================
+
+  * add some basic formatting to `up stack plan`
+  * rename `up stack show` to `up stack status`
+  * fix hard-coded versions for stack updates
+
 v0.1.11 / 2017-08-22
 ====================
 
