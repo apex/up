@@ -60,6 +60,21 @@ func TestStatic(t *testing.T) {
 	assert.Equal(t, header, actual)
 }
 
+func TestNodeWithPackag(t *testing.T) {
+	os.Chdir("testdata/node-pkg")
+	defer os.Chdir("../..")
+
+	h, err := New()
+	assert.NoError(t, err)
+
+	res := httptest.NewRecorder()
+	req := httptest.NewRequest("GET", "/", nil)
+
+	h.ServeHTTP(res, req)
+
+	assert.Equal(t, "Hello World", res.Body.String())
+}
+
 func TestHandler_conditionalGet(t *testing.T) {
 	os.Chdir("testdata/static")
 	defer os.Chdir("../..")
