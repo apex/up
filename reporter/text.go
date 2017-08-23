@@ -36,11 +36,13 @@ func Text(events <-chan *event.Event) {
 
 // reporter struct.
 type reporter struct {
-	events       <-chan *event.Event
-	spinner      *spin.Spinner
-	prevTime     time.Time
-	pendingName  string
-	pendingValue string
+	events         <-chan *event.Event
+	spinner        *spin.Spinner
+	prevTime       time.Time
+	bar            *progress.Bar
+	inlineProgress bool
+	pendingName    string
+	pendingValue   string
 }
 
 // spin the spinner by moving to the start of the line and re-printing.
@@ -77,9 +79,6 @@ func (r *reporter) Start() {
 	tick := time.NewTicker(150 * time.Millisecond)
 	defer tick.Stop()
 
-	var bar *progress.Bar
-	var inlineProgress bool
-
 	for {
 		select {
 		case <-tick.C:
@@ -104,39 +103,32 @@ func (r *reporter) Start() {
 			case "platform.deploy.complete":
 				r.complete("deploy", "complete", e.Duration("duration"))
 			case "platform.function.create":
-				inlineProgress = true
+				r.inlineProgress = true
 			case "stack.create":
-				inlineProgress = true
+				r.inlineProgress = true
 			case "platform.stack.report":
-				if inlineProgress {
-					bar = util.NewInlineProgressInt(e.Int("total"))
-					r.pending("stack", bar.String())
+				if r.inlineProgress {
+					r.bar = util.NewInlineProgressInt(e.Int("total"))
+					r.pending("stack", r.bar.String())
 				} else {
-					bar = util.NewProgressInt(e.Int("total"))
-					io.WriteString(os.Stdout, term.CenterLine(bar.String()))
+					r.bar = util.NewProgressInt(e.Int("total"))
+					io.WriteString(os.Stdout, term.CenterLine(r.bar.String()))
 				}
 			case "platform.stack.report.event":
-				if inlineProgress {
-					bar.ValueInt(e.Int("complete"))
-					r.pending("stack", bar.String())
+				if r.inlineProgress {
+					r.bar.ValueInt(e.Int("complete"))
+					r.pending("stack", r.bar.String())
 				} else {
-					bar.ValueInt(e.Int("complete"))
-					io.WriteString(os.Stdout, term.CenterLine(bar.String()))
+					r.bar.ValueInt(e.Int("complete"))
+					io.WriteString(os.Stdout, term.CenterLine(r.bar.String()))
 				}
 			case "platform.stack.report.complete":
-				if inlineProgress {
+				if r.inlineProgress {
 					r.complete("stack", "complete", e.Duration("duration"))
 				} else {
 					term.ClearAll()
 					term.ShowCursor()
 				}
-			// case "platform.stack.delete":
-			// 	bar = util.NewProgressInt(e.Int("resources"))
-			// 	term.HideCursor()
-			// 	io.WriteString(os.Stdout, term.CenterLine(bar.String()))
-			// case "platform.stack.complete":
-			// 	term.ClearAll()
-			// 	term.ShowCursor()
 			case "platform.stack.show", "platform.stack.show.complete":
 				fmt.Printf("\n")
 			case "platform.stack.show.stack":
@@ -155,27 +147,21 @@ func (r *reporter) Start() {
 					color = colors.Red
 				}
 				fmt.Printf("  %s\n", color(kind))
-				fmt.Printf("  %s: %v\n", color("id"), *event.LogicalResourceId)
-				fmt.Printf("  %s: %s\n", color("status"), status)
+				fmt.Printf("    %s: %v\n", color("id"), *event.LogicalResourceId)
+				fmt.Printf("    %s: %s\n", color("status"), status)
 				if reason := event.ResourceStatusReason; reason != nil {
-					fmt.Printf("  %s: %s\n", color("reason"), *reason)
+					fmt.Printf("    %s: %s\n", color("reason"), *reason)
 				}
 				fmt.Printf("\n")
 			case "stack.plan":
 				fmt.Printf("\n")
-			// case "platform.stack.apply":
-			// 	bar = util.NewProgressInt(e.Int("changes"))
-			// case "platform.stack.apply.complete":
-			// 	term.ClearAll()
-			// 	term.ShowCursor()
 			case "platform.stack.plan.change":
-				// TODO: real thing... output props... diff
-				change := e.Fields["change"].(*cloudformation.Change)
-				c := change.ResourceChange
-				fmt.Printf("  %s %s\n", *c.Action, *c.ResourceType)
-				fmt.Printf("    id: %s\n", *c.LogicalResourceId)
+				c := e.Fields["change"].(*cloudformation.Change).ResourceChange
+				color := actionColor(*c.Action)
+				fmt.Printf("  %s %s\n", color(*c.Action), *c.ResourceType)
+				fmt.Printf("    %s: %s\n", color("id"), *c.LogicalResourceId)
 				if c.Replacement != nil {
-					fmt.Printf("    replace: %s\n", *c.Replacement)
+					fmt.Printf("    %s: %s\n", color("replace"), *c.Replacement)
 				}
 				fmt.Printf("\n")
 			case "metrics", "metrics.complete":
@@ -226,4 +212,18 @@ func countEventsComplete(events []*cloudformation.StackEvent) (n int) {
 	}
 
 	return
+}
+
+// actionColor returns a color func by action.
+func actionColor(s string) colors.Func {
+	switch s {
+	case "Add":
+		return colors.Purple
+	case "Remove":
+		return colors.Red
+	case "Update":
+		return colors.Yellow
+	default:
+		return colors.Gray
+	}
 }

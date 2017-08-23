@@ -5,6 +5,9 @@ import (
 	color "github.com/aybabtme/rgbterm"
 )
 
+// Func is a color function.
+type Func func(string) string
+
 // Gray string.
 func Gray(s string) string {
 	return color.FgString(s, 150, 150, 150)
