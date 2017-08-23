@@ -8,6 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/pkg/errors"
 
 	"github.com/apex/log"
@@ -27,6 +28,7 @@ var defaultChangeset = "changes"
 // Stack represents a single CloudFormation stack.
 type Stack struct {
 	client *cloudformation.CloudFormation
+	lambda *lambda.Lambda
 	events event.Events
 	config *up.Config
 }
@@ -36,6 +38,7 @@ func New(c *up.Config, events event.Events, region string) *Stack {
 	sess := session.New(aws.NewConfig().WithRegion(region))
 	return &Stack{
 		client: cloudformation.New(sess),
+		lambda: lambda.New(sess),
 		events: events,
 		config: c,
 	}
@@ -68,7 +71,11 @@ func (s *Stack) Create(version string) error {
 				ParameterValue: &name,
 			},
 			{
-				ParameterKey:   aws.String("FunctionVersion"),
+				ParameterKey:   aws.String("FunctionVersionStaging"),
+				ParameterValue: &version,
+			},
+			{
+				ParameterKey:   aws.String("FunctionVersionProduction"),
 				ParameterValue: &version,
 			},
 		},
@@ -155,7 +162,23 @@ func (s *Stack) Plan() error {
 
 	defer s.events.Time("platform.stack.plan", nil)
 
-	// TODO: don't change deployments
+	prod, err := s.lambda.GetAlias(&lambda.GetAliasInput{
+		FunctionName: &name,
+		Name:         aws.String("production"),
+	})
+
+	if err != nil {
+		return errors.Wrap(err, "fetching production alias")
+	}
+
+	stage, err := s.lambda.GetAlias(&lambda.GetAliasInput{
+		FunctionName: &name,
+		Name:         aws.String("staging"),
+	})
+
+	if err != nil {
+		return errors.Wrap(err, "fetching staging alias")
+	}
 
 	log.Debug("deleting changeset")
 	_, err = s.client.DeleteChangeSet(&cloudformation.DeleteChangeSetInput{
@@ -185,8 +208,12 @@ func (s *Stack) Plan() error {
 				ParameterValue: &name,
 			},
 			{
-				ParameterKey:   aws.String("FunctionVersion"),
-				ParameterValue: aws.String("113"), // TODO: correct
+				ParameterKey:   aws.String("FunctionVersionStaging"),
+				ParameterValue: stage.FunctionVersion,
+			},
+			{
+				ParameterKey:   aws.String("FunctionVersionProduction"),
+				ParameterValue: prod.FunctionVersion,
 			},
 		},
 	})

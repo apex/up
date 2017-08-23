@@ -198,7 +198,7 @@ func api(c *up.Config, m Map) {
 			"Name":            "staging",
 			"Description":     util.ManagedByUp("Staging environment"),
 			"FunctionName":    ref("FunctionName"),
-			"FunctionVersion": ref("FunctionVersion"),
+			"FunctionVersion": ref("FunctionVersionStaging"),
 		},
 	}
 
@@ -208,7 +208,7 @@ func api(c *up.Config, m Map) {
 			"Name":            "production",
 			"Description":     util.ManagedByUp("Production environment"),
 			"FunctionName":    ref("FunctionName"),
-			"FunctionVersion": ref("FunctionVersion"),
+			"FunctionVersion": ref("FunctionVersionProduction"),
 		},
 	}
 }
@@ -318,8 +318,12 @@ func parameters(c *up.Config) Map {
 			"Description": "Name of application function",
 			"Type":        "String",
 		},
-		"FunctionVersion": Map{
-			"Description": "Version of application function",
+		"FunctionVersionStaging": Map{
+			"Description": "Version of staging deployment",
+			"Type":        "String",
+		},
+		"FunctionVersionProduction": Map{
+			"Description": "Version of production deployment",
 			"Type":        "String",
 		},
 	}
