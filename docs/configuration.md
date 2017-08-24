@@ -226,7 +226,7 @@ By default Up will serve a minimalistic error page for you if the client accepts
 
 You may customize the default template's `color` and optionally provide a `support_email` to allow customers to contact your support team.
 
-```son
+```json
 {
   "name": "site",
   "type": "static",
