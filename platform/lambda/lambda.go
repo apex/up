@@ -483,44 +483,6 @@ func (p *Platform) getAPI(c *apigateway.APIGateway) (api *apigateway.RestApi, er
 	return
 }
 
-// getStage returns the stage if present or nil.
-func (p *Platform) getStage(c *apigateway.APIGateway, stage string) (s *apigateway.Stage, err error) {
-	api, err := p.getAPI(c)
-	if err != nil {
-		return nil, errors.Wrap(err, "fetching api")
-	}
-
-	stages, err := c.GetStages(&apigateway.GetStagesInput{
-		RestApiId: api.Id,
-	})
-
-	if err != nil {
-		return nil, errors.Wrap(err, "fetching stages")
-	}
-
-	for _, v := range stages.Item {
-		if *v.StageName == stage {
-			s = v
-		}
-	}
-
-	return
-}
-
-// validateStage returns an error if the stage does not exist.
-func (p *Platform) validateStage(c *apigateway.APIGateway, stage string) error {
-	s, err := p.getStage(c, stage)
-	if err != nil {
-		return errors.Wrap(err, "fetching stage")
-	}
-
-	if s == nil {
-		return errors.Errorf("stage %q does not exist", stage)
-	}
-
-	return nil
-}
-
 // injectProxy injects the Go proxy.
 func (p *Platform) injectProxy() error {
 	log.Debugf("injecting proxy")
