@@ -317,13 +317,13 @@ Examples:
 
 ## build
 
-Build zip file, typically only helpful for debugging the contents, note that you may also use `up build -v` to view what is added to the zip.
+Build zip file, typically only helpful for inspecting its contents. If you're interested in seeing what files are causing bloat, use the `--size` flag to list files by size descending.
 
 ```
 
 Usage:
 
-  up build
+  up build [<flags>]
 
 Flags:
 
@@ -332,6 +332,7 @@ Flags:
   -C, --chdir="."      Change working directory.
   -v, --verbose        Enable verbose log output.
       --version        Show application version.
+      --size           Show zip contents size information.
 
 Examples:
 
@@ -340,5 +341,11 @@ Examples:
 
   Build archive and output to file via stdout.
   $ up build > /tmp/out.zip
+
+  Build archive list files by size.
+  $ up build --size
+
+  Build archive and list size without creating out.zip.
+  $ up build --size > /dev/null
 
 ```
