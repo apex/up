@@ -74,3 +74,8 @@ func Lists(vals, list []string) error {
 
 	return nil
 }
+
+// Stage validation.
+func Stage(stage string) error {
+	return List(stage, []string{"development", "staging", "production"})
+}

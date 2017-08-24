@@ -26,6 +26,7 @@ import (
 	"github.com/apex/up/config"
 	"github.com/apex/up/internal/proxy/bin"
 	"github.com/apex/up/internal/util"
+	"github.com/apex/up/internal/validate"
 	"github.com/apex/up/internal/zip"
 	"github.com/apex/up/platform"
 	"github.com/apex/up/platform/event"
@@ -189,6 +190,10 @@ func (p *Platform) URL(region, stage string) (string, error) {
 	s := session.New(aws.NewConfig().WithRegion(region))
 	c := apigateway.New(s)
 
+	if err := validate.Stage(stage); err != nil {
+		return "", err
+	}
+
 	api, err := p.getAPI(c)
 	if err != nil {
 		return "", errors.Wrap(err, "fetching api")
@@ -196,10 +201,6 @@ func (p *Platform) URL(region, stage string) (string, error) {
 
 	if api == nil {
 		return "", errors.Errorf("cannot find the API, looks like you haven't deployed")
-	}
-
-	if err := p.validateStage(c, stage); err != nil {
-		return "", err
 	}
 
 	id := fmt.Sprintf("https://%s.execute-api.%s.amazonaws.com/%s/", *api.Id, region, stage)
@@ -260,6 +261,10 @@ func (p *Platform) deploy(region, stage string) (version string, err error) {
 	a := apigateway.New(s)
 	c := lambda.New(s)
 
+	if err := validate.Stage(stage); err != nil {
+		return "", err
+	}
+
 	ctx.Debug("fetching function config")
 	_, err = c.GetFunctionConfiguration(&lambda.GetFunctionConfigurationInput{
 		FunctionName: &p.config.Name,
@@ -316,10 +321,6 @@ func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, st
 	if stage != "development" {
 		publish = true
 		log.Debug("publishing new version")
-	}
-
-	if err := p.validateStage(a, stage); err != nil {
-		return "", err
 	}
 
 	_, err = c.UpdateFunctionConfiguration(&lambda.UpdateFunctionConfigurationInput{
