@@ -24,8 +24,7 @@ func init() {
 	size := cmd.Flag("size", "Show zip contents size information.").Bool()
 	cmd.Example(`up build`, "Build archive and save to ./out.zip")
 	cmd.Example(`up build > /tmp/out.zip`, "Build archive and output to file via stdout.")
-	cmd.Example(`up build --size`, "Build archive list files by size.")
-	cmd.Example(`up build --size > /dev/null`, "Build archive and list size without creating out.zip.")
+	cmd.Example(`up build --size`, "Build archive and list files by size.")
 
 	cmd.Action(func(_ *kingpin.ParseContext) error {
 		defer util.Pad()()
@@ -46,20 +45,21 @@ func init() {
 			return errors.Wrap(err, "zip")
 		}
 
-		out := os.Stdout
+		var out io.Writer
+		var buf bytes.Buffer
 
-		if term.IsTerminal() {
+		switch {
+		default:
+			out = os.Stdout
+		case *size:
+			out = &buf
+		case term.IsTerminal():
 			f, err := os.Create("out.zip")
 			if err != nil {
 				return errors.Wrap(err, "creating zip")
 			}
 			defer f.Close()
 			out = f
-		}
-
-		var buf bytes.Buffer
-		if *size {
-			r = io.TeeReader(r, &buf)
 		}
 
 		if _, err := io.Copy(out, r); err != nil {
@@ -84,15 +84,10 @@ func init() {
 				return a.UncompressedSize64 > b.UncompressedSize64
 			})
 
-			fmt.Fprintln(os.Stderr)
-			for i, f := range files {
-				// skip out.zip
-				if i == 0 {
-					continue
-				}
-
+			fmt.Printf("\n")
+			for _, f := range files {
 				size := humanize.Bytes(f.UncompressedSize64)
-				fmt.Fprintf(os.Stderr, "  %10s %s\n", size, colors.Purple(f.Name))
+				fmt.Printf("  %10s %s\n", size, colors.Purple(f.Name))
 			}
 		}
 
