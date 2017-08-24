@@ -148,6 +148,11 @@ func (p *Platform) Build() error {
 	return nil
 }
 
+// Zip returns the zip reader.
+func (p *Platform) Zip() io.Reader {
+	return p.zip
+}
+
 // Deploy implementation.
 func (p *Platform) Deploy(stage string) error {
 	regions := p.config.Regions

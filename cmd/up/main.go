@@ -11,6 +11,7 @@ import (
 	"github.com/tj/go/term"
 
 	// commands
+	_ "github.com/apex/up/internal/cli/build"
 	_ "github.com/apex/up/internal/cli/config"
 	_ "github.com/apex/up/internal/cli/deploy"
 	_ "github.com/apex/up/internal/cli/docs"

@@ -5,7 +5,7 @@ import (
 	"time"
 )
 
-// TODO: these interfaces suck, clean them up ;)
+// TODO: these interfaces suck, don't mind them for now :D
 
 // Logs is the interface for viewing logs.
 type Logs interface {
@@ -40,4 +40,10 @@ type Interface interface {
 	ApplyStack(region string) error
 
 	ShowMetrics(region, stage string, start time.Time) error
+}
+
+// Zipper is the interface used by platforms which
+// utilize zips for delivery of deployments.
+type Zipper interface {
+	Zip() io.Reader
 }

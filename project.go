@@ -1,6 +1,7 @@
 package up
 
 import (
+	"io"
 	"os"
 	"os/exec"
 	"time"
@@ -115,6 +116,16 @@ func (p *Project) Logs(region, query string) platform.Logs {
 // URL returns the endpoint.
 func (p *Project) URL(region, stage string) (string, error) {
 	return p.platform.URL(region, stage)
+}
+
+// Zip returns the zip if supported by the platform.
+func (p *Project) Zip() (io.Reader, error) {
+	z, ok := p.platform.(platform.Zipper)
+	if !ok {
+		return nil, errors.Errorf("platform does not support zips")
+	}
+
+	return z.Zip(), nil
 }
 
 // CreateStack implementation.

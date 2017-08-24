@@ -314,3 +314,31 @@ Examples:
   $ up stack delete
 
 ```
+
+## build
+
+Build zip file, typically only helpful for debugging the contents, note that you may also use `up build -v` to view what is added to the zip.
+
+```
+
+Usage:
+
+  up build
+
+Flags:
+
+  -h, --help           Output usage information.
+  -r, --region=REGION  Override the region.
+  -C, --chdir="."      Change working directory.
+  -v, --verbose        Enable verbose log output.
+      --version        Show application version.
+
+Examples:
+
+  Build archive and save to ./out.zip
+  $ up build
+
+  Build archive and output to file via stdout.
+  $ up build > /tmp/out.zip
+
+```
