@@ -198,6 +198,10 @@ func (p *Platform) URL(region, stage string) (string, error) {
 		return "", errors.Errorf("cannot find the API, looks like you haven't deployed")
 	}
 
+	if err := p.validateStage(c, stage); err != nil {
+		return "", err
+	}
+
 	id := fmt.Sprintf("https://%s.execute-api.%s.amazonaws.com/%s/", *api.Id, region, stage)
 	return id, nil
 }
@@ -271,7 +275,7 @@ func (p *Platform) deploy(region, stage string) (version string, err error) {
 	}
 
 	defer p.events.Time("platform.function.update", fields)
-	return p.updateFunction(c, stage)
+	return p.updateFunction(c, a, stage)
 }
 
 // createFunction creates the function.
@@ -306,12 +310,16 @@ retry:
 }
 
 // updateFunction updates the function.
-func (p *Platform) updateFunction(c *lambda.Lambda, stage string) (version string, err error) {
+func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, stage string) (version string, err error) {
 	var publish bool
 
 	if stage != "development" {
 		publish = true
 		log.Debug("publishing new version")
+	}
+
+	if err := p.validateStage(a, stage); err != nil {
+		return "", err
 	}
 
 	_, err = c.UpdateFunctionConfiguration(&lambda.UpdateFunctionConfigurationInput{
@@ -453,7 +461,7 @@ func (p *Platform) deleteRole(region string) error {
 	return nil
 }
 
-// getAPI returns the API if present.
+// getAPI returns the API if present or nil.
 func (p *Platform) getAPI(c *apigateway.APIGateway) (api *apigateway.RestApi, err error) {
 	name := p.config.Name
 
@@ -472,6 +480,44 @@ func (p *Platform) getAPI(c *apigateway.APIGateway) (api *apigateway.RestApi, er
 	}
 
 	return
+}
+
+// getStage returns the stage if present or nil.
+func (p *Platform) getStage(c *apigateway.APIGateway, stage string) (s *apigateway.Stage, err error) {
+	api, err := p.getAPI(c)
+	if err != nil {
+		return nil, errors.Wrap(err, "fetching api")
+	}
+
+	stages, err := c.GetStages(&apigateway.GetStagesInput{
+		RestApiId: api.Id,
+	})
+
+	if err != nil {
+		return nil, errors.Wrap(err, "fetching stages")
+	}
+
+	for _, v := range stages.Item {
+		if *v.StageName == stage {
+			s = v
+		}
+	}
+
+	return
+}
+
+// validateStage returns an error if the stage does not exist.
+func (p *Platform) validateStage(c *apigateway.APIGateway, stage string) error {
+	s, err := p.getStage(c, stage)
+	if err != nil {
+		return errors.Wrap(err, "fetching stage")
+	}
+
+	if s == nil {
+		return errors.Errorf("stage %q does not exist", stage)
+	}
+
+	return nil
 }
 
 // injectProxy injects the Go proxy.
