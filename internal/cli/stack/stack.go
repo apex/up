@@ -15,10 +15,12 @@ import (
 
 func init() {
 	cmd := root.Command("stack", "Stack resource management.")
+
 	cmd.Example(`up stack`, "Show status of the stack resources.")
 	cmd.Example(`up stack plan`, "Show resource changes.")
 	cmd.Example(`up stack apply`, "Apply resource changes.")
 	cmd.Example(`up stack delete`, "Delete the stack resources.")
+
 	plan(cmd)
 	apply(cmd)
 	delete(cmd)
