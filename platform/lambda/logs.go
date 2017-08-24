@@ -13,7 +13,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudwatchlogs"
-	"github.com/mattn/go-isatty"
+	"github.com/tj/go/term"
 
 	"github.com/apex/up/internal/logs/parser"
 	"github.com/apex/up/internal/logs/text"
@@ -92,7 +92,7 @@ func (l *Logs) start() {
 
 	var handler log.Handler
 
-	if isatty.IsTerminal(os.Stdout.Fd()) {
+	if term.IsTerminal() {
 		handler = text.New(os.Stdout)
 	} else {
 		handler = jsonlog.New(os.Stdout)

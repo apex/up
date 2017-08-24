@@ -4,8 +4,8 @@ import (
 	"io"
 	"os"
 
-	"github.com/mattn/go-isatty"
 	"github.com/pkg/errors"
+	"github.com/tj/go/term"
 	"github.com/tj/kingpin"
 
 	"github.com/apex/up/internal/cli/root"
@@ -40,9 +40,7 @@ func init() {
 
 		out := os.Stdout
 
-		// TODO: lib
-
-		if isatty.IsTerminal(os.Stdout.Fd()) {
+		if term.IsTerminal() {
 			f, err := os.Create("out.zip")
 			if err != nil {
 				return errors.Wrap(err, "creating zip")

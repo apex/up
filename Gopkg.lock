@@ -266,10 +266,10 @@
   revision = "748ebc778a698c0df0eb9855caf3ef677ed99471"
 
 [[projects]]
-  branch = "master"
   name = "github.com/tj/go"
   packages = ["clipboard","term"]
-  revision = "8403a29dbcbcdfeed7da1a251c56882923d28bc9"
+  revision = "e8bb76359e4c18d5bc28f4aefb383f9cf9f5d573"
+  version = "v1.0.0"
 
 [[projects]]
   branch = "master"
@@ -358,6 +358,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "6c67c8dcc0b096e550743014eb998165dd7142b9724f8134c0603fe1529bf12f"
+  inputs-digest = "23d7418ad9ddff661c73aded880d80056ef41f1aea6f00b5eb29b6ee642d4af7"
   solver-name = "gps-cdcl"
   solver-version = 1
