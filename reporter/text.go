@@ -171,7 +171,7 @@ func (r *reporter) Start() {
 				case "Avg Latency", "Min Latency", "Max Latency":
 					r.log(n, fmt.Sprintf("%dms", e.Int("value")))
 				default:
-					r.log(n, fmt.Sprintf("%d", e.Int("value")))
+					r.log(n, fmt.Sprintf("%s", humanize.Comma(int64(e.Int("value")))))
 				}
 			}
 
