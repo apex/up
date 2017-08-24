@@ -534,11 +534,12 @@ An example `.upignore` to omit markdown and `.go` source files might look like t
 *.go
 ```
 
-Patterns can be negated with `!`:
+Patterns can be negated with `!`, for example if you want to ignore everything and explicitly state that only a few files are included:
 
 ```
-*.md
-!docs/*.md
+*
+!app.js
+!package.json
 ```
 
 
