@@ -77,5 +77,9 @@ func Lists(vals, list []string) error {
 
 // Stage validation.
 func Stage(stage string) error {
-	return List(stage, []string{"development", "staging", "production"})
+	if err := List(stage, []string{"development", "staging", "production"}); err != nil {
+		return errors.Wrap(err, "stage")
+	}
+
+	return nil
 }
