@@ -129,7 +129,7 @@ retry:
 
 	// temporary error, try again
 	if e, ok := err.(net.Error); ok && e.Temporary() {
-		ctx.WithError(err).Warn("temporary error")
+		ctx.WithError(err).Warn("temporary")
 		time.Sleep(b.Duration())
 		goto retry
 	}
@@ -142,7 +142,7 @@ retry:
 	}
 
 	// restart the server, try again
-	ctx.WithError(err).Error("network error")
+	ctx.WithError(err).Error("network")
 	if err := p.Restart(); err != nil {
 		return nil, errors.Wrap(err, "restarting")
 	}
