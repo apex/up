@@ -46,5 +46,5 @@ func TestBuild(t *testing.T) {
 	}
 	sort.Strings(names)
 
-	assert.Equal(t, []string{".upignore", "bar.js", "foo.js", "index.js", "out.zip"}, names)
+	assert.Equal(t, []string{"bar.js", "foo.js", "index.js", "out.zip"}, names)
 }
