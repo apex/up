@@ -83,7 +83,8 @@ func (p *Proxy) Start() error {
 
 	// TODO: configurable timeout
 	ctx.Infof("waiting for %s", p.target.String())
-	if err := waitForListen(p.target, 5*time.Second); err != nil {
+
+	if err := waitForListen(p.target, p.config.Proxy.Timeout*time.Seconds); err != nil {
 		return errors.Wrapf(err, "waiting for %s to be in listening state", p.target.String())
 	}
 

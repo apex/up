@@ -14,12 +14,19 @@ type Relay struct {
 
 	// Backoff configuration.
 	Backoff Backoff `json:"backoff"`
+
+	// Timeout interval in seconds.
+	Timeout	int	`json:"timeout"` 
 }
 
 // Default implementation.
 func (r *Relay) Default() error {
 	if r.Command == "" {
 		r.Command = "./server"
+	}
+
+	if r.Timeout == 0 {
+		r.Timeout = 5
 	}
 
 	if err := r.Backoff.Default(); err != nil {
