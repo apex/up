@@ -5,7 +5,7 @@
   branch = "master"
   name = "github.com/NYTimes/gziphandler"
   packages = ["."]
-  revision = "967539e5e271a2bc9b3dcb1285078a1b1df105ae"
+  revision = "d8cb2618e18c754a400c91774526b0744c783471"
 
 [[projects]]
   branch = "master"
@@ -46,8 +46,8 @@
 [[projects]]
   name = "github.com/aws/aws-sdk-go"
   packages = ["aws","aws/awserr","aws/awsutil","aws/client","aws/client/metadata","aws/corehandlers","aws/credentials","aws/credentials/ec2rolecreds","aws/credentials/endpointcreds","aws/credentials/stscreds","aws/defaults","aws/ec2metadata","aws/endpoints","aws/request","aws/session","aws/signer/v4","internal/shareddefaults","private/protocol","private/protocol/json/jsonutil","private/protocol/jsonrpc","private/protocol/query","private/protocol/query/queryutil","private/protocol/rest","private/protocol/restjson","private/protocol/xml/xmlutil","service/apigateway","service/cloudformation","service/cloudwatch","service/cloudwatchlogs","service/cloudwatchlogs/cloudwatchlogsiface","service/iam","service/lambda","service/sts"]
-  revision = "b33b08175d12b795daa7726c5577b39d06a2551c"
-  version = "v1.10.20"
+  revision = "079cb20e4e0bacb13463971932bd3a59bd3a2a6c"
+  version = "v1.10.32"
 
 [[projects]]
   branch = "master"
@@ -112,14 +112,8 @@
 [[projects]]
   name = "github.com/go-ini/ini"
   packages = ["."]
-  revision = "d3de07a94d22b4a0972deb4b96d790c2c0ce8333"
-  version = "v1.28.0"
-
-[[projects]]
-  branch = "master"
-  name = "github.com/golang/protobuf"
-  packages = ["proto"]
-  revision = "1909bc2f63dc92bb931deace8b8312c4db72d12f"
+  revision = "20b96f641a5ea98f2f8619ff4f3e061cff4833bd"
+  version = "v1.28.2"
 
 [[projects]]
   branch = "master"
@@ -131,7 +125,7 @@
   branch = "master"
   name = "github.com/google/go-github"
   packages = ["github"]
-  revision = "44e0413e5b74655281275e8c90cff2b27d9673a1"
+  revision = "78072f320213a7e011b5fb2700bcb9eb90efec37"
 
 [[projects]]
   branch = "master"
@@ -209,7 +203,7 @@
   branch = "master"
   name = "github.com/pascaldekloe/name"
   packages = ["."]
-  revision = "c5487bbadce34f41e69ec6f3e5712496a2c15025"
+  revision = "81013e77fe79dad5d5d9592e0147e0af254ec583"
 
 [[projects]]
   branch = "master"
@@ -335,29 +329,23 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
-  revision = "81db3efc71b576a04b145ca576c0bb9c0fb74d4f"
+  revision = "eb71ad9bd329b5ac0fd0148dd99bd62e8be8e035"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/net"
   packages = ["context"]
-  revision = "167db312be3be3d239e24dbe0ab099ab5b9aa783"
+  revision = "57efc9c3d9f91fb3277f8da1cff370539c4d3dc5"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix","windows"]
-  revision = "d8f5ea21b9295e315e612b4bcf4bedea93454d4d"
-
-[[projects]]
-  name = "google.golang.org/appengine"
-  packages = [".","internal","internal/app_identity","internal/base","internal/datastore","internal/log","internal/modules","internal/remote_api"]
-  revision = "150dc57a1b433e64154302bdc40b6bb8aefa313a"
-  version = "v1.0.0"
+  revision = "07c182904dbd53199946ba614a412c61d3c548f5"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "23d7418ad9ddff661c73aded880d80056ef41f1aea6f00b5eb29b6ee642d4af7"
+  inputs-digest = "59f497061dd9e6acdad701fa73caba230e54b05f671e67b3f76dbeae09add052"
   solver-name = "gps-cdcl"
   solver-version = 1
