@@ -18,6 +18,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/apigateway"
 	"github.com/aws/aws-sdk-go/service/iam"
 	"github.com/aws/aws-sdk-go/service/lambda"
+	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/dustin/go-humanize"
 	"github.com/golang/sync/errgroup"
 	"github.com/pkg/errors"
@@ -132,12 +133,6 @@ func (p *Platform) Build() error {
 		"size_compressed":   p.zip.Len(),
 		"duration":          time.Since(start),
 	})
-
-	if p.zip.Len() > maxZipSize {
-		size := humanize.Bytes(uint64(p.zip.Len()))
-		max := humanize.Bytes(uint64(maxZipSize))
-		return errors.Errorf("zip is %s, exceeding Lambda's limit of %s", size, max)
-	}
 
 	if stats.SizeUncompressed > maxCodeSize {
 		size := humanize.Bytes(uint64(stats.SizeUncompressed))
@@ -263,6 +258,7 @@ func (p *Platform) deploy(region, stage string) (version string, err error) {
 
 	ctx := log.WithField("region", region)
 	s := session.New(aws.NewConfig().WithRegion(region))
+	svc := s3.New(s)
 	a := apigateway.New(s)
 	c := lambda.New(s)
 
@@ -275,9 +271,16 @@ func (p *Platform) deploy(region, stage string) (version string, err error) {
 		FunctionName: &p.config.Name,
 	})
 
+	ctx.Debug("setting s3 bucket name")
+	err = stack.New(p.config, p.events, region).SetS3BucketName()
+
+	if err != nil {
+		return "", errors.Wrap(err, "setting s3 bucket name")
+	}
+
 	if util.IsNotFound(err) {
 		defer p.events.Time("platform.function.create", fields)
-		return p.createFunction(c, a, stage)
+		return p.createFunction(c, a, svc, stage)
 	}
 
 	if err != nil {
@@ -285,12 +288,24 @@ func (p *Platform) deploy(region, stage string) (version string, err error) {
 	}
 
 	defer p.events.Time("platform.function.update", fields)
-	return p.updateFunction(c, a, stage)
+	return p.updateFunction(c, a, svc, stage)
 }
 
 // createFunction creates the function.
-func (p *Platform) createFunction(c *lambda.Lambda, a *apigateway.APIGateway, stage string) (version string, err error) {
+func (p *Platform) createFunction(c *lambda.Lambda, a *apigateway.APIGateway, svc *s3.S3, stage string) (version string, err error) {
 retry:
+	b := aws.String(p.config.S3BucketName)
+	k := aws.String(p.config.Name)
+	_, err = svc.PutObject(&s3.PutObjectInput{
+		Bucket: b,
+		Key:    k,
+		Body:   aws.ReadSeekCloser(p.zip),
+	})
+
+	if err != nil {
+		return "", errors.Wrap(err, "putting object to s3")
+	}
+
 	res, err := c.CreateFunction(&lambda.CreateFunctionInput{
 		FunctionName: &p.config.Name,
 		Handler:      &p.handler,
@@ -301,7 +316,8 @@ retry:
 		Publish:      aws.Bool(true),
 		Environment:  toEnv(p.config.Environment),
 		Code: &lambda.FunctionCode{
-			ZipFile: p.zip.Bytes(),
+			S3Bucket: b,
+			S3Key:    k,
 		},
 	})
 
@@ -320,7 +336,7 @@ retry:
 }
 
 // updateFunction updates the function.
-func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, stage string) (version string, err error) {
+func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, svc *s3.S3, stage string) (version string, err error) {
 	var publish bool
 
 	if stage != "development" {
@@ -342,10 +358,23 @@ func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, st
 		return "", errors.Wrap(err, "updating function config")
 	}
 
+	b := aws.String(p.config.S3BucketName)
+	k := aws.String(p.config.Name)
+	_, err = svc.PutObject(&s3.PutObjectInput{
+		Bucket: b,
+		Key:    k,
+		Body:   aws.ReadSeekCloser(p.zip),
+	})
+
+	if err != nil {
+		return "", errors.Wrap(err, "putting object to s3")
+	}
+
 	res, err := c.UpdateFunctionCode(&lambda.UpdateFunctionCodeInput{
 		FunctionName: &p.config.Name,
 		Publish:      &publish,
-		ZipFile:      p.zip.Bytes(),
+		S3Bucket:     b,
+		S3Key:        k,
 	})
 
 	if err != nil {

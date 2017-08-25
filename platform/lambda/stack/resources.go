@@ -8,6 +8,8 @@ import (
 	"github.com/apex/up/internal/util"
 )
 
+const upDeploymentBucketLogicalID = "UpDeploymentBucket"
+
 // Map .
 type Map map[string]interface{}
 
@@ -79,6 +81,13 @@ func dns(c *up.Config, m Map) {
 				},
 			}
 		}
+	}
+}
+
+// S3 resources.
+func s3(c *up.Config, m Map) {
+	m[upDeploymentBucketLogicalID] = Map{
+		"Type": "AWS::S3::Bucket",
 	}
 }
 
@@ -299,6 +308,7 @@ func acm(c *up.Config, m Map) {
 func resources(c *up.Config) Map {
 	m := Map{}
 
+	s3(c, m)
 	api(c, m)
 	iam(c, m)
 	acm(c, m)
@@ -343,6 +353,9 @@ func outputs(c *up.Config) Map {
 		"ApiFunctionArn": Map{
 			"Description": "API Lambda function ARN",
 			"Value":       lambdaArn("FunctionName"),
+		},
+		"UpDeploymentBucketName": Map{
+			"Value": ref(upDeploymentBucketLogicalID),
 		},
 	}
 }
