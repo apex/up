@@ -1,4 +1,16 @@
 
+v0.2.0 / 2017-08-25
+===================
+
+  * add hiding of cursor for stack delete and apply
+  * add support for configuring proxy timeout (#273)
+  * add cost to metrics output. Closes #204
+  * add: ignore dotfiles by default
+  * add nicer formatting for numeric metrics
+  * add build command. Closes #257
+  * add validation of stage name to `url` and `deploy`. Closes #261
+  * remove .npmignore support. Closes #270
+
 v0.1.12 / 2017-08-23
 =====================
 
