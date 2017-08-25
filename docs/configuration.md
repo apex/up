@@ -524,7 +524,6 @@ Custom domain mapping is not _yet_ supported. For now you can visit `/apigateway
 Up supports gitignore style pattern matching for omitting files from deployment. The following files are loaded in sequence:
 
 - .gitignore
-- .npmignore
 - .upignore
 
 An example `.upignore` to omit markdown and `.go` source files might look like this:

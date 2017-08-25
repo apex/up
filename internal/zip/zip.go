@@ -34,12 +34,6 @@ func Build(dir string) (io.ReadCloser, *archive.Stats, error) {
 	}
 	defer gitignore.Close()
 
-	npmignore, err := read(".npmignore")
-	if err != nil {
-		return nil, nil, errors.Wrap(err, "reading .npmignore")
-	}
-	defer npmignore.Close()
-
 	upignore, err := read(".upignore")
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "reading .upignore")
@@ -49,8 +43,6 @@ func Build(dir string) (io.ReadCloser, *archive.Stats, error) {
 	r := io.MultiReader(
 		strings.NewReader(".*\n"),
 		gitignore,
-		strings.NewReader("\n"),
-		npmignore,
 		strings.NewReader("\n!node_modules\n"),
 		upignore,
 		strings.NewReader("\n!main\n!_proxy.js\n!byline.js\n!up.json\n"))
