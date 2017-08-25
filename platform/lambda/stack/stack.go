@@ -310,6 +310,22 @@ func (s *Stack) Apply() error {
 	return nil
 }
 
+// SetS3BucketName Set S3 Bucket Name in config
+func (s *Stack) SetS3BucketName() error {
+	o, err := s.client.DescribeStackResource(&cloudformation.DescribeStackResourceInput{
+		StackName:         aws.String(s.config.Name),
+		LogicalResourceId: aws.String(upDeploymentBucketLogicalID),
+	})
+
+	if err != nil {
+		return errors.Wrap(err, "set stack name")
+	}
+
+	s.config.S3BucketName = *o.StackResourceDetail.PhysicalResourceId
+
+	return nil
+}
+
 // report events with a map of desired stats from logical or physical id,
 // any resources not mapped are ignored as they do not contribute to changes.
 func (s *Stack) report(states map[string]Status) error {

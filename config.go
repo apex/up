@@ -86,6 +86,9 @@ type Config struct {
 
 	// DNS config.
 	DNS config.DNS `json:"dns"`
+
+	// S3 Bucket Name
+	S3BucketName string
 }
 
 // Validate implementation.
