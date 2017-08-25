@@ -25,8 +25,8 @@ func (r *Relay) Default() error {
 		r.Command = "./server"
 	}
 
-	if r.Timeout == "" {
-		r.Timeout = "5s"
+	if r.Timeout == 0 {
+		r.Timeout = 5
 	}
 
 	if err := r.Backoff.Default(); err != nil {
