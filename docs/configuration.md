@@ -534,7 +534,13 @@ An example `.upignore` to omit markdown and `.go` source files might look like t
 *.go
 ```
 
-Patterns can be negated with `!`, for example if you want to ignore everything and explicitly state that only a few files are included:
+By default dotfiles are ignored, if you wish to include them, you may use `!` to negate a pattern in `.upignore`:
+
+```
+!.myfile
+```
+
+Another use-case for negation is to ignore everything and explicitly include a number of files instead, to be more specific:
 
 ```
 *
