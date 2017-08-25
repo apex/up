@@ -46,12 +46,12 @@ func (s *stat) Value() int {
 // stats to fetch.
 var stats = []*stat{
 	{"AWS/ApiGateway", "Requests", "Count", "Sum", nil},
-	{"AWS/ApiGateway", "Duration (min)", "Latency", "Minimum", nil},
-	{"AWS/ApiGateway", "Duration (avg)", "Latency", "Average", nil},
-	{"AWS/ApiGateway", "Duration (max)", "Latency", "Maximum", nil},
-	{"AWS/Lambda", "Duration (sum)", "Duration", "Sum", nil},
-	{"AWS/ApiGateway", "Errors (4xx)", "4XXError", "Sum", nil},
-	{"AWS/ApiGateway", "Errors (5xx)", "5XXError", "Sum", nil},
+	{"AWS/ApiGateway", "Duration min", "Latency", "Minimum", nil},
+	{"AWS/ApiGateway", "Duration avg", "Latency", "Average", nil},
+	{"AWS/ApiGateway", "Duration max", "Latency", "Maximum", nil},
+	{"AWS/Lambda", "Duration sum", "Duration", "Sum", nil},
+	{"AWS/ApiGateway", "Errors 4xx", "4XXError", "Sum", nil},
+	{"AWS/ApiGateway", "Errors 5xx", "5XXError", "Sum", nil},
 	{"AWS/Lambda", "Invocations", "Invocations", "Sum", nil},
 	{"AWS/Lambda", "Errors", "Errors", "Sum", nil},
 	{"AWS/Lambda", "Throttles", "Throttles", "Sum", nil},

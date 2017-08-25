@@ -169,13 +169,13 @@ func (r *reporter) Start() {
 				fmt.Printf("\n")
 			case "metrics.value":
 				switch n := e.String("name"); n {
-				case "Duration (min)", "Duration (avg)", "Duration (max)":
+				case "Duration min", "Duration avg", "Duration max":
 					r.log(n, fmt.Sprintf("%dms", e.Int("value")))
 				case "Requests":
 					v := humanize.Comma(int64(e.Int("value")))
 					c := cost.Requests(e.Int("value"))
 					r.log(n, fmt.Sprintf("%s %s", v, currency(c)))
-				case "Duration (sum)":
+				case "Duration sum":
 					d := time.Millisecond * time.Duration(e.Int("value"))
 					c := cost.Duration(e.Int("value"), e.Int("memory"))
 					r.log(n, fmt.Sprintf("%s %s", d, currency(c)))
