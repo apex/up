@@ -47,6 +47,7 @@ func Build(dir string) (io.ReadCloser, *archive.Stats, error) {
 	defer upignore.Close()
 
 	r := io.MultiReader(
+		strings.NewReader(".*\n"),
 		gitignore,
 		strings.NewReader("\n"),
 		npmignore,
