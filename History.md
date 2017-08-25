@@ -1,4 +1,9 @@
 
+v0.2.1 / 2017-08-25
+===================
+
+  * fix missing param in Infof log call, outputting `MISSING`
+
 v0.2.0 / 2017-08-25
 ===================
 
