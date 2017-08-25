@@ -81,10 +81,9 @@ func (p *Proxy) Start() error {
 	p.ReverseProxy = httputil.NewSingleHostReverseProxy(p.target)
 	p.ReverseProxy.Transport = p
 
-	// TODO: configurable timeout
-	ctx.Infof("waiting for %s", p.target.String())
-
 	timeout := time.Duration(p.config.Proxy.Timeout) * time.Second
+	ctx.Infof("waiting for %s (timeout %s)", p.target.String())
+
 	if err := waitForListen(p.target, timeout); err != nil {
 		return errors.Wrapf(err, "waiting for %s to be in listening state", p.target.String())
 	}
