@@ -534,6 +534,8 @@ An example `.upignore` to omit markdown and `.go` source files might look like t
 *.go
 ```
 
+### Negation
+
 By default dotfiles are ignored, if you wish to include them, you may use `!` to negate a pattern in `.upignore`:
 
 ```
@@ -547,6 +549,8 @@ Another use-case for negation is to ignore everything and explicitly include a n
 !app.js
 !package.json
 ```
+
+### Inspecting
 
 
 To get a better idea of which files are being filtered or added, use `up -v` when deploying, and you may also find it useful to `grep` in some cases:
@@ -562,11 +566,19 @@ DEBU filtered node_modules/binary-extensions/readme.md – 751
 DEBU filtered node_modules/chalk/readme.md – 6136
 ```
 
-For example if you're building a Node project with Webpack or Browserify, you may want to ignore `node_modules` when deploying, so add this to your .upignore:
+You may also wish to use `up build --size` to view the largest files within the zip.
+
+### Node specifics
+
+When building a Node project, `node_modules` is often added to `.gitignore`, so Up special-cases this scenario so that `node_modules` is not excluded by default.
+
+If you're using a bundler such as Webpack or Browserify instead, you may wish to ignore `node_modules` as they're not required in production, add this to your `./.upignore`:
 
 ```
 node_modules
 ```
+
+### Pattern matching
 
 Note that patterns are matched much like `.gitignore`, so if you have the following `.upignore` contents even `node_modules/debug/src/index.js` will be ignored since it contains `src`.
 
