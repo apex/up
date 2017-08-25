@@ -15,8 +15,8 @@ type Relay struct {
 	// Backoff configuration.
 	Backoff Backoff `json:"backoff"`
 
-	//Timeout interval, Valid time units are "ns", "us" (or "µs"), "ms", "s", "m", "h".
-	Timeout	string	`json:"timeout"` 
+	// Timeout interval in seconds.
+	Timeout	int	`json:"timeout"` 
 }
 
 // Default implementation.
