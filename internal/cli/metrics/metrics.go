@@ -31,7 +31,7 @@ func init() {
 			"since": since.Round(time.Second),
 		})
 
-		start := time.Now().Add(-*since)
+		start := time.Now().UTC().Add(-*since)
 		return p.ShowMetrics(region, *stage, start)
 	})
 }

@@ -46,13 +46,15 @@ func (s *stat) Value() int {
 // stats to fetch.
 var stats = []*stat{
 	{"AWS/ApiGateway", "Requests", "Count", "Sum", nil},
-	{"AWS/ApiGateway", "Min Latency", "Latency", "Minimum", nil},
-	{"AWS/ApiGateway", "Avg Latency", "Latency", "Average", nil},
-	{"AWS/ApiGateway", "Max Latency", "Latency", "Maximum", nil},
-	{"AWS/ApiGateway", "Client Errors", "4XXError", "Sum", nil},
-	{"AWS/ApiGateway", "Server Errors", "5XXError", "Sum", nil},
-	{"AWS/Lambda", "Lambda Errors", "Errors", "Sum", nil},
-	{"AWS/Lambda", "Lambda Throttles", "Throttles", "Sum", nil},
+	{"AWS/ApiGateway", "Duration (min)", "Latency", "Minimum", nil},
+	{"AWS/ApiGateway", "Duration (avg)", "Latency", "Average", nil},
+	{"AWS/ApiGateway", "Duration (max)", "Latency", "Maximum", nil},
+	{"AWS/Lambda", "Duration (sum)", "Duration", "Sum", nil},
+	{"AWS/ApiGateway", "Errors (4xx)", "4XXError", "Sum", nil},
+	{"AWS/ApiGateway", "Errors (5xx)", "5XXError", "Sum", nil},
+	{"AWS/Lambda", "Invocations", "Invocations", "Sum", nil},
+	{"AWS/Lambda", "Errors", "Errors", "Sum", nil},
+	{"AWS/Lambda", "Throttles", "Throttles", "Sum", nil},
 }
 
 // ShowMetrics implementation.
@@ -61,8 +63,7 @@ func (p *Platform) ShowMetrics(region, stage string, start time.Time) error {
 	c := cloudwatch.New(s)
 	var g errgroup.Group
 
-	d := time.Now().Sub(start)
-	period := int(d / time.Second)
+	d := time.Now().UTC().Sub(start)
 
 	for _, s := range stats {
 		s := s
@@ -70,7 +71,7 @@ func (p *Platform) ShowMetrics(region, stage string, start time.Time) error {
 			m := metrics.New().
 				Namespace(s.Namespace).
 				TimeRange(time.Now().Add(-d), time.Now()).
-				Period(period).
+				Period(int(d.Seconds())).
 				Stat(s.Stat).
 				Metric(s.Metric)
 
@@ -78,7 +79,7 @@ func (p *Platform) ShowMetrics(region, stage string, start time.Time) error {
 			case "AWS/ApiGateway":
 				m = m.Dimension("ApiName", p.config.Name).Dimension("Stage", stage)
 			case "AWS/Lambda":
-				m = m.Dimension("FunctionName", p.config.Name).Dimension("Alias", stage)
+				m = m.Dimension("FunctionName", p.config.Name)
 			}
 
 			res, err := c.GetMetricStatistics(m.Params())
@@ -100,8 +101,9 @@ func (p *Platform) ShowMetrics(region, stage string, start time.Time) error {
 
 	for _, s := range stats {
 		p.events.Emit("metrics.value", event.Fields{
-			"name":  s.Name,
-			"value": s.Value(),
+			"name":   s.Name,
+			"value":  s.Value(),
+			"memory": p.config.Lambda.Memory,
 		})
 	}
 

@@ -17,6 +17,7 @@ import (
 	"github.com/apex/up/internal/colors"
 	"github.com/apex/up/internal/util"
 	"github.com/apex/up/platform/event"
+	"github.com/apex/up/platform/lambda/cost"
 	"github.com/apex/up/platform/lambda/stack"
 )
 
@@ -168,8 +169,20 @@ func (r *reporter) Start() {
 				fmt.Printf("\n")
 			case "metrics.value":
 				switch n := e.String("name"); n {
-				case "Avg Latency", "Min Latency", "Max Latency":
+				case "Duration (min)", "Duration (avg)", "Duration (max)":
 					r.log(n, fmt.Sprintf("%dms", e.Int("value")))
+				case "Requests":
+					v := humanize.Comma(int64(e.Int("value")))
+					c := cost.Requests(e.Int("value"))
+					r.log(n, fmt.Sprintf("%s %s", v, currency(c)))
+				case "Duration (sum)":
+					d := time.Millisecond * time.Duration(e.Int("value"))
+					c := cost.Duration(e.Int("value"), e.Int("memory"))
+					r.log(n, fmt.Sprintf("%s %s", d, currency(c)))
+				case "Invocations":
+					d := time.Millisecond * time.Duration(e.Int("value"))
+					c := cost.Invocations(e.Int("value"))
+					r.log(n, fmt.Sprintf("%s %s", d, currency(c)))
 				default:
 					r.log(n, fmt.Sprintf("%s", humanize.Comma(int64(e.Int("value")))))
 				}
@@ -178,6 +191,11 @@ func (r *reporter) Start() {
 			r.prevTime = time.Now()
 		}
 	}
+}
+
+// currency format.
+func currency(n float64) string {
+	return colors.Gray(fmt.Sprintf("($%0.2f)", n))
 }
 
 // countEventsByStatus returns the number of events with the given state.
