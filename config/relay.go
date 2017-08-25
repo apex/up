@@ -15,8 +15,9 @@ type Relay struct {
 	// Backoff configuration.
 	Backoff Backoff `json:"backoff"`
 
-	// Timeout interval in seconds.
-	Timeout	int	`json:"timeout"` 
+	// Timeout in seconds when waiting for
+	// the application to bind to PORT.
+	Timeout int `json:"timeout"`
 }
 
 // Default implementation.
