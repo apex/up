@@ -170,7 +170,7 @@ func (p *Platform) Deploy(stage string) error {
 				return errors.Wrap(err, region)
 			}
 
-			if err := p.CreateStack(region, version); err != nil {
+			if err := p.UpdateStack(region, version); err != nil {
 				return errors.Wrap(err, region)
 			}
 
@@ -222,8 +222,28 @@ func (p *Platform) CreateStack(region, version string) error {
 	return stack.New(p.config, p.events, region).Create(version)
 }
 
+// UpdateStack implementation.
+func (p *Platform) UpdateStack(region, version string) error {
+	return stack.New(p.config, p.events, region).Update(version)
+}
+
+// SetS3BucketName based on stack.
+func (p *Platform) SetS3BucketName(region string) error {
+	return stack.New(p.config, p.events, region).SetS3BucketName()
+}
+
 // DeleteStack implementation.
 func (p *Platform) DeleteStack(region string, wait bool) error {
+	log.Debug("setting s3 bucket name")
+	if err := p.SetS3BucketName(region); err != nil {
+		return errors.Wrap(err, "setting s3 bucket name")
+	}
+
+	log.Debug("emptying s3 bucket")
+	if err := p.emptyBucket(region); err != nil {
+		return errors.Wrap(err, "emptying s3 bucket")
+	}
+
 	log.Debug("deleting stack")
 	if err := stack.New(p.config, p.events, region).Delete(wait); err != nil {
 		return errors.Wrap(err, "deleting stack")
@@ -400,9 +420,13 @@ func (p *Platform) deploy(region, stage string) (version string, err error) {
 
 	ctx := log.WithField("region", region)
 	s := session.New(aws.NewConfig().WithRegion(region))
-	svc := s3.New(s)
+	ss := s3.New(s)
 	a := apigateway.New(s)
 	c := lambda.New(s)
+
+	if err := validate.Stage(stage); err != nil {
+		return "", err
+	}
 
 	ctx.Debug("fetching function config")
 	_, err = c.GetFunctionConfiguration(&lambda.GetFunctionConfigurationInput{
@@ -410,15 +434,24 @@ func (p *Platform) deploy(region, stage string) (version string, err error) {
 	})
 
 	ctx.Debug("setting s3 bucket name")
-	err = stack.New(p.config, p.events, region).SetS3BucketName()
+	err = p.SetS3BucketName(region)
 
-	if err != nil {
+	if util.IsNotFound(err) {
+		if err := p.CreateStack(region, version); err != nil {
+			return "", errors.Wrap(err, region)
+		}
+	} else if err != nil {
 		return "", errors.Wrap(err, "setting s3 bucket name")
 	}
 
+	ctx.Debug("fetching function config")
+	_, err = c.GetFunctionConfiguration(&lambda.GetFunctionConfigurationInput{
+		FunctionName: &p.config.Name,
+	})
+
 	if util.IsNotFound(err) {
 		defer p.events.Time("platform.function.create", fields)
-		return p.createFunction(c, a, svc, stage)
+		return p.createFunction(c, a, ss, stage)
 	}
 
 	if err != nil {
@@ -426,22 +459,22 @@ func (p *Platform) deploy(region, stage string) (version string, err error) {
 	}
 
 	defer p.events.Time("platform.function.update", fields)
-	return p.updateFunction(c, a, svc, stage)
+	return p.updateFunction(c, a, ss, stage)
 }
 
 // createFunction creates the function.
-func (p *Platform) createFunction(c *lambda.Lambda, a *apigateway.APIGateway, svc *s3.S3, stage string) (version string, err error) {
+func (p *Platform) createFunction(c *lambda.Lambda, a *apigateway.APIGateway, ss *s3.S3, stage string) (version string, err error) {
 retry:
 	b := aws.String(p.config.S3BucketName)
-	k := aws.String(p.config.Name)
-	_, err = svc.PutObject(&s3.PutObjectInput{
+	k := aws.String(p.getS3Key(stage))
+	_, err = ss.PutObject(&s3.PutObjectInput{
 		Bucket: b,
 		Key:    k,
-		Body:   aws.ReadSeekCloser(p.zip),
+		Body:   bytes.NewReader(p.zip.Bytes()),
 	})
 
 	if err != nil {
-		return "", errors.Wrap(err, "putting object to s3")
+		return "", errors.Wrap(err, "creating function: putting object to s3")
 	}
 
 	res, err := c.CreateFunction(&lambda.CreateFunctionInput{
@@ -474,7 +507,7 @@ retry:
 }
 
 // updateFunction updates the function.
-func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, svc *s3.S3, stage string) (version string, err error) {
+func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, ss *s3.S3, stage string) (version string, err error) {
 	var publish bool
 
 	if stage != "development" {
@@ -497,15 +530,15 @@ func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, sv
 	}
 
 	b := aws.String(p.config.S3BucketName)
-	k := aws.String(p.config.Name)
-	_, err = svc.PutObject(&s3.PutObjectInput{
+	k := aws.String(p.getS3Key(stage))
+	_, err = ss.PutObject(&s3.PutObjectInput{
 		Bucket: b,
 		Key:    k,
-		Body:   aws.ReadSeekCloser(p.zip),
+		Body:   bytes.NewReader(p.zip.Bytes()),
 	})
 
 	if err != nil {
-		return "", errors.Wrap(err, "putting object to s3")
+		return "", errors.Wrap(err, "updating function: putting object to s3")
 	}
 
 	res, err := c.UpdateFunctionCode(&lambda.UpdateFunctionCodeInput{
@@ -634,6 +667,26 @@ func (p *Platform) deleteRole(region string) error {
 	return nil
 }
 
+// emptyBucket empty the bucket.
+func (p *Platform) emptyBucket(region string) error {
+	// TODO: sessions all over... refactor
+	s := s3.New(session.New(aws.NewConfig().WithRegion(region)))
+	b := aws.String(p.config.S3BucketName)
+
+	return s.ListObjectsPages(&s3.ListObjectsInput{
+		Bucket: b,
+	},
+		func(page *s3.ListObjectsOutput, lastPage bool) bool {
+			for _, c := range page.Contents {
+				s.DeleteObject(&s3.DeleteObjectInput{
+					Bucket: b,
+					Key:    c.Key,
+				})
+			}
+			return *page.IsTruncated
+		})
+}
+
 // getAPI returns the API if present or nil.
 func (p *Platform) getAPI(c *apigateway.APIGateway) (api *apigateway.RestApi, err error) {
 	name := p.config.Name
@@ -681,6 +734,10 @@ func (p *Platform) removeProxy() error {
 	os.Remove("_proxy.js")
 	os.Remove("byline.js")
 	return nil
+}
+
+func (p *Platform) getS3Key(stage string) string {
+	return fmt.Sprint(p.config.Name, "-", stage, ".zip")
 }
 
 // isCreatingRole returns true if the role has not been created.

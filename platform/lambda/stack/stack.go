@@ -48,7 +48,7 @@ func New(c *up.Config, events event.Events, region string) *Stack {
 // Create the stack.
 func (s *Stack) Create(version string) error {
 	c := s.config
-	tmpl := template(c)
+	tmpl := createTemplate(c)
 	name := c.Name
 
 	b, err := json.MarshalIndent(tmpl, "", "  ")
@@ -62,6 +62,52 @@ func (s *Stack) Create(version string) error {
 		TimeoutInMinutes: aws.Int64(60),
 		DisableRollback:  aws.Bool(true),
 		Capabilities:     aws.StringSlice([]string{"CAPABILITY_NAMED_IAM"}),
+		Parameters: []*cloudformation.Parameter{
+			{
+				ParameterKey:   aws.String("Name"),
+				ParameterValue: &name,
+			},
+		},
+	})
+
+	if err != nil {
+		return errors.Wrap(err, "creating stack")
+	}
+
+	if err := s.report(resourceStateFromTemplate(tmpl, CreateComplete)); err != nil {
+		return errors.Wrap(err, "reporting")
+	}
+
+	stack, err := s.getStack()
+	if err != nil {
+		return errors.Wrap(err, "fetching stack")
+	}
+
+	c.S3BucketName = *stack.Outputs[0].OutputValue
+
+	status := Status(*stack.StackStatus)
+	if status.State() == Failure {
+		return errors.New(*stack.StackStatusReason)
+	}
+
+	return nil
+}
+
+// Update the stack.
+func (s *Stack) Update(version string) error {
+	c := s.config
+	tmpl := template(c)
+	name := c.Name
+
+	b, err := json.MarshalIndent(tmpl, "", "  ")
+	if err != nil {
+		return errors.Wrap(err, "marshaling")
+	}
+
+	_, err = s.client.UpdateStack(&cloudformation.UpdateStackInput{
+		StackName:    &name,
+		TemplateBody: aws.String(string(b)),
+		Capabilities: aws.StringSlice([]string{"CAPABILITY_NAMED_IAM"}),
 		Parameters: []*cloudformation.Parameter{
 			{
 				ParameterKey:   aws.String("Name"),
@@ -83,10 +129,10 @@ func (s *Stack) Create(version string) error {
 	})
 
 	if err != nil {
-		return errors.Wrap(err, "creating stack")
+		return errors.Wrap(err, "updating stack")
 	}
 
-	if err := s.report(resourceStateFromTemplate(tmpl, CreateComplete)); err != nil {
+	if err := s.report(resourceStateFromTemplate(tmpl, UpdateComplete)); err != nil {
 		return errors.Wrap(err, "reporting")
 	}
 

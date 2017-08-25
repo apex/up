@@ -457,3 +457,45 @@ func template(c *up.Config) Map {
 		"Resources":                resources(c),
 	}
 }
+
+// createResources of the stack.
+func createResources(c *up.Config) Map {
+	m := Map{}
+
+	s3(c, m)
+
+	return m
+}
+
+// createParameters of the stack.
+func createParameters(c *up.Config) Map {
+	return Map{
+		"Name": Map{
+			"Description": "Name of application",
+			"Type":        "String",
+		},
+	}
+}
+
+// outputs of the stack.
+func createOutputs(c *up.Config) Map {
+	return Map{
+		"ApiName": Map{
+			"Description": "API name",
+			"Value":       ref("Name"),
+		},
+		"UpDeploymentBucketName": Map{
+			"Value": ref(upDeploymentBucketLogicalID),
+		},
+	}
+}
+
+// createTemplate for the given config.
+func createTemplate(c *up.Config) Map {
+	return Map{
+		"AWSTemplateFormatVersion": "2010-09-09",
+		"Parameters":               createParameters(c),
+		"Outputs":                  createOutputs(c),
+		"Resources":                createResources(c),
+	}
+}
