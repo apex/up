@@ -90,9 +90,9 @@ func (r *reporter) Start() {
 				r.pending("hook", e.String("name"))
 			case "hook.complete":
 				r.complete("hook", e.String("name"), e.Duration("duration"))
-			case "deploy":
+			case "deploy", "stack.delete", "platform.stack.apply":
 				term.HideCursor()
-			case "deploy.complete":
+			case "deploy.complete", "stack.delete.complete", "platform.stack.apply.complete":
 				term.ShowCursor()
 			case "platform.build":
 				r.pending("build", "")
@@ -239,8 +239,8 @@ func actionColor(s string) colors.Func {
 		return colors.Purple
 	case "Remove":
 		return colors.Red
-	case "Update":
-		return colors.Yellow
+	case "Modify":
+		return colors.Blue
 	default:
 		return colors.Gray
 	}
