@@ -15,9 +15,9 @@ type Relay struct {
 	// Backoff configuration.
 	Backoff Backoff `json:"backoff"`
 
-	// Timeout in seconds when waiting for
+	// ListenTimeout in seconds when waiting for
 	// the application to bind to PORT.
-	Timeout int `json:"timeout"`
+	ListenTimeout int `json:"listen_timeout"`
 }
 
 // Default implementation.
@@ -26,8 +26,8 @@ func (r *Relay) Default() error {
 		r.Command = "./server"
 	}
 
-	if r.Timeout == 0 {
-		r.Timeout = 5
+	if r.ListenTimeout == 0 {
+		r.ListenTimeout = 5
 	}
 
 	if err := r.Backoff.Default(); err != nil {
