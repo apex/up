@@ -300,23 +300,23 @@ func ReadConfig(path string) (*Config, error) {
 
 // golang config.
 func golang(c *Config) {
-	if c.Hooks.Build == "" {
-		c.Hooks.Build = `GOOS=linux GOARCH=amd64 go build -o server *.go`
+	if c.Hooks.Build.IsEmpty() {
+		c.Hooks.Build = config.Hook{`GOOS=linux GOARCH=amd64 go build -o server *.go`}
 	}
 
-	if c.Hooks.Clean == "" {
-		c.Hooks.Clean = `rm server`
+	if c.Hooks.Clean.IsEmpty() {
+		c.Hooks.Clean = config.Hook{`rm server`}
 	}
 }
 
 // crystal config.
 func crystal(c *Config) {
-	if c.Hooks.Build == "" {
-		c.Hooks.Build = `docker run --rm -v $(PWD):/src -w /src tjholowaychuk/up-crystal crystal build --link-flags -static -o server main.cr`
+	if c.Hooks.Build.IsEmpty() {
+		c.Hooks.Build = config.Hook{`docker run --rm -v $(PWD):/src -w /src tjholowaychuk/up-crystal crystal build --link-flags -static -o server main.cr`}
 	}
 
-	if c.Hooks.Clean == "" {
-		c.Hooks.Clean = `rm server`
+	if c.Hooks.Clean.IsEmpty() {
+		c.Hooks.Clean = config.Hook{`rm server`}
 	}
 }
 
@@ -337,15 +337,15 @@ func nodejs(c *Config) error {
 	// use "start" script unless explicitly defined in up.json
 	if c.Proxy.Command == "" {
 		if s := pkg.Scripts.Start; s == "" {
-			c.Proxy.Command = "node app.js"
+			c.Proxy.Command = `node app.js`
 		} else {
 			c.Proxy.Command = s
 		}
 	}
 
 	// use "build" script unless explicitly defined in up.json
-	if c.Hooks.Build == "" {
-		c.Hooks.Build = pkg.Scripts.Build
+	if c.Hooks.Build.IsEmpty() {
+		c.Hooks.Build = config.Hook{pkg.Scripts.Build}
 	}
 
 	return nil
@@ -369,12 +369,12 @@ func python(c *Config) {
 	c.Environment["PYTHONPATH"] = ".pypath/"
 
 	// Copy libraries into .pypath/
-	if c.Hooks.Build == "" {
-		c.Hooks.Build = `mkdir -p .pypath/ && pip install -r requirements.txt -t .pypath/`
+	if c.Hooks.Build.IsEmpty() {
+		c.Hooks.Build = config.Hook{`mkdir -p .pypath/ && pip install -r requirements.txt -t .pypath/`}
 	}
 
 	// Clean .pypath/
-	if c.Hooks.Clean == "" {
-		c.Hooks.Clean = `rm -r .pypath/`
+	if c.Hooks.Clean.IsEmpty() {
+		c.Hooks.Clean = config.Hook{`rm -r .pypath/`}
 	}
 }

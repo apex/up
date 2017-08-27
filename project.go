@@ -9,6 +9,7 @@ import (
 	"github.com/apex/log"
 	"github.com/pkg/errors"
 
+	"github.com/apex/up/config"
 	"github.com/apex/up/internal/util"
 	"github.com/apex/up/platform"
 	"github.com/apex/up/platform/event"
@@ -35,23 +36,23 @@ func (p *Project) WithPlatform(platform platform.Interface) *Project {
 	return p
 }
 
-// HookCommand returns a hook command by name or empty string.
-func (p *Project) HookCommand(name string) string {
+// HookCommand returns a hook command by name or empty hook.
+func (p *Project) HookCommand(name string) config.Hook {
 	switch name {
 	case "build":
 		return p.config.Hooks.Build
 	case "clean":
 		return p.config.Hooks.Clean
 	default:
-		return ""
+		return nil
 	}
 }
 
 // RunHook runs a hook by name.
 func (p *Project) RunHook(name string) error {
-	command := p.HookCommand(name)
+	hook := p.HookCommand(name)
 
-	if command == "" {
+	if hook.IsEmpty() {
 		log.Debugf("hook %s is not defined", name)
 		return nil
 	}
@@ -60,14 +61,18 @@ func (p *Project) RunHook(name string) error {
 		"name": name,
 	})()
 
-	cmd := exec.Command("sh", "-c", command)
-	cmd.Env = os.Environ()
-	cmd.Env = append(cmd.Env, util.Env(p.config.Environment)...)
-	cmd.Env = append(cmd.Env, "PATH=node_modules/.bin:"+os.Getenv("PATH"))
+	for _, command := range hook {
+		log.Debugf("run hook %q command %q", name, command)
 
-	b, err := cmd.CombinedOutput()
-	if err != nil {
-		return errors.New(string(b))
+		cmd := exec.Command("sh", "-c", command)
+		cmd.Env = os.Environ()
+		cmd.Env = append(cmd.Env, util.Env(p.config.Environment)...)
+		cmd.Env = append(cmd.Env, "PATH=node_modules/.bin:"+os.Getenv("PATH"))
+
+		b, err := cmd.CombinedOutput()
+		if err != nil {
+			return errors.Errorf("%q: %s", command, b)
+		}
 	}
 
 	return nil
