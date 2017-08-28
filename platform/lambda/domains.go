@@ -32,7 +32,9 @@ func (d *Domains) List() (v []*platform.Domain, err error) {
 
 	for _, d := range res.Domains {
 		v = append(v, &platform.Domain{
-			Name: *d.DomainName,
+			Name:      *d.DomainName,
+			Expiry:    *d.Expiry,
+			AutoRenew: *d.AutoRenew,
 		})
 	}
 

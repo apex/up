@@ -18,6 +18,8 @@ type Logs interface {
 type Domain struct {
 	Name      string
 	Available bool
+	Expiry    time.Time
+	AutoRenew bool
 }
 
 // DomainContact is the domain name contact information

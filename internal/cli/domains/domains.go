@@ -2,6 +2,7 @@ package open
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/Bowery/prompt"
 	"github.com/pkg/errors"
@@ -183,7 +184,11 @@ func list(cmd *kingpin.CmdClause) {
 		}
 
 		for _, d := range domains {
-			fmt.Printf("  %-40s\n", colors.Purple(d.Name))
+			s := "expires"
+			if d.AutoRenew {
+				s = " renews"
+			}
+			fmt.Printf("  %-40s %s %s\n", colors.Purple(d.Name), s, d.Expiry.Format(time.Stamp))
 		}
 
 		return nil
