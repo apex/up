@@ -7,6 +7,7 @@ import (
 	"sync"
 
 	"github.com/apex/log"
+	"github.com/dustin/go-humanize"
 
 	"github.com/apex/up/internal/colors"
 )
@@ -88,6 +89,10 @@ func (h *Handler) HandleLog(e *log.Entry) error {
 
 		if v == "" {
 			continue
+		}
+
+		if n, ok := v.(float64); ok && name == "size" {
+			v = humanize.Bytes(uint64(n))
 		}
 
 		fmt.Fprintf(h.Writer, " %s%s%v", color(name), colors.Gray(": "), v)
