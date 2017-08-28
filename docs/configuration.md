@@ -432,6 +432,18 @@ The following settings are available:
   }
 }
 ```
+- `gzipCompression` - By default the proxy has gzip compression enabled.  
+If your server has already a gzip compression the proxy is going to compress a
+compressed response leading to content decoding errors.  
+So you may disable this compression by setting this flag to `false`.  
+```json
+{
+  "proxy": {
+    "command": "node app.js",
+    "gzipCompression": false
+  }
+}
+```
 
 ## Crash Recovery
 

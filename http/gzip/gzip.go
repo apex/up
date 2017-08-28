@@ -11,5 +11,8 @@ import (
 
 // New gzip handler.
 func New(c *up.Config, next http.Handler) http.Handler {
+	if !*c.Proxy.GzipCompression {
+		return next
+	}
 	return gziphandler.GzipHandler(next)
 }
