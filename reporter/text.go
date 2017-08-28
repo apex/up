@@ -180,7 +180,7 @@ func (r *reporter) Start() {
 					c := cost.Duration(e.Int("value"), e.Int("memory"))
 					r.log(n, fmt.Sprintf("%s %s", d, currency(c)))
 				case "Invocations":
-					d := time.Millisecond * time.Duration(e.Int("value"))
+					d := humanize.Comma(int64(e.Int("value")))
 					c := cost.Invocations(e.Int("value"))
 					r.log(n, fmt.Sprintf("%s %s", d, currency(c)))
 				default:
