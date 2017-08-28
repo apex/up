@@ -3,6 +3,8 @@ package config
 import (
 	"time"
 
+	"github.com/aws/aws-sdk-go/aws"
+
 	"github.com/jpillora/backoff"
 	"github.com/pkg/errors"
 )
@@ -18,6 +20,9 @@ type Relay struct {
 	// ListenTimeout in seconds when waiting for
 	// the application to bind to PORT.
 	ListenTimeout int `json:"listen_timeout"`
+
+	// GzipCompression enable/disable
+	GzipCompression *bool `json:"gzipCompression"`
 }
 
 // Default implementation.
@@ -32,6 +37,10 @@ func (r *Relay) Default() error {
 
 	if err := r.Backoff.Default(); err != nil {
 		return errors.Wrap(err, ".backoff")
+	}
+
+	if r.GzipCompression == nil {
+		r.GzipCompression = aws.Bool(true)
 	}
 
 	return nil
