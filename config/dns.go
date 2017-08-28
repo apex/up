@@ -30,7 +30,7 @@ type DNS struct {
 
 // UnmarshalJSON implementation.
 func (d *DNS) UnmarshalJSON(b []byte) error {
-	var zones map[string][]Record
+	var zones map[string][]*Record
 
 	if err := json.Unmarshal(b, &zones); err != nil {
 		return err
@@ -71,8 +71,8 @@ func (d *DNS) Validate() error {
 
 // Zone is a DNS zone.
 type Zone struct {
-	Name    string   `json:"name"`
-	Records []Record `json:"records"`
+	Name    string    `json:"name"`
+	Records []*Record `json:"records"`
 }
 
 // Default implementation.

@@ -16,19 +16,18 @@ func ExampleDNS() {
 			{
 				"name": "something.com",
 				"type": "A",
-				"ttl": 300,
+				"ttl": 60,
 				"value": ["35.161.83.243"]
 			},
 			{
 				"name": "blog.something.com",
 				"type": "CNAME",
-				"ttl": 300,
+				"ttl": 60,
 				"value": ["34.209.172.67"]
 			},
 			{
 				"name": "api.something.com",
 				"type": "A",
-				"ttl": 300,
 				"value": ["54.187.185.18"]
 			}
 		]
@@ -46,6 +45,14 @@ func ExampleDNS() {
 		return a.Name > b.Name
 	})
 
+	if err := c.Validate(); err != nil {
+		log.Fatalf("error validating: %s", err)
+	}
+
+	if err := c.Default(); err != nil {
+		log.Fatalf("error defaulting: %s", err)
+	}
+
 	enc := json.NewEncoder(os.Stdout)
 	enc.SetIndent("", "  ")
 	enc.Encode(c)
@@ -58,7 +65,7 @@ func ExampleDNS() {
 	//         {
 	//           "name": "something.com",
 	//           "type": "A",
-	//           "ttl": 300,
+	//           "ttl": 60,
 	//           "value": [
 	//             "35.161.83.243"
 	//           ]
@@ -66,7 +73,7 @@ func ExampleDNS() {
 	//         {
 	//           "name": "blog.something.com",
 	//           "type": "CNAME",
-	//           "ttl": 300,
+	//           "ttl": 60,
 	//           "value": [
 	//             "34.209.172.67"
 	//           ]
@@ -91,7 +98,7 @@ func TestDNS_Validate(t *testing.T) {
 			Zones: []*Zone{
 				{
 					Name: "apex.sh",
-					Records: []Record{
+					Records: []*Record{
 						{
 							Name: "blog.apex.sh",
 							Type: "CNAME",
