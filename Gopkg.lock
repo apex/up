@@ -3,6 +3,12 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/Bowery/prompt"
+  packages = ["."]
+  revision = "eb8f7a6a197ce971ed0e9d4a739c628381d5f124"
+
+[[projects]]
+  branch = "master"
   name = "github.com/NYTimes/gziphandler"
   packages = ["."]
   revision = "d8cb2618e18c754a400c91774526b0744c783471"
@@ -18,12 +24,6 @@
   name = "github.com/alecthomas/units"
   packages = ["."]
   revision = "2efee857e7cfd4f3d0138cc3cbb1b4966962b93a"
-
-[[projects]]
-  name = "github.com/apex/apex"
-  packages = ["shim"]
-  revision = "5e2b77b6a0f358f5b0dbe2047c84030848d7f976"
-  version = "v0.15.0"
 
 [[projects]]
   branch = "master"
@@ -45,7 +45,7 @@
 
 [[projects]]
   name = "github.com/aws/aws-sdk-go"
-  packages = ["aws","aws/awserr","aws/awsutil","aws/client","aws/client/metadata","aws/corehandlers","aws/credentials","aws/credentials/ec2rolecreds","aws/credentials/endpointcreds","aws/credentials/stscreds","aws/defaults","aws/ec2metadata","aws/endpoints","aws/request","aws/session","aws/signer/v4","internal/shareddefaults","private/protocol","private/protocol/json/jsonutil","private/protocol/jsonrpc","private/protocol/query","private/protocol/query/queryutil","private/protocol/rest","private/protocol/restjson","private/protocol/xml/xmlutil","service/apigateway","service/cloudformation","service/cloudwatch","service/cloudwatchlogs","service/cloudwatchlogs/cloudwatchlogsiface","service/iam","service/lambda","service/sts"]
+  packages = ["aws","aws/awserr","aws/awsutil","aws/client","aws/client/metadata","aws/corehandlers","aws/credentials","aws/credentials/ec2rolecreds","aws/credentials/endpointcreds","aws/credentials/stscreds","aws/defaults","aws/ec2metadata","aws/endpoints","aws/request","aws/session","aws/signer/v4","internal/shareddefaults","private/protocol","private/protocol/json/jsonutil","private/protocol/jsonrpc","private/protocol/query","private/protocol/query/queryutil","private/protocol/rest","private/protocol/restjson","private/protocol/xml/xmlutil","service/apigateway","service/cloudformation","service/cloudwatch","service/cloudwatchlogs","service/cloudwatchlogs/cloudwatchlogsiface","service/iam","service/lambda","service/route53domains","service/sts"]
   revision = "079cb20e4e0bacb13463971932bd3a59bd3a2a6c"
   version = "v1.10.32"
 
@@ -346,6 +346,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "59f497061dd9e6acdad701fa73caba230e54b05f671e67b3f76dbeae09add052"
+  inputs-digest = "3911063e6eb074f2416aafb8e2ce6edb995d711f1a25d7fecd5751ea02c79d41"
   solver-name = "gps-cdcl"
   solver-version = 1

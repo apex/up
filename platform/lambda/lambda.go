@@ -11,7 +11,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/apex/apex/shim"
 	"github.com/apex/log"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -25,6 +24,7 @@ import (
 	"github.com/apex/up"
 	"github.com/apex/up/config"
 	"github.com/apex/up/internal/proxy/bin"
+	"github.com/apex/up/internal/shim"
 	"github.com/apex/up/internal/util"
 	"github.com/apex/up/internal/validate"
 	"github.com/apex/up/internal/zip"
@@ -188,6 +188,11 @@ func (p *Platform) Deploy(stage string) error {
 // Logs implementation.
 func (p *Platform) Logs(region, query string) platform.Logs {
 	return NewLogs(p, region, query)
+}
+
+// Domains implementation.
+func (p *Platform) Domains() platform.Domains {
+	return NewDomains()
 }
 
 // URL returns the stage url.

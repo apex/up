@@ -14,6 +14,36 @@ type Logs interface {
 	io.Reader
 }
 
+// Domain is a domain name and its availability.
+type Domain struct {
+	Name      string
+	Available bool
+}
+
+// DomainContact is the domain name contact information
+// required for registration.
+type DomainContact struct {
+	Email            string
+	FirstName        string
+	LastName         string
+	CountryCode      string
+	City             string
+	Address          string
+	OrganizationName string
+	PhoneNumber      string
+	State            string
+	ZipCode          string
+}
+
+// Domains is the interface for purchasing and
+// managing domains names, for platforms which
+// support this feature.
+type Domains interface {
+	Availability(domain string) (*Domain, error)
+	Suggestions(domain string) ([]*Domain, error)
+	Purchase(domain string, contact DomainContact) error
+}
+
 // Interface for platforms.
 type Interface interface {
 	// Build the project.
@@ -26,6 +56,10 @@ type Interface interface {
 	// Logs returns an interface for working
 	// with logging data.
 	Logs(region, query string) Logs
+
+	// Domains returns an interface for
+	// managing domain names.
+	Domains() Domains
 
 	// URL returns the endpoitn for the given
 	// region and stage combination, or an

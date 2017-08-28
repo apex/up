@@ -43,7 +43,8 @@ Below is a policy for [AWS Identity and Access Management](https://aws.amazon.co
   "Statement": [
     {
       "Action": [
-        "route53:*"
+        "route53:*",
+        "route53domains:*"
       ],
       "Effect": "Allow",
       "Resource": "*"

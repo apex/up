@@ -62,7 +62,7 @@ func (p *Project) RunHook(name string) error {
 	})()
 
 	for _, command := range hook {
-		log.Debugf("run hook %q command %q", name, command)
+		log.Debugf("hook %q command %q", name, command)
 
 		cmd := exec.Command("sh", "-c", command)
 		cmd.Env = os.Environ()
@@ -116,6 +116,11 @@ func (p *Project) deploy(stage string) error {
 // Logs for the project.
 func (p *Project) Logs(region, query string) platform.Logs {
 	return p.platform.Logs(region, query)
+}
+
+// Domains for the project.
+func (p *Project) Domains() platform.Domains {
+	return p.platform.Domains()
 }
 
 // URL returns the endpoint.

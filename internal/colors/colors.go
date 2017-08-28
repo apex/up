@@ -42,3 +42,12 @@ func Yellow(s string) string {
 func Purple(s string) string {
 	return color.FgString(s, 96, 97, 190)
 }
+
+// Bool returns a color func based on the state.
+func Bool(ok bool) Func {
+	if ok {
+		return Purple
+	}
+
+	return Red
+}

@@ -8,6 +8,8 @@ import (
 	"github.com/apex/up/internal/stats"
 )
 
+// TODO: remove? usage is low
+
 // URL for documentation.
 var url = `https://github.com/apex/up/tree/master/docs`
 
