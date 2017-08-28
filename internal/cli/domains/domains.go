@@ -25,8 +25,10 @@ import (
 
 func init() {
 	cmd := root.Command("domains", "Manage domain names.")
+	cmd.Example(`up domains`, "List purchased domains.")
 	cmd.Example(`up domains check example.com`, "Check availability of a domain.")
 	cmd.Example(`up domains buy example.com`, "Purchase domain if it's available.")
+	list(cmd)
 	check(cmd)
 	buy(cmd)
 }
@@ -121,6 +123,8 @@ func check(cmd *kingpin.CmdClause) {
 	domain := c.Arg("domain", "Domain name.").Required().String()
 
 	c.Action(func(_ *kingpin.ParseContext) error {
+		defer util.Pad()()
+
 		_, p, err := root.Init()
 		if err != nil {
 			return errors.Wrap(err, "initializing")
@@ -139,7 +143,6 @@ func check(cmd *kingpin.CmdClause) {
 			state = fmt.Sprintf("Domain %s is available for %s %s", d.Name, cost.Domain(d.Name), usd)
 		}
 
-		defer util.Pad()()
 		fmt.Printf("  %s\n", colors.Bool(d.Available)(state))
 
 		if !d.Available {
@@ -155,6 +158,32 @@ func check(cmd *kingpin.CmdClause) {
 				price := cost.Domain(d.Name)
 				fmt.Printf("  %-40s %s %s\n", colors.Purple(d.Name), price, usd)
 			}
+		}
+
+		return nil
+	})
+}
+
+func list(cmd *kingpin.CmdClause) {
+	c := cmd.Command("list", "List purchased domains.").Default()
+
+	c.Action(func(_ *kingpin.ParseContext) error {
+		defer util.Pad()()
+
+		_, p, err := root.Init()
+		if err != nil {
+			return errors.Wrap(err, "initializing")
+		}
+
+		stats.Track("List Domains", nil)
+
+		domains, err := p.Domains().List()
+		if err != nil {
+			return errors.Wrap(err, "listing domains")
+		}
+
+		for _, d := range domains {
+			fmt.Printf("  %-40s\n", colors.Purple(d.Name))
 		}
 
 		return nil

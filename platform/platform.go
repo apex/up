@@ -42,6 +42,7 @@ type Domains interface {
 	Availability(domain string) (*Domain, error)
 	Suggestions(domain string) ([]*Domain, error)
 	Purchase(domain string, contact DomainContact) error
+	List() ([]*Domain, error)
 }
 
 // Interface for platforms.

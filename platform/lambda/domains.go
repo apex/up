@@ -20,6 +20,25 @@ func NewDomains() *Domains {
 	}
 }
 
+// List implementation.
+func (d *Domains) List() (v []*platform.Domain, err error) {
+	res, err := d.client.ListDomains(&r.ListDomainsInput{
+		MaxItems: aws.Int64(100),
+	})
+
+	if err != nil {
+		return
+	}
+
+	for _, d := range res.Domains {
+		v = append(v, &platform.Domain{
+			Name: *d.DomainName,
+		})
+	}
+
+	return
+}
+
 // Availability implementation.
 func (d *Domains) Availability(domain string) (*platform.Domain, error) {
 	res, err := d.client.CheckDomainAvailability(&r.CheckDomainAvailabilityInput{
