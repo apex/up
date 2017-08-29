@@ -173,7 +173,7 @@ Show or tail log output with optional query for filtering. When viewing or taili
 
 Up supports a comprehensive query language, allowing you to perform complex filters against structured data, supporting operators, equality, substring tests and so on.
 
-#### AND
+#### AND Operator
 
 The `and` operator is implied, and entirely optional to specify. Given the following example, you'll end up with `and` injected in-between.
 
@@ -187,7 +187,7 @@ The query effectively compiles to the following, to show only production errors 
 production and error and ip = "207.194.38.50"
 ```
 
-#### Or
+#### Or Operator
 
 There is also an `or` operator, for example showing warnings or errors.
 
@@ -201,7 +201,7 @@ These may of course be nested as you require:
 (production or staging) (warn or error) method = "GET"
 ```
 
-#### Equality
+#### Equality Operators
 
 The `=` and `!=` equality operators allow you to filter on the contents of a field.
 
@@ -217,12 +217,34 @@ Or for example `!=` may be used to show anything except GET:
 method != "GET"
 ```
 
-#### Relational
+#### Relational Operators
 
 The `>`, `>=`, `<`, and `<=` relational operators are useful for comparing numeric values, for example response status codes:
 
 ```
 status >= 200 status < 300
+```
+
+#### Stages
+
+Currently all development, staging, and production logs are all stored in the same location, however you may filter to find exactly what you need.
+
+The keywords `production`, `staging`, and `development` expand to:
+
+```
+stage = "production"
+```
+
+For example filtering on slow production responses:
+
+```
+production duration >= 1s
+```
+
+Is the same as:
+
+```
+stage = "production" duration >= 1s
 ```
 
 #### Severity Levels
@@ -241,7 +263,7 @@ You may use:
 production error
 ```
 
-#### In
+#### In Operator
 
 The `in` operator checks for the presence of a field within the set provided. For example showing only POST, PUT and PATCH requests:
 
@@ -249,7 +271,7 @@ The `in` operator checks for the presence of a field within the set provided. Fo
 method in ("POST", "PUT", "PATCH")
 ```
 
-### Not
+### Not Operator
 
 The `not` operator is a low-precedence negation operator, for example excluding requests with the method POST, PUT, or PATCH:
 
