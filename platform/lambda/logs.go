@@ -44,6 +44,7 @@ func NewLogs(p *Platform, region, query string) platform.Logs {
 	if err != nil {
 		w.CloseWithError(err)
 	}
+	log.Debugf("query %q", query)
 
 	l := &Logs{
 		platform: p,
