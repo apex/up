@@ -175,13 +175,15 @@ Up supports a comprehensive query language, allowing you to perform complex filt
 
 #### AND Operator
 
-The `and` operator is implied, and entirely optional to specify. Given the following example, you'll end up with `and` injected in-between.
+The `and` operator is implied, and entirely optional to specify, since this is the common case.
+
+Suppose you have the following example query to show only production errors from a the specified IP address.
 
 ```
-production error ip = "207.194.38.50"
+production error ip = "207.194.32.30"
 ```
 
-The query effectively compiles to the following, to show only production errors from a given remote address.
+The parser will inject `and`, effectively compiling to:
 
 ```
 production and error and ip = "207.194.38.50"
@@ -189,7 +191,7 @@ production and error and ip = "207.194.38.50"
 
 #### Or Operator
 
-There is also an `or` operator, for example showing warnings or errors.
+There is of course also an `or` operator, for example showing warnings or errors.
 
 ```
 production (warn or error)
