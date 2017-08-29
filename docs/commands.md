@@ -29,7 +29,6 @@ Commands:
   stack delete    Delete configured resources.
   start           Start development server.
   url             Show, open, or copy a stage endpoint.
-
 ```
 
 ## Deploy
@@ -37,7 +36,6 @@ Commands:
 Deploy the project, by default to the "development" stage. Note that running `up` and `up deploy` are identical, however for staging and production you must run `up deploy <stage>`.
 
 ```
-
 Usage:
 
   up deploy [<stage>]
@@ -53,7 +51,6 @@ Flags:
 Args:
 
   [<stage>]  Target stage name.
-
 ```
 
 ### Examples
@@ -145,7 +142,6 @@ $ up config
 Show or tail log output with optional query for filtering. When viewing or tailing logs, you are viewing them from _all_ stages, see the examples below to filter on a stage name.
 
 ```
-
  Usage:
 
    up logs [<flags>] [<query>]
@@ -162,7 +158,6 @@ Show or tail log output with optional query for filtering. When viewing or taili
  Args:
 
    [<query>]  Query pattern for filtering logs.
-
 ```
 
 ### Query Language
@@ -422,7 +417,6 @@ $ up logs 'method in ("POST", "PUT") ip = "207.*" status = 200 duration >= 50'``
 Show, open, or copy a stage endpoint.
 
 ```
-
 Usage:
 
   up url [<flags>] [<stage>]
@@ -440,7 +434,6 @@ Flags:
 Args:
 
   [<stage>]  Name of the stage.
-
 ```
 
 ### Examples
@@ -500,7 +493,6 @@ Flags:
   -v, --verbose          Enable verbose log output.
       --version          Show application version.
       --address=":3000"  Address for server.
-
 ```
 
 ### Examples
@@ -575,7 +567,6 @@ $ up stack delete
 Build zip file, typically only helpful for inspecting its contents. If you're interested in seeing what files are causing bloat, use the `--size` flag to list files by size descending.
 
 ```
-
 Usage:
 
   up build [<flags>]
