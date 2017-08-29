@@ -2,6 +2,7 @@ package start
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/apex/log"
 	"github.com/pkg/errors"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/apex/up/handler"
 	"github.com/apex/up/internal/cli/root"
+	"github.com/apex/up/internal/signals"
 	"github.com/apex/up/internal/stats"
 )
 
@@ -31,6 +33,12 @@ func init() {
 
 		stats.Track("Start", map[string]interface{}{
 			"address": *addr,
+		})
+
+		signals.AddCloser(func(_ os.Signal) {
+			if err := p.RunHook("clean"); err != nil {
+				errors.Wrap(err, "cleaning")
+			}
 		})
 
 		h, err := handler.New()

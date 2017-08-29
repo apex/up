@@ -3,10 +3,8 @@ package main
 import (
 	"errors"
 	"os"
-	"os/signal"
 	"runtime"
 	"strings"
-	"syscall"
 
 	"github.com/tj/go/term"
 
@@ -24,6 +22,7 @@ import (
 	_ "github.com/apex/up/internal/cli/version"
 
 	"github.com/apex/up/internal/cli/app"
+	"github.com/apex/up/internal/signals"
 	"github.com/apex/up/internal/stats"
 	"github.com/apex/up/internal/util"
 )
@@ -31,7 +30,13 @@ import (
 var version = "master"
 
 func main() {
-	trap()
+	signals.Capture()
+	signals.AddCloser(func(_ os.Signal) {
+		// Always exit w/clean terminal
+		term.ShowCursor()
+		println("\n")
+		os.Exit(1)
+	})
 
 	err := run()
 
@@ -57,18 +62,4 @@ func run() error {
 	})
 
 	return app.Run(version)
-}
-
-// trap signals.
-func trap() {
-	sigs := make(chan os.Signal, 1)
-	signal.Notify(sigs, syscall.SIGINT)
-
-	// TODO: abort with context
-	go func() {
-		<-sigs
-		term.ShowCursor()
-		println("\n")
-		os.Exit(1)
-	}()
 }
