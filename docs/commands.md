@@ -338,6 +338,24 @@ There is also a special keyword for this case:
 message contains "login"
 ```
 
+### JSON Output
+
+When stdout is not a terminal Up will output the logs as JSON, which can be useful for further processing with tools such as [jq](https://stedolan.github.io/jq/).
+
+In this contrived example the last 5 hours of production errors are piped to `jq` to produce a CSV of HTTP methods to IP address.
+
+```
+$ up logs -s 5h 'production error' | jq -r '.|[.fields.method,.fields.ip]|@csv'
+```
+
+Yielding:
+
+```
+"GET","207.194.34.24"
+"GET","207.194.34.24"
+"GET","207.194.34.24"
+```
+
 ### Examples
 
 Show logs from the past 5 minutes.
