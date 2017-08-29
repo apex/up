@@ -187,8 +187,14 @@ Show or tail log output with optional query for filtering.
    Show logs with a specific message.
    $ up logs 'message = "user login"'
 
-   Show 200 responses with latency above 150ms.
-   $ up logs 'status = 200 duration > 150'
+   Show responses with latency above 15ms.
+   $ up logs 'duration > 15'
+
+   Show 200 responses with latency above 1500ms.
+   $ up logs 'status = 200 duration > 1.5s'
+
+   Show responses with bodies larger than 100kb.
+   $ up logs 'size > 100kb'
 
    Show 4xx and 5xx responses.
    $ up logs 'status >= 400'
