@@ -18,6 +18,7 @@ func init() {
 	cmd.Example(`up logs -s 5h`, "Show logs from the past 5 hours.")
 	cmd.Example(`up logs -f`, "Show live log output.")
 	cmd.Example(`up logs error`, "Show error logs.")
+	cmd.Example(`up logs 'error stage = "production"'`, "Show error logs in production.")
 	cmd.Example(`up logs 'error or fatal'`, "Show error and fatal logs.")
 	cmd.Example(`up logs 'not info'`, "Show non-info logs.")
 	cmd.Example(`up logs 'message = "user login"'`, "Show logs with a specific message.")
