@@ -32,7 +32,7 @@ var cases = []struct {
 	{`message = "user signin"`, `{ $.message = "user signin" }`},
 	{`status = 0`, `{ $.fields.status = 0 }`},
 	{`status = 0.123`, `{ $.fields.status = 0.123 }`},
-	{`status = .123`, `{ $.fields.status = .123 }`},
+	{`status = .123`, `{ $.fields.status = 0.123 }`},
 	{`status = 200`, `{ $.fields.status = 200 }`},
 	{`price = 1.95`, `{ $.fields.price = 1.95 }`},
 	{`price == 1.95`, `{ $.fields.price = 1.95 }`},
@@ -62,18 +62,26 @@ var cases = []struct {
 	{`user.role not in ("Admin", "Moderator")`, `{ !(($.fields.user.role = "Admin" || $.fields.user.role = "Moderator")) }`},
 	{`not level = "error" or level = "fatal"`, `{ !($.level = "error" || $.level = "fatal") }`},
 	{`cart.products[0] = "something"`, `{ $.fields.cart.products[0] = "something" }`},
-	{`cart.products[0].price = 15.00`, `{ $.fields.cart.products[0].price = 15.00 }`},
-	{`cart.products[0][1].price = 15.00`, `{ $.fields.cart.products[0][1].price = 15.00 }`},
-	{`cart.products[0].items[1].price = 15.00`, `{ $.fields.cart.products[0].items[1].price = 15.00 }`},
+	{`cart.products[0].price = 15.99`, `{ $.fields.cart.products[0].price = 15.99 }`},
+	{`cart.products[0][1].price = 15.99`, `{ $.fields.cart.products[0][1].price = 15.99 }`},
+	{`cart.products[0].items[1].price = 15.99`, `{ $.fields.cart.products[0].items[1].price = 15.99 }`},
 	{`user.name in ("Tobi", "Loki") and status >= 500`, `{ ($.fields.user.name = "Tobi" || $.fields.user.name = "Loki") && $.fields.status >= 500 }`},
 	{`method in ("POST", "PUT") and ip = "207.*" and status = 200 and duration >= 50`, `{ ($.fields.method = "POST" || $.fields.method = "PUT") && $.fields.ip = "207.*" && $.fields.status = 200 && $.fields.duration >= 50 }`},
 	{`method in ("POST", "PUT") ip = "207.*" status = 200 duration >= 50`, `{ ($.fields.method = "POST" || $.fields.method = "PUT") && $.fields.ip = "207.*" && $.fields.status = 200 && $.fields.duration >= 50 }`},
+	{`size > 1kb`, `{ $.fields.size > 1024 }`},
+	{`size > 2kb`, `{ $.fields.size > 2048 }`},
+	{`size > 1.5mb`, `{ $.fields.size > 1572864 }`},
+	{`size > 100b`, `{ $.fields.size > 100 }`},
+	{`duration > 100ms`, `{ $.fields.duration > 100 }`},
+	{`duration > 1s`, `{ $.fields.duration > 1000 }`},
+	{`duration > 4.5s`, `{ $.fields.duration > 4500 }`},
 	// {`ip = 111.222.333.*`, ``},
 	// {`user.email is null`, ``},
 }
 
 func TestParse(t *testing.T) {
 	for _, c := range cases {
+		t.Logf("parsing %q", c.Input)
 		n, err := Parse(c.Input)
 
 		if err != nil {

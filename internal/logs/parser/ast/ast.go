@@ -2,6 +2,7 @@ package ast
 
 import (
 	"fmt"
+	"strconv"
 	"strings"
 )
 
@@ -126,11 +127,27 @@ func (n Member) String() string {
 }
 
 // Number node.
-type Number string
+type Number struct {
+	Value float64
+	Unit  string
+}
 
 // String implementation.
 func (n Number) String() string {
-	return fmt.Sprintf(`%s`, string(n))
+	v := n.Value
+
+	switch n.Unit {
+	case "kb":
+		v *= 1 << 10
+	case "mb":
+		v *= 1 << 20
+	case "gb":
+		v *= 1 << 30
+	case "s":
+		v *= 1000
+	}
+
+	return strconv.FormatFloat(v, 'f', -1, 64)
 }
 
 // Binary node.

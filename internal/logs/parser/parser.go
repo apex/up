@@ -6,6 +6,8 @@
 package parser
 
 import (
+	"strconv"
+
 	"github.com/apex/up/internal/logs/parser/ast"
 )
 
@@ -85,9 +87,18 @@ func (p *parser) AddMember(s string) {
 	})
 }
 
+// SetNumber text.
+func (p *parser) SetNumber(s string) {
+	p.number = s
+}
+
 // AddNumber node.
-func (p *parser) AddNumber(s string) {
-	p.push(ast.Number(s))
+func (p *parser) AddNumber(unit string) {
+	f, _ := strconv.ParseFloat(p.number, 64)
+	p.push(ast.Number{
+		Value: f,
+		Unit:  unit,
+	})
 }
 
 // AddTuple node.

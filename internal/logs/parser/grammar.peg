@@ -4,12 +4,14 @@ import "github.com/apex/up/internal/logs/parser/ast"
 
 type parser Peg {
   stack []ast.Node
+  number string
 }
 
 Query <- _ Expr _ EOF
 
 PrimaryExpr
-  <- Number                 { p.AddNumber(text) }
+  <- Numbers Unit _         { p.AddNumber(text) }
+  / Numbers _               { p.AddNumber("")   }
   / Severity                { p.AddLevel(text)  }
   / Id                      { p.AddField(text)  }
   / String                  { p.AddString(text) }
@@ -34,7 +36,7 @@ NotInExpr
 PostfixExpr
   <- PrimaryExpr (
       DOT Id                { p.AddMember(text)    }
-    / LBRK Number RBRK      { p.AddSubscript(text) }
+    / LBRK Number _ RBRK    { p.AddSubscript(text) }
     / InExpr
     / NotInExpr
   )*
@@ -117,9 +119,12 @@ HexDigit
 # Numeric
 #
 
+Numbers
+  <- Number { p.SetNumber(text) }
+
 Number
-  <- < Float > _
-  / < Integer > _
+  <- < Float >
+  / < Integer >
 
 Integer
   <- [0-9]*
@@ -134,6 +139,33 @@ Fraction
 
 Exponent
   <- [eE][+\-]? [0-9]+
+
+#
+# Units
+#
+
+Unit
+  <- Bytes
+  / Duration
+
+Duration
+  <- S
+  / MS
+
+S  <- < 's'  > !IdChar _
+MS <- < 'ms' > !IdChar _
+
+
+Bytes
+  <- B
+  / KB
+  / MB
+  / GB
+
+B  <- < 'b'  > !IdChar _
+KB <- < 'kb' > !IdChar _
+MB <- < 'mb' > !IdChar _
+GB <- < 'gb' > !IdChar _
 
 #
 # Identifiers
@@ -163,11 +195,11 @@ Severity
 # Keywords
 #
 
-IN       <- 'in'       !IdChar   _
-OR       <- 'or'       !IdChar   _
-AND      <- 'and'      !IdChar   _
-NOT      <- 'not'      !IdChar   _
-CONTAINS <- 'contains' !IdChar   _
+IN       <- 'in'       !IdChar _
+OR       <- 'or'       !IdChar _
+AND      <- 'and'      !IdChar _
+NOT      <- 'not'      !IdChar _
+CONTAINS <- 'contains' !IdChar _
 
 DEBUG  <- < 'debug' > !IdChar  _
 INFO   <- < 'info'  > !IdChar  _
@@ -186,6 +218,12 @@ Keyword
     / 'error'
     / 'fatal'
     / 'in'
+    / 'gb'
+    / 'mb'
+    / 'kb'
+    / 'b'
+    / 'ms'
+    / 's'
   ) !IdChar
 
 #
