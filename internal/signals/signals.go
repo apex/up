@@ -1,10 +1,11 @@
 package signals
 
 import (
-	"fmt"
 	"os"
 	"os/signal"
 	"syscall"
+
+	"github.com/apex/log"
 )
 
 type closer func(os.Signal)
@@ -17,7 +18,8 @@ var (
 )
 
 // Init signals channel
-func root() {
+func init() {
+	log.Infof("Root\n")
 	signals = make(chan os.Signal, 1)
 	signal.Notify(signals, syscall.SIGINT)
 }
@@ -32,7 +34,7 @@ func Capture() {
 	go func() {
 		<-signals
 		for _, fn := range closers {
-			fmt.Println("Executing")
+			log.Infof("Executing\n")
 			fn(incoming)
 		}
 	}()
