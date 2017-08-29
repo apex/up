@@ -309,14 +309,14 @@ duration > 1.5s
 
 Byte units are:
 
-- `b` bytes (`123b` or `123`)
-- `kb` bytes (`5kb`)
-- `mb` bytes (`1.5mb`)
+- `b` bytes (`123b` or `123` are equivalent)
+- `kb` bytes (`5kb`, `128kb`)
+- `mb` bytes (`5mb`, `15.5mb`)
 
 Duration units are:
 
-- `ms` milliseconds (`100ms` or `100`)
-- `s` seconds (`5s`)
+- `ms` milliseconds (`100ms` or `100` are equivalent)
+- `s` seconds (`1.5s`, `5s`)
 
 #### Substring Matches
 
