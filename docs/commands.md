@@ -364,6 +364,18 @@ Show logs from the past 5 minutes.
 $ up logs
 ```
 
+Show logs from the past 45 minutes.
+
+```
+$ up -s 45m logs
+```
+
+Show logs from the past 24 hours.
+
+```
+$ up -s 24h logs
+```
+
 Show live log output.
 
 ```
@@ -457,7 +469,8 @@ $ up logs 'user.email = "tj@*"'
 Show logs with a more complex query.
 
 ```
-$ up logs 'method in ("POST", "PUT") ip = "207.*" status = 200 duration >= 50'```
+$ up logs 'method in ("POST", "PUT") ip = "207.*" status = 200 duration >= 50'
+```
 
 
 ## URL
