@@ -20,15 +20,24 @@ Flags:
 
 Commands:
 
-  help            Show help.
+  help            Show help for a command.
+  build           Build zip file.
   config          Show configuration after defaults and validation.
   deploy          Deploy the project.
+  domains list    List purchased domains.
+  domains check   Check availability of a domain.
+  domains buy     Purchase a domain.
   logs            Show log output.
+  metrics         Show project metrics.
   run             Run a hook.
-  stack           Show the status of the stack.
+  stack plan      Plan configuration changes.
+  stack apply     Apply configuration changes.
   stack delete    Delete configured resources.
+  stack status    Show status of resources.
   start           Start development server.
+  upgrade         Install the latest release of Up.
   url             Show, open, or copy a stage endpoint.
+  version         Show version.
 ```
 
 ## Deploy
