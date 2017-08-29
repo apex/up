@@ -26,7 +26,6 @@ var omit = map[string]bool{
 	"app":    true,
 	"region": true,
 	"plugin": true,
-	"stage":  true,
 }
 
 // Colors mapping.
