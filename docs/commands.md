@@ -190,6 +190,12 @@ Show or tail log output with optional query for filtering.
    Show responses with latency above 15ms.
    $ up logs 'duration > 15'
 
+   Show 4xx and 5xx responses in production
+   $ up logs 'production (warn or error)
+
+   Show production 5xx responses with a POST, PUT, or DELETE method.
+   $ up logs 'production error method in ("POST", "PUT", "DELETE")
+
    Show 200 responses with latency above 1500ms.
    $ up logs 'status = 200 duration > 1.5s'
 

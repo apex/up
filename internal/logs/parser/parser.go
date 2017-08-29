@@ -123,6 +123,15 @@ func (p *parser) AddBinary(op ast.Op) {
 	})
 }
 
+// AddStage node.
+func (p *parser) AddStage(stage string) {
+	p.push(ast.Binary{
+		Op:    ast.EQ,
+		Left:  ast.Field("stage"),
+		Right: ast.String(stage),
+	})
+}
+
 // AddBinaryContains node.
 func (p *parser) AddBinaryContains() {
 	p.push(ast.Binary{

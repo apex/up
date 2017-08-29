@@ -13,6 +13,7 @@ PrimaryExpr
   <- Numbers Unit _         { p.AddNumber(text) }
   / Numbers _               { p.AddNumber("")   }
   / Severity                { p.AddLevel(text)  }
+  / Stage                   { p.AddStage(text)  }
   / Id                      { p.AddField(text)  }
   / String                  { p.AddString(text) }
   / LPAR Expr RPAR          { p.AddExpr()       }
@@ -141,6 +142,19 @@ Exponent
   <- [eE][+\-]? [0-9]+
 
 #
+# Stages
+#
+
+Stage
+  <- DEVELOPMENT
+  / STAGING
+  / PRODUCTION
+
+DEVELOPMENT <- < 'development' > !IdChar _
+STAGING     <- < 'staging' > !IdChar _
+PRODUCTION  <- < 'production' > !IdChar _
+
+#
 # Units
 #
 
@@ -208,7 +222,11 @@ ERROR  <- < 'error' > !IdChar  _
 FATAL  <- < 'fatal' > !IdChar  _
 
 Keyword
-  <- ( 'or'
+  <- (
+      'production'
+    / 'staging'
+    / 'development'
+    / 'or'
     / 'and'
     / 'not'
     / 'contains'
