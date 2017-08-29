@@ -276,7 +276,6 @@ method in ("POST", "PUT", "PATCH")
 The `not` operator is a low-precedence negation operator, for example excluding requests with the method POST, PUT, or PATCH:
 
 ```
-```
 not method in ("POST", "PUT", "PATCH")
 ```
 
