@@ -30,64 +30,59 @@ Commands:
   start           Start development server.
   url             Show, open, or copy a stage endpoint.
 
-Examples:
-
-  Deploy the project to the development stage.
-  $ up
-
-  Deploy the project to the prod stage.
-  $ up deploy prod
-
-  Tail project logs.
-  $ up logs -f
-
-  Show error or fatal level logs.
-  $ up logs 'error or fatal'
-
-  Show help and examples for a sub-command.
-  $ up help logs
-
-  Run build command manually.
-  $ up run build
-
 ```
 
-## deploy
+## Deploy
 
 Deploy the project, by default to the "development" stage. Note that running `up` and `up deploy` are identical, however for staging and production you must run `up deploy <stage>`.
 
 ```
 
-  Usage:
+Usage:
 
-    up deploy [<stage>]
+  up deploy [<stage>]
 
-  Flags:
+Flags:
 
-    -h, --help           Output usage information.
-    -r, --region=REGION  Override the region.
-    -C, --chdir="."      Change working directory.
-    -v, --verbose        Enable verbose log output.
-        --version        Show application version.
+  -h, --help           Output usage information.
+  -r, --region=REGION  Override the region.
+  -C, --chdir="."      Change working directory.
+  -v, --verbose        Enable verbose log output.
+      --version        Show application version.
 
-  Args:
+Args:
 
-    [<stage>]  Target stage name.
-
-  Examples:
-
-    Deploy the project to the development stage.
-    $ up deploy
-
-    Deploy the project to the staging stage.
-    $ up deploy staging
-
-    Deploy the project to the production stage.
-    $ up deploy production
+  [<stage>]  Target stage name.
 
 ```
 
-## config
+### Examples
+
+Deploy the project to the development stage.
+
+```
+$ up
+```
+
+Deploy the project to the development stage, this is the same as running `up` without arguments.
+
+```
+$ up deploy
+```
+
+Deploy the project to the staging stage.
+
+```
+$ up deploy staging
+```
+
+Deploy the project to the production stage.
+
+```
+$ up deploy production
+```
+
+## Config
 
 Validate and output configuration with defaults applied.
 
@@ -145,11 +140,12 @@ $ up config
 ...
 ```
 
-## logs
+## Logs
 
-Show or tail log output with optional query for filtering.
+Show or tail log output with optional query for filtering. When viewing or tailing logs, you are viewing them from _all_ stages, see the examples below to filter on a stage name.
 
 ```
+
  Usage:
 
    up logs [<flags>] [<query>]
@@ -167,58 +163,113 @@ Show or tail log output with optional query for filtering.
 
    [<query>]  Query pattern for filtering logs.
 
- Examples:
-
-   Show logs from the past 5 minutes.
-   $ up logs
-
-   Show live log output.
-   $ up logs -f
-
-   Show error logs.
-   $ up logs error
-
-   Show error and fatal logs.
-   $ up logs 'error or fatal'
-
-   Show non-info logs.
-   $ up logs 'not info'
-
-   Show logs with a specific message.
-   $ up logs 'message = "user login"'
-
-   Show responses with latency above 15ms.
-   $ up logs 'duration > 15'
-
-   Show 4xx and 5xx responses in production
-   $ up logs 'production (warn or error)
-
-   Show production 5xx responses with a POST, PUT, or DELETE method.
-   $ up logs 'production error method in ("POST", "PUT", "DELETE")
-
-   Show 200 responses with latency above 1500ms.
-   $ up logs 'status = 200 duration > 1.5s'
-
-   Show responses with bodies larger than 100kb.
-   $ up logs 'size > 100kb'
-
-   Show 4xx and 5xx responses.
-   $ up logs 'status >= 400'
-
-   Show emails containing @apex.sh.
-   $ up logs 'user.email contains "@apex.sh"'
-
-   Show emails ending with @apex.sh.
-   $ up logs 'user.email = "*@apex.sh"'
-
-   Show emails starting with tj@.
-   $ up logs 'user.email = "tj@*"'
-
-   Show logs with a more complex query.
-   $ up logs 'method in ("POST", "PUT") ip = "207.*" status = 200 duration >= 50'
 ```
 
-## url
+### Examples
+
+Show logs from the past 5 minutes.
+
+```
+$ up logs
+```
+
+Show live log output.
+
+```
+$ up logs -f
+```
+
+Show live logs from production only.
+
+```
+$ up logs -f production
+```
+
+Show live error logs from production only.
+
+```
+$ up logs -f 'production error'
+```
+
+Show error logs, which include 5xx responses.
+
+```
+$ up logs error
+```
+
+Show error and warning logs, which include 4xx and 5xx responses.
+
+```
+$ up logs 'warn or error'
+```
+
+Show logs with a specific message.
+
+```
+$ up logs 'message = "user login"'
+```
+
+Show responses with latency above 15ms.
+
+```
+$ up logs 'duration > 15'
+```
+
+Show 4xx and 5xx responses in production
+
+```
+$ up logs 'production (warn or error)'
+```
+
+Show production 5xx responses with a POST, PUT, or DELETE method.
+
+```
+$ up logs 'production error method in ("POST", "PUT", "DELETE")
+```
+
+Show 200 responses with latency above 1500ms.
+
+```
+$ up logs 'status = 200 duration > 1.5s'
+```
+
+Show responses with bodies larger than 100kb.
+
+```
+$ up logs 'size > 100kb'
+```
+
+Show 4xx and 5xx responses.
+
+```
+$ up logs 'status >= 400'
+```
+
+Show emails containing @apex.sh.
+
+```
+$ up logs 'user.email contains "@apex.sh"'
+```
+
+Show emails ending with @apex.sh.
+
+```
+$ up logs 'user.email = "*@apex.sh"'
+```
+
+Show emails starting with tj@.
+
+```
+$ up logs 'user.email = "tj@*"'
+```
+
+Show logs with a more complex query.
+
+```
+$ up logs 'method in ("POST", "PUT") ip = "207.*" status = 200 duration >= 50'```
+
+
+## URL
 
 Show, open, or copy a stage endpoint.
 
@@ -242,29 +293,47 @@ Args:
 
   [<stage>]  Name of the stage.
 
-Examples:
-
-  Show the development endpoint.
-  $ up url
-
-  Open the development endpoint in the browser.
-  $ up url --open
-
-  Copy the development endpoint to the clipboard.
-  $ up url --copy
-
-  Show the production endpoint.
-  $ up url production
-
-  Open the production endpoint in the browser.
-  $ up url -o production
-
-  Copy the production endpoint to the clipboard.
-  $ up url -c production
-
 ```
 
-## start
+### Examples
+
+Show the development endpoint.
+
+```
+$ up url
+```
+
+Open the development endpoint in the browser.
+
+```
+$ up url --open
+```
+
+Copy the development endpoint to the clipboard.
+
+```
+$ up url --copy
+```
+
+Show the production endpoint.
+
+```
+$ up url production
+```
+
+Open the production endpoint in the browser.
+
+```
+$ up url -o production
+```
+
+Copy the production endpoint to the clipboard.
+
+```
+$ up url -c production
+```
+
+## Start
 
 Start development server. The development server runs the same proxy that is used in production for serving, so you can test a static site or application locally with the same feature-set.
 
@@ -284,17 +353,23 @@ Flags:
       --version          Show application version.
       --address=":3000"  Address for server.
 
-Examples:
-
-  Start development server on port 3000.
-  $ up start
-
-  Start development server on port 5000.
-  $ up start --address :5000
-
 ```
 
-## stack
+### Examples
+
+Start development server on port 3000.
+
+```
+$ up start
+```
+
+Start development server on port 5000.
+
+```
+$ up start --address :5000
+```
+
+## Stack
 
 Stack resource management. The stack is essentially all of the resources powering your app, which is configured by Up on the first deploy.
 
@@ -314,20 +389,40 @@ Flags:
       --version        Show application version.
 
 Subcommands:
+  stack plan      Plan configuration changes.
+  stack apply     Apply configuration changes.
   stack delete    Delete configured resources.
-  stack show      Show status of resources.
-
-Examples:
-
-  Show status of the stack resources.
-  $ up stack
-
-  Delete the stack resources.
-  $ up stack delete
-
+  stack status    Show status of resources.
 ```
 
-## build
+### Examples
+
+Show status of the stack resources.
+
+```
+$ up stack
+```
+
+Show resource changes.
+
+```
+$ up stack plan
+```
+
+Apply resource changes.
+
+```
+$ up stack apply
+```
+
+Delete the stack resources.
+
+```
+$ up stack delete
+```
+
+
+## Build
 
 Build zip file, typically only helpful for inspecting its contents. If you're interested in seeing what files are causing bloat, use the `--size` flag to list files by size descending.
 
@@ -345,19 +440,30 @@ Flags:
   -v, --verbose        Enable verbose log output.
       --version        Show application version.
       --size           Show zip contents size information.
+```
 
-Examples:
+### Examples
 
-  Build archive and save to ./out.zip
-  $ up build
+Build archive and save to ./out.zip
 
-  Build archive and output to file via stdout.
-  $ up build > /tmp/out.zip
+```
+$ up build
+```
 
-  Build archive list files by size.
-  $ up build --size
+Build archive and output to file via stdout.
 
-  Build archive and list size without creating out.zip.
-  $ up build --size > /dev/null
+```
+$ up build > /tmp/out.zip
+```
 
+Build archive list files by size.
+
+```
+$ up build --size
+```
+
+Build archive and list size without creating out.zip.
+
+```
+$ up build --size > /dev/null
 ```
