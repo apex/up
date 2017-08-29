@@ -165,6 +165,154 @@ Show or tail log output with optional query for filtering. When viewing or taili
 
 ```
 
+### Query Language
+
+Up supports a comprehensive query language, allowing you to perform complex filters against structured data, supporting operators, equality, substring tests and so on.
+
+#### AND
+
+The `and` operator is implied, and entirely optional to specify. Given the following example, you'll end up with `and` injected in-between.
+
+```
+production error ip = "207.194.38.50"
+```
+
+The query effectively compiles to the following, to show only production errors from a given remote address.
+
+```
+production and error and ip = "207.194.38.50"
+```
+
+#### Or
+
+There is also an `or` operator, for example showing warnings or errors.
+
+```
+production (warn or error)
+```
+
+These may of course be nested as you require:
+
+```
+(production or staging) (warn or error) method = "GET"
+```
+
+#### Equality
+
+The `=` and `!=` equality operators allow you to filter on the contents of a field.
+
+Here `=` is used to show only GET requests:
+
+```
+method = "GET"
+```
+
+Or for example `!=` may be used to show anything except GET:
+
+```
+method != "GET"
+```
+
+#### Relational
+
+The `>`, `>=`, `<`, and `<=` relational operators are useful for comparing numeric values, for example response status codes:
+
+```
+status >= 200 status < 300
+```
+
+#### Severity Levels
+
+Up provides request level logging with severity levels applied automatically, for example a 5xx response is an ERROR level, while 4xx is a WARN, and 3xx or 2xx are the INFO level.
+
+This means that instead of using the following for showing production errors:
+
+```
+production status >= 500
+```
+
+You may use:
+
+```
+production error
+```
+
+#### In
+
+The `in` operator checks for the presence of a field within the set provided. For example showing only POST, PUT and PATCH requests:
+
+```
+method in ("POST", "PUT", "PATCH")
+```
+
+### Not
+
+The `not` operator is a low-precedence negation operator, for example excluding requests with the method POST, PUT, or PATCH:
+
+```
+```
+not method in ("POST", "PUT", "PATCH")
+```
+
+Since it is the lowest precedence operator, the following will show messages that are not "user login" or "user logout":
+
+```
+not message = "user login" or message = "user logout"
+```
+
+Effectively compiling to:
+
+```
+!(message = "user login" or message = "user logout")
+```
+
+#### Units
+
+The log grammar supports units for bytes and durations, for example showing responses larger than 56kb:
+
+```
+size > 56kb
+```
+
+Or showing responses longer than 1500ms:
+
+```
+duration > 1.5s
+```
+
+Byte units are:
+
+- `b` bytes (`123b` or `123`)
+- `kb` bytes (`5kb`)
+- `mb` bytes (`1.5mb`)
+
+Duration units are:
+
+- `ms` milliseconds (`100ms` or `100`)
+- `s` seconds (`5s`)
+
+#### Substring Matches
+
+When filtering on strings, such as the log message, you may use the `*` character for substring matches.
+
+For example if you want to show logs with a remote ip prefix of `207.`:
+
+```
+ip = "207.*"
+```
+
+Or a message containing the word "login":
+
+```
+message = "*login*"
+```
+
+There is also a special keyword for this case:
+
+```
+message contains "login"
+```
+
 ### Examples
 
 Show logs from the past 5 minutes.
