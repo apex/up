@@ -43,7 +43,7 @@ func Build(dir string) (io.ReadCloser, *archive.Stats, error) {
 	r := io.MultiReader(
 		strings.NewReader(".*\n"),
 		gitignore,
-		strings.NewReader("\n!node_modules\n"),
+		strings.NewReader("\n!node_modules/**\n"),
 		upignore,
 		strings.NewReader("\n!main\n!server\n!_proxy.js\n!byline.js\n!up.json\n"))
 
