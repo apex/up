@@ -1,3 +1,6 @@
+---
+skip: true
+---
 
 - [Installation](installation.md) – Install the command-line
 - [AWS Credentials](aws-credentials.md) – Set up AWS credentials

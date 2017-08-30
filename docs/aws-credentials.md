@@ -1,3 +1,7 @@
+---
+title: AWS Credentials
+---
+
 Before using Up you need to first provide your AWS account credentials so that resources can be created. There are a number of ways to do that, which are outlined here.
 
 ## Via environment variables
