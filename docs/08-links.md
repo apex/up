@@ -2,6 +2,7 @@
 title: Links
 ---
 
+- Follow the progress on [GitHub repository](https://github.com/apex/up)
 - Follow [@tjholowaychuk](https://twitter.com/tjholowaychuk) on Twitter for updates
 - [Example applications](https://github.com/apex/up-examples) for Up
 - [Slack](https://apex-dev.azurewebsites.net/) to chat with apex(1) and up(1) community members
