@@ -15,7 +15,7 @@ http.createServer((req, res) => {
 }).listen(PORT)
 ```
 
-Next you'll ned to let Up know which profile in `~/.aws/credentials` to use. Note however that instead of assigning `AWS_PROFILE` you may use the `"profile": "NAME"` option in `up.json`.
+Next you'll need to let Up know which profile in `~/.aws/credentials` to use. Note however that instead of assigning `AWS_PROFILE` you may use the `"profile": "NAME"` option in `up.json`.
 
 ```
 $ export AWS_PROFILE=myapp
