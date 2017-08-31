@@ -2,13 +2,15 @@
 title: Installation
 ---
 
-Up can be installed via pre-compiled binaries, head over to the [Releases](https://github.com/apex/up/releases) page, or use this one-liner which will install `up` to `/usr/local/bin` by default.
+Up is distributed in a binary form and can be installed manually via the [tarball releases](https://github.com/apex/up/releases) or one of the options below.
+
+The quickest way to get `up` is to run the following command, which installs to to `/usr/local/bin` by default.
 
 ```
 $ curl -sfL https://raw.githubusercontent.com/apex/up/master/install.sh | sh
 ```
 
-Or via NPM with:
+NPM's `up` package runs the same script as above.
 
 ```
 $ npm i -g up

@@ -2,9 +2,9 @@
 title: Getting Started
 ---
 
-The bare minimum Up application is a single file for the application itself. Up runs "vanilla" HTTP servers listening on the `PORT` environment variable, passed to it by Up.
+The simplest Up application is a single file for the application itself, with zero dependencies.
 
-For example create a new directory with the following `app.js` file:
+Up runs "vanilla" HTTP servers listening on the `PORT` environment variable, which is passed to your program by Up. For example create a new directory with the following `app.js` file:
 
 ```js
 const http = require('http')
@@ -15,7 +15,7 @@ http.createServer((req, res) => {
 }).listen(PORT)
 ```
 
-Let Up know which ~/.aws/credentials to use, note that you may also define "myapp" to the "profile" property in `up.json`.
+Next you'll ned to let Up know which profile in `~/.aws/credentials` to use. Note however that instead of assigning `AWS_PROFILE` you may use the `"profile": "NAME"` option in `up.json`.
 
 ```
 $ export AWS_PROFILE=myapp

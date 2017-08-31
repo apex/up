@@ -2,7 +2,7 @@
 title: Configuration
 ---
 
-Up configuration lives in the `up.json` file, and allows you review changes made to the infrastructure before applying them. This follows industry best practices of "infrastructure as code" contrasting CRUD style sub-commands for manipulating resources.
+Configuration for your app lives in the `up.json` within your project's directory. This section details each of the options available.
 
 ## Name
 
@@ -16,7 +16,7 @@ The name of the application, which is used to name resources such as the Lambda 
 
 ## Profile
 
-The `profile` property is equivalent to setting `AWS_PROFILE` for referencing AWS credentials in the `~/.aws` directory. This method is ideal since it prevents accidents with environment variables.
+The `profile` property is equivalent to setting `AWS_PROFILE` for referencing AWS credentials in the `~/.aws` directory. Use of this property is preferred it prevents accidents with environment variables.
 
 ```json
 {
@@ -129,6 +129,22 @@ Here's an example using Browserify to bundle a Node application. Use the `-v` ve
 ```
 
 Up performs runtime inference to discover what kind of application you're using, and does its best to provide helpful defaults. See the "Runtimes" section.
+
+Multiple commands be provided by using arrays, and are run in separate shells:
+
+```json
+{
+  "name": "app",
+  "hooks": {
+    "build": [
+      "mkdir -p build",
+      "cp -fr static build",
+      "browserify --node index.js > build/client.js"
+    ],
+    "clean": "rm -fr build"
+  }
+}
+```
 
 ## Static File Serving
 

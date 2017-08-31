@@ -3,7 +3,9 @@ title: Commands
 ---
 
 
-Up provides the `up` command-line program. To view details for a command at any time use `up help` or `up help <command>`.
+Up provides the `up` command-line program, used to deploy the app, and manage associated resources such as domains and SSL certificates, as well as operational tasks like viewing logs.
+
+To view details for a command at any time use `up help` or `up help <command>`.
 
 ```
 Usage:
