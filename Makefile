@@ -15,7 +15,7 @@ install:
 # Install the development dependencies.
 install.deps:
 	@echo "==> Installing dev dependencies"
-	@$(GO) get -u /github.com/rsc/gt
+	@$(GO) get -u rsc.io/gt
 	@$(GO) get -u github.com/jteeuwen/go-bindata/...
 	@$(GO) get -u github.com/pointlander/peg/...
 .PHONY: install.deps
