@@ -59,5 +59,5 @@ func Duration(ms, memory int) float64 {
 
 // Total returns the total cost.
 func Total(requests, ms, memory int) float64 {
-	return Invocations(requests) + Duration(ms, memory)
+	return Invocations(requests) + Duration(requests*ms, memory)
 }
