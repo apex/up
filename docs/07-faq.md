@@ -16,7 +16,9 @@ title: FAQ
   <summary>How is this different than other serverless frameworks?</summary>
   <p>Most of the AWS Lambda based tools are function-oriented, while Up abstracts this away entirely. Up does not use framework "shims", the servers that you run using Up are regular HTTP servers and require no code changes for Lambda compatibility.</p>
 
-  <p>This keeps your apps and APIs portable, makes testing them locally easier, and prevents vendor lock-in. The Lambda support for Up is simply an implementation detail, you are not coupled to API Gateway or Lambda.</p>
+  <p>Up keeps your apps and APIs portable, makes testing them locally easier, and prevents vendor lock-in. The Lambda support for Up is simply an implementation detail, you are not coupled to API Gateway or Lambda.</p>
+
+  <p>If you're looking to manage function-level event processing pipelines, Apex or Serverless are likely better candidates, however if you're creating applications, apis, micro services, or websites, Up is built for you.</p>
 </details>
 
 <details>
