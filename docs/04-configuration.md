@@ -70,13 +70,13 @@ All regions like a boss:
 
 Currently Lambda supports the following regions:
 
-- **us-east** – US East (Ohio)
-- **us-east** – US East (N. Virginia)
-- **us-west** – US West (N. California)
-- **us-west** – US West (Oregon)
+- **us-east-2** – US East (Ohio)
+- **us-east-1** – US East (N. Virginia)
+- **us-west-1** – US West (N. California)
+- **us-west-2** – US West (Oregon)
 - **ap-northeast-2** – Asia Pacific (Seoul)
 - **ap-south-1** – Asia Pacific (Mumbai)
-- **ap-southeast** – Asia Pacific (Singapore)
+- **ap-southeast-1** – Asia Pacific (Singapore)
 - **ap-southeast-2** – Asia Pacific (Sydney)
 - **ap-northeast-1** – Asia Pacific (Tokyo)
 - **ca-central-1** – Canada (Central)
