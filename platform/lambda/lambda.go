@@ -2,8 +2,6 @@ package lambda
 
 import (
 	"bytes"
-	"crypto/sha256"
-	"encoding/base64"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -531,11 +529,4 @@ func toEnv(env config.Environment) *lambda.Environment {
 	return &lambda.Environment{
 		Variables: aws.StringMap(env),
 	}
-}
-
-// hash returns a base64 encoded SHA256 hash of `b`.
-func hash(b []byte) string {
-	h := sha256.New()
-	h.Write(b)
-	return base64.StdEncoding.EncodeToString(h.Sum(nil))
 }

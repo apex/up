@@ -413,9 +413,7 @@ func (s *Stack) getEvents() (events []*cloudformation.StackEvent, err error) {
 			return nil, err
 		}
 
-		for _, e := range res.StackEvents {
-			events = append(events, e)
-		}
+		events = append(events, res.StackEvents...)
 
 		next = res.NextToken
 
