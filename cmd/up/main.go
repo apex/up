@@ -43,7 +43,7 @@ func main() {
 	term.ShowCursor()
 
 	if strings.Contains(err.Error(), "NoCredentialProviders") {
-		util.Fatal(errors.New("Cannot find credentials, visit https://github.com/apex/up/blob/master/docs/aws-credentials.md for help."))
+		util.Fatal(errors.New("Cannot find credentials, visit https://github.com/apex/up/blob/master/docs/02-aws-credentials.md for help."))
 	}
 
 	util.Fatal(err)
