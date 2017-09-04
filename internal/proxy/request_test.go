@@ -62,4 +62,19 @@ func TestNewRequest(t *testing.T) {
 
 		assert.Equal(t, `Hello World`, string(b))
 	})
+
+	t.Run("Bearer Auth", func(t *testing.T) {
+		var in Input
+		err := json.Unmarshal([]byte(getEvent), &in)
+		assert.NoError(t, err, "unmarshal")
+
+		// Add Bearer auth
+		in.Headers["Authorization"] = "Bearer token"
+
+		req, err := NewRequest(&in)
+		assert.NoError(t, err, "new request")
+
+		assert.Equal(t, "Bearer token", req.Header.Get("Authorization"))
+		assert.Equal(t, true, req.URL.User == nil)
+	})
 }
