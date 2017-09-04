@@ -1,4 +1,4 @@
-![](https://dl.dropboxusercontent.com/u/6396913/Apex/Up/Readme/title-fs8.png)
+![](assets/title.png)
 
 Up deploys infinitely scalable serverless apps, APIs, and static websites in seconds, so you can get back to working on what makes your project unique. Up focuses on deploying "vanilla" apps, there's nothing new to learn, just develop with your favorite existing frameworks like Express, Koa, Django, Golang net/http or others.
 
@@ -6,25 +6,25 @@ Up currently supports Node.js, Golang, Python, Crystal, and static sites out of 
 
 Check out the [documentation](https://apex.github.io/up/), [examples](https://github.com/apex/up-examples), or chat with us in [Slack](https://apex-dev.azurewebsites.net/). Up is still very early in development, if you have no AWS experience you may want to hold off for a future release.
 
-![](https://dl.dropboxusercontent.com/u/6396913/Apex/Up/Readme/screen-koa-fs8.png)
+![](assets/screen.png)
 
 ## Features
 
 Open source community edition: Coming soon.
 
-![](https://dl.dropboxusercontent.com/u/6396913/Apex/Up/Readme/up-features-community-fs8.png)
+![Open source edition features](assets/features-community.png)
 
 ## Pro Features
 
 Close sourced pro edition: Coming less soon.
 
-![](https://dl.dropboxusercontent.com/u/6396913/Apex/Up/Readme/up-features-pro-fs8.png)
+![Pro edition features](assets/features-pro.png)
 
 ## Pricing
 
 Updated as of July 2017 based on public information. Some services offer a restricted free version, or free access for solo developers – this table is based on commercial use.
 
-![pricing table](https://dl.dropboxusercontent.com/u/6396913/Apex/Up/Readme/pricing.png)
+![Pricing comparison table](assets/pricing.png)
 
 ## FAQ
 
