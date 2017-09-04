@@ -67,20 +67,3 @@ func TestDuration(t *testing.T) {
 		assert.Equal(t, row.expected, Duration(row.duration, row.memory))
 	}
 }
-
-func TestTotal(t *testing.T) {
-	table := []struct {
-		requests int
-		duration int
-		memory   int
-		expected float64
-	}{
-		{0, 0, 128, 0},
-		{1, 100, 1536, 2.701e-6},
-		{1e7, 100, 128, 4.08},
-	}
-
-	for _, row := range table {
-		assert.Equal(t, row.expected, Total(row.requests, row.duration, row.memory))
-	}
-}
