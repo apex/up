@@ -1,7 +1,9 @@
 package proxy
 
 import (
+	"bytes"
 	"encoding/base64"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -24,18 +26,21 @@ func NewRequest(e *Input) (*http.Request, error) {
 	}
 	u.RawQuery = q.Encode()
 
+	var reader io.Reader
 	// base64 encoded body
-	body := e.Body
 	if e.IsBase64Encoded {
-		b, err := base64.StdEncoding.DecodeString(body)
+		b, err := base64.StdEncoding.DecodeString(e.Body)
 		if err != nil {
 			return nil, errors.Wrap(err, "decoding base64 body")
 		}
-		body = string(b)
+
+		reader = bytes.NewReader(b)
+	} else {
+		reader = strings.NewReader(e.Body)
 	}
 
 	// new request
-	req, err := http.NewRequest(e.HTTPMethod, u.String(), strings.NewReader(body))
+	req, err := http.NewRequest(e.HTTPMethod, u.String(), reader)
 	if err != nil {
 		return nil, errors.Wrap(err, "creating request")
 	}
@@ -59,30 +64,46 @@ func NewRequest(e *Input) (*http.Request, error) {
 	// user
 	auth := req.Header.Get("Authorization")
 	if auth != "" {
-		user, pass, err := basic(auth)
+		authType, creds, err := parseAuthHeader(auth)
 		if err != nil {
-			return nil, errors.Wrap(err, "parsing basic auth")
+			return nil, errors.Wrap(err, "parsing auth header")
 		}
-		req.URL.User = url.UserPassword(user, pass)
+
+		// Specifically allow Basic auth to be parsed
+		// Purposefully ignore other kinds of auth, to allow them to trivially pass through
+		// by simply copying their headers
+		if strings.ToLower(authType) == "basic" {
+			userinfo, err := basic(creds)
+			if err != nil {
+				return nil, errors.Wrap(err, "parsing basic auth")
+			}
+
+			req.URL.User = userinfo
+		}
 	}
 
 	// TODO: pass the original json input
 	return req, nil
 }
 
-// basic auth parser.
-func basic(s string) (user, pass string, err error) {
+// parseAuthHeader will parse the authorization header to determine the type of auth used
+// in this request.
+func parseAuthHeader(s string) (authType, credentials string, err error) {
 	p := strings.SplitN(s, " ", 2)
-
-	if len(p) != 2 || p[0] != "Basic" {
+	if len(p) != 2 {
 		return "", "", errors.New("malformed")
 	}
 
-	b, err := base64.StdEncoding.DecodeString(p[1])
+	return p[0], p[1], nil
+}
+
+// basic parses credentials of an Authorization header, this assumes it is basic auth
+func basic(creds string) (userinfo *url.Userinfo, err error) {
+	b, err := base64.StdEncoding.DecodeString(creds)
 	if err != nil {
-		return "", "", errors.Wrap(err, "decoding")
+		return nil, errors.Wrap(err, "decoding")
 	}
 
-	pair := strings.SplitN(string(b), ":", 2)
-	return pair[0], pair[1], nil
+	p := strings.SplitN(string(b), ":", 2)
+	return url.UserPassword(p[0], p[1]), nil
 }
