@@ -33,3 +33,23 @@ func TestMatcher_Lookup(t *testing.T) {
 	assert.Equal(t, Fields{"X-Type": "docs"}, m.Lookup("/docs/checks"))
 	assert.Equal(t, Fields{"X-Type": "docs alerts"}, m.Lookup("/docs/alerts"))
 }
+
+func TestMerge(t *testing.T) {
+	rules := Rules{
+		"*": {
+			"X-Type": "html",
+		},
+	}
+	m, err := Compile(rules)
+	assert.NoError(t, err, "compile")
+	assert.Equal(t, Fields{"X-Type": "html"}, m.Lookup("/something"))
+
+	Merge(rules, Rules{
+		"*": {
+			"X-Type": "pdf",
+		},
+	})
+	m, err = Compile(rules)
+	assert.NoError(t, err, "compile")
+	assert.Equal(t, Fields{"X-Type": "pdf"}, m.Lookup("/something"))
+}
