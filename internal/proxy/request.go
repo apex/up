@@ -1,7 +1,9 @@
 package proxy
 
 import (
+	"bytes"
 	"encoding/base64"
+	"io"
 	"net/http"
 	"net/url"
 	"strings"
@@ -24,18 +26,21 @@ func NewRequest(e *Input) (*http.Request, error) {
 	}
 	u.RawQuery = q.Encode()
 
+	var reader io.Reader
 	// base64 encoded body
-	body := e.Body
 	if e.IsBase64Encoded {
-		b, err := base64.StdEncoding.DecodeString(body)
+		b, err := base64.StdEncoding.DecodeString(e.Body)
 		if err != nil {
 			return nil, errors.Wrap(err, "decoding base64 body")
 		}
-		body = string(b)
+
+		reader = bytes.NewReader(b)
+	} else {
+		reader = strings.NewReader(e.Body)
 	}
 
 	// new request
-	req, err := http.NewRequest(e.HTTPMethod, u.String(), strings.NewReader(body))
+	req, err := http.NewRequest(e.HTTPMethod, u.String(), reader)
 	if err != nil {
 		return nil, errors.Wrap(err, "creating request")
 	}
