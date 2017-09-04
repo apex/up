@@ -82,12 +82,6 @@ func (r *response) Write(b []byte) (int, error) {
 	return r.ResponseWriter.Write(b)
 }
 
-// Errors handles error page support.
-type Errors struct {
-	next  http.Handler
-	pages errorpage.Pages
-}
-
 // New error pages handler.
 func New(c *up.Config, next http.Handler) (http.Handler, error) {
 	pages, err := errorpage.Load(c.ErrorPages.Dir)

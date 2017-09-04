@@ -19,12 +19,6 @@ import (
 // filename of headers file.
 var filename = "_headers"
 
-// Headers handler injects headers.
-type Headers struct {
-	next  http.Handler
-	rules *header.Matcher
-}
-
 // New headers handler.
 func New(c *up.Config, next http.Handler) (http.Handler, error) {
 	rulesFromFile, err := readFromFile(filename)
