@@ -67,16 +67,12 @@ func init() {
 		}
 
 		if *size {
-			var files []*zip.File
-
 			z, err := zip.NewReader(bytes.NewReader(buf.Bytes()), int64(buf.Len()))
 			if err != nil {
 				return errors.Wrap(err, "opening zip")
 			}
 
-			for _, f := range z.File {
-				files = append(files, f)
-			}
+			files := z.File
 
 			sort.Slice(files, func(i int, j int) bool {
 				a := files[i]
