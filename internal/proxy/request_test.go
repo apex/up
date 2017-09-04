@@ -62,4 +62,20 @@ func TestNewRequest(t *testing.T) {
 
 		assert.Equal(t, `Hello World`, string(b))
 	})
+
+	t.Run("Basic Auth", func(t *testing.T) {
+		var in Input
+		err := json.Unmarshal([]byte(getEventBasicAuth), &in)
+		assert.NoError(t, err, "unmarshal")
+
+		req, err := NewRequest(&in)
+		assert.NoError(t, err, "new request")
+
+		assert.Equal(t, "GET", req.Method)
+		assert.Equal(t, "/pets/tobi", req.URL.Path)
+		user, pass, ok := req.BasicAuth()
+		assert.Equal(t, "tobi", user)
+		assert.Equal(t, "ferret", pass)
+		assert.True(t, ok)
+	})
 }

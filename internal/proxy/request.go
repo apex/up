@@ -56,17 +56,6 @@ func NewRequest(e *Input) (*http.Request, error) {
 	req.URL.Host = req.Header.Get("Host")
 	req.Host = req.URL.Host
 
-	// user
-	auth := req.Header.Get("Authorization")
-	if auth != "" {
-		user, pass, err := basic(auth)
-		if err != nil {
-			return nil, errors.Wrap(err, "parsing basic auth")
-		}
-		req.URL.User = url.UserPassword(user, pass)
-	}
-
-	// TODO: pass the original json input
 	return req, nil
 }
 

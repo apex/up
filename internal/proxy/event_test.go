@@ -63,6 +63,65 @@ var getEvent = `{
   "isBase64Encoded": false
 }`
 
+var getEventBasicAuth = `{
+  "resource": "/{proxy+}",
+  "path": "/pets/tobi",
+  "httpMethod": "GET",
+  "headers": {
+    "Accept": "*/*",
+    "CloudFront-Forwarded-Proto": "https",
+    "CloudFront-Is-Desktop-Viewer": "true",
+    "CloudFront-Is-Mobile-Viewer": "false",
+    "CloudFront-Is-SmartTV-Viewer": "false",
+    "CloudFront-Is-Tablet-Viewer": "false",
+    "CloudFront-Viewer-Country": "CA",
+    "Host": "apex-ping.com",
+    "User-Agent": "curl/7.48.0",
+    "Via": "2.0 a44b4468444ef3ee67472bd5c5016098.cloudfront.net (CloudFront)",
+    "X-Amz-Cf-Id": "VRxPGF8rOXD7xpRjAjseXfRrFD3wg-QPUHY6chzB9bR7pXlct1NTpg==",
+    "X-Amzn-Trace-Id": "Root=1-59554c99-4375fc8705ccb554008b3aad",
+    "X-Forwarded-For": "207.102.57.26, 54.182.214.69",
+    "X-Forwarded-Port": "443",
+    "X-Forwarded-Proto": "https",
+		"Authorization": "Basic dG9iaTpmZXJyZXQ="
+  },
+  "queryStringParameters": {
+    "format": "json"
+  },
+  "pathParameters": {
+    "proxy": "pets/tobi"
+  },
+  "stageVariables": {
+    "env": "prod"
+  },
+  "requestContext": {
+    "path": "/pets/tobi",
+    "accountId": "111111111",
+    "resourceId": "jcl9w3",
+    "stage": "prod",
+    "requestId": "344b184b-5cfc-11e7-8483-27dbb2d30a77",
+    "identity": {
+      "cognitoIdentityPoolId": null,
+      "accountId": null,
+      "cognitoIdentityId": null,
+      "caller": null,
+      "apiKey": "",
+      "sourceIp": "207.102.57.26",
+      "accessKey": null,
+      "cognitoAuthenticationType": null,
+      "cognitoAuthenticationProvider": null,
+      "userArn": null,
+      "userAgent": "curl/7.48.0",
+      "user": null
+    },
+    "resourcePath": "/{proxy+}",
+    "httpMethod": "GET",
+    "apiId": "iwcgwgigca"
+  },
+  "body": null,
+  "isBase64Encoded": false
+}`
+
 var postEvent = `{
   "resource": "/{proxy+}",
   "path": "/pets/tobi",
