@@ -38,18 +38,34 @@ func TestMerge(t *testing.T) {
 	rules := Rules{
 		"*": {
 			"X-Type": "html",
+			"X-Foo":  "bar",
+		},
+		"/login": {
+			"X-Something": "here",
 		},
 	}
-	m, err := Compile(rules)
-	assert.NoError(t, err, "compile")
-	assert.Equal(t, Fields{"X-Type": "html"}, m.Lookup("/something"))
 
-	Merge(rules, Rules{
+	rules = Merge(rules, Rules{
 		"*": {
 			"X-Type": "pdf",
 		},
+		"/admin": {
+			"X-Something": "here",
+		},
 	})
-	m, err = Compile(rules)
-	assert.NoError(t, err, "compile")
-	assert.Equal(t, Fields{"X-Type": "pdf"}, m.Lookup("/something"))
+
+	expected := Rules{
+		"*": {
+			"X-Type": "pdf",
+			"X-Foo":  "bar",
+		},
+		"/login": {
+			"X-Something": "here",
+		},
+		"/admin": {
+			"X-Something": "here",
+		},
+	}
+
+	assert.Equal(t, expected, rules)
 }
