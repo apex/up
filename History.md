@@ -1,4 +1,23 @@
 
+v0.2.2 / 2017-09-05
+===================
+
+  * add logging of log query for debugging
+  * add stage shorthands to log grammar. Closes #286
+  * add bytes / duration units to logging grammar. Closes #283
+  * add humanization of .size field in logs. Closes #252
+  * add support for checking domain availability and registration. Closes #159
+  * add support for multiple hook commands with arrays. Closes #127
+  * add forced inclusion of ./server
+  * add eu-west-2 to the regions list. Closes #280
+  * fix ignoring of node_modules dotfiles (removed .bin by accident etc)
+  * fix stage validation, move before building zip
+  * fix support for other authentication schemes. Closes #287
+  * fix dns record .ttl default
+  * rename .proxy.timeout to .proxy.listen_timeout (BREAKING)
+  * remove `docs` command
+  * remove omission of stage from logs
+
 v0.2.1 / 2017-08-25
 ===================
 
