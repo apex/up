@@ -101,3 +101,12 @@ Thank you to all our sponsors! (please ask your company to also support this ope
 <a href="https://opencollective.com/apex-up/sponsor/7/website" target="_blank"><img src="https://opencollective.com/apex-up/sponsor/7/avatar.svg"></a>
 <a href="https://opencollective.com/apex-up/sponsor/8/website" target="_blank"><img src="https://opencollective.com/apex-up/sponsor/8/avatar.svg"></a>
 <a href="https://opencollective.com/apex-up/sponsor/9/website" target="_blank"><img src="https://opencollective.com/apex-up/sponsor/9/avatar.svg"></a>
+
+## Releases
+
+Notes for myself:
+
+- Run `git changelog`
+- Run `git release`
+- Run `make release`
+- Re-build documentation
