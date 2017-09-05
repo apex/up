@@ -1,4 +1,4 @@
-package open
+package url
 
 import (
 	"fmt"

@@ -1,4 +1,4 @@
-package open
+package build
 
 import (
 	"archive/zip"
