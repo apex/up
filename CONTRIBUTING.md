@@ -62,6 +62,9 @@ The proxy accepts AWS Lambda events from API Gateway, translates them to HTTP, a
 
 Reverse proxy features such as URL rewriting, gzip compression, script injection, error pages and others are also provided in `up-proxy`.
 
+## Roadmap
+
+Up uses GitHub issue tracking and milestones for its loose roadmap. I highly recommend installing Zenhub (https://www.zenhub.com/) as well, however I primarily organize by milestones and labels for now.
 
 ## Financial contributions
 
@@ -70,7 +73,6 @@ Anyone can file an expense. If the expense makes sense for the development of th
 
 
 ## Credits
-
 
 ### Contributors
 
