@@ -27,7 +27,7 @@ func (r *Relay) Default() error {
 	}
 
 	if r.ListenTimeout == 0 {
-		r.ListenTimeout = 5
+		r.ListenTimeout = 15
 	}
 
 	if err := r.Backoff.Default(); err != nil {

@@ -440,7 +440,7 @@ The following settings are available:
   - When `app.js` is detected `node app.js` is used
   - When `app.py` is detected `python app.py` is used
 - `backoff` – Backoff configuration object described in "Crash Recovery"
-- `listen_timeout` – Timeout in seconds Up will wait for your app to boot and listen on `PORT`
+- `listen_timeout` – Timeout in seconds Up will wait for your app to boot and listen on `PORT` (Default `15`)
 
 ```json
 {
