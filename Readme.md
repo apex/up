@@ -6,46 +6,9 @@ Up focuses on deploying "vanilla" HTTP servers so there's nothing new to learn, 
 
 Up currently supports Node.js, Golang, Python, Crystal, and static sites out of the box. Up is platform-agnostic, supporting AWS Lambda and API Gateway as the first targets. You can think of Up as self-hosted Heroku style user experience for a fraction of the price, with the security, flexibility, and scalability of AWS.
 
+Check out the [documentation](https://apex.github.io/up/) for more instructions, try one of the [examples](https://github.com/apex/up-examples), or chat with us in [Slack](https://apex-dev.azurewebsites.net/).
+
 ![](assets/screen.png)
-
-## Getting Started
-
-Install Up:
-
-```
-$ curl -sfL https://raw.githubusercontent.com/apex/up/master/install.sh | sh
-```
-
-Tell up which AWS profile to use:
-
-```
-export AWS_PROFILE=example
-```
-
-Create an `app.js` file:
-
-```js
-const http = require('http')
-const { PORT = 3000 } = process.env
-
-http.createServer((req, res) => {
-  res.end('Hello World\n')
-}).listen(PORT)
-```
-
-Deploy the app:
-
-```
-$ up
-```
-
-Open it in the browser:
-
-```
-$ up url --open
-```
-
-Check out the [documentation](https://apex.github.io/up/) for more instructions, try one of the [examples](https://github.com/apex/up-examples), or chat with us in [Slack](https://apex-dev.azurewebsites.net/). Up is still very early in development, if you have no AWS experience you may want to hold off for a future release.
 
 ## Features
 
@@ -64,6 +27,40 @@ Close sourced pro edition: Coming less soon.
 Updated as of July 2017 based on public information. Some services offer a restricted free version, or free access for solo developers – this table is based on commercial use.
 
 ![Pricing comparison table](assets/pricing.png)
+
+## Quick Start
+
+Install Up:
+
+```
+$ curl -sfL https://raw.githubusercontent.com/apex/up/master/install.sh | sh
+```
+
+Tell up which AWS profile to use:
+
+```
+export AWS_PROFILE=example
+```
+
+Create an `app.js` file:
+
+```js
+require('http').createServer((req, res) => {
+  res.end('Hello World\n')
+}).listen(process.env.PORT)
+```
+
+Deploy the app:
+
+```
+$ up
+```
+
+Open it in the browser:
+
+```
+$ up url --open
+```
 
 ## Community
 
