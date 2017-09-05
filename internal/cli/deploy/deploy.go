@@ -10,6 +10,7 @@ import (
 	"github.com/apex/up/internal/cli/root"
 	"github.com/apex/up/internal/stats"
 	"github.com/apex/up/internal/util"
+	"github.com/apex/up/internal/validate"
 )
 
 func init() {
@@ -26,7 +27,6 @@ func init() {
 		}
 
 		start := time.Now()
-		defer util.Pad()()
 
 		stats.Track("Deploy", map[string]interface{}{
 			"duration":             time.Since(start) / time.Millisecond,
@@ -48,6 +48,12 @@ func init() {
 				log.WithError(err).Warn("flushing analytics")
 			}
 		}()
+
+		if err := validate.Stage(*stage); err != nil {
+			return err
+		}
+
+		defer util.Pad()()
 
 		if err := p.Deploy(*stage); err != nil {
 			return err

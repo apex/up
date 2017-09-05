@@ -24,7 +24,6 @@ import (
 	"github.com/apex/up/internal/proxy/bin"
 	"github.com/apex/up/internal/shim"
 	"github.com/apex/up/internal/util"
-	"github.com/apex/up/internal/validate"
 	"github.com/apex/up/internal/zip"
 	"github.com/apex/up/platform"
 	"github.com/apex/up/platform/event"
@@ -198,10 +197,6 @@ func (p *Platform) URL(region, stage string) (string, error) {
 	s := session.New(aws.NewConfig().WithRegion(region))
 	c := apigateway.New(s)
 
-	if err := validate.Stage(stage); err != nil {
-		return "", err
-	}
-
 	api, err := p.getAPI(c)
 	if err != nil {
 		return "", errors.Wrap(err, "fetching api")
@@ -268,10 +263,6 @@ func (p *Platform) deploy(region, stage string) (version string, err error) {
 	s := session.New(aws.NewConfig().WithRegion(region))
 	a := apigateway.New(s)
 	c := lambda.New(s)
-
-	if err := validate.Stage(stage); err != nil {
-		return "", err
-	}
 
 	ctx.Debug("fetching function config")
 	_, err = c.GetFunctionConfiguration(&lambda.GetFunctionConfigurationInput{

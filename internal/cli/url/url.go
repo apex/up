@@ -10,6 +10,7 @@ import (
 
 	"github.com/apex/up/internal/cli/root"
 	"github.com/apex/up/internal/stats"
+	"github.com/apex/up/internal/validate"
 )
 
 func init() {
@@ -40,6 +41,10 @@ func init() {
 			"open":   *open,
 			"copy":   *copy,
 		})
+
+		if err := validate.Stage(*stage); err != nil {
+			return err
+		}
 
 		url, err := p.URL(region, *stage)
 		if err != nil {
