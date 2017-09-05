@@ -96,7 +96,6 @@ func test(t *testing.T, h http.Handler) {
 		h.ServeHTTP(res, req)
 
 		assert.Equal(t, 200, res.Code)
-		assert.Equal(t, "text/plain; charset=utf-8", res.Header().Get("Content-Type"))
 		assert.Equal(t, "Index\n", res.Body.String())
 	})
 
@@ -153,6 +152,7 @@ func test(t *testing.T, h http.Handler) {
 		h.ServeHTTP(res, req)
 
 		assert.Equal(t, 200, res.Code)
+		assert.Equal(t, "text/html; charset=utf-8", res.Header().Get("Content-Type"))
 		assert.Equal(t, "Index\n", res.Body.String())
 	})
 

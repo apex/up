@@ -20,22 +20,25 @@ var ctx = logs.Plugin("redirects")
 
 type rewrite struct {
 	http.ResponseWriter
-	header bool
-	ignore bool
+	header     bool
+	isNotFound bool
 }
 
 // WriteHeader implementation.
 func (r *rewrite) WriteHeader(code int) {
 	r.header = true
-	r.ignore = code == 404
-	if !r.ignore {
-		r.ResponseWriter.WriteHeader(code)
+	r.isNotFound = code == 404
+
+	if r.isNotFound {
+		return
 	}
+
+	r.ResponseWriter.WriteHeader(code)
 }
 
 // Write implementation.
 func (r *rewrite) Write(b []byte) (int, error) {
-	if r.ignore {
+	if r.isNotFound {
 		return len(b), nil
 	}
 
@@ -89,10 +92,14 @@ func New(c *up.Config, next http.Handler) (http.Handler, error) {
 			res := &rewrite{ResponseWriter: w}
 			next.ServeHTTP(res, r)
 
-			if res.ignore {
+			if res.isNotFound {
 				ctx.WithField("dest", path).Info("rewrite")
 				r.Header.Set("X-Original-Path", r.URL.Path)
 				r.URL.Path = path
+				// This hack is necessary for SPAs because the Go
+				// static file server uses .html to set the correct mime,
+				// ideally it uses the file's extension or magic number etc.
+				w.Header().Set("Content-Type", "text/html; charset=utf-8")
 				next.ServeHTTP(w, r)
 			}
 			return
