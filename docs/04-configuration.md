@@ -440,16 +440,18 @@ The following settings are available:
   - When `app.js` is detected `node app.js` is used
   - When `app.py` is detected `python app.py` is used
 - `backoff` – Backoff configuration object described in "Crash Recovery"
+- `listen_timeout` – Timeout in seconds Up will wait for your app to boot and listen on `PORT`
 
 ```json
 {
   "proxy": {
-    "command": "node app.js"
+    "command": "node app.js",
+    "listen_timeout": 30
   }
 }
 ```
 
-## Crash Recovery
+### Crash Recovery
 
 Another benefit of using Up as a reverse proxy is performing crash recovery, restarting your server upon crashing and re-attempting the request before responding to the client with an error.
 
