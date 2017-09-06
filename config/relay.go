@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"time"
 
 	"github.com/jpillora/backoff"
@@ -28,6 +29,11 @@ func (r *Relay) Default() error {
 
 	if r.ListenTimeout == 0 {
 		r.ListenTimeout = 15
+	}
+
+	if r.ListenTimeout >= 30 {
+		err := fmt.Errorf("listen_timeout should be less 30s (APIGateway integration limit)")
+		return errors.Wrap(err, ".listen_timeout")
 	}
 
 	if err := r.Backoff.Default(); err != nil {
