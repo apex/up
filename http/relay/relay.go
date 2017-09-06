@@ -56,6 +56,10 @@ type Proxy struct {
 	restarts int
 	port     int
 	target   *url.URL
+
+	// maxRetries is the number of times to retry a single request before failing alltogether
+	maxRetries int
+
 	*httputil.ReverseProxy
 }
 
@@ -113,9 +117,9 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 // RoundTrip implementation.
 func (p *Proxy) RoundTrip(r *http.Request) (*http.Response, error) {
-	// TODO: give up after N attempts
-
 	b := p.config.Proxy.Backoff.Backoff()
+
+	retries := 0
 
 retry:
 	// replace host as it will change on restart
@@ -126,6 +130,12 @@ retry:
 	if err == nil {
 		return res, nil
 	}
+
+	if retries >= p.maxRetries {
+		return nil, err
+	}
+
+	retries++
 
 	// temporary error, try again
 	if e, ok := err.(net.Error); ok && e.Temporary() {
