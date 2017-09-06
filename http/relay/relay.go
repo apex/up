@@ -66,6 +66,10 @@ type Proxy struct {
 	// maxRetries is the number of times to retry a single request before failing alltogether
 	maxRetries int
 
+	// shutdownTimeout is the amount of time to wait between sending a SIGINT before
+	// killing with a SIGKILL
+	shutdownTimeout time.Duration
+
 	*httputil.ReverseProxy
 }
 
@@ -75,8 +79,9 @@ func New(c *up.Config) (http.Handler, error) {
 		config: c,
 		// We want to buffer this channel so that we can bound the number of concurrent processes
 		// currently executing, and prevent exhausting the ulimits of the host OS
-		cmdCleanup: make(chan *exec.Cmd, 3),
-		maxRetries: 3,
+		cmdCleanup:      make(chan *exec.Cmd, 3),
+		maxRetries:      c.Proxy.Backoff.Attempts,
+		shutdownTimeout: time.Duration(c.Proxy.ShutdownTimeout) * time.Second,
 	}
 
 	if err := p.Start(); err != nil {
@@ -131,8 +136,6 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (p *Proxy) RoundTrip(r *http.Request) (*http.Response, error) {
 	b := p.config.Proxy.Backoff.Backoff()
 
-	retries := 0
-
 retry:
 	// replace host as it will change on restart
 	r.URL.Host = p.target.Host
@@ -143,11 +146,10 @@ retry:
 		return res, nil
 	}
 
-	if retries >= p.maxRetries {
+	// the backoff library used float64 for attempts?
+	if b.Attempt() >= float64(p.maxRetries) {
 		return nil, err
 	}
-
-	retries++
 
 	// temporary error, try again
 	if e, ok := err.(net.Error); ok && e.Temporary() {
@@ -199,9 +201,6 @@ func (p *Proxy) start() error {
 		return errors.Wrap(err, "parsing url")
 	}
 
-	p.port = port
-	p.target = target
-
 	ctx.Infof("executing %q", p.config.Proxy.Command)
 
 	cmd = exec.Command("sh", "-c", p.config.Proxy.Command)
@@ -213,7 +212,9 @@ func (p *Proxy) start() error {
 		return errors.Wrap(err, "running command")
 	}
 
-	// Only remember this command it if was successfully started
+	// Only remember these properties it if was successfully started
+	p.port = port
+	p.target = target
 	p.cmd = cmd
 	ctx.Infof("proxy (pid=%d) started", cmd.Process.Pid)
 
@@ -294,7 +295,7 @@ func (p *Proxy) cleanupAbandoned() {
 		select {
 		case <-waitDone:
 			continue
-		case <-time.After(10 * time.Second):
+		case <-time.After(p.shutdownTimeout):
 			ctx.Warnf("proxy (pid=%d) sending SIGKILL", cmd.Process.Pid)
 			cmd.Process.Kill()
 			<-waitDone
