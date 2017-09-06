@@ -188,7 +188,7 @@ func list(cmd *kingpin.CmdClause) {
 			if d.AutoRenew {
 				s = " renews"
 			}
-			fmt.Printf("  %-40s %s %s\n", colors.Purple(d.Name), s, d.Expiry.Format(time.Stamp))
+			fmt.Printf("  %-45s %s %s\n", colors.Purple(d.Name), s, d.Expiry.Format(time.RFC3339))
 		}
 
 		return nil
