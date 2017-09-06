@@ -136,6 +136,7 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 func (p *Proxy) RoundTrip(r *http.Request) (*http.Response, error) {
 	b := p.config.Proxy.Backoff.Backoff()
 
+	retries := 0
 retry:
 	// replace host as it will change on restart
 	r.URL.Host = p.target.Host
@@ -146,10 +147,11 @@ retry:
 		return res, nil
 	}
 
-	// the backoff library used float64 for attempts?
-	if b.Attempt() >= float64(p.maxRetries) {
+	if retries >= p.maxRetries {
 		return nil, err
 	}
+
+	retries++
 
 	// temporary error, try again
 	if e, ok := err.(net.Error); ok && e.Temporary() {

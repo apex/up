@@ -161,6 +161,7 @@ func TestConfig_defaultRegions(t *testing.T) {
 			Type:    "server",
 			Regions: regions,
 		}
+		assert.NoError(t, c.Default(), "default")
 
 		assert.NoError(t, c.defaultRegions(), "defaultRegions")
 		assert.Equal(t, 2, len(c.Regions), "regions should have length 2")
@@ -177,10 +178,12 @@ func TestConfig_defaultRegions(t *testing.T) {
 			Name: "api",
 			Type: "server",
 		}
+		assert.NoError(t, c.Default(), "default")
 
 		assert.NoError(t, c.defaultRegions(), "defaultRegions")
 		assert.Equal(t, 1, len(c.Regions), "regions should have length 1")
 		assert.Equal(t, region, c.Regions[0], "should read regions from AWS_REGION")
+		assert.NoError(t, c.Default(), "default")
 		assert.NoError(t, c.Validate(), "validate")
 	})
 
@@ -194,6 +197,7 @@ func TestConfig_defaultRegions(t *testing.T) {
 			Name: "api",
 			Type: "server",
 		}
+		assert.NoError(t, c.Default(), "default")
 
 		assert.NoError(t, c.defaultRegions(), "defaultRegions")
 		assert.Equal(t, 1, len(c.Regions), "regions should have length 1")
@@ -224,6 +228,7 @@ func TestConfig_defaultRegions(t *testing.T) {
 			Name: "api",
 			Type: "server",
 		}
+		assert.NoError(t, c.Default(), "default")
 
 		assert.NoError(t, c.defaultRegions(), "defaultRegions")
 		assert.Equal(t, 1, len(c.Regions), "regions should have length 1")
@@ -257,6 +262,7 @@ func TestConfig_defaultRegions(t *testing.T) {
 			Name: "api",
 			Type: "server",
 		}
+		assert.NoError(t, c.Default(), "default")
 
 		assert.NoError(t, c.defaultRegions(), "defaultRegions")
 		assert.Equal(t, 1, len(c.Regions), "regions should have length 1")
@@ -272,6 +278,7 @@ func TestConfig_defaultRegions(t *testing.T) {
 			Name: "api",
 			Type: "server",
 		}
+		assert.NoError(t, c.Default(), "default")
 
 		assert.NoError(t, c.defaultRegions(), "defaultRegions")
 		assert.Equal(t, 1, len(c.Regions), "regions should have length 1")
