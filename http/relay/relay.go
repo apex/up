@@ -201,6 +201,9 @@ func (p *Proxy) start() error {
 		return errors.Wrap(err, "parsing url")
 	}
 
+	p.port = port
+	p.target = target
+
 	ctx.Infof("executing %q", p.config.Proxy.Command)
 
 	cmd = exec.Command("sh", "-c", p.config.Proxy.Command)
@@ -212,9 +215,7 @@ func (p *Proxy) start() error {
 		return errors.Wrap(err, "running command")
 	}
 
-	// Only remember these properties it if was successfully started
-	p.port = port
-	p.target = target
+	// Only remember this if it was successfully started
 	p.cmd = cmd
 	ctx.Infof("proxy (pid=%d) started", cmd.Process.Pid)
 
