@@ -58,20 +58,3 @@ func NewRequest(e *Input) (*http.Request, error) {
 
 	return req, nil
 }
-
-// basic auth parser.
-func basic(s string) (user, pass string, err error) {
-	p := strings.SplitN(s, " ", 2)
-
-	if len(p) != 2 || p[0] != "Basic" {
-		return "", "", errors.New("malformed")
-	}
-
-	b, err := base64.StdEncoding.DecodeString(p[1])
-	if err != nil {
-		return "", "", errors.Wrap(err, "decoding")
-	}
-
-	pair := strings.SplitN(string(b), ":", 2)
-	return pair[0], pair[1], nil
-}
