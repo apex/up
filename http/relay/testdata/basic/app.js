@@ -61,7 +61,7 @@ routes['/close'] = (req, res) => {
   server.close(() => 1);
 
   res.writeHead(200, {
-    Connection: 'close',
+    Connection: 'close'
   });
 
   res.end('closed');
