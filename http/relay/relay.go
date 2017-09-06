@@ -28,7 +28,6 @@ import (
 // TODO: add timeout
 // TODO: scope all plugin logs to their plugin name
 // TODO: utilize BufferPool
-// TODO: if the first Start() fails then bail
 
 // log context.
 var ctx = logs.Plugin("relay")
