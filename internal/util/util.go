@@ -141,3 +141,17 @@ func Env(m map[string]string) (env []string) {
 	}
 	return
 }
+
+// PrefixLines prefixes the lines in s with prefix.
+func PrefixLines(s string, prefix string) string {
+	lines := strings.Split(s, "\n")
+	for i, l := range lines {
+		lines[i] = prefix + l
+	}
+	return strings.Join(lines, "\n")
+}
+
+// Indent the given string.
+func Indent(s string) string {
+	return PrefixLines(s, "  ")
+}
