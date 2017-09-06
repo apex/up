@@ -12,6 +12,7 @@ import (
 	"os"
 	"os/exec"
 	"sync"
+	"syscall"
 	"time"
 
 	"github.com/apex/log"
@@ -24,7 +25,6 @@ import (
 	"github.com/apex/up/internal/logs/writer"
 )
 
-// TODO: Wait() and handle error
 // TODO: add timeout
 // TODO: scope all plugin logs to their plugin name
 // TODO: utilize BufferPool
@@ -57,6 +57,13 @@ type Proxy struct {
 	port     int
 	target   *url.URL
 
+	// cmd refers to the currently running (active) proxy subprocss
+	cmd *exec.Cmd
+
+	// cmdCleanup is a channel that queues abandoned commands so they can be cleaned up
+	// and resources reclaimed
+	cmdCleanup chan *exec.Cmd
+
 	// maxRetries is the number of times to retry a single request before failing alltogether
 	maxRetries int
 
@@ -67,12 +74,18 @@ type Proxy struct {
 func New(c *up.Config) (http.Handler, error) {
 	p := &Proxy{
 		config: c,
+		// We want to buffer this channel so that we can bound the number of concurrent processes
+		// currently executing, and prevent exhausting the ulimits of the host OS
+		cmdCleanup: make(chan *exec.Cmd, 3),
+		maxRetries: 3,
 	}
 
 	if err := p.Start(); err != nil {
 		return nil, err
 	}
 
+	// Launch a goroutine for cleaning up the old commands as they are abandoned
+	go p.cleanupAbandoned()
 	return p, nil
 }
 
@@ -170,29 +183,40 @@ func (p *Proxy) environment() []string {
 
 // start the server on a free port.
 func (p *Proxy) start() error {
+	cmd := p.cmd
+	p.cmd = nil
+
+	// Send this previous command to be cleaned up (Waited on, killed if necessary)
+	p.cmdCleanup <- cmd
+
 	port, err := freeport.Get()
 	if err != nil {
 		return errors.Wrap(err, "getting free port")
 	}
-	p.port = port
+
 	ctx.Infof("found free port %d", port)
-
-	ctx.Infof("executing %q", p.config.Proxy.Command)
-	cmd := exec.Command("sh", "-c", p.config.Proxy.Command)
-	cmd.Stdout = writer.New(log.InfoLevel)
-	cmd.Stderr = writer.New(log.ErrorLevel)
-	env := append(p.environment(), "PATH=node_modules/.bin:"+os.Getenv("PATH"))
-	cmd.Env = append(os.Environ(), env...)
-
-	if err := cmd.Start(); err != nil {
-		return errors.Wrap(err, "running command")
-	}
-
 	target, err := url.Parse(fmt.Sprintf("http://127.0.0.1:%d", port))
 	if err != nil {
 		return errors.Wrap(err, "parsing url")
 	}
+
+	p.port = port
 	p.target = target
+
+	ctx.Infof("executing %q", p.config.Proxy.Command)
+
+	cmd = exec.Command("sh", "-c", p.config.Proxy.Command)
+	cmd.Stdout = writer.New(log.InfoLevel)
+	cmd.Stderr = writer.New(log.ErrorLevel)
+	env := append(p.environment(), "PATH=node_modules/.bin:"+os.Getenv("PATH"))
+	cmd.Env = append(os.Environ(), env...)
+	if err := cmd.Start(); err != nil {
+		return errors.Wrap(err, "running command")
+	}
+
+	// Only remember this command it if was successfully started
+	p.cmd = cmd
+	ctx.Infof("proxy (pid=%d) started", cmd.Process.Pid)
 
 	return nil
 }
@@ -233,4 +257,48 @@ func isListening(u *url.URL) bool {
 
 	conn.Close()
 	return true
+}
+
+// cleanupAbandoned consumes the cmdCleanup channel and signals abandoned processes to shut down
+// and release their resources.
+func (p *Proxy) cleanupAbandoned() {
+	for cmd := range p.cmdCleanup {
+		if cmd == nil {
+			continue
+		}
+
+		// Set up a channel to wait for this process to complete processing cleanly
+		waitDone := make(chan bool, 1)
+		go func() {
+			err := cmd.Wait()
+			ps := cmd.ProcessState
+			if e, ok := err.(*exec.ExitError); ok && e != nil {
+				ps = e.ProcessState
+			}
+
+			exitCode := "?"
+			if ps != nil {
+				sys := ps.Sys()
+				if x, ok := sys.(syscall.WaitStatus); ok {
+					exitCode = fmt.Sprintf("%d", x.ExitStatus())
+				}
+			}
+
+			ctx.Infof("proxy (pid=%d) exited with code=%s", cmd.Process.Pid, exitCode)
+			waitDone <- true
+		}()
+
+		// We have deemed this command suitable for cleanup, but we aren't positive the reason
+		// was because of an actual process shutdown.  First try to nicely send a SIGINT.
+		cmd.Process.Signal(os.Interrupt)
+
+		select {
+		case <-waitDone:
+			continue
+		case <-time.After(10 * time.Second):
+			ctx.Warnf("proxy (pid=%d) sending SIGKILL", cmd.Process.Pid)
+			cmd.Process.Kill()
+			<-waitDone
+		}
+	}
 }
