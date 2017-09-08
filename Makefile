@@ -8,20 +8,21 @@ build:
 
 # Install from source.
 install:
+	@echo "==> Installing up ${GOPATH}/bin/up"
 	@$(GO) install ./...
-	@echo "==> Installed up ${GOPATH}/bin/up"
 .PHONY: install
 
 # Install the development dependencies.
 install.deps:
+	@echo "==> Installing dev dependencies"
+	@$(GO) get -u /github.com/rsc/gt
 	@$(GO) get -u github.com/jteeuwen/go-bindata/...
 	@$(GO) get -u github.com/pointlander/peg/...
-	@echo "==> Install all development dependencies"
 .PHONY: install.deps
 
 # Run all tests.
 test:
-	@$(GO) test -cover ./...
+	@gt ./... && echo "\n==>\033[32m Ok\033[m\n"
 .PHONY: test
 
 # Test setup for CI.

@@ -32,6 +32,12 @@ Grab the dependencies:
 $ dep ensure
 ```
 
+Grab the dev dependencies:
+
+```
+make install.deps
+```
+
 ## Testing
 
 ```
