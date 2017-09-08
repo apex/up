@@ -293,7 +293,7 @@ retry:
 		MemorySize:   aws.Int64(int64(p.config.Lambda.Memory)),
 		Timeout:      aws.Int64(int64(p.config.Lambda.Timeout)),
 		Publish:      aws.Bool(true),
-		Environment:  toEnv(p.config.Environment),
+		Environment:  toEnv(p.config.Environment, stage),
 		Code: &lambda.FunctionCode{
 			ZipFile: p.zip.Bytes(),
 		},
@@ -329,7 +329,7 @@ func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, st
 		Role:         &p.config.Lambda.Role,
 		MemorySize:   aws.Int64(int64(p.config.Lambda.Memory)),
 		Timeout:      aws.Int64(int64(p.config.Lambda.Timeout)),
-		Environment:  toEnv(p.config.Environment),
+		Environment:  toEnv(p.config.Environment, stage),
 	})
 
 	if err != nil {
@@ -516,8 +516,10 @@ func isCreatingRole(err error) bool {
 }
 
 // toEnv returns a lambda environment.
-func toEnv(env config.Environment) *lambda.Environment {
+func toEnv(env config.Environment, stage string) *lambda.Environment {
+	m := aws.StringMap(env)
+	m["UP_STAGE"] = &stage
 	return &lambda.Environment{
-		Variables: aws.StringMap(env),
+		Variables: m,
 	}
 }
