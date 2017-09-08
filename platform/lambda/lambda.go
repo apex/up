@@ -63,7 +63,7 @@ var apiGatewayAssumePolicy = `{
 }`
 
 // policy for the lambda function.
-var logWritePolicy = `{
+var functionPolicy = `{
 	"Version": "2012-10-17",
 	"Statement": [
 		{
@@ -72,7 +72,8 @@ var logWritePolicy = `{
 			"Action": [
 				"logs:CreateLogGroup",
 				"logs:CreateLogStream",
-				"logs:PutLogEvents"
+				"logs:PutLogEvents",
+				"ssm:GetParametersByPath"
 			]
 		}
 	]
@@ -422,7 +423,7 @@ func (p *Platform) createRole() error {
 	_, err = c.PutRolePolicy(&iam.PutRolePolicyInput{
 		PolicyName:     &name,
 		RoleName:       &name,
-		PolicyDocument: &logWritePolicy,
+		PolicyDocument: &functionPolicy,
 	})
 
 	if err != nil {
