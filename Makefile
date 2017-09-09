@@ -3,6 +3,8 @@ GO ?= go
 
 # Build all files.
 build:
+	@echo "==> Building"
+	@rm internal/proxy/bin/bin_assets.go
 	@$(GO) generate ./...
 .PHONY: build
 
