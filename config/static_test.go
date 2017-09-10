@@ -11,7 +11,7 @@ func TestStatic(t *testing.T) {
 	cwd, _ := os.Getwd()
 
 	table := []struct {
-		dir   Static
+		Static
 		valid bool
 	}{
 		{Static{Dir: cwd}, true},
@@ -20,9 +20,9 @@ func TestStatic(t *testing.T) {
 
 	for _, row := range table {
 		if row.valid {
-			assert.NoError(t, row.dir.Validate())
+			assert.NoError(t, row.Validate())
 		} else {
-			assert.Error(t, row.dir.Validate())
+			assert.Error(t, row.Validate())
 		}
 	}
 }
