@@ -18,6 +18,13 @@ type Relay struct {
 	// ListenTimeout in seconds when waiting for
 	// the application to bind to PORT.
 	ListenTimeout int `json:"listen_timeout"`
+
+	// ShutdownTimeout in seconds to wait after
+	// sending a SIGINT before sending a SIGKILL.
+	ShutdownTimeout int `json:"shutdown_timeout"`
+
+	// platform is a currently unexported designation of the target deploy platform for this Relay
+	platform string
 }
 
 // Default implementation.
@@ -30,8 +37,46 @@ func (r *Relay) Default() error {
 		r.ListenTimeout = 15
 	}
 
+	if r.ShutdownTimeout == 0 {
+		r.ShutdownTimeout = 15
+	}
+
 	if err := r.Backoff.Default(); err != nil {
 		return errors.Wrap(err, ".backoff")
+	}
+
+	if r.platform == "" {
+		r.platform = "lambda"
+	}
+
+	return nil
+}
+
+// Validate will try to perform sanity checks for this Relay configuration.
+func (r *Relay) Validate() error {
+	if r.Command == "" {
+		err := errors.New("should not be empty")
+		return errors.Wrap(err, ".command")
+	}
+
+	if r.platform != "lambda" {
+		err := errors.New("internal consistency error, platform should be lambda")
+		return errors.Wrap(err, ".platform")
+	}
+
+	if r.ListenTimeout <= 0 {
+		err := errors.New("should be greater than 0")
+		return errors.Wrap(err, ".listen_timeout")
+	}
+
+	if r.platform == "lambda" && r.ListenTimeout > 25 {
+		err := errors.New("should be <= 25")
+		return errors.Wrap(err, ".listen_timeout")
+	}
+
+	if r.ShutdownTimeout < 0 {
+		err := errors.New("should be greater than 0")
+		return errors.Wrap(err, ".shutdown_timeout")
 	}
 
 	return nil

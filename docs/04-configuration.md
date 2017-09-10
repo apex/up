@@ -440,13 +440,15 @@ The following settings are available:
   - When `app.js` is detected `node app.js` is used
   - When `app.py` is detected `python app.py` is used
 - `backoff` – Backoff configuration object described in "Crash Recovery"
-- `listen_timeout` – Timeout in seconds Up will wait for your app to boot and listen on `PORT` (Default `15`)
+- `listen_timeout` – Timeout in seconds Up will wait for your app to boot and listen on `PORT` (Default `15`, Max `25`)
+- `shutdown_timeout` – Timeout in seconds Up will wait after sending a SIGINT to your server, before sending a SIGKILL (Default `15`)
 
 ```json
 {
   "proxy": {
     "command": "node app.js",
-    "listen_timeout": 30
+    "listen_timeout": 12,
+    "shutdown_timeout": 5
   }
 }
 ```
@@ -481,6 +483,8 @@ Here's an example tweaking the default behaviour:
   }
 }
 ```
+
+Since Up's purpose is to proxy your http traffic, Up will treat network errors as a crash.  When Up detects this, it will allow the server to cleanly close by sending a SIGINT, it the server does not close within `proxy.shutdown_timeout` seconds, it will forcibly close it with a SIGKILL.
 
 ## DNS Zones & Records
 

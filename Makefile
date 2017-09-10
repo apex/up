@@ -24,7 +24,7 @@ install.deps:
 
 # Run all tests.
 test:
-	@gt ./... && echo "\n==>\033[32m Ok\033[m\n"
+	@$(GO) test ./... && echo "\n==>\033[32m Ok\033[m\n"
 .PHONY: test
 
 # Test setup for CI.
