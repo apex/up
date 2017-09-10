@@ -1,8 +1,11 @@
 package relay
 
 import (
+	"io"
+	"net/http"
 	"net/http/httptest"
 	"os"
+	"strconv"
 	"strings"
 	"testing"
 	"time"
@@ -21,14 +24,55 @@ func TestRelay(t *testing.T) {
 	c := &up.Config{}
 	assert.NoError(t, c.Default(), "default")
 
-	h, err := New(c)
-	assert.NoError(t, err, "init")
+	var h http.Handler
+	newH := func(t *testing.T) {
+		localH, err := New(c)
+		assert.NoError(t, err, "init")
+		h = localH
+	}
+
+	// newRequestBody is a helper to fetch the body from a child process route
+	newRequestBody := func(t *testing.T, method, path string, body io.Reader) string {
+		t.Helper()
+		res := httptest.NewRecorder()
+		req := httptest.NewRequest(method, path, body)
+		h.ServeHTTP(res, req)
+		assert.Equal(t, 200, res.Code)
+		return res.Body.String()
+	}
+
+	// numRestarts fetches the numer of restarts for this relay handler (UP_RESTARTS env var)
+	numRestarts := func() int {
+		res := httptest.NewRecorder()
+		req := httptest.NewRequest("GET", "/env?key=UP_RESTARTS", nil)
+		h.ServeHTTP(res, req)
+		body := res.Body.String()
+		r, err := strconv.ParseInt(body, 10, 32)
+		if err != nil {
+			panic(err)
+		}
+
+		return int(r)
+	}
+
+	// childPid returns the pid of the child process currently running in the proxy
+	childPid := func(t *testing.T) int {
+		t.Helper()
+		body := newRequestBody(t, "GET", "/pid", nil)
+		r, err := strconv.ParseInt(body, 10, 32)
+		if err != nil {
+			panic(err)
+		}
+
+		return int(r)
+	}
 
 	t.Run("GET simple", func(t *testing.T) {
-		res := httptest.NewRecorder()
-		req := httptest.NewRequest("GET", "/hello", nil)
+		newH(t)
 
 		start := time.Now()
+		res := httptest.NewRecorder()
+		req := httptest.NewRequest("GET", "/hello", nil)
 		h.ServeHTTP(res, req)
 		t.Logf("latency = %s", time.Since(start))
 
@@ -38,12 +82,13 @@ func TestRelay(t *testing.T) {
 	})
 
 	t.Run("GET encoded path", func(t *testing.T) {
+		newH(t)
+
 		t.Run("200", func(t *testing.T) {
 			res := httptest.NewRecorder()
 			req := httptest.NewRequest("GET", "/echo/01BM82CJ9K1WK6EFJX8C1R4YH7/foo%20%25%20bar%20&%20baz%20=%20raz", nil)
 			req.Header.Set("Host", "example.com")
 			req.Header.Set("User-Agent", "tobi")
-
 			h.ServeHTTP(res, req)
 
 			body := `{
@@ -64,10 +109,11 @@ func TestRelay(t *testing.T) {
 	})
 
 	t.Run("POST basic", func(t *testing.T) {
+		newH(t)
+
 		t.Run("200", func(t *testing.T) {
 			res := httptest.NewRecorder()
 			req := httptest.NewRequest("POST", "/echo/something", strings.NewReader("Some body here"))
-
 			h.ServeHTTP(res, req)
 
 			body := `{
@@ -87,18 +133,100 @@ func TestRelay(t *testing.T) {
 		})
 	})
 
+	closeApp := func(t *testing.T) {
+		t.Helper()
+		r1 := numRestarts()
+		body := newRequestBody(t, "GET", "/close", nil)
+		assertString(t, "closed", body)
+
+		r2 := numRestarts()
+		assert.Equal(t, r2, r1+1)
+	}
+
+	// A bad route (such as /throw) eventually stops retrying
+	t.Run("bad route", func(t *testing.T) {
+		newH(t)
+
+		r1 := numRestarts()
+		res := httptest.NewRecorder()
+		req := httptest.NewRequest("GET", "/throw", nil)
+		h.ServeHTTP(res, req)
+		r2 := numRestarts()
+
+		// Be a good proxy now
+		assert.Equal(t, 502, res.Code)
+
+		// 3 retries == 4 tries
+		assert.Equal(t, r2-r1, 4)
+	})
+
 	t.Run("restart server", func(t *testing.T) {
+		newH(t)
+
 		t.Run("200", func(t *testing.T) {
-			res := httptest.NewRecorder()
-			req := httptest.NewRequest("GET", "/throw/env", nil)
+			body := newRequestBody(t, "GET", "/throw/env", nil)
+			assertString(t, "Hello", body)
+		})
 
-			h.ServeHTTP(res, req)
+		t.Run("use after close", func(t *testing.T) {
+			closeApp(t)
+		})
 
-			assert.Equal(t, 200, res.Code)
-			assertString(t, "Hello", res.Body.String())
+		t.Run("use after close restart loop", func(t *testing.T) {
+			for i := 0; i < 7; i++ {
+				closeApp(t)
+			}
 		})
 	})
 
+	t.Run("child process cleanup", func(t *testing.T) {
+
+		// In this test, we test that a child process who stops accepting network connections
+		// (but hasn't crashed) is gracefully asked to be shut down
+		t.Run("net offline zombie", func(t *testing.T) {
+			newH(t)
+
+			pid := childPid(t)
+			process, err := os.FindProcess(pid)
+			assert.NoError(t, err, "find process")
+
+			start := time.Now()
+			closeApp(t)
+			ps, err := process.Wait()
+			if err != nil {
+				// This process might have completed before this test progressed this far
+				assert.Contains(t, err.Error(), "no child processes")
+				return
+			}
+
+			assert.True(t, time.Since(start).Seconds() >= 10)
+			assert.True(t, time.Since(start).Seconds() < 12)
+			assert.NoError(t, err, "zombie wait")
+			assert.True(t, ps.Exited())
+		})
+
+		// In this test, we test that a child process who swallows the "nice" shutdown signal
+		// will eventually be sent a SIGKILL and shut down
+		t.Run("signal swallower", func(t *testing.T) {
+			newH(t)
+
+			pid := childPid(t)
+			process, err := os.FindProcess(pid)
+			assert.NoError(t, err, "find process")
+
+			// First, swallow any 'normal' signals
+			newRequestBody(t, "GET", "/swallowSignals", nil)
+
+			// Then close the app (this triggers a restart)
+			closeApp(t)
+			_, err = process.Wait()
+			if err != nil {
+				// This process might have completed before this test progressed this far
+				assert.Contains(t, err.Error(), "no child processes")
+				return
+			}
+		})
+	})
 }
 
 // TODO: move test to handler pkg or just test the config
@@ -124,6 +252,7 @@ func TestRelay_node(t *testing.T) {
 }
 
 func assertString(t testing.TB, want, got string) {
+	t.Helper()
 	if want != got {
 		t.Fatalf("\nwant:\n\n%s\n\ngot:\n\n%s\n", want, got)
 	}

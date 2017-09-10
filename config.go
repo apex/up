@@ -118,6 +118,10 @@ func (c *Config) Validate() error {
 		return errors.Wrap(err, ".inject")
 	}
 
+	if err := c.Proxy.Validate(); err != nil {
+		return errors.Wrap(err, ".proxy")
+	}
+
 	return nil
 }
 
