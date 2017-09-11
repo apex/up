@@ -569,6 +569,8 @@ Another use-case for negation is to ignore everything and explicitly include a n
 *
 !app.js
 !package.json
+!node_modules/**
+!src/**
 ```
 
 ### Inspecting
@@ -611,4 +613,11 @@ You can be more specific with a leading `./`:
 
 ```
 ./src
+```
+
+Files can be matched recursively using `**`, for example ignoring everything except the files in `dist`:
+
+```
+*
+!dist/**
 ```
