@@ -158,12 +158,6 @@
   version = "0.2.2"
 
 [[projects]]
-  branch = "master"
-  name = "github.com/jpillora/backoff"
-  packages = ["."]
-  revision = "06c7a16c845dc8e0bf575fafeeca0f5462f5eb4d"
-
-[[projects]]
   name = "github.com/klauspost/compress"
   packages = ["flate","zip"]
   revision = "6c8db69c4b49dd4df1fff66996cf556176d0b9bf"
@@ -352,6 +346,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "5bb0f35b2b64fadc763abfe71ae71c3094a99c862407ab60d4f8f1cb496e4093"
+  inputs-digest = "e89f808ecc6a7950135cb4837704ea0148fc9da9f21f06eafe22bf2a85a316ff"
   solver-name = "gps-cdcl"
   solver-version = 1
