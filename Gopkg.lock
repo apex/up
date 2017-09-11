@@ -260,6 +260,12 @@
   revision = "748ebc778a698c0df0eb9855caf3ef677ed99471"
 
 [[projects]]
+  name = "github.com/tj/backoff"
+  packages = ["."]
+  revision = "1560017ae58934ab41c8393558fd179d7305941f"
+  version = "v1.0.0"
+
+[[projects]]
   name = "github.com/tj/go"
   packages = ["clipboard","term"]
   revision = "e8bb76359e4c18d5bc28f4aefb383f9cf9f5d573"
@@ -346,6 +352,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "1e8206f89530d7e6cc45c8300a1a1ab47128c61d75ba7a6e832bf604a35bbf7b"
+  inputs-digest = "5bb0f35b2b64fadc763abfe71ae71c3094a99c862407ab60d4f8f1cb496e4093"
   solver-name = "gps-cdcl"
   solver-version = 1

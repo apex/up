@@ -13,22 +13,27 @@ import (
 	"github.com/tj/assert"
 
 	"github.com/apex/up"
+	"github.com/apex/up/config"
 )
-
-// TODO: fix hanging
 
 func TestRelay(t *testing.T) {
 	os.Chdir("testdata/basic")
 	defer os.Chdir("../..")
 
-	c := &up.Config{}
+	c := &up.Config{
+		Proxy: config.Relay{
+			ListenTimeout:   2,
+			ShutdownTimeout: 2,
+		},
+	}
+
 	assert.NoError(t, c.Default(), "default")
 
 	var h http.Handler
-	newH := func(t *testing.T) {
-		localH, err := New(c)
+	newHandler := func(t *testing.T) {
+		v, err := New(c)
 		assert.NoError(t, err, "init")
-		h = localH
+		h = v
 	}
 
 	// newRequestBody is a helper to fetch the body from a child process route
@@ -55,8 +60,8 @@ func TestRelay(t *testing.T) {
 		return int(r)
 	}
 
-	// childPid returns the pid of the child process currently running in the proxy
-	childPid := func(t *testing.T) int {
+	// childPID returns the pid of the child process currently running in the proxy
+	childPID := func(t *testing.T) int {
 		t.Helper()
 		body := newRequestBody(t, "GET", "/pid", nil)
 		r, err := strconv.ParseInt(body, 10, 32)
@@ -68,7 +73,7 @@ func TestRelay(t *testing.T) {
 	}
 
 	t.Run("GET simple", func(t *testing.T) {
-		newH(t)
+		newHandler(t)
 
 		start := time.Now()
 		res := httptest.NewRecorder()
@@ -82,16 +87,15 @@ func TestRelay(t *testing.T) {
 	})
 
 	t.Run("GET encoded path", func(t *testing.T) {
-		newH(t)
+		newHandler(t)
 
-		t.Run("200", func(t *testing.T) {
-			res := httptest.NewRecorder()
-			req := httptest.NewRequest("GET", "/echo/01BM82CJ9K1WK6EFJX8C1R4YH7/foo%20%25%20bar%20&%20baz%20=%20raz", nil)
-			req.Header.Set("Host", "example.com")
-			req.Header.Set("User-Agent", "tobi")
-			h.ServeHTTP(res, req)
+		res := httptest.NewRecorder()
+		req := httptest.NewRequest("GET", "/echo/01BM82CJ9K1WK6EFJX8C1R4YH7/foo%20%25%20bar%20&%20baz%20=%20raz", nil)
+		req.Header.Set("Host", "example.com")
+		req.Header.Set("User-Agent", "tobi")
+		h.ServeHTTP(res, req)
 
-			body := `{
+		body := `{
   "header": {
     "host": "example.com",
     "user-agent": "tobi",
@@ -102,21 +106,19 @@ func TestRelay(t *testing.T) {
   "body": ""
 }`
 
-			assert.Equal(t, 200, res.Code)
-			assert.Equal(t, "application/json", res.Header().Get("Content-Type"))
-			assertString(t, body, res.Body.String())
-		})
+		assert.Equal(t, 200, res.Code)
+		assert.Equal(t, "application/json", res.Header().Get("Content-Type"))
+		assertString(t, body, res.Body.String())
 	})
 
 	t.Run("POST basic", func(t *testing.T) {
-		newH(t)
+		newHandler(t)
 
-		t.Run("200", func(t *testing.T) {
-			res := httptest.NewRecorder()
-			req := httptest.NewRequest("POST", "/echo/something", strings.NewReader("Some body here"))
-			h.ServeHTTP(res, req)
+		res := httptest.NewRecorder()
+		req := httptest.NewRequest("POST", "/echo/something", strings.NewReader("Some body here"))
+		h.ServeHTTP(res, req)
 
-			body := `{
+		body := `{
   "header": {
     "host": "example.com",
     "content-length": "14",
@@ -127,10 +129,9 @@ func TestRelay(t *testing.T) {
   "body": "Some body here"
 }`
 
-			assert.Equal(t, 200, res.Code)
-			assert.Equal(t, "application/json", res.Header().Get("Content-Type"))
-			assertString(t, body, res.Body.String())
-		})
+		assert.Equal(t, 200, res.Code)
+		assert.Equal(t, "application/json", res.Header().Get("Content-Type"))
+		assertString(t, body, res.Body.String())
 	})
 
 	closeApp := func(t *testing.T) {
@@ -145,7 +146,7 @@ func TestRelay(t *testing.T) {
 
 	// A bad route (such as /throw) eventually stops retrying
 	t.Run("bad route", func(t *testing.T) {
-		newH(t)
+		newHandler(t)
 
 		r1 := numRestarts()
 		res := httptest.NewRecorder()
@@ -161,7 +162,7 @@ func TestRelay(t *testing.T) {
 	})
 
 	t.Run("restart server", func(t *testing.T) {
-		newH(t)
+		newHandler(t)
 
 		t.Run("200", func(t *testing.T) {
 			body := newRequestBody(t, "GET", "/throw/env", nil)
@@ -181,12 +182,12 @@ func TestRelay(t *testing.T) {
 
 	t.Run("child process cleanup", func(t *testing.T) {
 
-		// In this test, we test that a child process who stops accepting network connections
+		// Test that a child process who stops accepting network connections
 		// (but hasn't crashed) is gracefully asked to be shut down
 		t.Run("net offline zombie", func(t *testing.T) {
-			newH(t)
+			newHandler(t)
 
-			pid := childPid(t)
+			pid := childPID(t)
 			process, err := os.FindProcess(pid)
 			assert.NoError(t, err, "find process")
 
@@ -199,18 +200,18 @@ func TestRelay(t *testing.T) {
 				return
 			}
 
-			assert.True(t, time.Since(start).Seconds() >= 10)
-			assert.True(t, time.Since(start).Seconds() < 12)
+			assert.True(t, time.Since(start).Seconds() >= 2)
+			assert.True(t, time.Since(start).Seconds() < 4)
 			assert.NoError(t, err, "zombie wait")
 			assert.True(t, ps.Exited())
 		})
 
-		// In this test, we test that a child process who swallows the "nice" shutdown signal
+		// Test that a child process who swallows the "nice" shutdown signal
 		// will eventually be sent a SIGKILL and shut down
 		t.Run("signal swallower", func(t *testing.T) {
-			newH(t)
+			newHandler(t)
 
-			pid := childPid(t)
+			pid := childPID(t)
 			process, err := os.FindProcess(pid)
 			assert.NoError(t, err, "find process")
 
@@ -218,13 +219,14 @@ func TestRelay(t *testing.T) {
 			newRequestBody(t, "GET", "/swallowSignals", nil)
 
 			// Then close the app (this triggers a restart)
+			start := time.Now()
 			closeApp(t)
 			_, err = process.Wait()
 			if err != nil {
-				// This process might have completed before this test progressed this far
 				assert.Contains(t, err.Error(), "no child processes")
-				return
 			}
+
+			assert.True(t, time.Since(start).Seconds() >= 2)
 		})
 	})
 }

@@ -5,13 +5,19 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"net"
 	"net/http"
+	"net/url"
 	"os"
+	"os/exec"
 	"strings"
+	"syscall"
+	"time"
 
 	"github.com/apex/up/internal/colors"
 	"github.com/pascaldekloe/name"
 	"github.com/pkg/errors"
+	"github.com/tj/backoff"
 	"github.com/tj/go-progress"
 )
 
@@ -154,4 +160,55 @@ func PrefixLines(s string, prefix string) string {
 // Indent the given string.
 func Indent(s string) string {
 	return PrefixLines(s, "  ")
+}
+
+// WaitForListen blocks until `u` is listening with timeout.
+func WaitForListen(u *url.URL, timeout time.Duration) error {
+	timedout := time.After(timeout)
+
+	b := backoff.Backoff{
+		Min:    100 * time.Millisecond,
+		Max:    time.Second,
+		Factor: 1.5,
+	}
+
+	for {
+		select {
+		case <-timedout:
+			return errors.Errorf("timed out after %s", timeout)
+		case <-time.After(b.Duration()):
+			if IsListening(u) {
+				return nil
+			}
+		}
+	}
+}
+
+// IsListening returns true if there's a server listening on `u`.
+func IsListening(u *url.URL) bool {
+	conn, err := net.Dial("tcp", u.Host)
+	if err != nil {
+		return false
+	}
+
+	conn.Close()
+	return true
+}
+
+// ExitStatus returns the exit status of cmd.
+func ExitStatus(cmd *exec.Cmd, err error) string {
+	ps := cmd.ProcessState
+
+	if e, ok := err.(*exec.ExitError); ok {
+		ps = e.ProcessState
+	}
+
+	if ps != nil {
+		s, ok := ps.Sys().(syscall.WaitStatus)
+		if ok {
+			return fmt.Sprintf("%d", s.ExitStatus())
+		}
+	}
+
+	return "?"
 }

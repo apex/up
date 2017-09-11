@@ -12,22 +12,17 @@ import (
 	"os"
 	"os/exec"
 	"sync"
-	"syscall"
 	"time"
 
 	"github.com/apex/log"
 	"github.com/facebookgo/freeport"
-	"github.com/jpillora/backoff"
 	"github.com/pkg/errors"
 
 	"github.com/apex/up"
 	"github.com/apex/up/internal/logs"
 	"github.com/apex/up/internal/logs/writer"
+	"github.com/apex/up/internal/util"
 )
-
-// TODO: add timeout
-// TODO: scope all plugin logs to their plugin name
-// TODO: utilize BufferPool
 
 // log context.
 var ctx = logs.Plugin("relay")
@@ -59,26 +54,29 @@ type Proxy struct {
 	// cmd refers to the currently running (active) proxy subprocss
 	cmd *exec.Cmd
 
-	// cmdCleanup is a channel that queues abandoned commands so they can be cleaned up
-	// and resources reclaimed
+	// cmdCleanup is a channel that queues abandoned commands
+	// so they can be cleaned up and resources reclaimed.
 	cmdCleanup chan *exec.Cmd
 
-	// maxRetries is the number of times to retry a single request before failing alltogether
+	// maxRetries is the number of times to retry a single
+	// request before failing alltogether.
 	maxRetries int
 
-	// shutdownTimeout is the amount of time to wait between sending a SIGINT before
-	// killing with a SIGKILL
+	// shutdownTimeout is the amount of time to wait between sending
+	// a SIGINT and finally killing with a SIGKILL.
 	shutdownTimeout time.Duration
 
 	*httputil.ReverseProxy
 }
 
 // New proxy.
+//
+// We want to buffer the cleanup channel so that we can bound the
+// number of concurrent processes executing, and prevent exhausting
+// the ulimits of the host OS.
 func New(c *up.Config) (http.Handler, error) {
 	p := &Proxy{
-		config: c,
-		// We want to buffer this channel so that we can bound the number of concurrent processes
-		// currently executing, and prevent exhausting the ulimits of the host OS
+		config:          c,
 		cmdCleanup:      make(chan *exec.Cmd, 3),
 		maxRetries:      c.Proxy.Backoff.Attempts,
 		shutdownTimeout: time.Duration(c.Proxy.ShutdownTimeout) * time.Second,
@@ -88,8 +86,8 @@ func New(c *up.Config) (http.Handler, error) {
 		return nil, err
 	}
 
-	// Launch a goroutine for cleaning up the old commands as they are abandoned
 	go p.cleanupAbandoned()
+
 	return p, nil
 }
 
@@ -105,7 +103,7 @@ func (p *Proxy) Start() error {
 	timeout := time.Duration(p.config.Proxy.ListenTimeout) * time.Second
 	ctx.Infof("waiting for %s to listen (timeout %s)", p.target.String(), timeout)
 
-	if err := waitForListen(p.target, timeout); err != nil {
+	if err := util.WaitForListen(p.target, timeout); err != nil {
 		return errors.Wrapf(err, "waiting for %s to be in listening state", p.target.String())
 	}
 
@@ -135,8 +133,8 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // RoundTrip implementation.
 func (p *Proxy) RoundTrip(r *http.Request) (*http.Response, error) {
 	b := p.config.Proxy.Backoff.Backoff()
-
 	retries := 0
+
 retry:
 	// replace host as it will change on restart
 	r.URL.Host = p.target.Host
@@ -147,6 +145,7 @@ retry:
 		return res, nil
 	}
 
+	// retries exceeded
 	if retries >= p.maxRetries {
 		return nil, err
 	}
@@ -224,84 +223,40 @@ func (p *Proxy) start() error {
 	return nil
 }
 
-// env returns an environment variable.
-func env(name string, val interface{}) string {
-	return fmt.Sprintf("%s=%v", name, val)
-}
-
-// waitForListen blocks until `u` is listening with timeout.
-func waitForListen(u *url.URL, timeout time.Duration) error {
-	timedout := time.After(timeout)
-
-	b := backoff.Backoff{
-		Min:    100 * time.Millisecond,
-		Max:    time.Second,
-		Factor: 1.5,
-	}
-
-	for {
-		select {
-		case <-timedout:
-			return errors.Errorf("timed out after %s", timeout)
-		case <-time.After(b.Duration()):
-			if isListening(u) {
-				return nil
-			}
-		}
-	}
-}
-
-// isListening returns true if there's a server listening on `u`.
-func isListening(u *url.URL) bool {
-	conn, err := net.Dial("tcp", u.Host)
-	if err != nil {
-		return false
-	}
-
-	conn.Close()
-	return true
-}
-
-// cleanupAbandoned consumes the cmdCleanup channel and signals abandoned processes to shut down
-// and release their resources.
+// cleanupAbandoned consumes the cmdCleanup channel and signals
+// abandoned processes to shut down and release their resources.
 func (p *Proxy) cleanupAbandoned() {
 	for cmd := range p.cmdCleanup {
 		if cmd == nil {
 			continue
 		}
 
-		// Set up a channel to wait for this process to complete processing cleanly
-		waitDone := make(chan bool, 1)
+		done := make(chan bool, 1)
+
 		go func() {
 			err := cmd.Wait()
-			ps := cmd.ProcessState
-			if e, ok := err.(*exec.ExitError); ok && e != nil {
-				ps = e.ProcessState
-			}
-
-			exitCode := "?"
-			if ps != nil {
-				sys := ps.Sys()
-				if x, ok := sys.(syscall.WaitStatus); ok {
-					exitCode = fmt.Sprintf("%d", x.ExitStatus())
-				}
-			}
-
-			ctx.Infof("proxy (pid=%d) exited with code=%s", cmd.Process.Pid, exitCode)
-			waitDone <- true
+			code := util.ExitStatus(cmd, err)
+			ctx.Infof("proxy (pid=%d) exited with code=%s", cmd.Process.Pid, code)
+			done <- true
 		}()
 
-		// We have deemed this command suitable for cleanup, but we aren't positive the reason
-		// was because of an actual process shutdown.  First try to nicely send a SIGINT.
+		// We have deemed this command suitable for cleanup,
+		// but we aren't positive the reason was because of an actual
+		// process shutdown. First try to nicely send a SIGINT.
 		cmd.Process.Signal(os.Interrupt)
 
 		select {
-		case <-waitDone:
+		case <-done:
 			continue
 		case <-time.After(p.shutdownTimeout):
 			ctx.Warnf("proxy (pid=%d) sending SIGKILL", cmd.Process.Pid)
 			cmd.Process.Kill()
-			<-waitDone
+			<-done
 		}
 	}
+}
+
+// env returns an environment variable.
+func env(name string, val interface{}) string {
+	return fmt.Sprintf("%s=%v", name, val)
 }

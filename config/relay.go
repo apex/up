@@ -3,8 +3,8 @@ package config
 import (
 	"time"
 
-	"github.com/jpillora/backoff"
 	"github.com/pkg/errors"
+	"github.com/tj/backoff"
 )
 
 // Relay config.
