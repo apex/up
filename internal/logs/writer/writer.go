@@ -13,7 +13,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-// TODO: json support?
 // TODO: logfmt support?
 // TODO: rename "app" field
 
