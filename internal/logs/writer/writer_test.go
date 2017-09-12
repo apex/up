@@ -89,3 +89,28 @@ SomethingError: three
 
 	assert.Equal(t, expected, buf.String())
 }
+
+func TestWriter_json(t *testing.T) {
+	var buf bytes.Buffer
+
+	log.SetHandler(json.New(&buf))
+
+	w := New(log.InfoLevel)
+
+	input := `{ "level": "info", "message": "request", "method": "GET", "path": "/" }
+{ "level": "info", "message": "request", "method": "GET", "path": "/login" }
+{ "level": "info", "message": "request", "method": "POST", "path": "/login" }
+`
+
+	_, err := io.Copy(w, strings.NewReader(input))
+	assert.NoError(t, err, "copy")
+
+	assert.NoError(t, w.Close(), `close`)
+
+	expected := `{"fields":{"app":true,"method":"GET","path":"/"},"level":"info","timestamp":"1969-12-31T16:00:00-08:00","message":"request"}
+{"fields":{"app":true,"method":"GET","path":"/login"},"level":"info","timestamp":"1969-12-31T16:00:00-08:00","message":"request"}
+{"fields":{"app":true,"method":"POST","path":"/login"},"level":"info","timestamp":"1969-12-31T16:00:00-08:00","message":"request"}
+`
+
+	assert.Equal(t, expected, buf.String())
+}
