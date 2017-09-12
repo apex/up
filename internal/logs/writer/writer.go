@@ -74,57 +74,25 @@ func (w *logWriter) Write(b []byte) (int, error) {
 // writeJSON writes a json log,
 // interpreting it as a log.Entry.
 func (w *logWriter) writeJSON(b []byte) (int, error) {
-	var m map[string]interface{}
+	// TODO: make this less ugly in apex/log,
+	// you should be able to write an arbitrary Entry.
+	var e log.Entry
 
-	// parse
-	if err := json.Unmarshal(b, &m); err != nil {
+	if err := json.Unmarshal(b, &e); err != nil {
 		return 0, errors.Wrap(err, "unmarshaling")
 	}
 
-	// see if it looks like a log
-	level, ok := m["level"].(string)
-	if !ok {
-		return w.writeText(b)
-	}
-
-	// parse log level
-	lvl, err := log.ParseLevel(level)
-	if err != nil {
-		return 0, errors.Wrap(err, "parsing level")
-	}
-
-	// message
-	var msg string
-	if s, ok := m["message"].(string); ok {
-		msg = s
-	}
-
-	// reserved fields
-	delete(m, "level")
-	delete(m, "timestamp")
-	delete(m, "message")
-	delete(m, "fields")
-
-	// fields
-	fields := log.Fields{}
-	for k, v := range m {
-		fields[k] = v
-	}
-
-	ctx := w.log.WithFields(fields)
-
-	// log
-	switch lvl {
+	switch e.Level {
 	case log.DebugLevel:
-		ctx.Debug(msg)
+		w.log.WithFields(e.Fields).Debug(e.Message)
 	case log.InfoLevel:
-		ctx.Info(msg)
+		w.log.WithFields(e.Fields).Info(e.Message)
 	case log.WarnLevel:
-		ctx.Warn(msg)
+		w.log.WithFields(e.Fields).Warn(e.Message)
 	case log.ErrorLevel:
-		ctx.Error(msg)
+		w.log.WithFields(e.Fields).Error(e.Message)
 	case log.FatalLevel:
-		ctx.Fatal(msg)
+		w.log.WithFields(e.Fields).Fatal(e.Message)
 	}
 
 	return len(b), nil

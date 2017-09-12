@@ -97,9 +97,9 @@ func TestWriter_json(t *testing.T) {
 
 	w := New(log.InfoLevel)
 
-	input := `{ "level": "info", "message": "request", "method": "GET", "path": "/" }
-{ "level": "info", "message": "request", "method": "GET", "path": "/login" }
-{ "level": "info", "message": "request", "method": "POST", "path": "/login" }
+	input := `{ "level": "info", "message": "request", "fields": { "method": "GET", "path": "/" } }
+{ "level": "info", "message": "request", "fields": { "method": "GET", "path": "/login" } }
+{ "level": "info", "message": "request", "fields": { "method": "POST", "path": "/login" } }
 `
 
 	_, err := io.Copy(w, strings.NewReader(input))
