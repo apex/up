@@ -75,11 +75,9 @@ func TestRelay(t *testing.T) {
 	t.Run("GET simple", func(t *testing.T) {
 		newHandler(t)
 
-		start := time.Now()
 		res := httptest.NewRecorder()
 		req := httptest.NewRequest("GET", "/hello", nil)
 		h.ServeHTTP(res, req)
-		t.Logf("latency = %s", time.Since(start))
 
 		assert.Equal(t, 200, res.Code)
 		assert.Equal(t, "text/plain", res.Header().Get("Content-Type"))
