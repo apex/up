@@ -207,12 +207,7 @@ func (p *Proxy) start() error {
 	p.target = target
 
 	ctx.Infof("executing %q", p.config.Proxy.Command)
-
-	cmd = exec.Command("sh", "-c", p.config.Proxy.Command)
-	cmd.Stdout = writer.New(log.InfoLevel)
-	cmd.Stderr = writer.New(log.ErrorLevel)
-	env := append(p.environment(), "PATH=node_modules/.bin:"+os.Getenv("PATH"))
-	cmd.Env = append(os.Environ(), env...)
+	cmd = command(p.config.Proxy.Command, p.environment())
 	if err := cmd.Start(); err != nil {
 		return errors.Wrap(err, "running command")
 	}
@@ -232,15 +227,15 @@ func (p *Proxy) cleanupAbandoned() {
 			continue
 		}
 
-		done := make(chan bool, 1)
+		done := make(chan bool)
 
 		go func() {
+			defer close(done)
 			err := cmd.Wait()
 			code := util.ExitStatus(cmd, err)
 			ctx.Infof("proxy (pid=%d) exited with code=%s", cmd.Process.Pid, code)
 			maybeClose(cmd.Stdout)
 			maybeClose(cmd.Stderr)
-			done <- true
 		}()
 
 		// We have deemed this command suitable for cleanup,
@@ -271,4 +266,13 @@ func maybeClose(v interface{}) error {
 // env returns an environment variable.
 func env(name string, val interface{}) string {
 	return fmt.Sprintf("%s=%v", name, val)
+}
+
+// command returns the command for spawning a server.
+func command(s string, env []string) *exec.Cmd {
+	cmd := exec.Command("sh", "-c", s)
+	cmd.Stdout = writer.New(log.InfoLevel)
+	cmd.Stderr = writer.New(log.ErrorLevel)
+	cmd.Env = append(os.Environ(), append(env, "PATH=node_modules/.bin:"+os.Getenv("PATH"))...)
+	return cmd
 }
