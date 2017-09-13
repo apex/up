@@ -45,6 +45,7 @@ func init() {
 		if *verbose {
 			log.SetHandler(delta.Default)
 			log.SetLevel(log.DebugLevel)
+			log.Debugf("up version %s", Cmd.GetVersion())
 		}
 
 		Init = func() (*up.Config, *up.Project, error) {
