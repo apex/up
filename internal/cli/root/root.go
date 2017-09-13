@@ -38,6 +38,7 @@ func init() {
 	region := Cmd.Flag("region", "Override the region.").Short('r').String()
 	workdir := Cmd.Flag("chdir", "Change working directory.").Default(".").Short('C').String()
 	verbose := Cmd.Flag("verbose", "Enable verbose log output.").Short('v').Bool()
+	endpoint := Cmd.Flag("endpoint", "Specify custom AWS API endpoint.").Short('e').String()
 
 	Cmd.PreAction(func(ctx *kingpin.ParseContext) error {
 		os.Chdir(*workdir)
@@ -55,6 +56,10 @@ func init() {
 
 			if *region != "" {
 				c.Regions = []string{*region}
+			}
+
+			if *endpoint != "" {
+				c.Endpoint = *endpoint
 			}
 
 			events := make(event.Events)

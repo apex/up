@@ -16,6 +16,7 @@ import (
 	"github.com/apex/up/internal/util"
 	"github.com/apex/up/internal/validate"
 	"github.com/apex/up/platform/lambda/regions"
+	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 )
 
@@ -60,6 +61,9 @@ type Config struct {
 	// Profile is the AWS profile name to reference for credentials.
 	Profile string `json:"profile"`
 
+	// Endpoint is a custom AWS API endpoint
+	Endpoint string `json:"endpoint"`
+
 	// Inject rules.
 	Inject inject.Rules `json:"inject"`
 
@@ -100,6 +104,10 @@ func (c *Config) Validate() error {
 
 	if err := validate.Lists(c.Regions, regions.All); err != nil {
 		return errors.Wrap(err, ".regions")
+	}
+
+	if err := validate.URL(c.Endpoint); err != nil {
+		return errors.Wrap(err, ".endpoint")
 	}
 
 	if err := c.Certs.Validate(); err != nil {
@@ -223,8 +231,15 @@ func (c *Config) defaultRegions() error {
 		return nil
 	}
 
+	if c.Endpoint != "" {
+		log.Debugf("using custom endpoint: %s", c.Endpoint)
+	}
+
 	s, err := session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
+		Config: aws.Config{
+			Endpoint: &c.Endpoint,
+		},
 	})
 
 	if err != nil {
