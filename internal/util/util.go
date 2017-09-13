@@ -4,6 +4,7 @@ package util
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"net"
 	"net/http"
@@ -211,4 +212,13 @@ func ExitStatus(cmd *exec.Cmd, err error) string {
 	}
 
 	return "?"
+}
+
+// MaybeClose closes v if it is an io.Closer.
+func MaybeClose(v interface{}) error {
+	if c, ok := v.(io.Closer); ok {
+		return c.Close()
+	}
+
+	return nil
 }

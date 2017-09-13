@@ -5,7 +5,6 @@ package relay
 
 import (
 	"fmt"
-	"io"
 	"net"
 	"net/http"
 	"net/http/httputil"
@@ -234,8 +233,8 @@ func (p *Proxy) cleanupAbandoned() {
 			err := cmd.Wait()
 			code := util.ExitStatus(cmd, err)
 			ctx.Infof("proxy (pid=%d) exited with code=%s", cmd.Process.Pid, code)
-			maybeClose(cmd.Stdout)
-			maybeClose(cmd.Stderr)
+			util.MaybeClose(cmd.Stdout)
+			util.MaybeClose(cmd.Stderr)
 		}()
 
 		// We have deemed this command suitable for cleanup,
@@ -252,15 +251,6 @@ func (p *Proxy) cleanupAbandoned() {
 			<-done
 		}
 	}
-}
-
-// maybeClose closes if v is a closer.
-func maybeClose(v interface{}) error {
-	if c, ok := v.(io.Closer); ok {
-		return c.Close()
-	}
-
-	return nil
 }
 
 // env returns an environment variable.
