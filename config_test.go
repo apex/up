@@ -65,13 +65,15 @@ func TestConfig_Type(t *testing.T) {
 
 func TestConfig_Endpoint(t *testing.T) {
 	t.Run("valid", func(t *testing.T) {
+		endpoint := "http://localhost:1234"
 		c := Config{
 			Name:     "my-app123",
-			Endpoint: "http://localhost:1234",
+			Endpoint: endpoint,
 		}
 
 		assert.NoError(t, c.Default(), "default")
 		assert.NoError(t, c.Validate(), "validate")
+		assert.Equal(t, endpoint, c.Endpoint)
 	})
 
 	t.Run("invalid", func(t *testing.T) {
