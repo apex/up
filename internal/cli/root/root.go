@@ -38,7 +38,7 @@ func init() {
 	region := Cmd.Flag("region", "Override the region.").Short('r').String()
 	workdir := Cmd.Flag("chdir", "Change working directory.").Default(".").Short('C').String()
 	verbose := Cmd.Flag("verbose", "Enable verbose log output.").Short('v').Bool()
-	endpoint := Cmd.Flag("local", "Deploy to localstack.").Short('l').Bool()
+	local := Cmd.Flag("local", "Deploy to localstack.").Short('l').Bool()
 
 	Cmd.PreAction(func(ctx *kingpin.ParseContext) error {
 		os.Chdir(*workdir)
@@ -58,8 +58,8 @@ func init() {
 				c.Regions = []string{*region}
 			}
 
-			if *endpoint {
-				c.Endpoint = *endpoint
+			if *local {
+				c.Local = true
 			}
 
 			events := make(event.Events)
