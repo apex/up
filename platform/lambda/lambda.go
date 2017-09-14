@@ -195,7 +195,9 @@ func (p *Platform) Domains() platform.Domains {
 
 // URL returns the stage url.
 func (p *Platform) URL(region, stage string) (string, error) {
-	s := session.New(aws.NewConfig().WithRegion(region).WithEndpoint(p.config.GetEndpoint(up.Lambda)))
+	e := p.config.GetEndpoint(up.Lambda)
+	log.Debugf("Creating new AWS Lambda session with endpoint: %s", e)
+	s := session.New(aws.NewConfig().WithRegion(region).WithEndpoint(e))
 	c := apigateway.New(s)
 
 	api, err := p.getAPI(c)

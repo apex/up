@@ -76,9 +76,10 @@ func (l *Logs) start() {
 	// TODO: flag to override and allow querying other groups
 	// TODO: apply backoff instead of PollInterval
 	group := "/aws/lambda/" + l.platform.config.Name
-
+	endpoint := l.platform.config.GetEndpoint(up.Cloudwatch)
+	log.Debugf("Creating new AWS CloudWatch session with endpoint: %s", endpoint)
 	config := logs.Config{
-		Service:       cloudwatchlogs.New(session.New(aws.NewConfig().WithRegion(l.region).WithEndpoint(l.platform.config.GetEndpoint(up.Cloudwatch)))),
+		Service:       cloudwatchlogs.New(session.New(aws.NewConfig().WithRegion(l.region).WithEndpoint(endpoint))),
 		StartTime:     l.since,
 		PollInterval:  2 * time.Second,
 		Follow:        l.follow,
