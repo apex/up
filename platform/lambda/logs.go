@@ -9,6 +9,7 @@ import (
 
 	"github.com/apex/log"
 	jsonlog "github.com/apex/log/handlers/json"
+	"github.com/apex/up"
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -77,7 +78,7 @@ func (l *Logs) start() {
 	group := "/aws/lambda/" + l.platform.config.Name
 
 	config := logs.Config{
-		Service:       cloudwatchlogs.New(session.New(aws.NewConfig().WithRegion(l.region))),
+		Service:       cloudwatchlogs.New(session.New(aws.NewConfig().WithRegion(l.region).WithEndpoint(l.platform.config.GetEndpoint(up.Cloudwatch)))),
 		StartTime:     l.since,
 		PollInterval:  2 * time.Second,
 		Follow:        l.follow,

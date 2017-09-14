@@ -35,7 +35,7 @@ type Stack struct {
 
 // New stack.
 func New(c *up.Config, events event.Events, region string) *Stack {
-	sess := session.New(aws.NewConfig().WithRegion(region))
+	sess := session.New(aws.NewConfig().WithRegion(region).WithEndpoint(c.GetEndpoint(up.Cloudformation)))
 	return &Stack{
 		client: cloudformation.New(sess),
 		lambda: lambda.New(sess),

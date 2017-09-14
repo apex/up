@@ -8,6 +8,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/cloudwatch"
 	"github.com/golang/sync/errgroup"
 
+	"github.com/apex/up"
 	"github.com/apex/up/internal/metrics"
 	"github.com/apex/up/platform/event"
 )
@@ -59,7 +60,7 @@ var stats = []*stat{
 
 // ShowMetrics implementation.
 func (p *Platform) ShowMetrics(region, stage string, start time.Time) error {
-	s := session.New(aws.NewConfig().WithRegion(region))
+	s := session.New(aws.NewConfig().WithRegion(region).WithEndpoint(p.config.GetEndpoint(up.Cloudwatch)))
 	c := cloudwatch.New(s)
 	var g errgroup.Group
 

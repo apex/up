@@ -2,7 +2,6 @@
 package validate
 
 import (
-	"net/url"
 	"regexp"
 	"strings"
 
@@ -49,18 +48,6 @@ var name = regexp.MustCompile(`^[a-zA-Z][-a-zA-Z0-9]*$`)
 func Name(s string) error {
 	if !name.MatchString(s) {
 		return errors.Errorf("must contain only alphanumeric characters and '-'")
-	}
-
-	return nil
-}
-
-// URL validation
-func URL(u string) error {
-	if u != "" {
-		_, err := url.ParseRequestURI(u)
-		if err != nil {
-			return errors.Wrap(err, "url")
-		}
 	}
 
 	return nil

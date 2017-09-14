@@ -63,30 +63,6 @@ func TestConfig_Type(t *testing.T) {
 	})
 }
 
-func TestConfig_Endpoint(t *testing.T) {
-	t.Run("valid", func(t *testing.T) {
-		endpoint := "http://localhost:1234"
-		c := Config{
-			Name:     "my-app123",
-			Endpoint: endpoint,
-		}
-
-		assert.NoError(t, c.Default(), "default")
-		assert.NoError(t, c.Validate(), "validate")
-		assert.Equal(t, endpoint, c.Endpoint)
-	})
-
-	t.Run("invalid", func(t *testing.T) {
-		c := Config{
-			Name:     "my-app123",
-			Endpoint: "http//localhost",
-		}
-
-		assert.NoError(t, c.Default(), "default")
-		assert.EqualError(t, c.Validate(), `.endpoint: url: parse http//localhost: invalid URI for request`)
-	})
-}
-
 func TestConfig_Regions(t *testing.T) {
 	t.Run("valid multiple", func(t *testing.T) {
 		c := Config{

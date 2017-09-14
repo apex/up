@@ -190,12 +190,12 @@ func (p *Platform) Logs(region, query string) platform.Logs {
 
 // Domains implementation.
 func (p *Platform) Domains() platform.Domains {
-	return NewDomains()
+	return NewDomains(p.config)
 }
 
 // URL returns the stage url.
 func (p *Platform) URL(region, stage string) (string, error) {
-	s := session.New(aws.NewConfig().WithRegion(region))
+	s := session.New(aws.NewConfig().WithRegion(region).WithEndpoint(p.config.GetEndpoint(up.Lambda)))
 	c := apigateway.New(s)
 
 	api, err := p.getAPI(c)
@@ -261,7 +261,7 @@ func (p *Platform) deploy(region, stage string) (version string, err error) {
 	defer p.events.Time("platform.deploy", fields)()
 
 	ctx := log.WithField("region", region)
-	s := session.New(aws.NewConfig().WithRegion(region))
+	s := session.New(aws.NewConfig().WithRegion(region).WithEndpoint(p.config.GetEndpoint(up.Lambda)))
 	a := apigateway.New(s)
 	c := lambda.New(s)
 

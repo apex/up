@@ -16,7 +16,6 @@ import (
 	"github.com/apex/up/internal/util"
 	"github.com/apex/up/internal/validate"
 	"github.com/apex/up/platform/lambda/regions"
-	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 )
 
@@ -61,8 +60,8 @@ type Config struct {
 	// Profile is the AWS profile name to reference for credentials.
 	Profile string `json:"profile"`
 
-	// Endpoint is a custom AWS API endpoint
-	Endpoint string `json:"endpoint"`
+	// Local indicates if a local dev deployment to LocalStack should be made
+	Local bool `json:"local"`
 
 	// Inject rules.
 	Inject inject.Rules `json:"inject"`
@@ -92,6 +91,19 @@ type Config struct {
 	DNS config.DNS `json:"dns"`
 }
 
+const (
+	// Cloudformation represents the Cloudformation API
+	Cloudformation = iota
+	// Route53 represents the Route53 API used for routing
+	Route53
+	// Lambda represents the Lambda API used for lambdas
+	Lambda
+	// Cloudwatch represents the CloudWatch API used for logs
+	Cloudwatch
+	// Metrics represents the Metrics API used for metrics
+	Metrics
+)
+
 // Validate implementation.
 func (c *Config) Validate() error {
 	if err := validate.Name(c.Name); err != nil {
@@ -104,10 +116,6 @@ func (c *Config) Validate() error {
 
 	if err := validate.Lists(c.Regions, regions.All); err != nil {
 		return errors.Wrap(err, ".regions")
-	}
-
-	if err := validate.URL(c.Endpoint); err != nil {
-		return errors.Wrap(err, ".endpoint")
 	}
 
 	if err := c.Certs.Validate(); err != nil {
@@ -231,15 +239,12 @@ func (c *Config) defaultRegions() error {
 		return nil
 	}
 
-	if c.Endpoint != "" {
-		log.Debugf("using custom endpoint: %s", c.Endpoint)
+	if c.Local {
+		log.Debug("deploying locally to localstack")
 	}
 
 	s, err := session.NewSessionWithOptions(session.Options{
 		SharedConfigState: session.SharedConfigEnable,
-		Config: aws.Config{
-			Endpoint: &c.Endpoint,
-		},
 	})
 
 	if err != nil {
@@ -396,4 +401,24 @@ func python(c *Config) {
 	if c.Hooks.Clean.IsEmpty() {
 		c.Hooks.Clean = config.Hook{`rm -r .pypath/`}
 	}
+}
+
+// GetEndpoint returns the correct API endpoint for LocalStack, or "" for AWS
+func (c *Config) GetEndpoint(api int) string {
+	if c.Local {
+		switch api {
+		case Cloudformation:
+			return "http://localhost:4581"
+		case Route53:
+			return "http://localhost:4580"
+		case Lambda:
+			return "http://localhost:4574"
+		case Cloudwatch:
+			return "http://localhost:4582"
+		default:
+			return ""
+		}
+	}
+
+	return ""
 }
