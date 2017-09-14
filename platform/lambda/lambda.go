@@ -263,7 +263,9 @@ func (p *Platform) deploy(region, stage string) (version string, err error) {
 	defer p.events.Time("platform.deploy", fields)()
 
 	ctx := log.WithField("region", region)
-	s := session.New(aws.NewConfig().WithRegion(region).WithEndpoint(p.config.GetEndpoint(up.Lambda)))
+	e := p.config.GetEndpoint(up.Lambda)
+	ctx.Debugf("creating new AWS Lambda session with endpoint: %s", e)
+	s := session.New(aws.NewConfig().WithRegion(region).WithEndpoint(e))
 	a := apigateway.New(s)
 	c := lambda.New(s)
 
