@@ -1,4 +1,18 @@
 
+v0.2.4 / 2017-09-15
+===================
+
+  * add custom domain support
+  * add Up version to the -v debug output
+  * add support for JSON log lines, captured and translated to the internal format
+  * add support for indented log lines to be captured as a single message
+  * add sub-process cleanup and grace period. Closes #311
+  * add `ssm:GetParametersByPath` to the function policy
+  * add UP_STAGE env var. Closes #200
+  * change default `proxy.listen_timeout` to 15
+  * fix gzip handling when previously compressed. Closes #328
+  * fix ignoring of .pypath
+
 v0.2.3 / 2017-09-05
 ===================
 

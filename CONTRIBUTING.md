@@ -112,6 +112,7 @@ Thank you to all our sponsors! (please ask your company to also support this ope
 
 Notes for myself:
 
+- Run `make build` if necessary to re-build the proxy
 - Run `git changelog`
 - Run `git release`
 - Run `make release`
