@@ -10,3 +10,5 @@ Use "VERB some thing here. Closes #n" to close the relevant issue, where VERB is
 If the change is documentation related prefix with "docs: ", as these are filtered from the changelog.
 
   docs: add ~/.aws/config
+
+Omit changes to the up-proxy binary if they are included in your PR. The proxy is re-built before releases.
