@@ -12,9 +12,11 @@ import (
 	"github.com/apex/log"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/acm"
 	"github.com/aws/aws-sdk-go/service/apigateway"
 	"github.com/aws/aws-sdk-go/service/iam"
 	"github.com/aws/aws-sdk-go/service/lambda"
+	"github.com/aws/aws-sdk-go/service/route53"
 	"github.com/dustin/go-humanize"
 	"github.com/golang/sync/errgroup"
 	"github.com/pkg/errors"
@@ -213,6 +215,14 @@ func (p *Platform) URL(region, stage string) (string, error) {
 
 // CreateStack implementation.
 func (p *Platform) CreateStack(region, version string) error {
+	if err := p.createCerts(); err != nil {
+		return errors.Wrap(err, "creating certs")
+	}
+
+	if err := p.populateZones(); err != nil {
+		return errors.Wrap(err, "fetching zones")
+	}
+
 	return stack.New(p.config, p.events, region).Create(version)
 }
 
@@ -243,12 +253,136 @@ func (p *Platform) ShowStack(region string) error {
 
 // PlanStack implementation.
 func (p *Platform) PlanStack(region string) error {
+	if err := p.createCerts(); err != nil {
+		return errors.Wrap(err, "creating certs")
+	}
+
+	if err := p.populateZones(); err != nil {
+		return errors.Wrap(err, "fetching zones")
+	}
+
 	return stack.New(p.config, p.events, region).Plan()
 }
 
 // ApplyStack implementation.
 func (p *Platform) ApplyStack(region string) error {
+	if err := p.createCerts(); err != nil {
+		return errors.Wrap(err, "creating certs")
+	}
+
 	return stack.New(p.config, p.events, region).Apply()
+}
+
+// populateZones fetches the existing hosted zones, storing
+// the HostedZoneId if present. This is required because domains
+// purchased via Route53 will already have a hosted zone,
+// so we need to reference it instead of creating a new zone.
+//
+// Currently subdomains are stripped. For example if you create
+// an app which maps only production to "api.example.com", the
+// zone "example.com" will be created (or discovered).
+func (p *Platform) populateZones() error {
+	r := route53.New(session.New(aws.NewConfig()))
+
+	res, err := r.ListHostedZonesByName(&route53.ListHostedZonesByNameInput{
+		MaxItems: aws.String("100"),
+	})
+
+	if err != nil {
+		return errors.Wrap(err, "listing zones")
+	}
+
+	for _, s := range p.config.Stages.List() {
+		domain := util.Domain(s.Domain)
+		log.Debugf("finding stage dns zones for %s %s (%s)", s.Name, domain, s.Domain)
+		for _, z := range res.HostedZones {
+			if domain+"." == *z.Name {
+				s.HostedZoneID = strings.Replace(*z.Id, "/hostedzone/", "", 1)
+				log.Debugf("found existing dns zone %s (%s) mapped to stage %s", s.Domain, s.HostedZoneID, s.Name)
+			}
+		}
+	}
+
+	return nil
+}
+
+// createCerts creates the certificates if necessary.
+//
+// We perform this task outside of CloudFormation because
+// the certificates currently must be created in the us-east-1
+// region. This also gives us a chance to let the user know
+// that they have to confirm an email.
+func (p *Platform) createCerts() error {
+	s := session.New(aws.NewConfig().WithRegion("us-east-1"))
+	a := acm.New(s)
+
+	// existing certs
+	res, err := a.ListCertificates(&acm.ListCertificatesInput{
+		MaxItems: aws.Int64(1000),
+	})
+
+	if err != nil {
+		return errors.Wrap(err, "listing")
+	}
+
+	var domains []string
+
+	// request certs
+	for _, s := range p.config.Stages.List() {
+		if s == nil {
+			continue
+		}
+
+		// see if the cert exists, stripping any subdomain
+		// since we request only a single wildcard cert.
+		log.Debugf("looking up cert for %s", s.Domain)
+		arn := getCert(res.CertificateSummaryList, util.Domain(s.Domain))
+		if arn != "" {
+			log.Debugf("found cert for %s: %s", s.Domain, arn)
+			s.Cert = arn
+			continue
+		}
+
+		// request the cert
+		res, err := a.RequestCertificate(&acm.RequestCertificateInput{
+			DomainName:              aws.String(s.Domain),
+			SubjectAlternativeNames: aws.StringSlice([]string{"*." + s.Domain}),
+		})
+
+		if err != nil {
+			return errors.Wrapf(err, "requesting cert for %s", s.Domain)
+		}
+
+		domains = append(domains, s.Domain)
+		s.Cert = *res.CertificateArn
+	}
+
+	// no certs needed
+	if len(domains) == 0 {
+		return nil
+	}
+
+	defer p.events.Time("platform.certs.create", event.Fields{
+		"domains": domains,
+	})()
+
+	// wait for approval
+	for range time.Tick(4 * time.Second) {
+		res, err = a.ListCertificates(&acm.ListCertificatesInput{
+			MaxItems:            aws.Int64(1000),
+			CertificateStatuses: aws.StringSlice([]string{acm.CertificateStatusPendingValidation}),
+		})
+
+		if err != nil {
+			return errors.Wrap(err, "listing")
+		}
+
+		if len(res.CertificateSummaryList) == 0 {
+			break
+		}
+	}
+
+	return nil
 }
 
 // deploy to the given region.
@@ -523,4 +657,14 @@ func toEnv(env config.Environment, stage string) *lambda.Environment {
 	return &lambda.Environment{
 		Variables: m,
 	}
+}
+
+// getCert returns the ARN if the cert is present.
+func getCert(certs []*acm.CertificateSummary, domain string) string {
+	for _, c := range certs {
+		if *c.DomainName == domain {
+			return *c.CertificateArn
+		}
+	}
+	return ""
 }

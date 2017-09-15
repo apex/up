@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"os"
+	"strings"
 	"time"
 
 	"github.com/aws/aws-sdk-go/service/cloudformation"
@@ -58,7 +59,7 @@ func (r *reporter) pending(name, value string) {
 	r.pendingName = name
 	r.pendingValue = value
 	term.ClearLine()
-	fmt.Printf("\r %30s %s", colors.Purple(r.spinner.Next()+" "+name+":"), value)
+	fmt.Printf("\r %35s %s", colors.Purple(r.spinner.Next()+" "+name+":"), value)
 }
 
 // complete log with duration.
@@ -67,7 +68,7 @@ func (r *reporter) complete(name, value string, d time.Duration) {
 	r.pendingValue = ""
 	term.ClearLine()
 	duration := fmt.Sprintf("(%s)", d.Round(time.Millisecond))
-	fmt.Printf("\r %30s %s %s\n", colors.Purple(name+":"), value, colors.Gray(duration))
+	fmt.Printf("\r %35s %s %s\n", colors.Purple(name+":"), value, colors.Gray(duration))
 }
 
 // log line
@@ -165,6 +166,12 @@ func (r *reporter) Start() {
 					fmt.Printf("    %s: %s\n", color("replace"), *c.Replacement)
 				}
 				fmt.Printf("\n")
+			case "platform.certs.create":
+				domains := e.Fields["domains"].([]string)
+				r.log("domains", "Verify your email")
+				r.pending("confirm", strings.Join(domains, ", "))
+			case "platform.certs.create.complete":
+				r.complete("confirm", "complete", e.Duration("duration"))
 			case "metrics", "metrics.complete":
 				fmt.Printf("\n")
 			case "metrics.value":

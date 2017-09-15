@@ -58,7 +58,7 @@ func (s *Stack) Create(version string) error {
 	_, err = s.client.CreateStack(&cloudformation.CreateStackInput{
 		StackName:        &name,
 		TemplateBody:     aws.String(string(b)),
-		TimeoutInMinutes: aws.Int64(15),
+		TimeoutInMinutes: aws.Int64(60),
 		DisableRollback:  aws.Bool(true),
 		Capabilities:     aws.StringSlice([]string{"CAPABILITY_NAMED_IAM"}),
 		Parameters: []*cloudformation.Parameter{

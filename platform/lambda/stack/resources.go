@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/apex/up"
+	"github.com/apex/up/config"
 	"github.com/apex/up/internal/util"
 )
 
@@ -51,35 +52,6 @@ func lambdaArn(name string) Map {
 // lambda ARN for function name with qualifier.
 func lambdaArnQualifier(name, qualifier string) Map {
 	return join(":", "arn", "aws", "lambda", ref("AWS::Region"), ref("AWS::AccountId"), "function", join(":", ref(name), qualifier))
-}
-
-// DNS resources.
-func dns(c *up.Config, m Map) {
-	for _, z := range c.DNS.Zones {
-		zoneID := util.Camelcase("dns_zone_%s", z.Name)
-
-		m[zoneID] = Map{
-			"Type": "AWS::Route53::HostedZone",
-			"Properties": Map{
-				"Name": z.Name,
-			},
-		}
-
-		for _, r := range z.Records {
-			id := util.Camelcase("dns_zone_%s_record_%s", z.Name, r.Name)
-
-			m[id] = Map{
-				"Type": "AWS::Route53::RecordSet",
-				"Properties": Map{
-					"Name":            r.Name,
-					"Type":            r.Type,
-					"TTL":             strconv.Itoa(r.TTL),
-					"ResourceRecords": r.Value,
-					"HostedZoneId":    ref(zoneID),
-				},
-			}
-		}
-	}
 }
 
 // API resources.
@@ -139,7 +111,6 @@ func api(c *up.Config, m Map) {
 		},
 	}
 
-	// TODO: allow mapping in config
 	m["ApiDeploymentDevelopment"] = Map{
 		"Type":      "AWS::ApiGateway::Deployment",
 		"DependsOn": []string{"ApiRootMethod", "ApiProxyMethod", "ApiFunctionAliasDevelopment"},
@@ -211,6 +182,118 @@ func api(c *up.Config, m Map) {
 			"FunctionVersion": ref("FunctionVersionProduction"),
 		},
 	}
+
+	stages(c, m)
+}
+
+// Stages configuration.
+func stages(c *up.Config, m Map) {
+	for _, s := range c.Stages.List() {
+		stage(c, s, m)
+	}
+}
+
+// Stage configuration.
+func stage(c *up.Config, s *config.Stage, m Map) {
+	id := util.Camelcase("api_domain_%s", s.Name)
+	deploymentID := util.Camelcase("api_deployment_%s", s.Name)
+
+	m[id] = Map{
+		"Type": "AWS::ApiGateway::DomainName",
+		"Properties": Map{
+			"CertificateArn": s.Cert,
+			"DomainName":     s.Domain,
+		},
+	}
+
+	m[id+"PathMapping"] = Map{
+		"Type":      "AWS::ApiGateway::BasePathMapping",
+		"DependsOn": []string{id, deploymentID},
+		"Properties": Map{
+			"DomainName": s.Domain,
+			"BasePath":   "",
+			"RestApiId":  ref("Api"),
+			"Stage":      s.Name,
+		},
+	}
+
+	stageAliasRecord(c, s, m, id)
+}
+
+// stageAliasRecord configuration.
+func stageAliasRecord(c *up.Config, s *config.Stage, m Map, domainID string) {
+	id := util.Camelcase("dns_zone_%s_record_%s", s.Domain, s.Domain)
+	zoneID := conditionalDNSZone(c, m, s.Domain)
+
+	m[id] = Map{
+		"Type": "AWS::Route53::RecordSet",
+		"Properties": Map{
+			"Name":         s.Domain,
+			"Type":         "A",
+			"Comment":      util.ManagedByUp(""),
+			"HostedZoneId": zoneID,
+			"AliasTarget": Map{
+				"DNSName":      get(domainID, "DistributionDomainName"),
+				"HostedZoneId": "Z2FDTNDATAQYW2",
+			},
+		},
+	}
+}
+
+// Conditionally create a DNS zone for domain, unless it is
+// already present, and return its id or reference.
+
+// Subdomains are stripped, as those records will live in the
+// same zone.
+//
+// TODO: store zone id somewhere else, it doesn't necessarily
+// have to be mapped to a stage, but for now that's what we assume.
+func conditionalDNSZone(c *up.Config, m Map, domain string) interface{} {
+	id := util.Camelcase("dns_zone_%s", domain)
+	s := c.Stages.GetByDomain(domain)
+
+	// already registered for creation
+	if m[id] != nil {
+		return ref(id)
+	}
+
+	// new zone
+	if s == nil || s.HostedZoneID == "" {
+		m[id] = Map{
+			"Type": "AWS::Route53::HostedZone",
+			"Properties": Map{
+				"Name": domain,
+			},
+		}
+
+		return ref(id)
+	}
+
+	// existing zone
+	return s.HostedZoneID
+}
+
+// DNS resources.
+func dns(c *up.Config, m Map) {
+	for _, z := range c.DNS.Zones {
+		zoneID := conditionalDNSZone(c, m, z.Name)
+
+		for _, r := range z.Records {
+			id := util.Camelcase("dns_zone_%s_record_%s", z.Name, r.Name)
+
+			m[id] = Map{
+				"Type": "AWS::Route53::RecordSet",
+				"Properties": Map{
+					"Name":            r.Name,
+					"Type":            r.Type,
+					"TTL":             strconv.Itoa(r.TTL),
+					"ResourceRecords": r.Value,
+					"HostedZoneId":    zoneID,
+					"Comment":         util.ManagedByUp(""),
+				},
+			}
+		}
+	}
 }
 
 // IAM resources.
@@ -273,37 +356,12 @@ func iam(c *up.Config, m Map) {
 	}
 }
 
-// ACM resources.
-func acm(c *up.Config, m Map) {
-	for _, c := range c.Certs {
-		domain := c.Domains[0]
-		alts := c.Domains[1:]
-		name := util.Camelcase("cert_%s", domain)
-
-		props := Map{
-			"DomainName": domain,
-		}
-
-		if len(alts) > 0 {
-			props["SubjectAlternativeNames"] = alts
-		}
-
-		m[name] = Map{
-			"Type":       "AWS::CertificateManager::Certificate",
-			"Properties": props,
-		}
-	}
-}
-
 // resources of the stack.
 func resources(c *up.Config) Map {
 	m := Map{}
-
 	api(c, m)
 	iam(c, m)
-	acm(c, m)
 	dns(c, m)
-
 	return m
 }
 

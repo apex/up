@@ -81,8 +81,8 @@ type Config struct {
 	// Logs config.
 	Logs config.Logs `json:"logs"`
 
-	// Certs config.
-	Certs config.Certs `json:"certs"`
+	// Stages config.
+	Stages config.Stages `json:"stages"`
 
 	// DNS config.
 	DNS config.DNS `json:"dns"`
@@ -102,10 +102,6 @@ func (c *Config) Validate() error {
 		return errors.Wrap(err, ".regions")
 	}
 
-	if err := c.Certs.Validate(); err != nil {
-		return errors.Wrap(err, ".certs")
-	}
-
 	if err := c.DNS.Validate(); err != nil {
 		return errors.Wrap(err, ".dns")
 	}
@@ -120,6 +116,10 @@ func (c *Config) Validate() error {
 
 	if err := c.Proxy.Validate(); err != nil {
 		return errors.Wrap(err, ".proxy")
+	}
+
+	if err := c.Stages.Validate(); err != nil {
+		return errors.Wrap(err, ".stages")
 	}
 
 	return nil
@@ -195,6 +195,11 @@ func (c *Config) Default() error {
 	// default .error_pages
 	if err := c.ErrorPages.Default(); err != nil {
 		return errors.Wrap(err, ".error_pages")
+	}
+
+	// default .stages
+	if err := c.Stages.Default(); err != nil {
+		return errors.Wrap(err, ".stages")
 	}
 
 	return nil
