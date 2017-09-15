@@ -1,3 +1,4 @@
+// Package platform provides the interfaces for platform integration.
 package platform
 
 import (

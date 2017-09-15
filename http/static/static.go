@@ -1,3 +1,4 @@
+// Package static provides static file serving with HTTP cache support.
 package static
 
 import (

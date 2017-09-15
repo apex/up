@@ -1,3 +1,4 @@
+// Package ast provides the log query language abstract syntax tree.
 package ast
 
 import (
