@@ -1,3 +1,4 @@
+// Package stack provides CloudFormation stack support.
 package stack
 
 import (

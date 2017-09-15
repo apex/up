@@ -1,3 +1,4 @@
+// Package regions provides AWS region utilities.
 package regions
 
 import "path/filepath"

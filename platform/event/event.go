@@ -1,3 +1,8 @@
+// Package event provides an evented mechanism for hooking into platform specifics.
+//
+// This is necessary as not all platforms have identical capabilities,
+// so the reporting output (among other things) may differ
+// slightly.
 package event
 
 import (
