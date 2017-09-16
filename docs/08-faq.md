@@ -16,7 +16,7 @@ title: FAQ
   <summary>How is this different than other serverless frameworks?</summary>
   <p>Most of the AWS Lambda based tools are function-oriented, while Up abstracts this away entirely. Up does not use framework "shims", the servers that you run using Up are regular HTTP servers and require no code changes for Lambda compatibility.</p>
 
-  <p>Up keeps your apps and APIs portable, makes testing them locally easier, and prevents vendor lock-in. The Lambda support for Up is simply an implementation detail, you are not coupled to API Gateway or Lambda.</p>
+  <p>Up keeps your apps and APIs portable, makes testing them locally easier, and prevents vendor lock-in. The Lambda support for Up is simply an implementation detail, you are not coupled to API Gateway or Lambda. Up uses the API Gateway proxy mode to send all requests (regardless of path or method) to your application.</p>
 
   <p>If you're looking to manage function-level event processing pipelines, Apex or Serverless are likely better candidates, however if you're creating applications, apis, micro services, or websites, Up is built for you.</p>
 </details>
@@ -24,6 +24,7 @@ title: FAQ
 <details>
   <summary>Why run HTTP servers in Lambda?</summary>
   <p>You might be thinking this defeats the purpose of Lambda, however most people just want to use the tools they know and love. Up lets you be productive developing locally as you normally would, Lambda for hosting is only an implementation detail.</p>
+
   <p>With Up you can use any Python, Node, Go, or Java framework you'd normally use to develop, and deploy with a single command, while maintaining the cost effectiveness, self-healing, and scaling capabilities of Lambda.</p>
 </details>
 
@@ -33,7 +34,7 @@ title: FAQ
 </details>
 
 <details>
-  <summary>How does it scale?</summary>
+  <summary>How well does it scale?</summary>
   <p>Up scales to fit your traffic on-demand, you don't have to do anything beyond deploying your code. There's no restriction on the number of concurrent instances, apps, custom domains and so on.</p>
 </details>
 
