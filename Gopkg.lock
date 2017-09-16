@@ -5,7 +5,7 @@
   branch = "master"
   name = "github.com/Bowery/prompt"
   packages = ["."]
-  revision = "eb8f7a6a197ce971ed0e9d4a739c628381d5f124"
+  revision = "753711fea478fa77bb2c83f6ec244b814d4a8bad"
 
 [[projects]]
   branch = "master"

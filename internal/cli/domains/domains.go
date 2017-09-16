@@ -78,7 +78,7 @@ func buy(cmd *kingpin.CmdClause) {
 			return errors.Wrap(err, "initializing")
 		}
 
-		confirm, err := prompt.Basic("  Confirm domain: ", true)
+		confirm, err := prompt.Basic("  Confirm domain:", true)
 		if err != nil {
 			return err
 		}
@@ -88,7 +88,7 @@ func buy(cmd *kingpin.CmdClause) {
 		}
 
 		for _, q := range questions {
-			s := fmt.Sprintf("  %s: ", q.Prompt)
+			s := fmt.Sprintf("  %s:", q.Prompt)
 			v, err := prompt.Basic(s, true)
 			if err != nil {
 				return err
