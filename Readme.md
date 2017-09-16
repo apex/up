@@ -12,7 +12,7 @@ Check out the [documentation](https://apex.github.io/up/) for more instructions,
 
 ## Features
 
-Open source community edition: Coming soon.
+Open source community edition.
 
 ![Open source edition features](assets/features-community.png)
 
