@@ -140,7 +140,6 @@ $ up config
   "logs": {
     "disable": false
   },
-  "certs": null,
   "dns": {
     "zones": null
   }
