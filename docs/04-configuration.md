@@ -554,6 +554,8 @@ This example maps only the production stage:
 }
 ```
 
+Plan the changes via `up stack plan` and `up stack apply` to perform the changes. Note that CloudFront can take 30-40 minutes to distribute your configuration globally, so be patient when applying these changes!
+
 ## Ignoring Files
 
 Up supports gitignore style pattern matching for omitting files from deployment. The following files are loaded in sequence:
