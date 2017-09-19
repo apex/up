@@ -490,7 +490,7 @@ Since Up's purpose is to proxy your http traffic, Up will treat network errors a
 
 Up allows you to configure DNS zones and records. One or more zones may be provided as keys in the `dns` object ("myapp.com" here), with a number of records defined within it.
 
-```
+```json
 {
   "name": "gh-polls",
   "dns": {
@@ -521,7 +521,38 @@ The record `type` must be one of:
 
 ## Custom Domains
 
-Custom domain mapping is not _yet_ supported. For now you can visit `/apigateway` in the AWS console, click "Custom Domain Names", and map your stage(s). Note that Cloudfront can take up to 30 minutes to provision (unfortunately). Better solutions are coming.
+You may purchase domains via the `up` CLI, or map custom domains from other registrars. Up uses Route53 to purchase domains using your AWS account credit card.
+
+Up supports custom domains by mapping stages. Stage configuration is optional, this example maps all three to sub-domains:
+
+
+```json
+{
+  "stages": {
+    "production": {
+      "domain": "api.gh-polls.com"
+    },
+    "staging": {
+      "domain": "stage.gh-polls.com"
+    }
+    "development": {
+      "domain": "dev.gh-polls.com"
+    }
+  }
+}
+```
+
+This example maps only the production stage:
+
+```json
+{
+  "stages": {
+    "production": {
+      "domain": "gh-polls.com"
+    }
+  }
+}
+```
 
 ## Ignoring Files
 
@@ -556,7 +587,6 @@ Another use-case for negation is to ignore everything and explicitly include a n
 ```
 
 ### Inspecting
-
 
 To get a better idea of which files are being filtered or added, use `up -v` when deploying, and you may also find it useful to `grep` in some cases:
 
