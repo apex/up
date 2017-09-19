@@ -492,31 +492,32 @@ Up allows you to configure DNS zones and records. One or more zones may be provi
 
 ```
 {
-  "name": "app",
+  "name": "gh-polls",
   "dns": {
-    "myapp.com": [
+    "gh-polls.com": [
       {
-        "name": "myapp.com",
-        "type": "A",
-        "ttl": 300,
-        "value": ["35.161.83.243"]
-      },
-      {
-        "name": "blog.myapp.com",
+        "name": "app.gh-polls.com",
         "type": "CNAME",
-        "ttl": 300,
-        "value": ["34.209.172.67"]
-      },
-      {
-        "name": "api.myapp.com",
-        "type": "A",
-        "ttl": 300,
-        "value": ["54.187.185.18"]
+        "value": ["gh-polls.netlify.com"]
       }
     ]
   }
 }
 ```
+
+The record `type` must be one of:
+
+- A
+- AAAA
+- CNAME
+- MX
+- NAPTR
+- NS
+- PTR
+- SOA
+- SPF
+- SRV
+- TXT
 
 ## Custom Domains
 
