@@ -233,3 +233,13 @@ func Domain(s string) string {
 	p := strings.Split(s, ".")
 	return strings.Join(p[len(p)-2:], ".")
 }
+
+// StringsContains returns true if list contains s.
+func StringsContains(list []string, s string) bool {
+	for _, v := range list {
+		if v == s {
+			return true
+		}
+	}
+	return false
+}

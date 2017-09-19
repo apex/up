@@ -31,6 +31,7 @@ func TestIsSubdomain(t *testing.T) {
 	assert.Equal(t, false, IsSubdomain("gh-polls.com"))
 	assert.Equal(t, true, IsSubdomain("staging.gh-polls.com"))
 	assert.Equal(t, true, IsSubdomain("blog.gh-polls.com"))
+	assert.Equal(t, true, IsSubdomain("foo.bar.gh-polls.com"))
 }
 
 func TestDomain(t *testing.T) {

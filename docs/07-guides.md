@@ -2,9 +2,211 @@
 title: Guides
 ---
 
+## Development to Production Workflow
+
+This section guides you through taking a small application from development, to production, complete with purchasing and mapping a custom domain.
+
+### Deploying
+
+First create `app.js` in an empty directory with the following Node.js app. Note that it must listen on __PORT__ which is passed by Up.
+
+```js
+const http = require('http')
+const { PORT = 3000 } = process.env
+
+http.createServer((req, res) => {
+  res.end('Hello World\n')
+}).listen(PORT)
+```
+
+Next you should give your application a name and start configuring. The `profile` name should correspond with the name in `~/.aws/credentials` so that Up knows which AWS account to deploy to, and which credentials to use.
+
+```json
+{
+  "name": "up-example",
+  "profile": "up-tobi"
+}
+```
+
+Run `up` to deploy the application.
+
+```
+$ up
+
+   build: 5 files, 3.9 MB (358ms)
+  deploy: complete (14.376s)
+   stack: complete (1m12.086s)
+```
+
+Test with `curl` to ensure everything is working:
+
+```
+$ curl `up url`
+Hello World
+```
+
+### Purchasing a Domain
+
+Domains can be mapped from existing services, or purchased directly from AWS via Route53. First check if the domain you'd like is available:
+
+```
+$ up domains check up.com
+
+  Domain up.com is unavailable
+
+  Suggestions:
+
+  theupwards.com          $12.00 USD
+  upwardonline.com        $12.00 USD
+  myupwards.com           $12.00 USD
+  theastir.com            $12.00 USD
+  astironline.com         $12.00 USD
+  myastir.com             $12.00 USD
+  myupward.net            $11.00 USD
+  cleanup.tv              $32.00 USD
+  myup.tv                 $32.00 USD
+  itup.tv                 $32.00 USD
+  newup.tv                $32.00 USD
+  thedown.net             $11.00 USD
+  theupward.net           $11.00 USD
+  upwardsonline.net       $11.00 USD
+```
+
+Oh no up.com is taken! Try another:
+
+```
+$ up domains check up-example.com
+
+  Domain up-example.com is available for $12.00 USD
+```
+
+Purchase it with the following command, and fill out the details required by the registrar.
+
+```
+$ up domains buy up-example.com
+
+  Confirm domain: up-example.com
+  First name: TJ
+  Last name: Holowaychuk
+  Email: tj@apex.sh
+  Phone: +1.2501007000
+  Country code: CA
+  City: Victoria
+  State or province: BC
+  Zip code: X9X 9X9
+  Address: Some address here
+```
+
+It can take a few minutes for AWS to finalize the purchase, you should receive an email, then you'll see it in the `up domains` output, along with the automatic renewal time.
+
+```
+$ up domains
+
+  gh-polls.com             renews Aug 28 17:17:58
+  up-example.com           renews Sep 19 19:40:50
+```
+
+### Deploying to Stages
+
+Before deploying to the staging and production stages, first tweak the application a little to include the `UP_STAGE` environment variable:
+
+```js
+const http = require('http')
+const { PORT = 3000, UP_STAGE } = process.env
+
+http.createServer((req, res) => {
+  res.end('Hello World from ' + UP_STAGE)
+}).listen(PORT)
+```
+
+Now deploy to development and production. Note that `up` is an alias of `up deploy development`.
+
+```
+$ up
+$ up deploy production
+```
+
+Open both in the browser:
+
+```
+$ up url -o
+$ up url production -o
+```
+
+You should see "Hello World from production" and "Hello World from development".
+
+### Mapping Custom Domains to Stages
+
+Now that you have an application deployed, you probably want a fancy custom domain for it right? You can map these using the `stages` and `domain` properties.
+
+Here we let Up know that we want `up-example.com` for production and `dev.up-example` for development. You could also map staging to `stage.up-example.com` or similar if you'd like.
+
+```json
+{
+  "name": "up-example",
+  "profile": "up-tobi",
+  "stages": {
+    "development": {
+      "domain": "dev.up-example.com"
+    },
+    "production": {
+      "domain": "up-example.com"
+    }
+  }
+}
+```
+
+Note that you could map staging to a domain like `staging-myapp.com` as well, it does not have to be a sub-domain of your production domain.
+
+Now when you run `up stack plan` to preview changes to your resources, it will prompt you to verify the Let's Encrypt certificate emails that AWS sends.
+
+```
+$ up stack plan
+
+       domains: Verify your email
+     ⠧ confirm: up-example.com
+```
+
+AWS requires email verification to prove you own the domain. After clicking "I Approve" in the email, the output will resume and you'll see some new resources Up will be creating.
+
+```
+Add AWS::ApiGateway::DomainName
+  id: ApiDomainDevelopment
+
+Add AWS::ApiGateway::BasePathMapping
+  id: ApiDomainDevelopmentPathMapping
+
+Add AWS::ApiGateway::DomainName
+  id: ApiDomainProduction
+
+Add AWS::ApiGateway::BasePathMapping
+  id: ApiDomainProductionPathMapping
+
+Add AWS::Route53::RecordSet
+  id: DnsZoneDevUpExampleComRecordDevUpExampleCom
+
+Add AWS::Route53::RecordSet
+  id: DnsZoneUpExampleComRecordUpExampleCom
+```
+
+If you're curious, now that Up knows you want to map the domain(s), it will create:
+
+- Registers ACM free SSL certificate(s) for your domain(s)
+- CloudFront distribution for the API Gateway
+- API Gateway stage mapping
+- Route53 DNS zone and record(s) mapping to the CloudFront distribution
+
+Now apply these changes:
+
+```
+$ up stack apply
+```
+
+After the changes have been applied, it can take roughly 30-40 minutes for CloudFront to distribute the configuration and SSL certificate globally, so until then our up-example.com domain won't work.
+
 ## Logging
 
-This description describes how you can log from you application in a way that Up will recognize. In the future Up will support forwarding your logs to services such as Loggly, Papertrail or ELK.
+This section describes how you can log from you application in a way that Up will recognize. In the future Up will support forwarding your logs to services such as Loggly, Papertrail or ELK.
 
 ### Plain Text
 

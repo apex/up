@@ -554,7 +554,7 @@ This example maps only the production stage:
 }
 ```
 
-Plan the changes via `up stack plan` and `up stack apply` to perform the changes. Note that CloudFront can take 30-40 minutes to distribute your configuration globally, so be patient when applying these changes!
+Plan the changes via `up stack plan` and `up stack apply` to perform the changes. Note that CloudFront can take 30-40 minutes to distribute this configuration globally, so be patient when applying these changes!
 
 ## Ignoring Files
 

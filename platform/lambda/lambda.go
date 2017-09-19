@@ -334,10 +334,18 @@ func (p *Platform) createCerts() error {
 			continue
 		}
 
+		domain := util.Domain(s.Domain)
+
+		// already requested
+		if util.StringsContains(domains, domain) {
+			log.Debugf("already requested cert for %s", domain)
+			continue
+		}
+
 		// see if the cert exists, stripping any subdomain
 		// since we request only a single wildcard cert.
 		log.Debugf("looking up cert for %s", s.Domain)
-		arn := getCert(res.CertificateSummaryList, util.Domain(s.Domain))
+		arn := getCert(res.CertificateSummaryList, domain)
 		if arn != "" {
 			log.Debugf("found cert for %s: %s", s.Domain, arn)
 			s.Cert = arn
@@ -346,15 +354,15 @@ func (p *Platform) createCerts() error {
 
 		// request the cert
 		res, err := a.RequestCertificate(&acm.RequestCertificateInput{
-			DomainName:              aws.String(s.Domain),
-			SubjectAlternativeNames: aws.StringSlice([]string{"*." + s.Domain}),
+			DomainName:              &domain,
+			SubjectAlternativeNames: aws.StringSlice([]string{"*." + domain}),
 		})
 
 		if err != nil {
 			return errors.Wrapf(err, "requesting cert for %s", s.Domain)
 		}
 
-		domains = append(domains, s.Domain)
+		domains = append(domains, domain)
 		s.Cert = *res.CertificateArn
 	}
 
