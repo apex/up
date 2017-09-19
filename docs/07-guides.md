@@ -202,7 +202,45 @@ Now apply these changes:
 $ up stack apply
 ```
 
-After the changes have been applied, it can take roughly 30-40 minutes for CloudFront to distribute the configuration and SSL certificate globally, so until then our up-example.com domain won't work.
+After the changes have been applied, it can take roughly 10-40 minutes for CloudFront to distribute the configuration and SSL certificate globally, so until then our up-example.com domain won't work.
+
+Once available https://up-example.com will always point to production via `up deploy production`, and https://dev.up-example.com/ will point to the latest deployment via `up`.
+
+### Stack Changes
+
+The "stack" is all of the resources associated with your app. You plan changes via `up stack plan` and perform them with `up stack apply`.
+
+Suppose you wanted to map the "staging" stage, you would first add it to `up.json`:
+
+```json
+{
+  "name": "up-example",
+  "profile": "up-tobi",
+  "stages": {
+    "development": {
+      "domain": "dev.up-example.com"
+    },
+    "staging": {
+      "domain": "stage.up-example.com"
+    },
+    "production": {
+      "domain": "up-example.com"
+    }
+  }
+}
+```
+
+Then run:
+
+```
+$ up stack plan
+```
+
+Review the output, it should be all "Add"s in this case, then apply:
+
+```
+$ up stack apply
+```
 
 ## Logging
 

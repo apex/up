@@ -519,11 +519,9 @@ The record `type` must be one of:
 - SRV
 - TXT
 
-## Custom Domains
+## Stages & Custom Domains
 
-You may purchase domains via the `up` CLI, or map custom domains from other registrars. Up uses Route53 to purchase domains using your AWS account credit card.
-
-Up supports custom domains by mapping stages. Stage configuration is optional, this example maps all three to sub-domains:
+Up supports per-stage configuration, such as mapping of custom domains. Stage configuration is optional, this example maps all three to sub-domains:
 
 
 ```json
@@ -555,6 +553,16 @@ This example maps only the production stage:
 ```
 
 Plan the changes via `up stack plan` and `up stack apply` to perform the changes. Note that CloudFront can take 30-40 minutes to distribute this configuration globally, so be patient when applying these changes!
+
+Custom stages may be supported in the future, for now there are three:
+
+- `development` – The latest deployment
+- `staging` – The latest deployment specific to "staging"
+- `production` – The latest deployment specific to "production"
+
+If you're familiar with AWS Lambda, "development" is the $LATEST version, while "staging" and "production" are aliases.
+
+You may purchase domains from the command-line, or map custom domains from other registrars. Up uses Route53 to purchase domains using your AWS account credit card. See `up help domains`.
 
 ## Ignoring Files
 
