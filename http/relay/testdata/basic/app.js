@@ -69,7 +69,7 @@ routes['/close'] = (req, res) => {
 
 routes['/appError'] = (req, res) => {
   res.writeHead(200, {
-    Connection: 'close',
+    Connection: 'close'
   });
 
   // Do some work here
