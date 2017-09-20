@@ -11,6 +11,7 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
+	"strings"
 	"sync"
 	"time"
 
@@ -133,15 +134,19 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // RoundTrip implementation.
 func (p *Proxy) RoundTrip(r *http.Request) (*http.Response, error) {
 	b := p.config.Proxy.Backoff.Backoff()
-	retries := 0
+	retries := -1
 
 retry:
+	retries++
 	// replace host as it will change on restart
 	r.URL.Host = p.target.Host
 	res, err := DefaultTransport.RoundTrip(r)
 
 	// everything is fine
 	if err == nil {
+		if shouldRetry(r, res) && retries < p.maxRetries {
+			goto retry
+		}
 		return res, nil
 	}
 
@@ -149,8 +154,6 @@ retry:
 	if retries >= p.maxRetries {
 		return nil, err
 	}
-
-	retries++
 
 	// temporary error, try again
 	if e, ok := err.(net.Error); ok && e.Temporary() {
@@ -177,7 +180,7 @@ retry:
 	}
 
 	// Only retry this request if we were successfully able to restart the app server
-	if canRetry(r, res) && restartErr == nil {
+	if shouldRetry(r, res) && restartErr == nil {
 		goto retry
 	}
 
@@ -276,13 +279,12 @@ func command(s string, env []string) *exec.Cmd {
 	return cmd
 }
 
-// canRetry determines if a request can be retried when there was an applicaiton error
-func canRetry(req *http.Request, res *http.Response) bool {
-	switch req.Method {
-	case http.MethodGet:
-	case http.MethodHead:
-	case http.MethodOptions:
-		return (res.StatusCode >= 500 && res.StatusCode < 600)
+// shouldRetry determines if a request should be retried when there was an applicaiton error
+func shouldRetry(req *http.Request, res *http.Response) bool {
+	switch strings.ToUpper(req.Method) {
+	case "HEAD", "OPTIONS", "GET":
+		// If we weren't able to get the StatusCode, we can assume something really bad happened
+		return res == nil || (res.StatusCode >= 500 && res.StatusCode < 600)
 	}
 
 	return false

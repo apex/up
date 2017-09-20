@@ -68,11 +68,10 @@ routes['/close'] = (req, res) => {
 };
 
 routes['/appError'] = (req, res) => {
-  res.writeHead(200, {
+  res.writeHead(500, {
     Connection: 'close'
   });
 
-  // Do some work here
   console.log('Doing some non-idempotent work');
   setTimeout(() => {
     res.socket.end();
