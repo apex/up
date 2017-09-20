@@ -242,6 +242,15 @@ Review the output, it should be all "Add"s in this case, then apply:
 $ up stack apply
 ```
 
+### Deleting the App
+
+After you're done messing around, you may want to remove all the resources and the app itself. To do so simply run:
+
+
+```
+$ up stack delete
+```
+
 ## Logging
 
 This section describes how you can log from you application in a way that Up will recognize. In the future Up will support forwarding your logs to services such as Loggly, Papertrail or ELK.
