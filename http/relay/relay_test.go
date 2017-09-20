@@ -208,21 +208,6 @@ func TestRelay(t *testing.T) {
 				assert.Equal(t, r2-r1, 3)
 			})
 		}
-
-		t.Run("get head options", func(t *testing.T) {
-			newHandler(t)
-			for _, m := range []string{"GET", "HEAD", "OPTIONS"} {
-				r1 := numRestarts()
-
-				res := httptest.NewRecorder()
-				req := httptest.NewRequest(m, "/appError", nil)
-				h.ServeHTTP(res, req)
-				r2 := numRestarts()
-
-				// Should restart and retry 3 times
-				assert.Equal(t, r2-r1, 3)
-			}
-		})
 	})
 
 	t.Run("child process cleanup", func(t *testing.T) {
