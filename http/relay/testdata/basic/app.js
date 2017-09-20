@@ -67,6 +67,18 @@ routes['/close'] = (req, res) => {
   res.end('closed');
 };
 
+routes['/appError'] = (req, res) => {
+  res.writeHead(200, {
+    Connection: 'close',
+  });
+
+  // Do some work here
+  console.log('Doing some non-idempotent work');
+  setTimeout(() => {
+    res.socket.end();
+  }, 10);
+};
+
 routes['/swallowSignals'] = (req, res) => {
   for (const s of ['SIGINT', 'SIGTERM', 'SIGHUP', 'SIGUSR1', 'SIGUSR2']) {
     process.on(s, () => 1);
