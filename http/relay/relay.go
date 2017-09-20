@@ -168,11 +168,14 @@ retry:
 
 	// restart the server, try again
 	ctx.WithError(err).Error("network")
-	if err := p.Restart(); err != nil {
-		return nil, errors.Wrap(err, "restarting")
+
+	if restartErr := p.Restart(); restartErr != nil {
+		// We want to restart, but dont want to fail with that error.
+		// The real error was the network error that happened above
+		ctx.WithError(restartErr).Error("restarting")
 	}
 
-	goto retry
+	return nil, errors.Wrap(err, "network")
 }
 
 // environment returns the server env variables.
