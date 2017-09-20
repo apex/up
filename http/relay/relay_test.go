@@ -178,6 +178,53 @@ func TestRelay(t *testing.T) {
 		})
 	})
 
+	t.Run("idempotency", func(t *testing.T) {
+		t.Run("POST", func(t *testing.T) {
+			newHandler(t)
+			r1 := numRestarts()
+
+			res := httptest.NewRecorder()
+			req := httptest.NewRequest("POST", "/appError", strings.NewReader("{}"))
+			h.ServeHTTP(res, req)
+			r2 := numRestarts()
+
+			// This test shoud only restart the server once,
+			// otherwise it incorrectly retried a request
+			assert.Equal(t, r2-r1, 1)
+		})
+
+		for _, m := range []string{"GET", "HEAD", "OPTIONS"} {
+			m := m
+			t.Run(m, func(t *testing.T) {
+				newHandler(t)
+				r1 := numRestarts()
+
+				res := httptest.NewRecorder()
+				req := httptest.NewRequest(m, "/appError", nil)
+				h.ServeHTTP(res, req)
+				r2 := numRestarts()
+
+				// Should restart and retry 3 times
+				assert.Equal(t, r2-r1, 3)
+			})
+		}
+
+		t.Run("get head options", func(t *testing.T) {
+			newHandler(t)
+			for _, m := range []string{"GET", "HEAD", "OPTIONS"} {
+				r1 := numRestarts()
+
+				res := httptest.NewRecorder()
+				req := httptest.NewRequest(m, "/appError", nil)
+				h.ServeHTTP(res, req)
+				r2 := numRestarts()
+
+				// Should restart and retry 3 times
+				assert.Equal(t, r2-r1, 3)
+			}
+		})
+	})
+
 	t.Run("child process cleanup", func(t *testing.T) {
 
 		// Test that a child process who stops accepting network connections

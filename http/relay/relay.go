@@ -133,24 +133,29 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // RoundTrip implementation.
 func (p *Proxy) RoundTrip(r *http.Request) (*http.Response, error) {
 	b := p.config.Proxy.Backoff.Backoff()
-	retries := 0
+	attempts := -1
 
 retry:
+	attempts++
+
 	// replace host as it will change on restart
 	r.URL.Host = p.target.Host
 	res, err := DefaultTransport.RoundTrip(r)
 
-	// everything is fine
+	// attempts exceeded, return the error or response
+	if attempts >= p.maxRetries {
+		return res, err
+	}
+
+	// we got an error response, retry if possible
+	if err == nil && res.StatusCode >= 500 && isIdempotent(r) {
+		goto retry
+	}
+
+	// we got a response
 	if err == nil {
 		return res, nil
 	}
-
-	// retries exceeded
-	if retries >= p.maxRetries {
-		return nil, err
-	}
-
-	retries++
 
 	// temporary error, try again
 	if e, ok := err.(net.Error); ok && e.Temporary() {
@@ -168,11 +173,19 @@ retry:
 
 	// restart the server, try again
 	ctx.WithError(err).Error("network")
-	if err := p.Restart(); err != nil {
-		return nil, errors.Wrap(err, "restarting")
+
+	var restartErr error
+	if restartErr = p.Restart(); restartErr != nil {
+		// we want to restart, but not mask the error above
+		ctx.WithError(restartErr).Error("restarting")
 	}
 
-	goto retry
+	// retry idempotent requests
+	if restartErr == nil && isIdempotent(r) {
+		goto retry
+	}
+
+	return nil, errors.Wrap(err, "network")
 }
 
 // environment returns the server env variables.
@@ -265,4 +278,14 @@ func command(s string, env []string) *exec.Cmd {
 	cmd.Stderr = writer.New(log.ErrorLevel)
 	cmd.Env = append(os.Environ(), append(env, "PATH=node_modules/.bin:"+os.Getenv("PATH"))...)
 	return cmd
+}
+
+// isIdempotent returns true if the request is considered idempotent.
+func isIdempotent(req *http.Request) bool {
+	switch req.Method {
+	case "GET", "HEAD", "OPTIONS":
+		return true
+	default:
+		return false
+	}
 }
