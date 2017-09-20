@@ -66,6 +66,10 @@ type Proxy struct {
 	// a SIGINT and finally killing with a SIGKILL.
 	shutdownTimeout time.Duration
 
+	// timeout is the amount of time that a response may take,
+	// including any retry attempts made.
+	timeout time.Duration
+
 	*httputil.ReverseProxy
 }
 
@@ -79,6 +83,7 @@ func New(c *up.Config) (http.Handler, error) {
 		config:          c,
 		cmdCleanup:      make(chan *exec.Cmd, 3),
 		maxRetries:      c.Proxy.Backoff.Attempts,
+		timeout:         time.Duration(c.Proxy.Timeout) * time.Second,
 		shutdownTimeout: time.Duration(c.Proxy.ShutdownTimeout) * time.Second,
 	}
 
@@ -133,6 +138,7 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // RoundTrip implementation.
 func (p *Proxy) RoundTrip(r *http.Request) (*http.Response, error) {
 	b := p.config.Proxy.Backoff.Backoff()
+	start := time.Now()
 	attempts := -1
 
 retry:
@@ -142,8 +148,14 @@ retry:
 	r.URL.Host = p.target.Host
 	res, err := DefaultTransport.RoundTrip(r)
 
-	// attempts exceeded, return the error or response
+	// attempts exceeded, respond as-is
 	if attempts >= p.maxRetries {
+		return res, err
+	}
+
+	// timeout exceeded, respond as-is
+	if time.Since(start) >= p.timeout {
+		// TODO: timeout in-flight as well
 		return res, err
 	}
 

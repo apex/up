@@ -15,6 +15,11 @@ type Relay struct {
 	// Backoff configuration.
 	Backoff Backoff `json:"backoff"`
 
+	// Timeout in seconds to wait for a response.
+	// This is also taken into account when performing
+	// retries, as to not exceed the limit.
+	Timeout int `json:"timeout"`
+
 	// ListenTimeout in seconds when waiting for
 	// the application to bind to PORT.
 	ListenTimeout int `json:"listen_timeout"`
@@ -31,6 +36,15 @@ type Relay struct {
 func (r *Relay) Default() error {
 	if r.Command == "" {
 		r.Command = "./server"
+	}
+
+	// TODO: remove Lambda timeout setting,
+	// it can be inferred from this property
+	// or just left at the max of 30s for API Gateway.
+	//
+	// also validate against 30s when using the Lambda platform.
+	if r.Timeout == 0 {
+		r.Timeout = 15
 	}
 
 	if r.ListenTimeout == 0 {
