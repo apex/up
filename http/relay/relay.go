@@ -11,6 +11,7 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
+	"strings"
 	"sync"
 	"time"
 
@@ -133,15 +134,19 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 // RoundTrip implementation.
 func (p *Proxy) RoundTrip(r *http.Request) (*http.Response, error) {
 	b := p.config.Proxy.Backoff.Backoff()
-	retries := 0
+	retries := -1
 
 retry:
+	retries++
 	// replace host as it will change on restart
 	r.URL.Host = p.target.Host
 	res, err := DefaultTransport.RoundTrip(r)
 
 	// everything is fine
 	if err == nil {
+		if shouldRetry(r, res) && retries < p.maxRetries {
+			goto retry
+		}
 		return res, nil
 	}
 
@@ -149,8 +154,6 @@ retry:
 	if retries >= p.maxRetries {
 		return nil, err
 	}
-
-	retries++
 
 	// temporary error, try again
 	if e, ok := err.(net.Error); ok && e.Temporary() {
@@ -168,11 +171,20 @@ retry:
 
 	// restart the server, try again
 	ctx.WithError(err).Error("network")
-	if err := p.Restart(); err != nil {
-		return nil, errors.Wrap(err, "restarting")
+
+	var restartErr error
+	if restartErr = p.Restart(); restartErr != nil {
+		// We want to restart, but dont want to fail with that error.
+		// The real error was the network error that happened above
+		ctx.WithError(restartErr).Error("restarting")
 	}
 
-	goto retry
+	// Only retry this request if we were successfully able to restart the app server
+	if shouldRetry(r, res) && restartErr == nil {
+		goto retry
+	}
+
+	return nil, errors.Wrap(err, "network")
 }
 
 // environment returns the server env variables.
@@ -265,4 +277,15 @@ func command(s string, env []string) *exec.Cmd {
 	cmd.Stderr = writer.New(log.ErrorLevel)
 	cmd.Env = append(os.Environ(), append(env, "PATH=node_modules/.bin:"+os.Getenv("PATH"))...)
 	return cmd
+}
+
+// shouldRetry determines if a request should be retried when there was an applicaiton error
+func shouldRetry(req *http.Request, res *http.Response) bool {
+	switch strings.ToUpper(req.Method) {
+	case "HEAD", "OPTIONS", "GET":
+		// If we weren't able to get the StatusCode, we can assume something really bad happened
+		return res == nil || (res.StatusCode >= 500 && res.StatusCode < 600)
+	}
+
+	return false
 }
