@@ -150,17 +150,20 @@ retry:
 
 	// attempts exceeded, respond as-is
 	if attempts >= p.maxRetries {
+		log.Warn("retry attempts exceeded")
 		return res, err
 	}
 
 	// timeout exceeded, respond as-is
 	if time.Since(start) >= p.timeout {
 		// TODO: timeout in-flight as well
+		log.Warn("retry timeout exceeded")
 		return res, err
 	}
 
 	// we got an error response, retry if possible
 	if err == nil && res.StatusCode >= 500 && isIdempotent(r) {
+		log.WithField("status", res.StatusCode).Warn("retrying idempotent request")
 		goto retry
 	}
 
