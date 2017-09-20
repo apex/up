@@ -169,10 +169,16 @@ retry:
 	// restart the server, try again
 	ctx.WithError(err).Error("network")
 
-	if restartErr := p.Restart(); restartErr != nil {
+	var restartErr error
+	if restartErr = p.Restart(); restartErr != nil {
 		// We want to restart, but dont want to fail with that error.
 		// The real error was the network error that happened above
 		ctx.WithError(restartErr).Error("restarting")
+	}
+
+	// Only retry this request if we were successfully able to restart the app server
+	if canRetry(r, res) && restartErr == nil {
+		goto retry
 	}
 
 	return nil, errors.Wrap(err, "network")
@@ -268,4 +274,16 @@ func command(s string, env []string) *exec.Cmd {
 	cmd.Stderr = writer.New(log.ErrorLevel)
 	cmd.Env = append(os.Environ(), append(env, "PATH=node_modules/.bin:"+os.Getenv("PATH"))...)
 	return cmd
+}
+
+// canRetry determines if a request can be retried when there was an applicaiton error
+func canRetry(req *http.Request, res *http.Response) bool {
+	switch req.Method {
+	case http.MethodGet:
+	case http.MethodHead:
+	case http.MethodOptions:
+		return (res.StatusCode >= 500 && res.StatusCode < 600)
+	}
+
+	return false
 }
