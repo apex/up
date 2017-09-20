@@ -455,7 +455,7 @@ The following settings are available:
 
 ### Crash Recovery
 
-Another benefit of using Up as a reverse proxy is performing crash recovery, restarting your server upon crashing and re-attempting the request before responding to the client with an error.
+Another benefit of using Up as a reverse proxy is performing crash recovery. Up will retry idempotent requests upon failure, and upon crash it will restart your server and re-attempt before responding to the client.
 
 By default the back-off is configured as:
 
@@ -552,7 +552,7 @@ This example maps only the production stage:
 }
 ```
 
-Plan the changes via `up stack plan` and `up stack apply` to perform the changes. Note that CloudFront can take 30-40 minutes to distribute this configuration globally, so be patient when applying these changes!
+Plan the changes via `up stack plan` and `up stack apply` to perform the changes. Note that CloudFront can take up to ~40 minutes to distribute this configuration globally, so grab a coffee while these changes are applied.
 
 Custom stages may be supported in the future, for now there are three:
 
@@ -562,7 +562,7 @@ Custom stages may be supported in the future, for now there are three:
 
 If you're familiar with AWS Lambda, "development" is the $LATEST version, while "staging" and "production" are aliases.
 
-You may purchase domains from the command-line, or map custom domains from other registrars. Up uses Route53 to purchase domains using your AWS account credit card. See `up help domains`.
+You may [purchase domains](#purchasing_a_domain) from the command-line, or map custom domains from other registrars. Up uses Route53 to purchase domains using your AWS account credit card. See `up help domains`.
 
 ## Ignoring Files
 
