@@ -31,5 +31,5 @@ $ up upgrade
 If you hit permission issues, you may need to run the following, as `up` is installed to `/usr/local/bin/up` by default.
 
 ```
-$ sudo chown -R $(whoami) /usr/local/
+$ sudo chown -R $(whoami) /usr/local/bin/
 ```
