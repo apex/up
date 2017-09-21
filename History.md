@@ -1,4 +1,29 @@
 
+v0.2.5 / 2017-09-20
+===================
+
+  * add more relay logs
+  * docs: refactor
+  * add .proxy.timeout for requests and retries. Closes #335
+  * refactor: remove a duplicate test
+  * add retrying of 5xx errors for idempotent requests. Closes #214
+  * docs: change chown to bin only. Closes #337
+  * docs: add deletion info
+  * docs: add more stage info
+  * docs: add guide for full app
+  * docs: add note about CF provisioning
+  * docs: add stage section
+  * docs: refactor dns section
+  * docs: remove references to `certs`
+  * docs: remove "coming soon"
+  * docs: tweak faq
+  * docs: add vendor mention
+  * update Bowery/prompt dep and fix spacing
+  * fix 404 checksum not found (#331)
+  * docs: add missing package comments
+  * docs: add missing package comments
+  * docs: add note about omitting proxy bin changes
+
 v0.2.4 / 2017-09-15
 ===================
 
