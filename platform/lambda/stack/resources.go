@@ -211,7 +211,7 @@ func stage(c *up.Config, s *config.Stage, m Map) {
 		"DependsOn": []string{id, deploymentID},
 		"Properties": Map{
 			"DomainName": s.Domain,
-			"BasePath":   "",
+			"BasePath":   util.BasePath(s.Path),
 			"RestApiId":  ref("Api"),
 			"Stage":      s.Name,
 		},

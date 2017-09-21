@@ -243,3 +243,9 @@ func StringsContains(list []string, s string) bool {
 	}
 	return false
 }
+
+// BasePath returns a normalized base path,
+// stripping the leading '/' if present.
+func BasePath(s string) string {
+	return strings.TrimLeft(s, "/")
+}

@@ -521,7 +521,21 @@ The record `type` must be one of:
 
 ## Stages & Custom Domains
 
-Up supports per-stage configuration, such as mapping of custom domains. Stage configuration is optional, this example maps all three to sub-domains:
+Up supports per-stage configuration, such as mapping of custom domains.
+
+By defining a stage and its `domain`, Up knows it will need to create a free SSL certificate for `gh-polls.com`, setup the DNS records, and map the domain to API Gateway.
+
+```json
+{
+  "stages": {
+    "production": {
+      "domain": "gh-polls.com"
+    }
+  }
+}
+```
+
+ Here's another example mapping each stage to a domain, note that Up will create a wildcard certificate, so sub-domains are fine.
 
 
 ```json
@@ -540,17 +554,19 @@ Up supports per-stage configuration, such as mapping of custom domains. Stage co
 }
 ```
 
-This example maps only the production stage:
+You may also provide an optional base path, for example to prefix your API with `/v1`. Note that currently your application will still receive "/v1" in its request path, for example Node's `req.url` will be  "/v1/users" instead of "/users".
 
 ```json
 {
   "stages": {
     "production": {
-      "domain": "gh-polls.com"
+      "domain": "api.gh-polls.com",
+      "path": "/v1"
     }
   }
 }
 ```
+
 
 Plan the changes via `up stack plan` and `up stack apply` to perform the changes. Note that CloudFront can take up to ~40 minutes to distribute this configuration globally, so grab a coffee while these changes are applied.
 
