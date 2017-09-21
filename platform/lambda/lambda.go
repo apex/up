@@ -98,7 +98,7 @@ type Platform struct {
 func New(c *up.Config, events event.Events) *Platform {
 	return &Platform{
 		config:  c,
-		runtime: "nodejs6.10",
+		runtime: "python3.6",
 		handler: "_proxy.handle",
 		events:  events,
 	}
@@ -642,6 +642,10 @@ func (p *Platform) injectProxy() error {
 		return errors.Wrap(err, "writing _proxy.js")
 	}
 
+	if err := ioutil.WriteFile("_proxy.py", shim.MustAsset("proxy.py"), 0755); err != nil {
+		return errors.Wrap(err, "writing _proxy.py")
+	}
+
 	return nil
 }
 
@@ -651,6 +655,7 @@ func (p *Platform) removeProxy() error {
 	os.Remove("main")
 	os.Remove("_proxy.js")
 	os.Remove("byline.js")
+	os.Remove("_proxy.py")
 	return nil
 }
 
