@@ -6,7 +6,7 @@ Up focuses on deploying "vanilla" HTTP servers so there's nothing new to learn, 
 
 Up currently supports Node.js, Golang, Python, Crystal, and static sites out of the box. Up is platform-agnostic, supporting AWS Lambda and API Gateway as the first targets. You can think of Up as self-hosted Heroku style user experience for a fraction of the price, with the security, flexibility, and scalability of AWS.
 
-Check out the [documentation](https://apex.github.io/up/) for more instructions, try one of the [examples](https://github.com/apex/up-examples), or chat with us in [Slack](https://apex-dev.azurewebsites.net/).
+Check out the [documentation](https://apex.github.io/up/) for more instructions, try one of the [examples](https://github.com/apex/up-examples), or chat with us in [Slack](https://apex-slackin.herokuapp.com/).
 
 ![](assets/screen.png)
 
@@ -67,7 +67,7 @@ $ up url --open
 - [Documentation](https://apex.github.io/up/)
 - [Example applications](https://github.com/apex/up-examples)
 - [Twitter](https://twitter.com/tjholowaychuk)
-- [Slack](https://apex-dev.azurewebsites.net/) to chat with apex(1) and up(1) community members
+- [Slack](https://apex-slackin.herokuapp.com/) to chat with apex(1) and up(1) community members
 - [Blog](https://blog.apex.sh/) to follow release posts, tips and tricks
 - [Wiki](https://github.com/apex/up/wiki) for article listings, database suggestions, etc
 

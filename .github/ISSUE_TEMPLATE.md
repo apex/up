@@ -16,4 +16,4 @@ Describe the steps required to reproduce the issue if applicable.
 
 Please consider donating https://opencollective.com/apex-up/donate to help the project.
 
-Just have a general question? Join us on Slack https://apex-dev.azurewebsites.net/
+Just have a general question? Join us on Slack https://apex-slackin.herokuapp.com/
