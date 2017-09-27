@@ -14,7 +14,7 @@ import (
 
 func init() {
 	log.Now = func() time.Time {
-		return time.Unix(0, 0)
+		return time.Unix(0, 0).UTC()
 	}
 }
 
@@ -37,11 +37,11 @@ POST /logout
 
 	assert.NoError(t, w.Close(), `close`)
 
-	expected := `{"fields":{"app":true},"level":"info","timestamp":"1969-12-31T16:00:00-08:00","message":"GET /"}
-{"fields":{"app":true},"level":"info","timestamp":"1969-12-31T16:00:00-08:00","message":"GET /account"}
-{"fields":{"app":true},"level":"info","timestamp":"1969-12-31T16:00:00-08:00","message":"GET /login"}
-{"fields":{"app":true},"level":"info","timestamp":"1969-12-31T16:00:00-08:00","message":"POST /"}
-{"fields":{"app":true},"level":"info","timestamp":"1969-12-31T16:00:00-08:00","message":"POST /logout"}
+	expected := `{"fields":{"app":true},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"GET /"}
+{"fields":{"app":true},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"GET /account"}
+{"fields":{"app":true},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"GET /login"}
+{"fields":{"app":true},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"POST /"}
+{"fields":{"app":true},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"POST /logout"}
 `
 
 	assert.Equal(t, expected, buf.String())
@@ -78,13 +78,13 @@ SomethingError: three
 
 	assert.NoError(t, w.Close(), `close`)
 
-	expected := `{"fields":{"app":true},"level":"info","timestamp":"1969-12-31T16:00:00-08:00","message":"GET /"}
-{"fields":{"app":true},"level":"info","timestamp":"1969-12-31T16:00:00-08:00","message":"GET /account"}
-{"fields":{"app":true},"level":"info","timestamp":"1969-12-31T16:00:00-08:00","message":"SomethingError: one\n  at foo\n  at bar\n  at baz\n  at raz"}
-{"fields":{"app":true},"level":"info","timestamp":"1969-12-31T16:00:00-08:00","message":"GET /login"}
-{"fields":{"app":true},"level":"info","timestamp":"1969-12-31T16:00:00-08:00","message":"SomethingError: two\n  at foo\n  at bar\n  at baz"}
-{"fields":{"app":true},"level":"info","timestamp":"1969-12-31T16:00:00-08:00","message":"POST /"}
-{"fields":{"app":true},"level":"info","timestamp":"1969-12-31T16:00:00-08:00","message":"SomethingError: three\n  at foo\n  at bar\n  at baz"}
+	expected := `{"fields":{"app":true},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"GET /"}
+{"fields":{"app":true},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"GET /account"}
+{"fields":{"app":true},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"SomethingError: one\n  at foo\n  at bar\n  at baz\n  at raz"}
+{"fields":{"app":true},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"GET /login"}
+{"fields":{"app":true},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"SomethingError: two\n  at foo\n  at bar\n  at baz"}
+{"fields":{"app":true},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"POST /"}
+{"fields":{"app":true},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"SomethingError: three\n  at foo\n  at bar\n  at baz"}
 `
 
 	assert.Equal(t, expected, buf.String())
@@ -107,9 +107,9 @@ func TestWriter_json(t *testing.T) {
 
 	assert.NoError(t, w.Close(), `close`)
 
-	expected := `{"fields":{"app":true,"method":"GET","path":"/"},"level":"info","timestamp":"1969-12-31T16:00:00-08:00","message":"request"}
-{"fields":{"app":true,"method":"GET","path":"/login"},"level":"info","timestamp":"1969-12-31T16:00:00-08:00","message":"request"}
-{"fields":{"app":true,"method":"POST","path":"/login"},"level":"info","timestamp":"1969-12-31T16:00:00-08:00","message":"request"}
+	expected := `{"fields":{"app":true,"method":"GET","path":"/"},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"request"}
+{"fields":{"app":true,"method":"GET","path":"/login"},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"request"}
+{"fields":{"app":true,"method":"POST","path":"/login"},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"request"}
 `
 
 	assert.Equal(t, expected, buf.String())
