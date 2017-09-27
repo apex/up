@@ -15,6 +15,9 @@ type Relay struct {
 	// Backoff configuration.
 	Backoff Backoff `json:"backoff"`
 
+	// Retry enables idempotent request retries. Enabled by default.
+	Retry *bool `json:"retry"`
+
 	// Timeout in seconds to wait for a response.
 	// This is also taken into account when performing
 	// retries, as to not exceed the limit.
@@ -57,6 +60,10 @@ func (r *Relay) Default() error {
 
 	if err := r.Backoff.Default(); err != nil {
 		return errors.Wrap(err, ".backoff")
+	}
+
+	if r.Retry != nil && !*r.Retry {
+		r.Backoff.Attempts = 0
 	}
 
 	if r.platform == "" {

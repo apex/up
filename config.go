@@ -168,6 +168,7 @@ func (c *Config) Default() error {
 	// region globbing
 	c.Regions = regions.Match(c.Regions)
 
+	// default .proxy
 	if err := c.Proxy.Default(); err != nil {
 		return errors.Wrap(err, ".proxy")
 	}

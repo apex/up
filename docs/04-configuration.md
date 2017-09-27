@@ -441,6 +441,7 @@ The following settings are available:
   - When `app.js` is detected `node app.js` is used
   - When `app.py` is detected `python app.py` is used
 - `backoff` – Backoff configuration object described in "Crash Recovery"
+- `retry` – Retry idempotent requests upon 5xx or server crashes. (Default `true`)
 - `listen_timeout` – Timeout in seconds Up will wait for your app to boot and listen on `PORT` (Default `15`, Max `25`)
 - `shutdown_timeout` – Timeout in seconds Up will wait after sending a SIGINT to your server, before sending a SIGKILL (Default `15`)
 
