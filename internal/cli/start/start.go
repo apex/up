@@ -2,6 +2,7 @@ package start
 
 import (
 	"net/http"
+	"os"
 
 	"github.com/apex/log"
 	"github.com/pkg/errors"
@@ -20,6 +21,8 @@ func init() {
 	addr := cmd.Flag("address", "Address for server.").Default(":3000").String()
 
 	cmd.Action(func(_ *kingpin.ParseContext) error {
+		os.Setenv("UP_STAGE", "development")
+
 		_, _, err := root.Init()
 		if err != nil {
 			return errors.Wrap(err, "initializing")
