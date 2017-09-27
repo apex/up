@@ -158,7 +158,7 @@ Up ships with a robust static file server, to enable it specify the app `type` a
 
 By default the current directory (`.`) is served, however you can change this using the `dir` setting. The following configuration restricts only serving of files in `./public/*`, any attempts to read files from outside of this root directory will fail.
 
-```son
+```json
 {
   "name": "app",
   "type": "static",
@@ -166,8 +166,9 @@ By default the current directory (`.`) is served, however you can change this us
     "dir": "public"
   }
 }
-
 ```
+
+Note that `static.dir` only tells Up which directory to serve – it does not exclude other files from the directory – see [Ignoring Files](#configuration__ignoring_files).
 
 ## Environment Variables
 
