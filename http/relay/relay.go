@@ -148,6 +148,11 @@ retry:
 	r.URL.Host = p.target.Host
 	res, err := DefaultTransport.RoundTrip(r)
 
+	// retries disabled, don't create noise in the logs
+	if p.maxRetries == 0 {
+		return res, err
+	}
+
 	// attempts exceeded, respond as-is
 	if attempts >= p.maxRetries {
 		log.Warn("retry attempts exceeded")
