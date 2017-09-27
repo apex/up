@@ -574,8 +574,8 @@ func (p *Platform) createRole() error {
 	}
 
 	arn := *role.Role.Arn
-	log.Debugf("set role to %s", arn)
 	p.config.Lambda.Role = arn
+	log.Debugf("set role to %s", arn)
 
 	return nil
 }

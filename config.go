@@ -86,6 +86,9 @@ type Config struct {
 
 	// DNS config.
 	DNS config.DNS `json:"dns"`
+
+	// Alerting config.
+	Alerting config.Alerting `json:"alerting"`
 }
 
 // Validate implementation.
@@ -124,6 +127,10 @@ func (c *Config) Validate() error {
 
 	if err := c.Stages.Validate(); err != nil {
 		return errors.Wrap(err, ".stages")
+	}
+
+	if err := c.Alerting.Validate(); err != nil {
+		return errors.Wrap(err, ".alerting")
 	}
 
 	return nil
@@ -205,6 +212,11 @@ func (c *Config) Default() error {
 	// default .stages
 	if err := c.Stages.Default(); err != nil {
 		return errors.Wrap(err, ".stages")
+	}
+
+	// default .alerting
+	if err := c.Alerting.Default(); err != nil {
+		return errors.Wrap(err, ".alerting")
 	}
 
 	return nil

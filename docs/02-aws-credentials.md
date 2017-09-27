@@ -69,6 +69,13 @@ Below is a policy for [AWS Identity and Access Management](https://aws.amazon.co
     },
     {
       "Action": [
+        "sns:*"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    },
+    {
+      "Action": [
         "cloudformation:Create*",
         "cloudformation:Update*",
         "cloudformation:Delete*",
@@ -120,7 +127,9 @@ Below is a policy for [AWS Identity and Access Management](https://aws.amazon.co
     {
       "Effect": "Allow",
       "Action": [
-        "cloudwatch:Get*"
+        "cloudwatch:Get*",
+        "cloudwatch:Delete*",
+        "cloudwatch:Put*"
       ],
       "Resource": "*"
     },
@@ -137,4 +146,4 @@ Below is a policy for [AWS Identity and Access Management](https://aws.amazon.co
 }
 ```
 
-Note that this may change as features are added to Up, so you may have to adjust the policy.
+Note that this may change as features are added to Up, so you may have to adjust the policy. A comprehensive minimum policy will provided when Up features solidify.

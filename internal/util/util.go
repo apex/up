@@ -10,6 +10,7 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
+	"sort"
 	"strings"
 	"syscall"
 	"time"
@@ -238,4 +239,13 @@ func StringsContains(list []string, s string) bool {
 // stripping the leading '/' if present.
 func BasePath(s string) string {
 	return strings.TrimLeft(s, "/")
+}
+
+// StringMapKeys returns keys for m.
+func StringMapKeys(m map[string]string) (keys []string) {
+	for k := range m {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	return
 }
