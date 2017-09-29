@@ -444,26 +444,6 @@ The `in` operator checks for the presence of a field within the set provided. Fo
 method in ("POST", "PUT", "PATCH")
 ```
 
-### Not Operator
-
-The `not` operator is a low-precedence negation operator, for example excluding requests with the method POST, PUT, or PATCH:
-
-```
-not method in ("POST", "PUT", "PATCH")
-```
-
-Since it is the lowest precedence operator, the following will show messages that are not "user login" or "user logout":
-
-```
-not message = "user login" or message = "user logout"
-```
-
-Effectively compiling to:
-
-```
-!(message = "user login" or message = "user logout")
-```
-
 ### Units
 
 The log grammar supports units for bytes and durations, for example showing responses larger than 56kb:
