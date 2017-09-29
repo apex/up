@@ -1,4 +1,12 @@
 
+v0.2.6 / 2017-09-29
+===================
+
+  * add `proxy.retry` option defaulting to `true`
+  * add UP_STAGE to `up start`
+  * add stage `.path` basepath support
+  * fix install script for Yosemite. Closes #345
+
 v0.2.5 / 2017-09-20
 ===================
 
