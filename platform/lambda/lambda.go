@@ -428,6 +428,17 @@ func (p *Platform) deploy(region, stage string) (version string, err error) {
 		return "", err
 	}
 
+	ctx.Debug("setting s3 bucket name")
+	err = p.SetS3BucketName(region)
+
+	if util.IsNotFound(err) {
+		if err := p.CreateStack(region, version); err != nil {
+			return "", errors.Wrap(err, region)
+		}
+	} else if err != nil {
+		return "", errors.Wrap(err, "setting s3 bucket name")
+	}
+
 	ctx.Debug("fetching function config")
 	_, err = c.GetFunctionConfiguration(&lambda.GetFunctionConfigurationInput{
 		FunctionName: &p.config.Name,
