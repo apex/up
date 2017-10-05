@@ -52,7 +52,7 @@ title: FAQ
 
 <details>
   <summary>What databases can I use?</summary>
-  <p>You're not limited to database from any given platform, such as AWS, provided that the database host provides authentication you can use anything. See the <a href="https://github.com/apex/up/wiki#databases">Wiki</a> for a list of managed & serverless database solutions.</p>
+  <p>You're not limited to databases from any given platform, such as AWS Provided that the database host provides authentication, you can use anything. See the <a href="https://github.com/apex/up/wiki#databases">Wiki</a> for a list of managed & serverless database solutions.</p>
 </details>
 
 <details>
