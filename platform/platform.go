@@ -49,8 +49,6 @@ type Domains interface {
 	List() ([]*Domain, error)
 }
 
-<<<<<<< HEAD
-=======
 // Secret is an encrypted variable..
 type Secret struct {
 	App              string
@@ -70,7 +68,6 @@ type Secrets interface {
 	Load() ([]*Secret, error)
 }
 
->>>>>>> add --plain for cleartext env variables
 // Interface for platforms.
 type Interface interface {
 	// Build the project.
@@ -88,6 +85,10 @@ type Interface interface {
 	// managing domain names.
 	Domains() Domains
 
+	// Secrets returns an interface for
+	// managing secret variables.
+	Secrets(stage string) Secrets
+
 	// URL returns the endpoitn for the given
 	// region and stage combination, or an
 	// empty string.
@@ -101,6 +102,14 @@ type Interface interface {
 	ApplyStack(region string) error
 
 	ShowMetrics(region, stage string, start time.Time) error
+}
+
+// Runtime is the interface used by a platform to support
+// runtime operations such as initializing environment
+// variables from remote storage.
+type Runtime interface {
+	// Init the runtime.
+	Init(stage string) error
 }
 
 // Zipper is the interface used by platforms which

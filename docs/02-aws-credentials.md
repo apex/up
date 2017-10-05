@@ -71,6 +71,20 @@ Below is a policy for [AWS Identity and Access Management](https://aws.amazon.co
     },
     {
       "Action": [
+        "sns:*"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    },
+    {
+      "Action": [
+        "ssm:*"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    },
+    {
+      "Action": [
         "cloudformation:Create*",
         "cloudformation:Update*",
         "cloudformation:Delete*",

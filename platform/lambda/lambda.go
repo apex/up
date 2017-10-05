@@ -30,6 +30,7 @@ import (
 	"github.com/apex/up/internal/zip"
 	"github.com/apex/up/platform"
 	"github.com/apex/up/platform/event"
+	"github.com/apex/up/platform/lambda/runtime"
 	"github.com/apex/up/platform/lambda/stack"
 )
 
@@ -194,6 +195,12 @@ func (p *Platform) Logs(region, query string) platform.Logs {
 // Domains implementation.
 func (p *Platform) Domains() platform.Domains {
 	return NewDomains()
+}
+
+// Secrets implementation.
+func (p *Platform) Secrets(stage string) platform.Secrets {
+	// TODO: all regions
+	return runtime.NewSecrets(p.config.Name, stage, p.config.Regions[0])
 }
 
 // URL returns the stage url.

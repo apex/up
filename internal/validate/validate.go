@@ -83,3 +83,12 @@ func Stage(stage string) error {
 
 	return nil
 }
+
+// OptionalStage validation.
+func OptionalStage(stage string) error {
+	if stage == "" {
+		return nil
+	}
+
+	return Stage(stage)
+}
