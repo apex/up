@@ -45,7 +45,7 @@
 
 [[projects]]
   name = "github.com/aws/aws-sdk-go"
-  packages = ["aws","aws/awserr","aws/awsutil","aws/client","aws/client/metadata","aws/corehandlers","aws/credentials","aws/credentials/ec2rolecreds","aws/credentials/endpointcreds","aws/credentials/stscreds","aws/defaults","aws/ec2metadata","aws/endpoints","aws/request","aws/session","aws/signer/v4","internal/shareddefaults","private/protocol","private/protocol/json/jsonutil","private/protocol/jsonrpc","private/protocol/query","private/protocol/query/queryutil","private/protocol/rest","private/protocol/restjson","private/protocol/restxml","private/protocol/xml/xmlutil","service/acm","service/apigateway","service/cloudformation","service/cloudwatch","service/cloudwatchlogs","service/cloudwatchlogs/cloudwatchlogsiface","service/iam","service/lambda","service/route53","service/route53domains","service/sts"]
+  packages = ["aws","aws/awserr","aws/awsutil","aws/client","aws/client/metadata","aws/corehandlers","aws/credentials","aws/credentials/ec2rolecreds","aws/credentials/endpointcreds","aws/credentials/stscreds","aws/defaults","aws/ec2metadata","aws/endpoints","aws/request","aws/session","aws/signer/v4","internal/shareddefaults","private/protocol","private/protocol/json/jsonutil","private/protocol/jsonrpc","private/protocol/query","private/protocol/query/queryutil","private/protocol/rest","private/protocol/restjson","private/protocol/restxml","private/protocol/xml/xmlutil","service/acm","service/apigateway","service/cloudformation","service/cloudwatch","service/cloudwatchlogs","service/cloudwatchlogs/cloudwatchlogsiface","service/iam","service/lambda","service/route53","service/route53domains","service/ssm","service/sts"]
   revision = "079cb20e4e0bacb13463971932bd3a59bd3a2a6c"
   version = "v1.10.32"
 
@@ -346,6 +346,10 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
+<<<<<<< HEAD
   inputs-digest = "3e40c274ee19367bd0a35e3511bc7e157f3c9e1c4f38fb3753ab861156291419"
+=======
+  inputs-digest = "fd9fae1fc71df15bb034a49ac7b00e99544cc8c22f2b263f6260197fccad3acd"
+>>>>>>> add env support
   solver-name = "gps-cdcl"
   solver-version = 1

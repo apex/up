@@ -76,6 +76,13 @@ Below is a policy for [AWS Identity and Access Management](https://aws.amazon.co
     },
     {
       "Action": [
+        "ssm:*"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    },
+    {
+      "Action": [
         "cloudformation:Create*",
         "cloudformation:Update*",
         "cloudformation:Delete*",
@@ -146,4 +153,8 @@ Below is a policy for [AWS Identity and Access Management](https://aws.amazon.co
 }
 ```
 
+<<<<<<< HEAD
 Note that this may change as features are added to Up, so you may have to adjust the policy. A comprehensive minimum policy will provided when Up features solidify.
+=======
+Note that this may change as features are added to Up, so you may have to adjust the policy. Tweak as desired to limit what your teammates have access to manipulate.
+>>>>>>> misc

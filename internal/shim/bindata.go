@@ -87,18 +87,32 @@ func bindataGo() (*asset, error) {
 	}
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	info := bindataFileInfo{name: "bindata.go", size: 0, mode: os.FileMode(420), modTime: time.Unix(1507926480, 0)}
 =======
+=======
+>>>>>>> add env support
 <<<<<<< HEAD
 	info := bindataFileInfo{name: "bindata.go", size: 0, mode: os.FileMode(420), modTime: time.Unix(1507633021, 0)}
 =======
+=======
+>>>>>>> add env support
 <<<<<<< HEAD
 	info := bindataFileInfo{name: "bindata.go", size: 0, mode: os.FileMode(420), modTime: time.Unix(1506687428, 0)}
 =======
 	info := bindataFileInfo{name: "bindata.go", size: 0, mode: os.FileMode(420), modTime: time.Unix(1506522157, 0)}
 >>>>>>> misc
+<<<<<<< HEAD
 >>>>>>> misc
+<<<<<<< HEAD
 >>>>>>> misc
+=======
+=======
+=======
+	info := bindataFileInfo{name: "bindata.go", size: 0, mode: os.FileMode(420), modTime: time.Unix(1507222190, 0)}
+>>>>>>> add env support
+>>>>>>> add env support
+>>>>>>> add env support
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -118,7 +132,11 @@ func bylineJs() (*asset, error) {
 		return nil, err
 	}
 
+<<<<<<< HEAD
 	info := bindataFileInfo{name: "byline.js", size: 4710, mode: os.FileMode(420), modTime: time.Unix(1507548061, 0)}
+=======
+	info := bindataFileInfo{name: "byline.js", size: 4710, mode: os.FileMode(420), modTime: time.Unix(1506693680, 0)}
+>>>>>>> add env support
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
