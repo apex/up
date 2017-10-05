@@ -5,6 +5,8 @@ import (
 
 	"github.com/apex/log"
 	"github.com/apex/up"
+	"github.com/apex/up/internal/secret"
+	"github.com/pkg/errors"
 )
 
 // Runtime implementation.
@@ -40,6 +42,33 @@ func (r *Runtime) Init(stage string) error {
 
 	if os.Getenv("NODE_ENV") == "" {
 		os.Setenv("NODE_ENV", stage)
+	}
+
+	log.Info("loading secrets")
+
+	// TODO: all regions
+	secrets, err := NewSecrets(r.config.Name, stage, r.config.Regions[0]).Load()
+	if err != nil {
+		return errors.Wrap(err, "loading secrets")
+	}
+
+	secrets = secret.FilterByApp(secrets, r.config.Name)
+	stages := secret.GroupByStage(secrets)
+
+	// TODO: util to de-dupe first
+	precedence := []string{
+		"all",
+		stage,
+	}
+
+	for _, name := range precedence {
+		if secrets := stages[name]; len(secrets) > 0 {
+			log.Infof("  %s %d variables", name, len(secrets))
+			for _, s := range secrets {
+				log.Infof("    - %s", s.Name)
+				os.Setenv(s.Name, s.Value)
+			}
+		}
 	}
 
 	return nil

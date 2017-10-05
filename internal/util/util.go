@@ -200,6 +200,15 @@ func Indent(s string) string {
 	return PrefixLines(s, "  ")
 }
 
+// DefaultString returns d unless s is present.
+func DefaultString(s *string, d string) string {
+	if s == nil || *s == "" {
+		return d
+	}
+
+	return *s
+}
+
 // WaitForListen blocks until `u` is listening with timeout.
 func WaitForListen(u *url.URL, timeout time.Duration) error {
 	timedout := time.After(timeout)

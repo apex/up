@@ -79,7 +79,11 @@ type Interface interface {
 	// managing domain names.
 	Domains() Domains
 
-	// URL returns the endpoint for the given
+	// Secrets returns an interface for
+	// managing secret variables.
+	Secrets(stage string) Secrets
+
+	// URL returns the endpoitn for the given
 	// region and stage combination, or an
 	// empty string.
 	URL(region, stage string) (string, error)

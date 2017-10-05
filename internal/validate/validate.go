@@ -86,3 +86,12 @@ func Lists(vals, list []string) error {
 
 	return nil
 }
+
+// OptionalStage validation.
+func OptionalStage(stage string) error {
+	if stage == "" {
+		return nil
+	}
+
+	return Stage(stage)
+}
