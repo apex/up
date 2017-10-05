@@ -88,10 +88,13 @@ func bindataGo() (*asset, error) {
 
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	info := bindataFileInfo{name: "bindata.go", size: 0, mode: os.FileMode(420), modTime: time.Unix(1507926480, 0)}
 =======
 =======
 >>>>>>> add env support
+=======
+>>>>>>> rebase
 <<<<<<< HEAD
 	info := bindataFileInfo{name: "bindata.go", size: 0, mode: os.FileMode(420), modTime: time.Unix(1507633021, 0)}
 =======
@@ -112,7 +115,13 @@ func bindataGo() (*asset, error) {
 	info := bindataFileInfo{name: "bindata.go", size: 0, mode: os.FileMode(420), modTime: time.Unix(1507222190, 0)}
 >>>>>>> add env support
 >>>>>>> add env support
+<<<<<<< HEAD
 >>>>>>> add env support
+=======
+=======
+	info := bindataFileInfo{name: "bindata.go", size: 0, mode: os.FileMode(420), modTime: time.Unix(1507228584, 0)}
+>>>>>>> rebase
+>>>>>>> rebase
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
