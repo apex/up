@@ -51,6 +51,11 @@ title: FAQ
 </details>
 
 <details>
+  <summary>What databases can I use?</summary>
+  <p>You're not limited to database from any given platform, such as AWS, provided that the database host provides authentication you can use anything. See the <a href="https://github.com/apex/up/wiki#databases">Wiki</a> for a list of managed & serverless database solutions.</p>
+</details>
+
+<details>
   <summary>Why is Up licensed as GPLv3?</summary>
   <p>Up is licensed in such a way that myself as an independent developer can continue to improve the product and provide support. Commercial customers receive access to a premium version of Up with additional features, priority support for bugfixes, and of course knowing that the project will stick around! Up saves your team countless hours maintaining infrastructure and custom tooling, so you can get back to what makes your company and products unique.</p>
 </details>
