@@ -19,6 +19,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/aws/aws-sdk-go/service/route53"
 	"github.com/aws/aws-sdk-go/service/s3"
+	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/dustin/go-humanize"
 	"github.com/golang/sync/errgroup"
 	"github.com/pkg/errors"
@@ -28,6 +29,7 @@ import (
 	"github.com/apex/up/internal/proxy/bin"
 	"github.com/apex/up/internal/shim"
 	"github.com/apex/up/internal/util"
+	"github.com/apex/up/internal/validate"
 	"github.com/apex/up/internal/zip"
 	"github.com/apex/up/platform"
 	"github.com/apex/up/platform/event"
@@ -420,7 +422,7 @@ func (p *Platform) deploy(region, stage string) (version string, err error) {
 
 	ctx := log.WithField("region", region)
 	s := session.New(aws.NewConfig().WithRegion(region))
-	ss := s3.New(s)
+	u := s3manager.NewUploaderWithClient(s3.New(s))
 	a := apigateway.New(s)
 	c := lambda.New(s)
 
@@ -462,7 +464,7 @@ func (p *Platform) deploy(region, stage string) (version string, err error) {
 
 	if util.IsNotFound(err) {
 		defer p.events.Time("platform.function.create", fields)
-		return p.createFunction(c, a, ss, stage)
+		return p.createFunction(c, a, u, stage)
 	}
 
 	if err != nil {
@@ -470,15 +472,15 @@ func (p *Platform) deploy(region, stage string) (version string, err error) {
 	}
 
 	defer p.events.Time("platform.function.update", fields)
-	return p.updateFunction(c, a, ss, stage)
+	return p.updateFunction(c, a, u, stage)
 }
 
 // createFunction creates the function.
-func (p *Platform) createFunction(c *lambda.Lambda, a *apigateway.APIGateway, ss *s3.S3, stage string) (version string, err error) {
+func (p *Platform) createFunction(c *lambda.Lambda, a *apigateway.APIGateway, up *s3manager.Uploader, stage string) (version string, err error) {
 retry:
 	b := aws.String(p.config.S3BucketName)
 	k := aws.String(p.getS3Key(stage))
-	_, err = ss.PutObject(&s3.PutObjectInput{
+	_, err = up.Upload(&s3manager.UploadInput{
 		Bucket: b,
 		Key:    k,
 		Body:   bytes.NewReader(p.zip.Bytes()),
@@ -518,7 +520,7 @@ retry:
 }
 
 // updateFunction updates the function.
-func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, ss *s3.S3, stage string) (version string, err error) {
+func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up *s3manager.Uploader, stage string) (version string, err error) {
 	var publish bool
 
 	if stage != "development" {
@@ -542,7 +544,7 @@ func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, ss
 
 	b := aws.String(p.config.S3BucketName)
 	k := aws.String(p.getS3Key(stage))
-	_, err = ss.PutObject(&s3.PutObjectInput{
+	_, err = up.Upload(&s3manager.UploadInput{
 		Bucket: b,
 		Key:    k,
 		Body:   bytes.NewReader(p.zip.Bytes()),

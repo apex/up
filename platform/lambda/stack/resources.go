@@ -56,42 +56,6 @@ func lambdaArnQualifier(name, qualifier string) Map {
 	return join(":", "arn", "aws", "lambda", ref("AWS::Region"), ref("AWS::AccountId"), "function", join(":", ref(name), qualifier))
 }
 
-// DNS resources.
-func dns(c *up.Config, m Map) {
-	for _, z := range c.DNS.Zones {
-		zoneID := util.Camelcase("dns_zone_%s", z.Name)
-
-		m[zoneID] = Map{
-			"Type": "AWS::Route53::HostedZone",
-			"Properties": Map{
-				"Name": z.Name,
-			},
-		}
-
-		for _, r := range z.Records {
-			id := util.Camelcase("dns_zone_%s_record_%s", z.Name, r.Name)
-
-			m[id] = Map{
-				"Type": "AWS::Route53::RecordSet",
-				"Properties": Map{
-					"Name":            r.Name,
-					"Type":            r.Type,
-					"TTL":             strconv.Itoa(r.TTL),
-					"ResourceRecords": r.Value,
-					"HostedZoneId":    ref(zoneID),
-				},
-			}
-		}
-	}
-}
-
-// S3 resources.
-func s3(c *up.Config, m Map) {
-	m[upDeploymentBucketLogicalID] = Map{
-		"Type": "AWS::S3::Bucket",
-	}
-}
-
 // API resources.
 func api(c *up.Config, m Map) {
 	desc := util.ManagedByUp(c.Description)
@@ -309,6 +273,13 @@ func conditionalDNSZone(c *up.Config, m Map, domain string) interface{} {
 
 	// existing zone
 	return s.HostedZoneID
+}
+
+// S3 resources.
+func s3(c *up.Config, m Map) {
+	m[upDeploymentBucketLogicalID] = Map{
+		"Type": "AWS::S3::Bucket",
+	}
 }
 
 // DNS resources.
