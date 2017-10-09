@@ -1,4 +1,12 @@
 
+v0.2.7 / 2017-10-09
+===================
+
+  * update go-apex dep
+  * update lambda shim with concurrency support
+  * fix: implement proxy GetBody to allow for re-reading request bodies. Closes #363
+  * remove .lambda.timeout, replace with .proxy.timeout
+
 v0.2.6 / 2017-09-29
 ===================
 
