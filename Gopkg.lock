@@ -26,10 +26,10 @@
   revision = "2efee857e7cfd4f3d0138cc3cbb1b4966962b93a"
 
 [[projects]]
-  branch = "master"
   name = "github.com/apex/go-apex"
   packages = ["."]
-  revision = "6e19883b04761c5930e32bf2f80e02ad0e3a1d4e"
+  revision = "338ee0137bc07a472789968021e66c5df905fc26"
+  version = "v1.0.0"
 
 [[projects]]
   branch = "master"
@@ -346,6 +346,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "df4daf5ab176b961aeda3726f5288356354b078f044dc6a7d54089a548a1a5de"
+  inputs-digest = "3e40c274ee19367bd0a35e3511bc7e157f3c9e1c4f38fb3753ab861156291419"
   solver-name = "gps-cdcl"
   solver-version = 1
