@@ -41,11 +41,6 @@ func (r *Relay) Default() error {
 		r.Command = "./server"
 	}
 
-	// TODO: remove Lambda timeout setting,
-	// it can be inferred from this property
-	// or just left at the max of 30s for API Gateway.
-	//
-	// also validate against 30s when using the Lambda platform.
 	if r.Timeout == 0 {
 		r.Timeout = 15
 	}
@@ -93,6 +88,11 @@ func (r *Relay) Validate() error {
 	if r.platform == "lambda" && r.ListenTimeout > 25 {
 		err := errors.New("should be <= 25")
 		return errors.Wrap(err, ".listen_timeout")
+	}
+
+	if r.platform == "lambda" && r.Timeout > 25 {
+		err := errors.New("should be <= 25")
+		return errors.Wrap(err, ".timeout")
 	}
 
 	if r.ShutdownTimeout < 0 {
