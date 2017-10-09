@@ -36,23 +36,15 @@ func NewRequest(e *Input) (*http.Request, error) {
 		body = string(b)
 	}
 
-	getBody := func() (io.ReadCloser, error) {
-		return ioutil.NopCloser(strings.NewReader(body)), nil
-	}
-
-	// even though this can't fail still handle the error to defend against future changes
-	bodyReader, err := getBody()
-	if err != nil {
-		return nil, err
-	}
-
 	// new request
-	req, err := http.NewRequest(e.HTTPMethod, u.String(), bodyReader)
+	req, err := http.NewRequest(e.HTTPMethod, u.String(), strings.NewReader(body))
 	if err != nil {
 		return nil, errors.Wrap(err, "creating request")
 	}
 
-	req.GetBody = getBody
+	req.GetBody = func() (io.ReadCloser, error) {
+		return ioutil.NopCloser(strings.NewReader(body)), nil
+	}
 
 	// remote addr
 	req.RemoteAddr = e.RequestContext.Identity.SourceIP

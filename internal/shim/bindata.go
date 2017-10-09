@@ -86,7 +86,7 @@ func bindataGo() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "bindata.go", size: 0, mode: os.FileMode(420), modTime: time.Unix(1507552435, 0)}
+	info := bindataFileInfo{name: "bindata.go", size: 0, mode: os.FileMode(420), modTime: time.Unix(1507557309, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -126,7 +126,7 @@ func indexJs() (*asset, error) {
 		return nil, err
 	}
 
-	info := bindataFileInfo{name: "index.js", size: 1955, mode: os.FileMode(420), modTime: time.Unix(1507551702, 0)}
+	info := bindataFileInfo{name: "index.js", size: 1955, mode: os.FileMode(420), modTime: time.Unix(1507557103, 0)}
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
