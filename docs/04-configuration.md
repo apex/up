@@ -107,6 +107,8 @@ For example:
 
 View the [Lambda Pricing](https://aws.amazon.com/lambda/pricing/) page for more information regarding the `memory` setting.
 
+Lambda timeout is implied from the [Reverse Proxy](#configuration__reverse_proxy) `timeout` setting.
+
 ## Hook Scripts
 
 Up provides "hooks" which are commands invoked at certain points within the the deployment workflow for automating builds, linting and so on. The following hooks are available:
