@@ -158,6 +158,12 @@
   version = "0.2.2"
 
 [[projects]]
+  name = "github.com/joho/godotenv"
+  packages = ["."]
+  revision = "a79fa1e548e2c689c241d10173efd51e5d689d5b"
+  version = "v1.2.0"
+
+[[projects]]
   name = "github.com/klauspost/compress"
   packages = ["flate","zip"]
   revision = "6c8db69c4b49dd4df1fff66996cf556176d0b9bf"
@@ -346,6 +352,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "3e40c274ee19367bd0a35e3511bc7e157f3c9e1c4f38fb3753ab861156291419"
+  inputs-digest = "f0e2340a97c4aec99a46a1205249a9c9186d1d88a7a06ad906a5bceffeda7406"
   solver-name = "gps-cdcl"
   solver-version = 1

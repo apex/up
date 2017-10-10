@@ -20,6 +20,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/route53"
 	"github.com/dustin/go-humanize"
 	"github.com/golang/sync/errgroup"
+	"github.com/joho/godotenv"
 	"github.com/pkg/errors"
 
 	"github.com/apex/up"
@@ -659,10 +660,20 @@ func isCreatingRole(err error) bool {
 	return err != nil && strings.Contains(err.Error(), "role defined for the function cannot be assumed by Lambda")
 }
 
-// toEnv returns a lambda environment.
+// toEnv adds env vars from config and .env file and returns a lambda environment.
 func toEnv(env config.Environment, stage string) *lambda.Environment {
 	m := aws.StringMap(env)
 	m["UP_STAGE"] = &stage
+
+	dotEnvVars, err := godotenv.Read()
+	if err != nil {
+		log.WithError(err).Warn(".env ignored")
+	} else {
+		for k, v := range aws.StringMap(dotEnvVars) {
+			m[k] = v
+		}
+	}
+
 	return &lambda.Environment{
 		Variables: m,
 	}
