@@ -1,4 +1,9 @@
 
+v0.2.9 / 2017-10-10
+===================
+
+  * fix: disable relay keep alive conns, they interact poorly with suspension (#365)
+
 v0.2.8 / 2017-10-09
 ===================
 
