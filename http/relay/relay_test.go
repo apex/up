@@ -98,7 +98,8 @@ func TestRelay(t *testing.T) {
     "host": "example.com",
     "user-agent": "tobi",
     "x-forwarded-for": "192.0.2.1",
-    "accept-encoding": "gzip"
+    "accept-encoding": "gzip",
+    "connection": "close"
   },
   "url": "/echo/01BM82CJ9K1WK6EFJX8C1R4YH7/foo%20%25%20bar%20&%20baz%20=%20raz",
   "body": ""
@@ -121,7 +122,8 @@ func TestRelay(t *testing.T) {
     "host": "example.com",
     "content-length": "14",
     "x-forwarded-for": "192.0.2.1",
-    "accept-encoding": "gzip"
+    "accept-encoding": "gzip",
+    "connection": "close"
   },
   "url": "/echo/something",
   "body": "Some body here"

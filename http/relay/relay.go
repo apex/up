@@ -34,11 +34,7 @@ var DefaultTransport http.RoundTripper = &http.Transport{
 		KeepAlive: 2 * time.Second,
 		DualStack: true,
 	}).DialContext,
-	MaxIdleConns:          0,
-	MaxIdleConnsPerHost:   10,
-	IdleConnTimeout:       5 * time.Minute,
-	TLSHandshakeTimeout:   2 * time.Second,
-	ExpectContinueTimeout: 1 * time.Second,
+	DisableKeepAlives: true,
 }
 
 // Proxy is a reverse proxy and sub-process monitor
@@ -143,6 +139,15 @@ func (p *Proxy) RoundTrip(r *http.Request) (*http.Response, error) {
 
 retry:
 	attempts++
+	// Starting on the second attempt, we need to rewind the body if we can
+	// The DefaultTransport.RoundTrip will only rewind it for us in non-err scenarios
+	if attempts > 0 && r.Body != http.NoBody && r.Body != nil && r.GetBody != nil {
+		newBody, err := r.GetBody()
+		if err != nil {
+			return nil, err
+		}
+		r.Body = newBody
+	}
 
 	// replace host as it will change on restart
 	r.URL.Host = p.target.Host
