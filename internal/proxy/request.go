@@ -2,8 +2,6 @@ package proxy
 
 import (
 	"encoding/base64"
-	"io"
-	"io/ioutil"
 	"net/http"
 	"net/url"
 	"strings"
@@ -40,10 +38,6 @@ func NewRequest(e *Input) (*http.Request, error) {
 	req, err := http.NewRequest(e.HTTPMethod, u.String(), strings.NewReader(body))
 	if err != nil {
 		return nil, errors.Wrap(err, "creating request")
-	}
-
-	req.GetBody = func() (io.ReadCloser, error) {
-		return ioutil.NopCloser(strings.NewReader(body)), nil
 	}
 
 	// remote addr
