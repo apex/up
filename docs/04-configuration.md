@@ -552,7 +552,7 @@ By defining a stage and its `domain`, Up knows it will need to create a free SSL
     },
     "staging": {
       "domain": "stage.gh-polls.com"
-    }
+    },
     "development": {
       "domain": "dev.gh-polls.com"
     }
