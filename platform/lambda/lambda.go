@@ -536,7 +536,7 @@ func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up
 	})
 
 	if err != nil {
-		return "", errors.Wrap(err, "updating function: putting object to s3")
+		return "", errors.Wrap(err, "updating function: uploading object to s3")
 	}
 
 	res, err := c.UpdateFunctionCode(&lambda.UpdateFunctionCodeInput{
