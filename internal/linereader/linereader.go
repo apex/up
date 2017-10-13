@@ -72,12 +72,9 @@ func (l *LineReader) read(r io.Reader, w *io.PipeWriter) {
 	// buffer lines with indentation support, flushing
 	// periodically as look-ahead is required for indents
 	go func() {
-		t := time.NewTicker(500 * time.Millisecond)
-		defer t.Stop()
-
 		for {
 			select {
-			case <-t.C:
+			case <-time.After(500 * time.Millisecond):
 				flush()
 			case <-l.flush:
 				flush()
