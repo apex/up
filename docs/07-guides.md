@@ -492,3 +492,39 @@ There is also a special keyword for this case:
 ```
 message contains "login"
 ```
+
+## Local Environment Variables
+
+If you'd like to define custom local development environment variables, we recommend using the [direnv](https://direnv.net/) tool, which allows you to create a `./.envrc` file in your project.
+
+Install it:
+
+```sh
+$ brew install direnv
+```
+
+Add the following to your bash profile:
+
+```sh
+eval `direnv hook bash`
+```
+
+Add some env vars:
+
+```sh
+$ echo "export DB_URL=foo" >> .envrc
+```
+
+GIT ignore them and allow sourcing:
+
+```sh
+$ echo .envrc >> .gitignore
+```
+
+Allow access now that you're sure the `.envrc` file isn't checked into GIT, these environment variables will automatically be set each time you `cd` into the project directory.
+
+```sh
+$ direnv allow
+direnv: loading .envrc
+direnv: export +DB_URL
+```

@@ -8,4 +8,5 @@ up-proxy
 !cmd/up-proxy
 dist
 .idea
-.vscode.DS_Store
+.vscode
+.DS_Store
