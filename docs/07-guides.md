@@ -340,6 +340,8 @@ function log(level, message, fields = {}) {
 }
 ```
 
+For example with the Go [apex/log](https://github.com/apex/log) package you'd use the `json` handler, which outputs this format.
+
 ## Log Query Language
 
 Up supports a comprehensive query language, allowing you to perform complex filters against structured data, supporting operators, equality, substring tests and so on. This section details the options available when querying.
