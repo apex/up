@@ -21,7 +21,8 @@ func New(l log.Level) io.WriteCloser {
 
 	w := &writer{
 		PipeWriter: pw,
-		done:       make(chan bool),
+		LineReader: linereader.New(pr),
+		done:       make(chan struct{}),
 	}
 
 	lw := &logWriter{
@@ -31,7 +32,7 @@ func New(l log.Level) io.WriteCloser {
 
 	go func() {
 		defer close(w.done)
-		io.Copy(lw, linereader.New(pr))
+		io.Copy(lw, w.LineReader)
 	}()
 
 	return w
@@ -41,7 +42,8 @@ func New(l log.Level) io.WriteCloser {
 // indentation support to a logWriter.
 type writer struct {
 	*io.PipeWriter
-	done chan bool
+	*linereader.LineReader
+	done chan struct{}
 }
 
 // Close implementation.

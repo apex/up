@@ -8,18 +8,39 @@ import (
 	"time"
 )
 
+// LineReader is a line reader with indentation support.
+type LineReader struct {
+	io.ReadCloser
+	lines chan string
+	logs  chan string
+	flush chan struct{}
+	done  chan struct{}
+}
+
+// Flush the logs.
+func (l *LineReader) Flush() {
+	l.flush <- struct{}{}
+}
+
 // New line reader.
-func New(r io.Reader) io.ReadCloser {
+func New(r io.Reader) *LineReader {
 	pr, pw := io.Pipe()
-	go read(r, pw)
-	return pr
+
+	lr := &LineReader{
+		ReadCloser: pr,
+		lines:      make(chan string),
+		logs:       make(chan string),
+		done:       make(chan struct{}),
+		flush:      make(chan struct{}),
+	}
+
+	go lr.read(r, pw)
+
+	return lr
 }
 
 // read from r and write lines to w.
-func read(r io.Reader, w *io.PipeWriter) {
-	lines := make(chan string)
-	logs := make(chan string)
-	done := make(chan struct{})
+func (l *LineReader) read(r io.Reader, w *io.PipeWriter) {
 	var buf []string
 
 	// flush the buffer as a distinct log message
@@ -28,7 +49,7 @@ func read(r io.Reader, w *io.PipeWriter) {
 			return
 		}
 
-		logs <- strings.Join(buf, "\n")
+		l.logs <- strings.Join(buf, "\n")
 		buf = nil
 	}
 
@@ -42,10 +63,10 @@ func read(r io.Reader, w *io.PipeWriter) {
 
 	// copy logs to the writer as distinct Write calls
 	go func() {
-		for l := range logs {
-			w.Write([]byte(l))
+		for s := range l.logs {
+			w.Write([]byte(s))
 		}
-		close(done)
+		close(l.done)
 	}()
 
 	// buffer lines with indentation support, flushing
@@ -57,13 +78,17 @@ func read(r io.Reader, w *io.PipeWriter) {
 		for {
 			select {
 			case <-t.C:
+				println("INTERVAL FLUSH")
 				flush()
-			case l, ok := <-lines:
+			case <-l.flush:
+				println("TRIGGERED FLUSH")
+				flush()
+			case s, ok := <-l.lines:
 				if ok {
-					buffer(l)
+					buffer(s)
 				} else {
 					flush()
-					close(logs)
+					close(l.logs)
 					return
 				}
 			}
@@ -73,12 +98,12 @@ func read(r io.Reader, w *io.PipeWriter) {
 	// scan lines from the reader
 	s := bufio.NewScanner(r)
 	for s.Scan() {
-		lines <- s.Text()
+		l.lines <- s.Text()
 	}
-	close(lines)
+	close(l.lines)
 
 	// wait for final writes
-	<-done
+	<-l.done
 	w.CloseWithError(s.Err())
 }
 

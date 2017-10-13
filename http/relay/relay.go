@@ -28,6 +28,11 @@ import (
 // log context.
 var ctx = logs.Plugin("relay")
 
+// flusher is the interface used for flushing logs.
+type flusher interface {
+	Flush()
+}
+
 // DefaultTransport used by relay.
 var DefaultTransport http.RoundTripper = &http.Transport{
 	DialContext: (&net.Dialer{
@@ -129,8 +134,10 @@ func (p *Proxy) Restart() error {
 func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
-	p.ReverseProxy.ServeHTTP(w, r)
 
+	p.ReverseProxy.ServeHTTP(w, r)
+	flushStdio(p.cmd.Stdout, "stdout")
+	flushStdio(p.cmd.Stderr, "stderr")
 }
 
 // RoundTrip implementation.
@@ -327,4 +334,14 @@ func closeStdio(w io.Writer, name string) {
 	if err := c.Close(); err != nil {
 		ctx.WithError(errors.Wrapf(err, "closing %s", name))
 	}
+}
+
+// flushStdio flushes the underlying log writer.
+func flushStdio(w io.Writer, name string) {
+	f, ok := w.(flusher)
+	if !ok {
+		return
+	}
+
+	f.Flush()
 }
