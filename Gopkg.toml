@@ -104,3 +104,7 @@
 [[constraint]]
   name = "github.com/tj/kingpin"
   version = "2.4.0"
+
+[[constraint]]
+  name = "github.com/joho/godotenv"
+  version = "1.2.0"
