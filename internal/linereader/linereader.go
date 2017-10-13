@@ -19,7 +19,7 @@ func New(r io.Reader) io.ReadCloser {
 func read(r io.Reader, w *io.PipeWriter) {
 	lines := make(chan string)
 	logs := make(chan string)
-	done := make(chan bool)
+	done := make(chan struct{})
 	var buf []string
 
 	// flush the buffer as a distinct log message

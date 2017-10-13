@@ -5,6 +5,7 @@ package relay
 
 import (
 	"fmt"
+	"io"
 	"net"
 	"net/http"
 	"net/http/httputil"
@@ -129,6 +130,7 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
 	p.ReverseProxy.ServeHTTP(w, r)
+
 }
 
 // RoundTrip implementation.
@@ -271,8 +273,8 @@ func (p *Proxy) cleanupAbandoned() {
 			err := cmd.Wait()
 			code := util.ExitStatus(cmd, err)
 			ctx.Infof("proxy (pid=%d) exited with code=%s", cmd.Process.Pid, code)
-			util.MaybeClose(cmd.Stdout)
-			util.MaybeClose(cmd.Stderr)
+			closeStdio(cmd.Stdout, "stdout")
+			closeStdio(cmd.Stderr, "stderr")
 		}()
 
 		// We have deemed this command suitable for cleanup,
@@ -312,5 +314,17 @@ func isIdempotent(req *http.Request) bool {
 		return true
 	default:
 		return false
+	}
+}
+
+// closeStdio closes the given stdio writer, which in turn flushes logs.
+func closeStdio(w io.Writer, name string) {
+	c, ok := w.(io.Closer)
+	if !ok {
+		return
+	}
+
+	if err := c.Close(); err != nil {
+		ctx.WithError(errors.Wrapf(err, "closing %s", name))
 	}
 }

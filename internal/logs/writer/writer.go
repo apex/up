@@ -13,7 +13,6 @@ import (
 	"github.com/pkg/errors"
 )
 
-// TODO: logfmt support?
 // TODO: rename "app" field
 
 // New writer with the given log level.
