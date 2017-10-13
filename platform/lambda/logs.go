@@ -103,8 +103,13 @@ func (l *Logs) start() {
 	for l := range tailer.Start() {
 		line := strings.TrimSpace(l.Message)
 
+		// textual log provided by Lambda itself
 		if !util.IsJSON(line) {
-			// fmt.Fprint(l.w, e.Message) // TODO: ignore? json-ify?
+			handler.HandleLog(&log.Entry{
+				Level:   log.InfoLevel,
+				Message: line,
+			})
+
 			continue
 		}
 
