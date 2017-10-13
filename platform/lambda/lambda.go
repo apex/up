@@ -659,8 +659,9 @@ func (p *Platform) environment(stage string) *lambda.Environment {
 	m := aws.StringMap(p.config.Environment)
 	m["UP_STAGE"] = &stage
 
-	dotEnvVars, err := godotenv.Read()
-	if err != nil {
+	dotEnvFile := ".env"
+	dotEnvVars, err := godotenv.Read(dotEnvFile)
+	if util.Exists(dotEnvFile) && err != nil {
 		log.WithError(err).Warn(".env ignored")
 	} else {
 		for k, v := range aws.StringMap(dotEnvVars) {
