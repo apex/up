@@ -107,7 +107,7 @@ func (l *Logs) start() {
 		if !util.IsJSON(line) {
 			handler.HandleLog(&log.Entry{
 				Level:   log.InfoLevel,
-				Message: line,
+				Message: strings.TrimRight(l.Message, " \n"),
 			})
 
 			continue
