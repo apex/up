@@ -78,10 +78,8 @@ func (l *LineReader) read(r io.Reader, w *io.PipeWriter) {
 		for {
 			select {
 			case <-t.C:
-				println("INTERVAL FLUSH")
 				flush()
 			case <-l.flush:
-				println("TRIGGERED FLUSH")
 				flush()
 			case s, ok := <-l.lines:
 				if ok {
