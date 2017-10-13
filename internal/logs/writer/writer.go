@@ -16,10 +16,10 @@ import (
 // TODO: rename "app" field
 
 // New writer with the given log level.
-func New(l log.Level) io.WriteCloser {
+func New(l log.Level) *Writer {
 	pr, pw := io.Pipe()
 
-	w := &writer{
+	w := &Writer{
 		PipeWriter: pw,
 		LineReader: linereader.New(pr),
 		done:       make(chan struct{}),
@@ -38,16 +38,16 @@ func New(l log.Level) io.WriteCloser {
 	return w
 }
 
-// writer is a writer which copies lines with
+// Writer is a writer which copies lines with
 // indentation support to a logWriter.
-type writer struct {
+type Writer struct {
 	*io.PipeWriter
 	*linereader.LineReader
 	done chan struct{}
 }
 
 // Close implementation.
-func (w *writer) Close() error {
+func (w *Writer) Close() error {
 	if err := w.PipeWriter.Close(); err != nil {
 		return err
 	}

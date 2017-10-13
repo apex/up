@@ -5,7 +5,6 @@ package relay
 
 import (
 	"fmt"
-	"io"
 	"net"
 	"net/http"
 	"net/http/httputil"
@@ -53,8 +52,14 @@ type Proxy struct {
 	port     int
 	target   *url.URL
 
-	// cmd refers to the currently running (active) proxy subprocss
+	// cmd is the active running user application sub-process
 	cmd *exec.Cmd
+
+	// stdout is the log writer for structured logging output
+	stdout *writer.Writer
+
+	// stderr is the log writer for structured logging output
+	stderr *writer.Writer
 
 	// cmdCleanup is a channel that queues abandoned commands
 	// so they can be cleaned up and resources reclaimed.
@@ -87,6 +92,8 @@ func New(c *up.Config) (http.Handler, error) {
 		maxRetries:      c.Proxy.Backoff.Attempts,
 		timeout:         time.Duration(c.Proxy.Timeout) * time.Second,
 		shutdownTimeout: time.Duration(c.Proxy.ShutdownTimeout) * time.Second,
+		stdout:          writer.New(log.InfoLevel),
+		stderr:          writer.New(log.ErrorLevel),
 	}
 
 	if err := p.Start(); err != nil {
@@ -136,8 +143,8 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	defer p.mu.Unlock()
 
 	p.ReverseProxy.ServeHTTP(w, r)
-	flushStdio(p.cmd.Stdout, "stdout")
-	flushStdio(p.cmd.Stderr, "stderr")
+	p.stdout.Flush()
+	p.stderr.Flush()
 }
 
 // RoundTrip implementation.
@@ -253,7 +260,7 @@ func (p *Proxy) start() error {
 	p.target = target
 
 	ctx.Infof("executing %q", p.config.Proxy.Command)
-	cmd = command(p.config.Proxy.Command, p.environment())
+	cmd = p.command(p.config.Proxy.Command, p.environment())
 	if err := cmd.Start(); err != nil {
 		return errors.Wrap(err, "running command")
 	}
@@ -280,8 +287,6 @@ func (p *Proxy) cleanupAbandoned() {
 			err := cmd.Wait()
 			code := util.ExitStatus(cmd, err)
 			ctx.Infof("proxy (pid=%d) exited with code=%s", cmd.Process.Pid, code)
-			closeStdio(cmd.Stdout, "stdout")
-			closeStdio(cmd.Stderr, "stderr")
 		}()
 
 		// We have deemed this command suitable for cleanup,
@@ -300,18 +305,18 @@ func (p *Proxy) cleanupAbandoned() {
 	}
 }
 
+// command returns the command for spawning a server.
+func (p *Proxy) command(s string, env []string) *exec.Cmd {
+	cmd := exec.Command("sh", "-c", s)
+	cmd.Stdout = p.stdout
+	cmd.Stderr = p.stderr
+	cmd.Env = append(os.Environ(), append(env, "PATH=node_modules/.bin:"+os.Getenv("PATH"))...)
+	return cmd
+}
+
 // env returns an environment variable.
 func env(name string, val interface{}) string {
 	return fmt.Sprintf("%s=%v", name, val)
-}
-
-// command returns the command for spawning a server.
-func command(s string, env []string) *exec.Cmd {
-	cmd := exec.Command("sh", "-c", s)
-	cmd.Stdout = writer.New(log.InfoLevel)
-	cmd.Stderr = writer.New(log.ErrorLevel)
-	cmd.Env = append(os.Environ(), append(env, "PATH=node_modules/.bin:"+os.Getenv("PATH"))...)
-	return cmd
 }
 
 // isIdempotent returns true if the request is considered idempotent.
@@ -322,26 +327,4 @@ func isIdempotent(req *http.Request) bool {
 	default:
 		return false
 	}
-}
-
-// closeStdio closes the given stdio writer, which in turn flushes logs.
-func closeStdio(w io.Writer, name string) {
-	c, ok := w.(io.Closer)
-	if !ok {
-		return
-	}
-
-	if err := c.Close(); err != nil {
-		ctx.WithError(errors.Wrapf(err, "closing %s", name))
-	}
-}
-
-// flushStdio flushes the underlying log writer.
-func flushStdio(w io.Writer, name string) {
-	f, ok := w.(flusher)
-	if !ok {
-		return
-	}
-
-	f.Flush()
 }
