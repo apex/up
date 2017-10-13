@@ -24,7 +24,6 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/apex/up"
-	"github.com/apex/up/config"
 	"github.com/apex/up/internal/proxy/bin"
 	"github.com/apex/up/internal/shim"
 	"github.com/apex/up/internal/util"
@@ -438,7 +437,7 @@ retry:
 		MemorySize:   aws.Int64(int64(p.config.Lambda.Memory)),
 		Timeout:      aws.Int64(int64(p.config.Proxy.Timeout + 3)),
 		Publish:      aws.Bool(true),
-		Environment:  toEnv(p.config.Environment, stage),
+		Environment:  p.environment(stage),
 		Code: &lambda.FunctionCode{
 			ZipFile: p.zip.Bytes(),
 		},
@@ -474,7 +473,7 @@ func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, st
 		Role:         &p.config.Lambda.Role,
 		MemorySize:   aws.Int64(int64(p.config.Lambda.Memory)),
 		Timeout:      aws.Int64(int64(p.config.Proxy.Timeout + 3)),
-		Environment:  toEnv(p.config.Environment, stage),
+		Environment:  p.environment(stage),
 	})
 
 	if err != nil {
@@ -655,14 +654,9 @@ func (p *Platform) removeProxy() error {
 	return nil
 }
 
-// isCreatingRole returns true if the role has not been created.
-func isCreatingRole(err error) bool {
-	return err != nil && strings.Contains(err.Error(), "role defined for the function cannot be assumed by Lambda")
-}
-
-// toEnv adds env vars from config and .env file and returns a lambda environment.
-func toEnv(env config.Environment, stage string) *lambda.Environment {
-	m := aws.StringMap(env)
+// environment adds env vars from config and .env file and returns a lambda environment.
+func (p *Platform) environment(stage string) *lambda.Environment {
+	m := aws.StringMap(p.config.Environment)
 	m["UP_STAGE"] = &stage
 
 	dotEnvVars, err := godotenv.Read()
@@ -677,6 +671,11 @@ func toEnv(env config.Environment, stage string) *lambda.Environment {
 	return &lambda.Environment{
 		Variables: m,
 	}
+}
+
+// isCreatingRole returns true if the role has not been created.
+func isCreatingRole(err error) bool {
+	return err != nil && strings.Contains(err.Error(), "role defined for the function cannot be assumed by Lambda")
 }
 
 // getCert returns the ARN if the cert is present.
