@@ -5,6 +5,7 @@ import (
 	"bufio"
 	"io"
 	"strings"
+	"time"
 )
 
 // New line reader.
@@ -16,28 +17,68 @@ func New(r io.Reader) io.ReadCloser {
 
 // read from r and write lines to w.
 func read(r io.Reader, w *io.PipeWriter) {
-	s := bufio.NewScanner(r)
-	var lines []string
+	lines := make(chan string)
+	logs := make(chan string)
+	done := make(chan bool)
+	var buf []string
 
+	// flush the buffer as a distinct log message
 	flush := func() {
-		io.WriteString(w, strings.Join(lines, "\n"))
-		lines = nil
+		if len(buf) == 0 {
+			return
+		}
+
+		logs <- strings.Join(buf, "\n")
+		buf = nil
 	}
 
-	for s.Scan() {
-		line := s.Text()
-		if !indented(line) {
-			if len(lines) > 0 {
+	// buffer line with indentation look-ahead
+	buffer := func(s string) {
+		if !indented(s) {
+			flush()
+		}
+		buf = append(buf, s)
+	}
+
+	// copy logs to the writer as distinct Write calls
+	go func() {
+		for l := range logs {
+			w.Write([]byte(l))
+		}
+		close(done)
+	}()
+
+	// buffer lines with indentation support, flushing
+	// periodically as look-ahead is required for indents
+	go func() {
+		t := time.NewTicker(500 * time.Millisecond)
+		defer t.Stop()
+
+		for {
+			select {
+			case <-t.C:
 				flush()
+			case l, ok := <-lines:
+				if ok {
+					buffer(l)
+				} else {
+					flush()
+					close(logs)
+					return
+				}
 			}
 		}
-		lines = append(lines, line)
-	}
+	}()
 
-	if len(lines) > 0 {
-		flush()
+	// scan lines from the reader
+	s := bufio.NewScanner(r)
+	for s.Scan() {
+		lines <- s.Text()
 	}
+	close(lines)
 
+	// wait for final writes
+	<-done
 	w.CloseWithError(s.Err())
 }
 
