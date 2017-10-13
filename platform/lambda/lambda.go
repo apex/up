@@ -20,6 +20,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/route53"
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
+	"github.com/dchest/uniuri"
 	"github.com/dustin/go-humanize"
 	"github.com/golang/sync/errgroup"
 	"github.com/pkg/errors"
@@ -471,7 +472,7 @@ retry:
 	})
 
 	if err != nil {
-		return "", errors.Wrap(err, "creating function: putting object to s3")
+		return "", errors.Wrap(err, "creating function: uploading object to s3")
 	}
 
 	res, err := c.CreateFunction(&lambda.CreateFunctionInput{
@@ -734,7 +735,7 @@ func (p *Platform) removeProxy() error {
 }
 
 func (p *Platform) getS3Key(stage string) string {
-	return fmt.Sprint(p.config.Name, "-", stage, ".zip")
+	return fmt.Sprintf("%s-%s-%v.zip", p.config.Name, stage, uniuri.New())
 }
 
 // isCreatingRole returns true if the role has not been created.
