@@ -93,7 +93,6 @@ The following Lambda-specific settings are available:
 
 - `role` – IAM role ARN, defaulting to the one Up creates for you
 - `memory` – Function memory in mb (Default `128`, Min `128`, Max `1536`)
-- `timeout` – Function timeout in seconds (Default `15`, Min `1`, Max `300`)
 
 For example:
 
@@ -101,13 +100,14 @@ For example:
 {
   "name": "api",
   "lambda": {
-    "memory": 512,
-    "timeout": 2
+    "memory": 512
   }
 }
 ```
 
 View the [Lambda Pricing](https://aws.amazon.com/lambda/pricing/) page for more information regarding the `memory` setting.
+
+Lambda timeout is implied from the [Reverse Proxy](#configuration__reverse_proxy) `timeout` setting.
 
 ## Hook Scripts
 
@@ -442,6 +442,7 @@ The following settings are available:
   - When `app.py` is detected `python app.py` is used
 - `backoff` – Backoff configuration object described in "Crash Recovery"
 - `retry` – Retry idempotent requests upon 5xx or server crashes. (Default `true`)
+- `timeout` – Timeout in seconds per request (Default `15`, Max `25`)
 - `listen_timeout` – Timeout in seconds Up will wait for your app to boot and listen on `PORT` (Default `15`, Max `25`)
 - `shutdown_timeout` – Timeout in seconds Up will wait after sending a SIGINT to your server, before sending a SIGKILL (Default `15`)
 
@@ -449,11 +450,14 @@ The following settings are available:
 {
   "proxy": {
     "command": "node app.js",
-    "listen_timeout": 12,
+    "timeout": 5,
+    "listen_timeout": 20,
     "shutdown_timeout": 5
   }
 }
 ```
+
+Lambda's function timeout is implied from the `.proxy.timeout` setting.
 
 ### Crash Recovery
 
@@ -548,7 +552,7 @@ By defining a stage and its `domain`, Up knows it will need to create a free SSL
     },
     "staging": {
       "domain": "stage.gh-polls.com"
-    }
+    },
     "development": {
       "domain": "dev.gh-polls.com"
     }

@@ -481,7 +481,7 @@ retry:
 		Runtime:      &p.runtime,
 		Role:         &p.config.Lambda.Role,
 		MemorySize:   aws.Int64(int64(p.config.Lambda.Memory)),
-		Timeout:      aws.Int64(int64(p.config.Lambda.Timeout)),
+		Timeout:      aws.Int64(int64(p.config.Proxy.Timeout + 3)),
 		Publish:      aws.Bool(true),
 		Environment:  toEnv(p.config.Environment, stage),
 		Code: &lambda.FunctionCode{
@@ -519,7 +519,7 @@ func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up
 		Runtime:      &p.runtime,
 		Role:         &p.config.Lambda.Role,
 		MemorySize:   aws.Int64(int64(p.config.Lambda.Memory)),
-		Timeout:      aws.Int64(int64(p.config.Lambda.Timeout)),
+		Timeout:      aws.Int64(int64(p.config.Proxy.Timeout + 3)),
 		Environment:  toEnv(p.config.Environment, stage),
 	})
 

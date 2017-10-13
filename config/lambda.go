@@ -1,5 +1,7 @@
 package config
 
+import "errors"
+
 // Lambda configuration.
 type Lambda struct {
 	Role string `json:"role"`
@@ -17,8 +19,13 @@ func (l *Lambda) Default() error {
 		l.Memory = 512
 	}
 
-	if l.Timeout == 0 {
-		l.Timeout = 15
+	return nil
+}
+
+// Validate implementation.
+func (l *Lambda) Validate() error {
+	if l.Timeout != 0 {
+		return errors.New(".lambda.timeout is deprecated, use .proxy.timeout")
 	}
 
 	return nil

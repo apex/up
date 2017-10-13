@@ -24,16 +24,13 @@ install.deps:
 
 # Run all tests.
 test:
-	@$(GO) test ./... && echo "\n==>\033[32m Ok\033[m\n"
+	@$(GO) test -timeout 2m ./... && echo "\n==>\033[32m Ok\033[m\n"
 .PHONY: test
 
-# Test setup for CI.
-test.setup:
-	@echo "==> Install dep"
-	@$(GO) get github.com/golang/dep/cmd/dep
-	@echo "==> Install dependencies"
-	@dep ensure
-.PHONY: test.setup
+# Run all tests in CI.
+test.ci:
+	@$(GO) test -timeout 2m -race ./... && echo "\n==>\033[32m Ok\033[m\n"
+.PHONY: test.ci
 
 # Show source statistics.
 cloc:
