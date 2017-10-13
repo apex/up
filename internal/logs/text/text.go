@@ -17,6 +17,7 @@ import (
 // TODO: option to output UTC
 // TODO: option to output expanded fields
 // TODO: option to truncate
+// TODO: move to apex/log?
 
 // color function.
 type colorFunc func(string) string
