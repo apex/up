@@ -103,23 +103,23 @@ func (l *Logs) start() {
 	for l := range tailer.Start() {
 		line := strings.TrimSpace(l.Message)
 
-		// textual log provided by Lambda itself
-		if !util.IsJSON(line) {
-			handler.HandleLog(&log.Entry{
-				Level:   log.InfoLevel,
-				Message: strings.TrimRight(l.Message, " \n"),
-			})
+		// json log
+		if util.IsJSON(line) {
+			var e log.Entry
+			err := json.Unmarshal([]byte(line), &e)
+			if err != nil {
+				log.Fatalf("error parsing json: %s", err)
+			}
 
+			handler.HandleLog(&e)
 			continue
 		}
 
-		var e log.Entry
-		err := json.Unmarshal([]byte(line), &e)
-		if err != nil {
-			log.Fatalf("error parsing json: %s", err)
-		}
-
-		handler.HandleLog(&e)
+		// plain text log
+		handler.HandleLog(&log.Entry{
+			Level:   log.InfoLevel,
+			Message: strings.TrimRight(l.Message, " \n"),
+		})
 	}
 
 	// TODO: refactor interface to delegate
