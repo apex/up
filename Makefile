@@ -4,7 +4,6 @@ GO ?= go
 # Build all files.
 build:
 	@echo "==> Building"
-	@rm -f internal/proxy/bin/bin_assets.go
 	@$(GO) generate ./...
 .PHONY: build
 
@@ -23,14 +22,17 @@ install.deps:
 .PHONY: install.deps
 
 # Run all tests.
-test:
+test: internal/proxy/bin/bin_assets.go
 	@$(GO) test -timeout 2m ./... && echo "\n==>\033[32m Ok\033[m\n"
 .PHONY: test
 
 # Run all tests in CI.
-test.ci:
+test.ci: internal/proxy/bin/bin_assets.go
 	@$(GO) test -timeout 2m -race ./... && echo "\n==>\033[32m Ok\033[m\n"
 .PHONY: test.ci
+
+internal/proxy/bin/bin_assets.go:
+	@$(GO) generate ./...
 
 # Show source statistics.
 cloc:
