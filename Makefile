@@ -63,13 +63,8 @@ size:
 
 # Clean.
 clean:
-	@rm -fr dist
+	@rm -fr \
+		dist \
+		internal/proxy/bin/bin_assets.go \
+		internal/shim/bindata.go
 .PHONY: clean
-
-# Reset unstages artifacts which should only be committed before a release.
-git.reset:
-	git reset HEAD internal/proxy/bin/bin_assets.go
-	git reset HEAD internal/shim/bindata.go
-	git checkout -- internal/shim/bindata.go
-	git checkout -- internal/proxy/bin/bin_assets.go
-.PHONY: git.reset
