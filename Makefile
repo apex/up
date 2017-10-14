@@ -63,3 +63,9 @@ size:
 clean:
 	@rm -fr dist
 .PHONY: clean
+
+# Reset unstages artifacts which should only be committed before a release.
+reset:
+	git reset -- internal/proxy/bin/bin_assets.go
+	git reset -- internal/shim/bindata.go
+.PHONY: reset
