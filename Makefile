@@ -65,7 +65,9 @@ clean:
 .PHONY: clean
 
 # Reset unstages artifacts which should only be committed before a release.
-reset:
-	git reset -- internal/proxy/bin/bin_assets.go
-	git reset -- internal/shim/bindata.go
-.PHONY: reset
+git.reset:
+	git reset HEAD internal/proxy/bin/bin_assets.go
+	git reset HEAD internal/shim/bindata.go
+	git checkout -- internal/shim/bindata.go
+	git checkout -- internal/proxy/bin/bin_assets.go
+.PHONY: git.reset
