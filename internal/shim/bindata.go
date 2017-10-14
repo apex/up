@@ -86,7 +86,57 @@ func bindataGo() (*asset, error) {
 		return nil, err
 	}
 
+<<<<<<< HEAD
 	info := bindataFileInfo{name: "bindata.go", size: 0, mode: os.FileMode(420), modTime: time.Unix(1510006474, 0)}
+=======
+<<<<<<< HEAD
+	info := bindataFileInfo{name: "bindata.go", size: 0, mode: os.FileMode(420), modTime: time.Unix(1509901073, 0)}
+=======
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+<<<<<<< HEAD
+	info := bindataFileInfo{name: "bindata.go", size: 0, mode: os.FileMode(420), modTime: time.Unix(1507926480, 0)}
+=======
+=======
+>>>>>>> add env support
+=======
+>>>>>>> rebase
+<<<<<<< HEAD
+	info := bindataFileInfo{name: "bindata.go", size: 0, mode: os.FileMode(420), modTime: time.Unix(1507633021, 0)}
+=======
+=======
+>>>>>>> add env support
+<<<<<<< HEAD
+	info := bindataFileInfo{name: "bindata.go", size: 0, mode: os.FileMode(420), modTime: time.Unix(1506687428, 0)}
+=======
+	info := bindataFileInfo{name: "bindata.go", size: 0, mode: os.FileMode(420), modTime: time.Unix(1506522157, 0)}
+>>>>>>> misc
+<<<<<<< HEAD
+>>>>>>> misc
+<<<<<<< HEAD
+>>>>>>> misc
+=======
+=======
+=======
+	info := bindataFileInfo{name: "bindata.go", size: 0, mode: os.FileMode(420), modTime: time.Unix(1507222190, 0)}
+>>>>>>> add env support
+>>>>>>> add env support
+<<<<<<< HEAD
+>>>>>>> add env support
+=======
+=======
+	info := bindataFileInfo{name: "bindata.go", size: 0, mode: os.FileMode(420), modTime: time.Unix(1507228584, 0)}
+>>>>>>> rebase
+>>>>>>> rebase
+<<<<<<< HEAD
+>>>>>>> rebase
+=======
+=======
+	info := bindataFileInfo{name: "bindata.go", size: 0, mode: os.FileMode(420), modTime: time.Unix(1507999992, 0)}
+>>>>>>> build
+>>>>>>> build
+>>>>>>> build
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
