@@ -92,7 +92,8 @@ func (w *logWriter) writeJSON(b []byte) (int, error) {
 	case log.ErrorLevel:
 		w.log.WithFields(e.Fields).Error(e.Message)
 	case log.FatalLevel:
-		w.log.WithFields(e.Fields).Fatal(e.Message)
+		// TODO: FATAL without exit...
+		w.log.WithFields(e.Fields).Error(e.Message)
 	}
 
 	return len(b), nil

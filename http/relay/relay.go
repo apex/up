@@ -286,8 +286,7 @@ func (p *Proxy) cleanupAbandoned() {
 
 		go func() {
 			defer close(done)
-			err := cmd.Wait()
-			code := util.ExitStatus(cmd, err)
+			code := util.ExitStatus(cmd, cmd.Wait())
 			ctx.WithField("pid", cmd.Process.Pid).WithField("code", code).Info("proxy exited")
 		}()
 
@@ -300,7 +299,7 @@ func (p *Proxy) cleanupAbandoned() {
 		case <-done:
 			continue
 		case <-time.After(p.shutdownTimeout):
-			ctx.Warnf("proxy (pid=%d) sending SIGKILL", cmd.Process.Pid)
+			ctx.WithField("pid", cmd.Process.Pid).Warn("proxy sending SIGKILL")
 			cmd.Process.Kill()
 			<-done
 		}
