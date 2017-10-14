@@ -89,6 +89,7 @@ func bindataGo() (*asset, error) {
 <<<<<<< HEAD
 <<<<<<< HEAD
 <<<<<<< HEAD
+<<<<<<< HEAD
 	info := bindataFileInfo{name: "bindata.go", size: 0, mode: os.FileMode(420), modTime: time.Unix(1507926480, 0)}
 =======
 =======
@@ -122,6 +123,9 @@ func bindataGo() (*asset, error) {
 	info := bindataFileInfo{name: "bindata.go", size: 0, mode: os.FileMode(420), modTime: time.Unix(1507228584, 0)}
 >>>>>>> rebase
 >>>>>>> rebase
+=======
+	info := bindataFileInfo{name: "bindata.go", size: 0, mode: os.FileMode(420), modTime: time.Unix(1507999992, 0)}
+>>>>>>> build
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
@@ -141,11 +145,7 @@ func bylineJs() (*asset, error) {
 		return nil, err
 	}
 
-<<<<<<< HEAD
 	info := bindataFileInfo{name: "byline.js", size: 4710, mode: os.FileMode(420), modTime: time.Unix(1507548061, 0)}
-=======
-	info := bindataFileInfo{name: "byline.js", size: 4710, mode: os.FileMode(420), modTime: time.Unix(1506693680, 0)}
->>>>>>> add env support
 	a := &asset{bytes: bytes, info: info}
 	return a, nil
 }
