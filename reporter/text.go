@@ -19,6 +19,7 @@ import (
 	"github.com/apex/up/internal/util"
 	"github.com/apex/up/platform/event"
 	"github.com/apex/up/platform/lambda/cost"
+	lambdautil "github.com/apex/up/platform/lambda/reporter"
 	"github.com/apex/up/platform/lambda/stack"
 )
 
@@ -142,7 +143,7 @@ func (r *reporter) Start() {
 				fmt.Printf("\n")
 			case "platform.stack.show.event":
 				event := e.Fields["event"].(*cloudformation.StackEvent)
-				kind := *event.ResourceType
+				kind := lambdautil.ResourceType(*event.ResourceType)
 				status := stack.Status(*event.ResourceStatus)
 				color := colors.Purple
 				if status.State() == stack.Failure {
@@ -160,7 +161,7 @@ func (r *reporter) Start() {
 			case "platform.stack.plan.change":
 				c := e.Fields["change"].(*cloudformation.Change).ResourceChange
 				color := actionColor(*c.Action)
-				fmt.Printf("  %s %s\n", color(*c.Action), *c.ResourceType)
+				fmt.Printf("  %s %s\n", color(*c.Action), lambdautil.ResourceType(*c.ResourceType))
 				fmt.Printf("    %s: %s\n", color("id"), *c.LogicalResourceId)
 				if c.Replacement != nil {
 					fmt.Printf("    %s: %s\n", color("replace"), *c.Replacement)
