@@ -10,6 +10,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/aws/aws-sdk-go/service/lambda"
+	"github.com/aws/aws-sdk-go/service/route53"
 	"github.com/pkg/errors"
 
 	"github.com/apex/log"
@@ -28,20 +29,22 @@ var defaultChangeset = "changes"
 
 // Stack represents a single CloudFormation stack.
 type Stack struct {
-	client *cloudformation.CloudFormation
-	lambda *lambda.Lambda
-	events event.Events
-	config *up.Config
+	client  *cloudformation.CloudFormation
+	lambda  *lambda.Lambda
+	route53 *route53.Route53
+	events  event.Events
+	config  *up.Config
 }
 
 // New stack.
 func New(c *up.Config, events event.Events, region string) *Stack {
 	sess := session.New(aws.NewConfig().WithRegion(region))
 	return &Stack{
-		client: cloudformation.New(sess),
-		lambda: lambda.New(sess),
-		events: events,
-		config: c,
+		client:  cloudformation.New(sess),
+		lambda:  lambda.New(sess),
+		route53: route53.New(sess),
+		events:  events,
+		config:  c,
 	}
 }
 
@@ -136,15 +139,8 @@ func (s *Stack) Show() error {
 		"stack": stack,
 	})
 
-	events, err := s.getLatestEvents()
-	if err != nil {
-		return errors.Wrap(err, "fetching latest events")
-	}
-
-	for _, e := range events {
-		s.events.Emit("platform.stack.show.event", event.Fields{
-			"event": e,
-		})
+	if err := s.showNameservers(); err != nil {
+		return errors.Wrap(err, "showing nameservers")
 	}
 
 	return nil
@@ -359,6 +355,55 @@ func (s *Stack) report(states map[string]Status) error {
 			"total":    len(states),
 			"complete": complete,
 		})
+	}
+
+	return nil
+}
+
+// showNameservers emits events for listing name servers.
+func (s *Stack) showNameservers() error {
+	s.events.Emit("platform.stack.show.nameservers", nil)
+
+	for _, stage := range s.config.Stages.List() {
+		if stage.Domain == "" {
+			continue
+		}
+
+		res, err := s.route53.ListHostedZonesByName(&route53.ListHostedZonesByNameInput{
+			DNSName:  &stage.Domain,
+			MaxItems: aws.String("1"),
+		})
+
+		if err != nil {
+			return errors.Wrap(err, "listing hosted zone")
+		}
+
+		if len(res.HostedZones) == 0 {
+			continue
+		}
+
+		z := res.HostedZones[0]
+		if stage.Domain+"." != *z.Name {
+			continue
+		}
+
+		zone, err := s.route53.GetHostedZone(&route53.GetHostedZoneInput{
+			Id: z.Id,
+		})
+
+		if err != nil {
+			return errors.Wrap(err, "fetching hosted zone")
+		}
+
+		s.events.Emit("platform.stack.show.stage", event.Fields{
+			"stage": stage,
+		})
+
+		for _, ns := range zone.DelegationSet.NameServers {
+			s.events.Emit("platform.stack.show.nameserver", event.Fields{
+				"nameserver": *ns,
+			})
+		}
 	}
 
 	return nil

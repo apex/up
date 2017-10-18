@@ -206,6 +206,27 @@ After the changes have been applied, it can take roughly 10-40 minutes for Cloud
 
 Once available https://up-example.com will always point to production via `up deploy production`, and https://dev.up-example.com/ will point to the latest deployment via `up`.
 
+### Mapping Domains from External Registrars
+
+If you purchased a domain via `up domains buy` then you can skip this step, however if you used an external registrar such as Godaddy you will need to delegate to AWS for DNS management.
+
+To do this you'll need to sign in to your registrar's site, and configure the nameservers. To figure out what values to use for the nameservers, run `up stack`, which outputs the NS records for the apex (top-level) domains of your application.
+
+```
+$ up stack
+
+status: Created
+
+development (isatty.com):
+
+• ns-1315.awsdns-36.org
+• ns-1911.awsdns-46.co.uk
+• ns-700.awsdns-23.net
+• ns-481.awsdns-60.com
+```
+
+Save those four values in your registrar's interface, and you should be good to go! Note that altering DNS records can take some time to propagate.
+
 ### Stack Changes
 
 The "stack" is all of the resources associated with your app. You plan changes via `up stack plan` and perform them with `up stack apply`.

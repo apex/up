@@ -429,7 +429,7 @@ Subcommands:
 
 ### Examples
 
-Show status of the stack resources.
+Show status of the stack resources and nameservers.
 
 ```
 $ up stack

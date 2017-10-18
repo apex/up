@@ -15,6 +15,7 @@ import (
 	"github.com/tj/go-spin"
 	"github.com/tj/go/term"
 
+	"github.com/apex/up/config"
 	"github.com/apex/up/internal/colors"
 	"github.com/apex/up/internal/util"
 	"github.com/apex/up/platform/event"
@@ -140,22 +141,11 @@ func (r *reporter) Start() {
 				if reason := s.StackStatusReason; reason != nil {
 					fmt.Printf("  %s: %s\n", colors.Purple("reason"), *reason)
 				}
-				fmt.Printf("\n")
-			case "platform.stack.show.event":
-				event := e.Fields["event"].(*cloudformation.StackEvent)
-				kind := lambdautil.ResourceType(*event.ResourceType)
-				status := stack.Status(*event.ResourceStatus)
-				color := colors.Purple
-				if status.State() == stack.Failure {
-					color = colors.Red
-				}
-				fmt.Printf("  %s\n", color(kind))
-				fmt.Printf("    %s: %v\n", color("id"), *event.LogicalResourceId)
-				fmt.Printf("    %s: %s\n", color("status"), status)
-				if reason := event.ResourceStatusReason; reason != nil {
-					fmt.Printf("    %s: %s\n", color("reason"), *reason)
-				}
-				fmt.Printf("\n")
+			case "platform.stack.show.nameserver":
+				fmt.Printf("  • %s\n", e.String("nameserver"))
+			case "platform.stack.show.stage":
+				stage := e.Fields["stage"].(*config.Stage)
+				fmt.Printf("\n  %s (%s):\n\n", colors.Purple(stage.Name), stage.Domain)
 			case "stack.plan":
 				fmt.Printf("\n")
 			case "platform.stack.plan.change":
