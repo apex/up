@@ -275,9 +275,13 @@ func (p *Platform) ApplyStack(region string) error {
 }
 
 // populateZones fetches the existing hosted zones, storing
-// the HostedZoneId if present. This is required because domains
-// purchased via Route53 will already have a hosted zone,
-// so we need to reference it instead of creating a new zone.
+// the HostedZoneId if present.
+//
+// This is required because domains purchased via Route53
+// will already have a hosted zone, and we may already have
+// a hosted zone for the apex (example.com) and we are
+// creating a sub-domain (api.example.com), these should
+// all live in the same zone.
 func (p *Platform) populateZones() error {
 	r := route53.New(session.New(aws.NewConfig()))
 
@@ -292,9 +296,9 @@ func (p *Platform) populateZones() error {
 	for _, s := range p.config.Stages.List() {
 		log.Debugf("finding stage dns zones for %s %s", s.Name, s.Domain)
 		for _, z := range res.HostedZones {
-			if s.Domain+"." == *z.Name {
+			if strings.Contains(s.Domain+".", *z.Name) {
 				s.HostedZoneID = strings.Replace(*z.Id, "/hostedzone/", "", 1)
-				log.Debugf("found existing dns zone %s (%s) mapped to stage %s", s.Domain, s.HostedZoneID, s.Name)
+				log.Debugf("found existing dns zone %s (%s)", *z.Name, s.HostedZoneID)
 			}
 		}
 	}
