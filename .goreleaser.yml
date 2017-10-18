@@ -15,3 +15,4 @@ changelog:
   filters:
     exclude:
       - '^docs:'
+      - '^refactor'

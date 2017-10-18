@@ -6,6 +6,7 @@ import "strings"
 
 // types map.
 var types = map[string]string{
+	"AWS::CloudFormation::Stack":       "Stack",
 	"AWS::Lambda::Alias":               "Lambda alias",
 	"AWS::Lambda::Permission":          "Lambda permission",
 	"AWS::ApiGateway::RestApi":         "API",
