@@ -321,8 +321,8 @@
 [[projects]]
   name = "github.com/tj/survey"
   packages = [".","core","terminal"]
-  revision = "1a4ad34724086dfd5a698141ff18299dfe1b52be"
-  version = "v2.0.1"
+  revision = "cc8db15e46206f2e66b067af4943028d40c41de7"
+  version = "v2.0.2"
 
 [[projects]]
   name = "github.com/ulikunitz/xz"
@@ -357,6 +357,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "11f6130249a726fb3bddb578e5f18a8bdf51eada9df60e5e451f1cf87f0c2b43"
+  inputs-digest = "32dddb379f6c7555d98fc79a5c70c39d0e27326352adbae94f61452e852f7d16"
   solver-name = "gps-cdcl"
   solver-version = 1
