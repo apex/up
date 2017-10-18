@@ -169,7 +169,7 @@ func (r *reporter) Start() {
 				fmt.Printf("\n")
 			case "platform.certs.create":
 				domains := e.Fields["domains"].([]string)
-				r.log("domains", "Check your email for certificate approval")
+				r.log("domains", "Check your email to approve the certificate")
 				r.pending("confirm", strings.Join(domains, ", "))
 			case "platform.certs.create.complete":
 				r.complete("confirm", "complete", e.Duration("duration"))
