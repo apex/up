@@ -3,12 +3,6 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/Bowery/prompt"
-  packages = ["."]
-  revision = "753711fea478fa77bb2c83f6ec244b814d4a8bad"
-
-[[projects]]
-  branch = "master"
   name = "github.com/NYTimes/gziphandler"
   packages = ["."]
   revision = "00f646270dcc2a0d97ac30753a3d10530654423f"
@@ -182,10 +176,22 @@
   version = "v1.1"
 
 [[projects]]
+  name = "github.com/mattn/go-colorable"
+  packages = ["."]
+  revision = "167de6bfdfba052fa6b2d3664c8f5272e23c9072"
+  version = "v0.0.9"
+
+[[projects]]
   name = "github.com/mattn/go-isatty"
   packages = ["."]
   revision = "fc9e8d8ef48496124e79ae0df75490096eccf6fe"
   version = "v0.0.2"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/mgutz/ansi"
+  packages = ["."]
+  revision = "9520e82c474b0a04dd04f8a40959027271bab992"
 
 [[projects]]
   branch = "master"
@@ -314,6 +320,12 @@
   version = "v2.4.3"
 
 [[projects]]
+  name = "github.com/tj/survey"
+  packages = [".","core","terminal"]
+  revision = "7c435b2b459b2fb3ee96a24c5f79e753a7ba9921"
+  version = "v2.0.0"
+
+[[projects]]
   name = "github.com/ulikunitz/xz"
   packages = [".","internal/hash","internal/xlog","lzma"]
   revision = "0c6b41e72360850ca4f98dc341fd999726ea007f"
@@ -346,6 +358,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "3e40c274ee19367bd0a35e3511bc7e157f3c9e1c4f38fb3753ab861156291419"
+  inputs-digest = "d4b9cb28c468bb9c81a4a8d25a1408c6ba9eb5a5443a5ec307faa9af4e1d2dbb"
   solver-name = "gps-cdcl"
   solver-version = 1
