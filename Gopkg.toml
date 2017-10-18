@@ -23,11 +23,15 @@
 
 [[constraint]]
   branch = "master"
-  name = "github.com/apex/go-apex"
+  name = "github.com/NYTimes/gziphandler"
 
 [[constraint]]
-  branch = "master"
+  name = "github.com/apex/go-apex"
+  version = "1.0.0"
+
+[[constraint]]
   name = "github.com/apex/log"
+  version = "1.0.0"
 
 [[constraint]]
   branch = "master"
@@ -44,14 +48,6 @@
 [[constraint]]
   branch = "master"
   name = "github.com/fanyang01/radix"
-
-[[constraint]]
-  branch = "master"
-  name = "github.com/jpillora/backoff"
-
-[[constraint]]
-  name = "github.com/mattn/go-isatty"
-  version = "0.0.2"
 
 [[constraint]]
   branch = "master"
@@ -78,8 +74,12 @@
   name = "github.com/tj/assert"
 
 [[constraint]]
-  branch = "master"
+  name = "github.com/tj/backoff"
+  version = "1.0.0"
+
+[[constraint]]
   name = "github.com/tj/go-archive"
+  version = "1.0.2"
 
 [[constraint]]
   branch = "master"
@@ -102,5 +102,13 @@
   version = "1.1.0"
 
 [[constraint]]
+  name = "github.com/tj/go-update"
+  version = "1.0.0"
+
+[[constraint]]
   name = "github.com/tj/kingpin"
-  version = "2.4.0"
+  version = "2.4.3"
+
+[[constraint]]
+  name = "github.com/tj/survey"
+  version = "2.0.1"
