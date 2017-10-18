@@ -25,7 +25,7 @@ func init() {
 	cmd := root.Command("domains", "Manage domain names.")
 	cmd.Example(`up domains`, "List purchased domains.")
 	cmd.Example(`up domains check example.com`, "Check availability of a domain.")
-	cmd.Example(`up domains buy example.com`, "Purchase domain if it's available.")
+	cmd.Example(`up domains buy`, "Purchase a domain.")
 	list(cmd)
 	check(cmd)
 	buy(cmd)

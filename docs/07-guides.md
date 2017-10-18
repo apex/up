@@ -83,9 +83,9 @@ $ up domains check up-example.com
 Purchase it with the following command, and fill out the details required by the registrar.
 
 ```
-$ up domains buy up-example.com
+$ up domains buy
 
-  Confirm domain: up-example.com
+  Domain: up-example.com
   First name: TJ
   Last name: Holowaychuk
   Email: tj@apex.sh
