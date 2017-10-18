@@ -401,6 +401,51 @@ Start development server on port 5000.
 $ up start --address :5000
 ```
 
+## Domains
+
+Manage domain names, and purchase them from AWS Route53 as the registrar.
+
+```
+Usage:
+
+  up domains <command> [<args> ...]
+
+Flags:
+
+  -h, --help           Output usage information.
+  -r, --region=REGION  Override the region.
+  -C, --chdir="."      Change working directory.
+  -v, --verbose        Enable verbose log output.
+      --version        Show application version.
+
+Subcommands:
+
+  domains list    List purchased domains.
+  domains check   Check availability of a domain.
+  domains buy     Purchase a domain.
+
+```
+
+### Examples
+
+List purchased domains.
+
+```
+$ up domains
+```
+
+Check availability of a domain.
+
+```
+$ up domains check example.com
+```
+
+Purchase a domain (with interactive form).
+
+```
+$ up domains buy
+```
+
 ## Stack
 
 Stack resource management. The stack is essentially all of the resources powering your app, which is configured by Up on the first deploy.
