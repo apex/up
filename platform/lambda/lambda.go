@@ -278,10 +278,6 @@ func (p *Platform) ApplyStack(region string) error {
 // the HostedZoneId if present. This is required because domains
 // purchased via Route53 will already have a hosted zone,
 // so we need to reference it instead of creating a new zone.
-//
-// Currently subdomains are stripped. For example if you create
-// an app which maps only production to "api.example.com", the
-// zone "example.com" will be created (or discovered).
 func (p *Platform) populateZones() error {
 	r := route53.New(session.New(aws.NewConfig()))
 
@@ -294,10 +290,9 @@ func (p *Platform) populateZones() error {
 	}
 
 	for _, s := range p.config.Stages.List() {
-		domain := util.Domain(s.Domain)
-		log.Debugf("finding stage dns zones for %s %s (%s)", s.Name, domain, s.Domain)
+		log.Debugf("finding stage dns zones for %s %s", s.Name, s.Domain)
 		for _, z := range res.HostedZones {
-			if domain+"." == *z.Name {
+			if s.Domain+"." == *z.Name {
 				s.HostedZoneID = strings.Replace(*z.Id, "/hostedzone/", "", 1)
 				log.Debugf("found existing dns zone %s (%s) mapped to stage %s", s.Domain, s.HostedZoneID, s.Name)
 			}
@@ -334,18 +329,9 @@ func (p *Platform) createCerts() error {
 			continue
 		}
 
-		domain := util.Domain(s.Domain)
-
-		// already requested
-		if util.StringsContains(domains, domain) {
-			log.Debugf("already requested cert for %s", domain)
-			continue
-		}
-
-		// see if the cert exists, stripping any subdomain
-		// since we request only a single wildcard cert.
+		// see if the cert exists
 		log.Debugf("looking up cert for %s", s.Domain)
-		arn := getCert(res.CertificateSummaryList, domain)
+		arn := getCert(res.CertificateSummaryList, s.Domain)
 		if arn != "" {
 			log.Debugf("found cert for %s: %s", s.Domain, arn)
 			s.Cert = arn
@@ -354,15 +340,14 @@ func (p *Platform) createCerts() error {
 
 		// request the cert
 		res, err := a.RequestCertificate(&acm.RequestCertificateInput{
-			DomainName:              &domain,
-			SubjectAlternativeNames: aws.StringSlice([]string{"*." + domain}),
+			DomainName: &s.Domain,
 		})
 
 		if err != nil {
 			return errors.Wrapf(err, "requesting cert for %s", s.Domain)
 		}
 
-		domains = append(domains, domain)
+		domains = append(domains, s.Domain)
 		s.Cert = *res.CertificateArn
 	}
 

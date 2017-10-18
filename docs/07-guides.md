@@ -163,7 +163,7 @@ Now when you run `up stack plan` to preview changes to your resources, it will p
 ```
 $ up stack plan
 
-       domains: Verify your email
+       domains: Check your email for certificate approval
      ⠧ confirm: up-example.com
 ```
 

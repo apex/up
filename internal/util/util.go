@@ -213,17 +213,6 @@ func ExitStatus(cmd *exec.Cmd, err error) string {
 	return "?"
 }
 
-// IsSubdomain returns true if s is a subdomain.
-func IsSubdomain(s string) bool {
-	return len(strings.Split(s, ".")) > 2
-}
-
-// Domain returns the domain devoid of any subdomain(s).
-func Domain(s string) string {
-	p := strings.Split(s, ".")
-	return strings.Join(p[len(p)-2:], ".")
-}
-
 // StringsContains returns true if list contains s.
 func StringsContains(list []string, s string) bool {
 	for _, v := range list {
