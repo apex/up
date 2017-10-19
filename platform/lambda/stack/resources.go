@@ -9,10 +9,13 @@ import (
 	"github.com/apex/up/internal/util"
 )
 
-const upDeploymentBucketLogicalID = "UpDeploymentBucket"
-
 // Map .
 type Map map[string]interface{}
+
+// GetS3BucketName returns the s3 bucket name based on config
+func GetS3BucketName(c *up.Config) string {
+	return fmt.Sprintf("up-deploy-%s", c.Name)
+}
 
 // ref of id.
 func ref(id string) Map {
@@ -275,13 +278,6 @@ func conditionalDNSZone(c *up.Config, m Map, domain string) interface{} {
 	return s.HostedZoneID
 }
 
-// S3 resources.
-func s3(c *up.Config, m Map) {
-	m[upDeploymentBucketLogicalID] = Map{
-		"Type": "AWS::S3::Bucket",
-	}
-}
-
 // DNS resources.
 func dns(c *up.Config, m Map) {
 	for _, z := range c.DNS.Zones {
@@ -368,8 +364,6 @@ func iam(c *up.Config, m Map) {
 // resources of the stack.
 func resources(c *up.Config) Map {
 	m := Map{}
-
-	s3(c, m)
 	api(c, m)
 	iam(c, m)
 	dns(c, m)
@@ -413,9 +407,6 @@ func outputs(c *up.Config) Map {
 			"Description": "API Lambda function ARN",
 			"Value":       lambdaArn("FunctionName"),
 		},
-		"UpDeploymentBucketName": Map{
-			"Value": ref(upDeploymentBucketLogicalID),
-		},
 	}
 }
 
@@ -426,47 +417,5 @@ func template(c *up.Config) Map {
 		"Parameters":               parameters(c),
 		"Outputs":                  outputs(c),
 		"Resources":                resources(c),
-	}
-}
-
-// createResources of the stack.
-func createResources(c *up.Config) Map {
-	m := Map{}
-
-	s3(c, m)
-
-	return m
-}
-
-// createParameters of the stack.
-func createParameters(c *up.Config) Map {
-	return Map{
-		"Name": Map{
-			"Description": "Name of application",
-			"Type":        "String",
-		},
-	}
-}
-
-// outputs of the stack.
-func createOutputs(c *up.Config) Map {
-	return Map{
-		"ApiName": Map{
-			"Description": "API name",
-			"Value":       ref("Name"),
-		},
-		"UpDeploymentBucketName": Map{
-			"Value": ref(upDeploymentBucketLogicalID),
-		},
-	}
-}
-
-// createTemplate for the given config.
-func createTemplate(c *up.Config) Map {
-	return Map{
-		"AWSTemplateFormatVersion": "2010-09-09",
-		"Parameters":               createParameters(c),
-		"Outputs":                  createOutputs(c),
-		"Resources":                createResources(c),
 	}
 }

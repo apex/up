@@ -30,20 +30,13 @@ import (
 	"github.com/apex/up/internal/proxy/bin"
 	"github.com/apex/up/internal/shim"
 	"github.com/apex/up/internal/util"
-	"github.com/apex/up/internal/validate"
 	"github.com/apex/up/internal/zip"
 	"github.com/apex/up/platform"
 	"github.com/apex/up/platform/event"
 	"github.com/apex/up/platform/lambda/stack"
 )
 
-// errFirstDeploy is returned from .deploy() when a function is created.
-var errFirstDeploy = errors.New("first deploy")
-
 const (
-	// maxZipSize is the max zip size supported by Lambda (50MiB).
-	maxZipSize = 50 << 20
-
 	// maxCodeSize is the max code size supported by Lambda (250MiB).
 	maxCodeSize = 250 << 20
 )
@@ -164,16 +157,8 @@ func (p *Platform) Deploy(stage string) error {
 	for _, r := range regions {
 		region := r
 		g.Go(func() error {
-			version, err := p.deploy(region, stage)
-			if err == nil {
-				return nil
-			}
-
-			if err != errFirstDeploy {
-				return errors.Wrap(err, region)
-			}
-
-			if err := p.UpdateStack(region, version); err != nil {
+			err := p.deploy(region, stage)
+			if err != nil {
 				return errors.Wrap(err, region)
 			}
 
@@ -225,26 +210,11 @@ func (p *Platform) CreateStack(region, version string) error {
 	return stack.New(p.config, p.events, region).Create(version)
 }
 
-// UpdateStack implementation.
-func (p *Platform) UpdateStack(region, version string) error {
-	return stack.New(p.config, p.events, region).Update(version)
-}
-
-// SetS3BucketName based on stack.
-func (p *Platform) SetS3BucketName(region string) error {
-	return stack.New(p.config, p.events, region).SetS3BucketName()
-}
-
 // DeleteStack implementation.
 func (p *Platform) DeleteStack(region string, wait bool) error {
-	log.Debug("setting s3 bucket name")
-	if err := p.SetS3BucketName(region); err != nil {
-		return errors.Wrap(err, "setting s3 bucket name")
-	}
-
-	log.Debug("emptying s3 bucket")
-	if err := p.emptyBucket(region); err != nil {
-		return errors.Wrap(err, "emptying s3 bucket")
+	log.Debug("deleting s3 bucket")
+	if err := p.deleteBucket(region); err != nil {
+		return errors.Wrap(err, "deleting s3 bucket")
 	}
 
 	log.Debug("deleting stack")
@@ -402,7 +372,7 @@ func (p *Platform) createCerts() error {
 }
 
 // deploy to the given region.
-func (p *Platform) deploy(region, stage string) (version string, err error) {
+func (p *Platform) deploy(region, stage string) (err error) {
 	fields := event.Fields{
 		"stage":  stage,
 		"region": region,
@@ -416,21 +386,6 @@ func (p *Platform) deploy(region, stage string) (version string, err error) {
 	a := apigateway.New(s)
 	c := lambda.New(s)
 
-	if err := validate.Stage(stage); err != nil {
-		return "", err
-	}
-
-	ctx.Debug("setting s3 bucket name")
-	err = p.SetS3BucketName(region)
-
-	if util.IsNotFound(err) {
-		if err := p.CreateStack(region, version); err != nil {
-			return "", errors.Wrap(err, region)
-		}
-	} else if err != nil {
-		return "", errors.Wrap(err, "setting s3 bucket name")
-	}
-
 	ctx.Debug("fetching function config")
 	_, err = c.GetFunctionConfiguration(&lambda.GetFunctionConfigurationInput{
 		FunctionName: &p.config.Name,
@@ -438,11 +393,11 @@ func (p *Platform) deploy(region, stage string) (version string, err error) {
 
 	if util.IsNotFound(err) {
 		defer p.events.Time("platform.function.create", fields)
-		return p.createFunction(c, a, u, stage)
+		return p.createFunction(c, a, u, region, stage)
 	}
 
 	if err != nil {
-		return "", errors.Wrap(err, "fetching function config")
+		return errors.Wrap(err, "fetching function config")
 	}
 
 	defer p.events.Time("platform.function.update", fields)
@@ -450,9 +405,17 @@ func (p *Platform) deploy(region, stage string) (version string, err error) {
 }
 
 // createFunction creates the function.
-func (p *Platform) createFunction(c *lambda.Lambda, a *apigateway.APIGateway, up *s3manager.Uploader, stage string) (version string, err error) {
+func (p *Platform) createFunction(c *lambda.Lambda, a *apigateway.APIGateway, up *s3manager.Uploader, region, stage string) (err error) {
+	log.Debug("creating s3 bucket")
+	err = p.createBucket(region)
+
+	if err != nil {
+		return errors.Wrap(err, "creating function: creating s3 bucket")
+	}
+
+	log.Debug("creating function")
 retry:
-	b := aws.String(p.config.S3BucketName)
+	b := aws.String(p.getS3BucketName())
 	k := aws.String(p.getS3Key(stage))
 	_, err = up.Upload(&s3manager.UploadInput{
 		Bucket: b,
@@ -461,7 +424,7 @@ retry:
 	})
 
 	if err != nil {
-		return "", errors.Wrap(err, "creating function: uploading object to s3")
+		return errors.Wrap(err, "creating function: uploading object to s3")
 	}
 
 	res, err := c.CreateFunction(&lambda.CreateFunctionInput{
@@ -487,14 +450,18 @@ retry:
 	}
 
 	if err != nil {
-		return "", errors.Wrap(err, "creating function")
+		return errors.Wrap(err, "creating function")
 	}
 
-	return *res.Version, errFirstDeploy
+	if err := p.CreateStack(region, *res.Version); err != nil {
+		return errors.Wrap(err, region)
+	}
+
+	return nil
 }
 
 // updateFunction updates the function.
-func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up *s3manager.Uploader, stage string) (version string, err error) {
+func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up *s3manager.Uploader, stage string) (err error) {
 	var publish bool
 
 	if stage != "development" {
@@ -502,6 +469,7 @@ func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up
 		log.Debug("publishing new version")
 	}
 
+	log.Debug("updating function")
 	_, err = c.UpdateFunctionConfiguration(&lambda.UpdateFunctionConfigurationInput{
 		FunctionName: &p.config.Name,
 		Handler:      &p.handler,
@@ -513,10 +481,10 @@ func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up
 	})
 
 	if err != nil {
-		return "", errors.Wrap(err, "updating function config")
+		return errors.Wrap(err, "updating function config")
 	}
 
-	b := aws.String(p.config.S3BucketName)
+	b := aws.String(p.getS3BucketName())
 	k := aws.String(p.getS3Key(stage))
 	_, err = up.Upload(&s3manager.UploadInput{
 		Bucket: b,
@@ -525,7 +493,7 @@ func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up
 	})
 
 	if err != nil {
-		return "", errors.Wrap(err, "updating function: uploading object to s3")
+		return errors.Wrap(err, "updating function: uploading object to s3")
 	}
 
 	res, err := c.UpdateFunctionCode(&lambda.UpdateFunctionCodeInput{
@@ -536,7 +504,7 @@ func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up
 	})
 
 	if err != nil {
-		return "", errors.Wrap(err, "updating function code")
+		return errors.Wrap(err, "updating function code")
 	}
 
 	if publish {
@@ -548,13 +516,13 @@ func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up
 		})
 
 		if err != nil {
-			return "", errors.Wrap(err, "creating function alias")
+			return errors.Wrap(err, "creating function alias")
 		}
 
-		return *res.Version, nil
+		return nil
 	}
 
-	return "", nil
+	return nil
 }
 
 // deleteFunction deletes the lambda function.
@@ -654,11 +622,39 @@ func (p *Platform) deleteRole(region string) error {
 	return nil
 }
 
+// createBucket create the bucket.
+func (p *Platform) createBucket(region string) (err error) {
+	// TODO: sessions all over... refactor
+	s := s3.New(session.New(aws.NewConfig().WithRegion(region)))
+	b := aws.String(p.getS3BucketName())
+
+	_, err = s.CreateBucket(&s3.CreateBucketInput{
+		Bucket: b,
+	})
+
+	return
+}
+
+// deleteBucket delete the bucket.
+func (p *Platform) deleteBucket(region string) (err error) {
+	p.emptyBucket(region)
+
+	// TODO: sessions all over... refactor
+	s := s3.New(session.New(aws.NewConfig().WithRegion(region)))
+	b := aws.String(p.getS3BucketName())
+
+	_, err = s.DeleteBucket(&s3.DeleteBucketInput{
+		Bucket: b,
+	})
+
+	return
+}
+
 // emptyBucket empty the bucket.
 func (p *Platform) emptyBucket(region string) error {
 	// TODO: sessions all over... refactor
 	s := s3.New(session.New(aws.NewConfig().WithRegion(region)))
-	b := aws.String(p.config.S3BucketName)
+	b := aws.String(p.getS3BucketName())
 
 	return s.ListObjectsPages(&s3.ListObjectsInput{
 		Bucket: b,
@@ -723,8 +719,14 @@ func (p *Platform) removeProxy() error {
 	return nil
 }
 
+// getS3Key returns the s3 key
 func (p *Platform) getS3Key(stage string) string {
 	return fmt.Sprintf("%s-%s-%v.zip", p.config.Name, stage, uniuri.New())
+}
+
+// getS3BucketName returns the s3 bucket name
+func (p *Platform) getS3BucketName() string {
+	return stack.GetS3BucketName(p.config)
 }
 
 // isCreatingRole returns true if the role has not been created.
