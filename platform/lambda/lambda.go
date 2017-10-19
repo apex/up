@@ -213,7 +213,7 @@ func (p *Platform) CreateStack(region, version string) error {
 // DeleteStack implementation.
 func (p *Platform) DeleteStack(region string, wait bool) error {
 	log.Debug("deleting s3 bucket")
-	if err := p.deleteBucket(region); err != nil {
+	if err := p.deleteBucket(region); err != nil && !util.IsNotFound(err) {
 		return errors.Wrap(err, "deleting s3 bucket")
 	}
 
