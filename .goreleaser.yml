@@ -12,6 +12,7 @@ build:
     - amd64
     - 386
 changelog:
+  sort: asc
   filters:
     exclude:
       - '^docs:'
