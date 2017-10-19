@@ -12,16 +12,13 @@ import (
 )
 
 var transform = archive.TransformFunc(func(r io.Reader, i os.FileInfo) (io.Reader, os.FileInfo) {
-	switch i.Name() {
-	case "main", "server":
-		i = archive.Info{
-			Name:     i.Name(),
-			Size:     i.Size(),
-			Mode:     i.Mode() | 0555,
-			Modified: i.ModTime(),
-			Dir:      i.IsDir(),
-		}.FileInfo()
-	}
+	i = archive.Info{
+		Name:     i.Name(),
+		Size:     i.Size(),
+		Mode:     i.Mode() | 0555,
+		Modified: i.ModTime(),
+		Dir:      i.IsDir(),
+	}.FileInfo()
 
 	return r, i
 })
