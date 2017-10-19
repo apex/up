@@ -1,4 +1,25 @@
 
+v0.3.0 / 2017-10-19
+===================
+
+  * add listing of NS records in `up stack` output
+  * add changelog exclusion of docs: for goreleaser
+  * add nicer domain registration form
+  * update tj/survey for color changes
+  * update dependencies
+  * refactor: add more properties to deploy track
+  * refactor: tweak cert email output
+  * refactor: exclude Makefile from todo target (#382)
+  * refactor: add stack to ResourceType mapping
+  * refactor reporting for aws types
+  * fix install.deps target
+  * fix case where improper cert is created due to second-level domain (.co.uk). Closes #350
+  * fix hosted zone regression introduced by e8a33a3
+  * fix permission issues for static file serving. Closes #385
+  * docs: add domains command
+  * docs: move policy behind a details element for collapsing
+  * docs: tweak for domain changes
+
 v0.2.10 / 2017-10-13
 ====================
 
