@@ -78,6 +78,17 @@ func (s *Stages) List() (v []*Stage) {
 	return
 }
 
+// Domains returns configured domains.
+func (s *Stages) Domains() (v []string) {
+	for _, s := range s.List() {
+		if s.Domain != "" {
+			v = append(v, s.Domain)
+		}
+	}
+
+	return
+}
+
 // GetByDomain returns the stage by domain or nil.
 func (s *Stages) GetByDomain(domain string) *Stage {
 	for _, s := range s.List() {
