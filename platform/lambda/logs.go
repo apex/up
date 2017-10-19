@@ -103,18 +103,23 @@ func (l *Logs) start() {
 	for l := range tailer.Start() {
 		line := strings.TrimSpace(l.Message)
 
-		if !util.IsJSON(line) {
-			// fmt.Fprint(l.w, e.Message) // TODO: ignore? json-ify?
+		// json log
+		if util.IsJSON(line) {
+			var e log.Entry
+			err := json.Unmarshal([]byte(line), &e)
+			if err != nil {
+				log.Fatalf("error parsing json: %s", err)
+			}
+
+			handler.HandleLog(&e)
 			continue
 		}
 
-		var e log.Entry
-		err := json.Unmarshal([]byte(line), &e)
-		if err != nil {
-			log.Fatalf("error parsing json: %s", err)
-		}
-
-		handler.HandleLog(&e)
+		// plain text log
+		handler.HandleLog(&log.Entry{
+			Level:   log.InfoLevel,
+			Message: strings.TrimRight(l.Message, " \n"),
+		})
 	}
 
 	// TODO: refactor interface to delegate

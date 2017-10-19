@@ -4,7 +4,6 @@ package util
 import (
 	"encoding/json"
 	"fmt"
-	"io"
 	"io/ioutil"
 	"net"
 	"net/http"
@@ -212,26 +211,6 @@ func ExitStatus(cmd *exec.Cmd, err error) string {
 	}
 
 	return "?"
-}
-
-// MaybeClose closes v if it is an io.Closer.
-func MaybeClose(v interface{}) error {
-	if c, ok := v.(io.Closer); ok {
-		return c.Close()
-	}
-
-	return nil
-}
-
-// IsSubdomain returns true if s is a subdomain.
-func IsSubdomain(s string) bool {
-	return len(strings.Split(s, ".")) > 2
-}
-
-// Domain returns the domain devoid of any subdomain(s).
-func Domain(s string) string {
-	p := strings.Split(s, ".")
-	return strings.Join(p[len(p)-2:], ".")
 }
 
 // StringsContains returns true if list contains s.

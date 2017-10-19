@@ -2,11 +2,12 @@ package domains
 
 import (
 	"fmt"
+	"strings"
 	"time"
 
-	"github.com/Bowery/prompt"
 	"github.com/pkg/errors"
 	"github.com/tj/kingpin"
+	"github.com/tj/survey"
 
 	"github.com/apex/up/internal/cli/root"
 	"github.com/apex/up/internal/colors"
@@ -16,19 +17,15 @@ import (
 	"github.com/apex/up/platform/lambda/cost"
 )
 
-// TODO: make list the default
-// TODO: find/write prompt with more options
-// TODO: add colors to prompts
-// TODO: add validation for emails, phone numbers, postal codes etc
 // TODO: add ability to move up/down lines more like a form
 // TODO: add polling of registration status (it's async)
-// TODO: auto-fill these details?
+// TODO: auto-fill these details from AWS account?
 
 func init() {
 	cmd := root.Command("domains", "Manage domain names.")
 	cmd.Example(`up domains`, "List purchased domains.")
 	cmd.Example(`up domains check example.com`, "Check availability of a domain.")
-	cmd.Example(`up domains buy example.com`, "Purchase domain if it's available.")
+	cmd.Example(`up domains buy`, "Purchase a domain.")
 	list(cmd)
 	check(cmd)
 	buy(cmd)
@@ -37,38 +34,57 @@ func init() {
 // USD.
 var usd = colors.Gray("USD")
 
-// Anwsers.
-var (
-	firstName   = new(string)
-	lastName    = new(string)
-	email       = new(string)
-	phone       = new(string)
-	address     = new(string)
-	city        = new(string)
-	state       = new(string)
-	countryCode = new(string)
-	zipCode     = new(string)
-)
-
 // Questions.
-var questions = []*struct {
-	Prompt string
-	Value  *string
-}{
-	{"First name", firstName},
-	{"Last name", lastName},
-	{"Email", email},
-	{"Phone", phone},
-	{"Country code", countryCode},
-	{"City", city},
-	{"State or province", state},
-	{"Zip code", zipCode},
-	{"Address", address},
+var questions = []*survey.Question{
+	{
+		Name:     "email",
+		Prompt:   &survey.Input{Message: "Email:"},
+		Validate: validateEmail,
+	},
+	{
+		Name:     "firstname",
+		Prompt:   &survey.Input{Message: "First name:"},
+		Validate: survey.Required,
+	},
+	{
+		Name:     "lastname",
+		Prompt:   &survey.Input{Message: "Last name:"},
+		Validate: survey.Required,
+	},
+	{
+		Name:     "countrycode",
+		Prompt:   &survey.Input{Message: "Country code:"},
+		Validate: validateCountryCode,
+	},
+	{
+		Name:     "city",
+		Prompt:   &survey.Input{Message: "City:"},
+		Validate: survey.Required,
+	},
+	{
+		Name:     "address",
+		Prompt:   &survey.Input{Message: "Address:"},
+		Validate: survey.Required,
+	},
+	{
+		Name:     "phonenumber",
+		Prompt:   &survey.Input{Message: "Phone:"},
+		Validate: validatePhoneNumber,
+	},
+	{
+		Name:     "state",
+		Prompt:   &survey.Input{Message: "State:"},
+		Validate: survey.Required,
+	},
+	{
+		Name:     "zipcode",
+		Prompt:   &survey.Input{Message: "Zip code:"},
+		Validate: survey.Required,
+	},
 }
 
 func buy(cmd *kingpin.CmdClause) {
 	c := cmd.Command("buy", "Purchase a domain.")
-	domain := c.Arg("domain", "Domain name.").Required().String()
 
 	c.Action(func(_ *kingpin.ParseContext) error {
 		defer util.Pad()()
@@ -78,40 +94,19 @@ func buy(cmd *kingpin.CmdClause) {
 			return errors.Wrap(err, "initializing")
 		}
 
-		confirm, err := prompt.Basic("  Confirm domain:", true)
-		if err != nil {
-			return err
-		}
+		var domain string
+		survey.AskOne(&survey.Input{
+			Message: "Domain:",
+		}, &domain, survey.Required)
 
-		if confirm != *domain {
-			return errors.New("domains do not match")
-		}
+		var contact platform.DomainContact
 
-		for _, q := range questions {
-			s := fmt.Sprintf("  %s:", q.Prompt)
-			v, err := prompt.Basic(s, true)
-			if err != nil {
-				return err
-			}
-			*q.Value = v
-		}
-
-		stats.Track("Register Domain", nil)
-
-		contact := platform.DomainContact{
-			Email:       *email,
-			FirstName:   *firstName,
-			LastName:    *lastName,
-			CountryCode: *countryCode,
-			City:        *city,
-			Address:     *address,
-			PhoneNumber: *phone,
-			State:       *state,
-			ZipCode:     *zipCode,
+		if err := survey.Ask(questions, &contact); err != nil {
+			return errors.Wrap(err, "prompting")
 		}
 
 		domains := p.Domains()
-		if err := domains.Purchase(*domain, contact); err != nil {
+		if err := domains.Purchase(domain, contact); err != nil {
 			return errors.Wrap(err, "purshasing")
 		}
 
@@ -193,4 +188,54 @@ func list(cmd *kingpin.CmdClause) {
 
 		return nil
 	})
+}
+
+// validateEmail returns an error if the input does not look like an email.
+func validateEmail(v interface{}) error {
+	s := v.(string)
+	i := strings.LastIndex(s, "@")
+
+	if s == "" {
+		return errors.New("Email is required.")
+	}
+
+	if i == -1 {
+		return errors.New("Email is missing '@'.")
+	}
+
+	if i == len(s)-1 {
+		return errors.New("Email is missing domain.")
+	}
+
+	return nil
+}
+
+// validateCountryCode returns an error if the input does not look like a valid country code.
+func validateCountryCode(v interface{}) error {
+	s := v.(string)
+
+	if s == "" {
+		return errors.New("Country code is required.")
+	}
+
+	if len(s) != 2 {
+		return errors.New("Country codes must consist of two uppercase letters, such as CA or AU.")
+	}
+
+	return nil
+}
+
+// validatePhoneNumber returns an error if the input does not look like a valid phone number.
+func validatePhoneNumber(v interface{}) error {
+	s := v.(string)
+
+	if s == "" {
+		return errors.New("Phone number is required.")
+	}
+
+	if !strings.HasPrefix(s, "+") {
+		return errors.New("Phone number must contain the country code, for example +1.2223334444 for Canada.")
+	}
+
+	return nil
 }

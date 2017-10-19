@@ -8,4 +8,7 @@ up-proxy
 !cmd/up-proxy
 dist
 .idea
-.vscode.DS_Store
+.vscode
+.DS_Store
+internal/proxy/bin/bin_assets.go
+internal/shim/bindata.go

@@ -2,6 +2,7 @@ package linereader
 
 import (
 	"io"
+	"io/ioutil"
 	"strings"
 	"testing"
 
@@ -19,11 +20,12 @@ func (w *writer) Write(b []byte) (int, error) {
 }
 
 func TestReader_flatLines(t *testing.T) {
-	input := `GET /
+	input := `GET /hello
 GET /account
 GET /signup
 GET /login
 POST /login
+GET /
 `
 
 	w := &writer{}
@@ -33,11 +35,12 @@ POST /login
 	assert.NoError(t, err)
 
 	expected := []string{
-		"GET /",
+		"GET /hello",
 		"GET /account",
 		"GET /signup",
 		"GET /login",
 		"POST /login",
+		"GET /",
 	}
 
 	assert.Equal(t, expected, w.writes)
@@ -55,8 +58,8 @@ UncaughtException: Something exploded
   at foo
   at bar
   at baz
-GET /
-GET /
+GET /a
+GET /b
 `
 
 	w := &writer{}
@@ -72,9 +75,23 @@ GET /
 		"POST /login\n\tuser: Tobi\n\treferrer: something.com",
 		"GET /login",
 		"UncaughtException: Something exploded\n  at foo\n  at bar\n  at baz",
-		"GET /",
-		"GET /",
+		"GET /a",
+		"GET /b",
 	}
 
 	assert.Equal(t, expected, w.writes)
+}
+
+func Benchmark(b *testing.B) {
+	pr, pw := io.Pipe()
+
+	r := New(pr)
+
+	go func() {
+		io.Copy(ioutil.Discard, r)
+	}()
+
+	for i := 0; i < b.N; i++ {
+		io.WriteString(pw, "GET /foo\n")
+	}
 }

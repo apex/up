@@ -107,7 +107,7 @@ For example:
 
 View the [Lambda Pricing](https://aws.amazon.com/lambda/pricing/) page for more information regarding the `memory` setting.
 
-Lambda timeout is implied from the [Reverse Proxy](#configuration__reverse_proxy) `timeout` setting.
+Lambda timeout is implied from the [Reverse Proxy](#configuration.reverse_proxy) `timeout` setting.
 
 ## Hook Scripts
 
@@ -168,7 +168,7 @@ By default the current directory (`.`) is served, however you can change this us
 }
 ```
 
-Note that `static.dir` only tells Up which directory to serve – it does not exclude other files from the directory – see [Ignoring Files](#configuration__ignoring_files).
+Note that `static.dir` only tells Up which directory to serve – it does not exclude other files from the directory – see [Ignoring Files](#configuration.ignoring_files).
 
 ## Environment Variables
 
@@ -584,7 +584,7 @@ Custom stages may be supported in the future, for now there are three:
 
 If you're familiar with AWS Lambda, "development" is the $LATEST version, while "staging" and "production" are aliases.
 
-You may [purchase domains](#purchasing_a_domain) from the command-line, or map custom domains from other registrars. Up uses Route53 to purchase domains using your AWS account credit card. See `up help domains`.
+You may [purchase domains](#guides.development_to_production_workflow.purchasing_a_domain) from the command-line, or map custom domains from other registrars. Up uses Route53 to purchase domains using your AWS account credit card. See `up help domains`.
 
 ## Ignoring Files
 

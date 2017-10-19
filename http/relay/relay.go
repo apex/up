@@ -27,6 +27,11 @@ import (
 // log context.
 var ctx = logs.Plugin("relay")
 
+// flusher is the interface used for flushing logs.
+type flusher interface {
+	Flush()
+}
+
 // DefaultTransport used by relay.
 var DefaultTransport http.RoundTripper = &http.Transport{
 	DialContext: (&net.Dialer{
@@ -47,8 +52,14 @@ type Proxy struct {
 	port     int
 	target   *url.URL
 
-	// cmd refers to the currently running (active) proxy subprocss
+	// cmd is the active running user application sub-process
 	cmd *exec.Cmd
+
+	// stdout is the log writer for structured logging output
+	stdout *writer.Writer
+
+	// stderr is the log writer for structured logging output
+	stderr *writer.Writer
 
 	// cmdCleanup is a channel that queues abandoned commands
 	// so they can be cleaned up and resources reclaimed.
@@ -81,6 +92,8 @@ func New(c *up.Config) (http.Handler, error) {
 		maxRetries:      c.Proxy.Backoff.Attempts,
 		timeout:         time.Duration(c.Proxy.Timeout) * time.Second,
 		shutdownTimeout: time.Duration(c.Proxy.ShutdownTimeout) * time.Second,
+		stdout:          writer.New(log.InfoLevel),
+		stderr:          writer.New(log.ErrorLevel),
 	}
 
 	if err := p.Start(); err != nil {
@@ -102,7 +115,7 @@ func (p *Proxy) Start() error {
 	p.ReverseProxy.Transport = p
 
 	timeout := time.Duration(p.config.Proxy.ListenTimeout) * time.Second
-	ctx.Infof("waiting for %s to listen (timeout %s)", p.target.String(), timeout)
+	ctx.WithField("url", p.target.String()).Info("waiting for server to listen")
 
 	if err := util.WaitForListen(p.target, timeout); err != nil {
 		return errors.Wrapf(err, "waiting for %s to be in listening state", p.target.String())
@@ -128,7 +141,10 @@ func (p *Proxy) Restart() error {
 func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	p.mu.Lock()
 	defer p.mu.Unlock()
+
 	p.ReverseProxy.ServeHTTP(w, r)
+	p.stdout.Flush()
+	p.stderr.Flush()
 }
 
 // RoundTrip implementation.
@@ -139,6 +155,7 @@ func (p *Proxy) RoundTrip(r *http.Request) (*http.Response, error) {
 
 retry:
 	attempts++
+
 	// Starting on the second attempt, we need to rewind the body if we can
 	// The DefaultTransport.RoundTrip will only rewind it for us in non-err scenarios
 	if attempts > 0 && r.Body != http.NoBody && r.Body != nil && r.GetBody != nil {
@@ -160,20 +177,20 @@ retry:
 
 	// attempts exceeded, respond as-is
 	if attempts >= p.maxRetries {
-		log.Warn("retry attempts exceeded")
+		ctx.Warn("retry attempts exceeded")
 		return res, err
 	}
 
 	// timeout exceeded, respond as-is
 	if time.Since(start) >= p.timeout {
 		// TODO: timeout in-flight as well
-		log.Warn("retry timeout exceeded")
+		ctx.Warn("retry timeout exceeded")
 		return res, err
 	}
 
 	// we got an error response, retry if possible
 	if err == nil && res.StatusCode >= 500 && isIdempotent(r) {
-		log.WithField("status", res.StatusCode).Warn("retrying idempotent request")
+		ctx.WithField("status", res.StatusCode).Warn("retrying idempotent request")
 		goto retry
 	}
 
@@ -207,6 +224,7 @@ retry:
 
 	// retry idempotent requests
 	if restartErr == nil && isIdempotent(r) {
+		ctx.Info("retrying idempotent request")
 		goto retry
 	}
 
@@ -234,7 +252,7 @@ func (p *Proxy) start() error {
 		return errors.Wrap(err, "getting free port")
 	}
 
-	ctx.Infof("found free port %d", port)
+	ctx.WithField("port", port).Info("found free port")
 	target, err := url.Parse(fmt.Sprintf("http://127.0.0.1:%d", port))
 	if err != nil {
 		return errors.Wrap(err, "parsing url")
@@ -243,15 +261,15 @@ func (p *Proxy) start() error {
 	p.port = port
 	p.target = target
 
-	ctx.Infof("executing %q", p.config.Proxy.Command)
-	cmd = command(p.config.Proxy.Command, p.environment())
+	ctx.WithField("command", p.config.Proxy.Command).Info("executing")
+	cmd = p.command(p.config.Proxy.Command, p.environment())
 	if err := cmd.Start(); err != nil {
 		return errors.Wrap(err, "running command")
 	}
 
 	// Only remember this if it was successfully started
 	p.cmd = cmd
-	ctx.Infof("proxy (pid=%d) started", cmd.Process.Pid)
+	ctx.WithField("pid", cmd.Process.Pid).Info("proxy started")
 
 	return nil
 }
@@ -268,11 +286,8 @@ func (p *Proxy) cleanupAbandoned() {
 
 		go func() {
 			defer close(done)
-			err := cmd.Wait()
-			code := util.ExitStatus(cmd, err)
-			ctx.Infof("proxy (pid=%d) exited with code=%s", cmd.Process.Pid, code)
-			util.MaybeClose(cmd.Stdout)
-			util.MaybeClose(cmd.Stderr)
+			code := util.ExitStatus(cmd, cmd.Wait())
+			ctx.WithField("pid", cmd.Process.Pid).WithField("code", code).Info("proxy exited")
 		}()
 
 		// We have deemed this command suitable for cleanup,
@@ -284,25 +299,25 @@ func (p *Proxy) cleanupAbandoned() {
 		case <-done:
 			continue
 		case <-time.After(p.shutdownTimeout):
-			ctx.Warnf("proxy (pid=%d) sending SIGKILL", cmd.Process.Pid)
+			ctx.WithField("pid", cmd.Process.Pid).Warn("proxy sending SIGKILL")
 			cmd.Process.Kill()
 			<-done
 		}
 	}
 }
 
+// command returns the command for spawning a server.
+func (p *Proxy) command(s string, env []string) *exec.Cmd {
+	cmd := exec.Command("sh", "-c", s)
+	cmd.Stdout = p.stdout
+	cmd.Stderr = p.stderr
+	cmd.Env = append(os.Environ(), append(env, "PATH=node_modules/.bin:"+os.Getenv("PATH"))...)
+	return cmd
+}
+
 // env returns an environment variable.
 func env(name string, val interface{}) string {
 	return fmt.Sprintf("%s=%v", name, val)
-}
-
-// command returns the command for spawning a server.
-func command(s string, env []string) *exec.Cmd {
-	cmd := exec.Command("sh", "-c", s)
-	cmd.Stdout = writer.New(log.InfoLevel)
-	cmd.Stderr = writer.New(log.ErrorLevel)
-	cmd.Env = append(os.Environ(), append(env, "PATH=node_modules/.bin:"+os.Getenv("PATH"))...)
-	return cmd
 }
 
 // isIdempotent returns true if the request is considered idempotent.

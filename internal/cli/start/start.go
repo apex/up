@@ -10,6 +10,7 @@ import (
 
 	"github.com/apex/up/handler"
 	"github.com/apex/up/internal/cli/root"
+	"github.com/apex/up/internal/logs/text"
 	"github.com/apex/up/internal/stats"
 )
 
@@ -21,11 +22,16 @@ func init() {
 	addr := cmd.Flag("address", "Address for server.").Default(":3000").String()
 
 	cmd.Action(func(_ *kingpin.ParseContext) error {
+		log.SetHandler(text.New(os.Stdout))
 		os.Setenv("UP_STAGE", "development")
 
-		_, _, err := root.Init()
+		c, _, err := root.Init()
 		if err != nil {
 			return errors.Wrap(err, "initializing")
+		}
+
+		for k, v := range c.Environment {
+			os.Setenv(k, v)
 		}
 
 		stats.Track("Start", map[string]interface{}{

@@ -11,6 +11,4 @@ If the change is documentation related prefix with "docs: ", as these are filter
 
   docs: add ~/.aws/config
 
-Omit changes to the up-proxy binary if they are included in your PR. The proxy is re-built before releases.
-
 Run `dep ensure` if you introduce any new `import`'s so they're included in the ./vendor dir.

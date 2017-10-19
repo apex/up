@@ -26,17 +26,3 @@ func TestExitStatus(t *testing.T) {
 		assert.Equal(t, "5", code)
 	})
 }
-
-func TestIsSubdomain(t *testing.T) {
-	assert.Equal(t, false, IsSubdomain("gh-polls.com"))
-	assert.Equal(t, true, IsSubdomain("staging.gh-polls.com"))
-	assert.Equal(t, true, IsSubdomain("blog.gh-polls.com"))
-	assert.Equal(t, true, IsSubdomain("foo.bar.gh-polls.com"))
-}
-
-func TestDomain(t *testing.T) {
-	assert.Equal(t, "gh-polls.com", Domain("gh-polls.com"))
-	assert.Equal(t, "gh-polls.com", Domain("staging.gh-polls.com"))
-	assert.Equal(t, "gh-polls.com", Domain("blog.gh-polls.com"))
-	assert.Equal(t, "gh-polls.com", Domain("foo.api.gh-polls.com"))
-}

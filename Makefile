@@ -4,7 +4,6 @@ GO ?= go
 # Build all files.
 build:
 	@echo "==> Building"
-	@rm -f internal/proxy/bin/bin_assets.go
 	@$(GO) generate ./...
 .PHONY: build
 
@@ -19,18 +18,21 @@ install.deps:
 	@echo "==> Installing dev dependencies"
 	@$(GO) get -u rsc.io/gt
 	@$(GO) get -u github.com/jteeuwen/go-bindata/...
-	@$(GO) get -u github.com/pointlander/peg/...
+	@$(GO) get -u github.com/pointlander/peg
 .PHONY: install.deps
 
 # Run all tests.
-test:
+test: internal/proxy/bin/bin_assets.go
 	@$(GO) test -timeout 2m ./... && echo "\n==>\033[32m Ok\033[m\n"
 .PHONY: test
 
 # Run all tests in CI.
-test.ci:
+test.ci: internal/proxy/bin/bin_assets.go
 	@$(GO) test -timeout 2m -race ./... && echo "\n==>\033[32m Ok\033[m\n"
 .PHONY: test.ci
+
+internal/proxy/bin/bin_assets.go:
+	@$(GO) generate ./...
 
 # Show source statistics.
 cloc:
@@ -49,6 +51,7 @@ todo:
 	@grep \
 		--exclude-dir=vendor \
 		--exclude-dir=node_modules \
+		--exclude=Makefile \
 		--text \
 		--color \
 		-nRo -E ' TODO:.*|SkipNow' .
@@ -61,5 +64,8 @@ size:
 
 # Clean.
 clean:
-	@rm -fr dist
+	@rm -fr \
+		dist \
+		internal/proxy/bin/bin_assets.go \
+		internal/shim/bindata.go
 .PHONY: clean

@@ -15,10 +15,12 @@ import (
 	"github.com/tj/go-spin"
 	"github.com/tj/go/term"
 
+	"github.com/apex/up/config"
 	"github.com/apex/up/internal/colors"
 	"github.com/apex/up/internal/util"
 	"github.com/apex/up/platform/event"
 	"github.com/apex/up/platform/lambda/cost"
+	lambdautil "github.com/apex/up/platform/lambda/reporter"
 	"github.com/apex/up/platform/lambda/stack"
 )
 
@@ -139,28 +141,17 @@ func (r *reporter) Start() {
 				if reason := s.StackStatusReason; reason != nil {
 					fmt.Printf("  %s: %s\n", colors.Purple("reason"), *reason)
 				}
-				fmt.Printf("\n")
-			case "platform.stack.show.event":
-				event := e.Fields["event"].(*cloudformation.StackEvent)
-				kind := *event.ResourceType
-				status := stack.Status(*event.ResourceStatus)
-				color := colors.Purple
-				if status.State() == stack.Failure {
-					color = colors.Red
-				}
-				fmt.Printf("  %s\n", color(kind))
-				fmt.Printf("    %s: %v\n", color("id"), *event.LogicalResourceId)
-				fmt.Printf("    %s: %s\n", color("status"), status)
-				if reason := event.ResourceStatusReason; reason != nil {
-					fmt.Printf("    %s: %s\n", color("reason"), *reason)
-				}
-				fmt.Printf("\n")
+			case "platform.stack.show.nameserver":
+				fmt.Printf("  • %s\n", e.String("nameserver"))
+			case "platform.stack.show.stage":
+				stage := e.Fields["stage"].(*config.Stage)
+				fmt.Printf("\n  %s (%s):\n\n", colors.Purple(stage.Name), stage.Domain)
 			case "stack.plan":
 				fmt.Printf("\n")
 			case "platform.stack.plan.change":
 				c := e.Fields["change"].(*cloudformation.Change).ResourceChange
 				color := actionColor(*c.Action)
-				fmt.Printf("  %s %s\n", color(*c.Action), *c.ResourceType)
+				fmt.Printf("  %s %s\n", color(*c.Action), lambdautil.ResourceType(*c.ResourceType))
 				fmt.Printf("    %s: %s\n", color("id"), *c.LogicalResourceId)
 				if c.Replacement != nil {
 					fmt.Printf("    %s: %s\n", color("replace"), *c.Replacement)
@@ -168,7 +159,7 @@ func (r *reporter) Start() {
 				fmt.Printf("\n")
 			case "platform.certs.create":
 				domains := e.Fields["domains"].([]string)
-				r.log("domains", "Verify your email")
+				r.log("domains", "Check your email to approve the certificate")
 				r.pending("confirm", strings.Join(domains, ", "))
 			case "platform.certs.create.complete":
 				r.complete("confirm", "complete", e.Duration("duration"))

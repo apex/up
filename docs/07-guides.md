@@ -83,9 +83,9 @@ $ up domains check up-example.com
 Purchase it with the following command, and fill out the details required by the registrar.
 
 ```
-$ up domains buy up-example.com
+$ up domains buy
 
-  Confirm domain: up-example.com
+  Domain: up-example.com
   First name: TJ
   Last name: Holowaychuk
   Email: tj@apex.sh
@@ -163,7 +163,7 @@ Now when you run `up stack plan` to preview changes to your resources, it will p
 ```
 $ up stack plan
 
-       domains: Verify your email
+       domains: Check your email for certificate approval
      ⠧ confirm: up-example.com
 ```
 
@@ -205,6 +205,27 @@ $ up stack apply
 After the changes have been applied, it can take roughly 10-40 minutes for CloudFront to distribute the configuration and SSL certificate globally, so until then our up-example.com domain won't work.
 
 Once available https://up-example.com will always point to production via `up deploy production`, and https://dev.up-example.com/ will point to the latest deployment via `up`.
+
+### Mapping Domains from External Registrars
+
+If you purchased a domain via `up domains buy` then you can skip this step, however if you used an external registrar such as Godaddy you will need to delegate to AWS for DNS management.
+
+To do this you'll need to sign in to your registrar's site, and configure the nameservers. To figure out what values to use for the nameservers, run `up stack`, which outputs the NS records for the apex (top-level) domains of your application.
+
+```
+$ up stack
+
+status: Created
+
+development (isatty.com):
+
+• ns-1315.awsdns-36.org
+• ns-1911.awsdns-46.co.uk
+• ns-700.awsdns-23.net
+• ns-481.awsdns-60.com
+```
+
+Save those four values in your registrar's interface, and you should be good to go! Note that altering DNS records can take some time to propagate.
 
 ### Stack Changes
 
@@ -339,6 +360,8 @@ function log(level, message, fields = {}) {
   console.log(JSON.stringify(entry))
 }
 ```
+
+For example with the Go [apex/log](https://github.com/apex/log) package you'd use the `json` handler, which outputs this format.
 
 ## Log Query Language
 
@@ -489,4 +512,40 @@ There is also a special keyword for this case:
 
 ```
 message contains "login"
+```
+
+## Local Environment Variables
+
+If you'd like to define custom local development environment variables, we recommend using the [direnv](https://direnv.net/) tool, which allows you to create a `./.envrc` file in your project.
+
+Install it:
+
+```sh
+$ brew install direnv
+```
+
+Add the following to your bash profile:
+
+```sh
+eval `direnv hook bash`
+```
+
+Add some env vars:
+
+```sh
+$ echo "export DB_URL=foo" >> .envrc
+```
+
+GIT ignore them and allow sourcing:
+
+```sh
+$ echo .envrc >> .gitignore
+```
+
+Allow access now that you're sure the `.envrc` file isn't checked into GIT, these environment variables will automatically be set each time you `cd` into the project directory.
+
+```sh
+$ direnv allow
+direnv: loading .envrc
+direnv: export +DB_URL
 ```

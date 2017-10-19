@@ -1,4 +1,11 @@
 
+v0.2.10 / 2017-10-13
+====================
+
+  * add flushing of proxy logs after response. Closes #370
+  * add periodic flushing of proxy logs for `up start`. Closes #369
+  * add internal text handler to `up start`
+
 v0.2.9 / 2017-10-10
 ===================
 

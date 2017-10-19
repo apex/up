@@ -13,16 +13,16 @@ import (
 	"github.com/pkg/errors"
 )
 
-// TODO: logfmt support?
 // TODO: rename "app" field
 
 // New writer with the given log level.
-func New(l log.Level) io.WriteCloser {
+func New(l log.Level) *Writer {
 	pr, pw := io.Pipe()
 
-	w := &writer{
+	w := &Writer{
 		PipeWriter: pw,
-		done:       make(chan bool),
+		LineReader: linereader.New(pr),
+		done:       make(chan struct{}),
 	}
 
 	lw := &logWriter{
@@ -32,21 +32,22 @@ func New(l log.Level) io.WriteCloser {
 
 	go func() {
 		defer close(w.done)
-		io.Copy(lw, linereader.New(pr))
+		io.Copy(lw, w.LineReader)
 	}()
 
 	return w
 }
 
-// writer is a writer which copies lines with
+// Writer is a writer which copies lines with
 // indentation support to a logWriter.
-type writer struct {
+type Writer struct {
 	*io.PipeWriter
-	done chan bool
+	*linereader.LineReader
+	done chan struct{}
 }
 
 // Close implementation.
-func (w *writer) Close() error {
+func (w *Writer) Close() error {
 	if err := w.PipeWriter.Close(); err != nil {
 		return err
 	}
@@ -91,7 +92,8 @@ func (w *logWriter) writeJSON(b []byte) (int, error) {
 	case log.ErrorLevel:
 		w.log.WithFields(e.Fields).Error(e.Message)
 	case log.FatalLevel:
-		w.log.WithFields(e.Fields).Fatal(e.Message)
+		// TODO: FATAL without exit...
+		w.log.WithFields(e.Fields).Error(e.Message)
 	}
 
 	return len(b), nil

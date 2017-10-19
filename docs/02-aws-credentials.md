@@ -39,8 +39,10 @@ You may store the profile name in the `up.json` file itself as shown in the foll
 
 ## IAM Policy for Up CLI
 
-Below is a policy for [AWS Identity and Access Management](https://aws.amazon.com/iam/) which provides Up access to manage your resources.
+Below is a policy for [AWS Identity and Access Management](https://aws.amazon.com/iam/) which provides Up access to manage your resources. Note that the policy may change as features are added to Up, so you may have to adjust the policy.
 
+<details>
+  <summary>Show policy</summary>
 ```json
 {
   "Version": "2012-10-17",
@@ -136,5 +138,4 @@ Below is a policy for [AWS Identity and Access Management](https://aws.amazon.co
   ]
 }
 ```
-
-Note that this may change as features are added to Up, so you may have to adjust the policy.
+</details>

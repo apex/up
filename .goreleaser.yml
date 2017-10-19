@@ -11,3 +11,8 @@ build:
   goarch:
     - amd64
     - 386
+changelog:
+  filters:
+    exclude:
+      - '^docs:'
+      - '^refactor'
