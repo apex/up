@@ -80,7 +80,7 @@ $ up domains check up-example.com
   Domain up-example.com is available for $12.00 USD
 ```
 
-Purchase it with the following command, and fill out the details required by the registrar.
+Purchase it with the following command and fill out the details required by the registrar:
 
 ```
 $ up domains buy
@@ -97,7 +97,7 @@ $ up domains buy
   Address: Some address here
 ```
 
-It can take a few minutes for AWS to finalize the purchase, you should receive an email, then you'll see it in the `up domains` output, along with the automatic renewal time.
+It can take a few minutes for AWS to finalize the purchase after which you should receive an email. Then you'll see it in the `up domains` output along with the automatic renewal time.
 
 ```
 $ up domains
@@ -274,7 +274,7 @@ $ up stack delete
 
 ## Logging
 
-This section describes how you can log from you application in a way that Up will recognize. In the future Up will support forwarding your logs to services such as Loggly, Papertrail or ELK.
+This section describes how you can log from your application in a way that Up will recognize. In the future Up will support forwarding your logs to services such as Loggly, Papertrail or ELK.
 
 ### Plain Text
 
@@ -352,7 +352,7 @@ Or:
 $ up logs 'name = "Tobi" or email = "tobi@*"'
 ```
 
-Here's a simple JavaScript logger for reference, all you need to do is output some JSON to stdout and Up will handle the rest!
+Here's a simple JavaScript logger for reference. All you need to do is output some JSON to stdout and Up will handle the rest!
 
 ```js
 function log(level, message, fields = {}) {
@@ -361,7 +361,7 @@ function log(level, message, fields = {}) {
 }
 ```
 
-For example with the Go [apex/log](https://github.com/apex/log) package you'd use the `json` handler, which outputs this format.
+For example, with the Go [apex/log](https://github.com/apex/log) package you'd use the `json` handler, which outputs this format.
 
 ## Log Query Language
 
@@ -431,7 +431,7 @@ The keywords `production`, `staging`, and `development` expand to:
 stage = "production"
 ```
 
-For example filtering on slow production responses:
+For example, filtering on slow production responses:
 
 ```
 production duration >= 1s
@@ -445,7 +445,7 @@ stage = "production" duration >= 1s
 
 ### Severity Levels
 
-Up provides request level logging with severity levels applied automatically, for example a 5xx response is an ERROR level, while 4xx is a WARN, and 3xx or 2xx are the INFO level.
+Up provides request level logging with severity levels applied automatically. For example, a 5xx response is an ERROR level, while 4xx is a WARN, and 3xx or 2xx are the INFO level.
 
 This means that instead of using the following for showing production errors:
 
@@ -461,7 +461,7 @@ production error
 
 ### In Operator
 
-The `in` operator checks for the presence of a field within the set provided. For example showing only POST, PUT and PATCH requests:
+The `in` operator checks for the presence of a field within the set provided. For example, showing only POST, PUT and PATCH requests:
 
 ```
 method in ("POST", "PUT", "PATCH")
@@ -469,7 +469,7 @@ method in ("POST", "PUT", "PATCH")
 
 ### Units
 
-The log grammar supports units for bytes and durations, for example showing responses larger than 56kb:
+The log grammar supports units for bytes and durations. For example, showing responses larger than 56kb:
 
 ```
 size > 56kb
