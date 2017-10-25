@@ -145,8 +145,10 @@ func (c *Config) Default() error {
 	switch {
 	case util.Exists("main.go"):
 		golang(c)
-	case util.Exists("pom.xml") || util.Exists("build.gradle"):
-		java(c);
+	case util.Exists("pom.xml"):
+		javaMaven(c)
+	case util.Exists("build.gradle"):
+		javaGradle(c)
 	case util.Exists("main.cr"):
 		crystal(c)
 	case util.Exists("package.json"):
@@ -325,34 +327,43 @@ func golang(c *Config) {
 	}
 }
 
-// java config.
-func java(c *Config) {
+// java gradle config.
+func javaGradle(c *Config) {
+	if c.Proxy.Command == "" {
+		c.Proxy.Command = "java -jar server.jar"
+	}
+
 	if c.Hooks.Build.IsEmpty() {
-		// attempt to handle either Gradle or Maven builds and their respective wrappers
-		// assumes build/package results in shaded jar named server.jar
-		if util.Exists("pom.xml") {
-			if util.Exists("mvnw") {
-				c.Hooks.Build = config.Hook{`./mvnw clean package && cp target/server.jar .`}
-			} else {
-				c.Hooks.Build = config.Hook{`mvn clean package && cp target/server.jar .`}	
-			}				
-		} else if util.Exists("build.gradle") {
-			if util.Exists("gradlew") {
-				c.Hooks.Build = config.Hook{`./gradlew clean build && cp build/libs/server.jar .`}
-			} else {
-				c.Hooks.Build = config.Hook{`gradle clean build && cp build/libs/server.jar .`}	
-			}			
+		// assumes build results in a shaded jar named server.jar		
+		if util.Exists("gradlew") {
+			c.Hooks.Build = config.Hook{`./gradlew clean build && cp build/libs/server.jar .`}
 		} else {
-			return
-		}
+			c.Hooks.Build = config.Hook{`gradle clean build && cp build/libs/server.jar .`}
+		}		
 	}
 
 	if c.Hooks.Clean.IsEmpty() {
 		c.Hooks.Clean = config.Hook{`rm server.jar`}
 	}
+}
 
-	if c.Proxy.Command == "" && util.Exists("server.jar") {
+// java maven config.
+func javaMaven(c *Config) {
+	if c.Proxy.Command == "" {
 		c.Proxy.Command = "java -jar server.jar"
+	}
+	
+	if c.Hooks.Build.IsEmpty() {
+		// assumes package results in a shaded jar named server.jar		
+		if util.Exists("mvnw") {
+			c.Hooks.Build = config.Hook{`./mvnw clean package && cp target/server.jar .`}
+		} else {
+			c.Hooks.Build = config.Hook{`mvn clean package && cp target/server.jar .`}	
+		}						
+	}
+
+	if c.Hooks.Clean.IsEmpty() {
+		c.Hooks.Clean = config.Hook{`rm server.jar`}
 	}
 }
 
