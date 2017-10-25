@@ -343,7 +343,7 @@ func javaGradle(c *Config) {
 	}
 
 	if c.Hooks.Clean.IsEmpty() {
-		c.Hooks.Clean = config.Hook{`rm server.jar`}
+		c.Hooks.Clean = config.Hook{`rm server.jar && gradle clean`}
 	}
 }
 
@@ -363,7 +363,7 @@ func javaMaven(c *Config) {
 	}
 
 	if c.Hooks.Clean.IsEmpty() {
-		c.Hooks.Clean = config.Hook{`rm server.jar`}
+		c.Hooks.Clean = config.Hook{`rm server.jar && mvn clean`}
 	}
 }
 
