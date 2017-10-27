@@ -42,7 +42,7 @@ func Build(dir string) (io.ReadCloser, *archive.Stats, error) {
 		gitignore,
 		strings.NewReader("\n!node_modules/**\n!.pypath/**\n"),
 		upignore,
-		strings.NewReader("\n!main\n!server\n!_proxy.js\n!byline.js\n!up.json\n"))
+		strings.NewReader("\n!main\n!server\n!_proxy.js\n!byline.js\n!up.json\n!pom.xml\nbuild.gradle\n"))
 
 	filter, err := archive.FilterPatterns(r)
 	if err != nil {
