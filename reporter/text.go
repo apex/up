@@ -4,8 +4,6 @@ package reporter
 
 import (
 	"fmt"
-	"io"
-	"os"
 	"strings"
 	"time"
 
@@ -83,6 +81,8 @@ func (r *reporter) Start() {
 	tick := time.NewTicker(150 * time.Millisecond)
 	defer tick.Stop()
 
+	render := term.Renderer()
+
 	for {
 		select {
 		case <-tick.C:
@@ -115,8 +115,9 @@ func (r *reporter) Start() {
 					r.bar = util.NewInlineProgressInt(e.Int("total"))
 					r.pending("stack", r.bar.String())
 				} else {
+					term.ClearAll()
 					r.bar = util.NewProgressInt(e.Int("total"))
-					io.WriteString(os.Stdout, term.CenterLine(r.bar.String()))
+					render(term.CenterLine(r.bar.String()))
 				}
 			case "platform.stack.report.event":
 				if r.inlineProgress {
@@ -124,7 +125,7 @@ func (r *reporter) Start() {
 					r.pending("stack", r.bar.String())
 				} else {
 					r.bar.ValueInt(e.Int("complete"))
-					io.WriteString(os.Stdout, term.CenterLine(r.bar.String()))
+					render(term.CenterLine(r.bar.String()))
 				}
 			case "platform.stack.report.complete":
 				if r.inlineProgress {
