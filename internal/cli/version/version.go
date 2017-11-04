@@ -13,7 +13,7 @@ func init() {
 	cmd := root.Command("version", "Show version.")
 	cmd.Action(func(_ *kingpin.ParseContext) error {
 		stats.Track("Show Version", nil)
-		fmt.Println(root.Cmd.GetVersion())
+		fmt.Printf("%s pro\n", root.Cmd.GetVersion())
 		return nil
 	})
 }
