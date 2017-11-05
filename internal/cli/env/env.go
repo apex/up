@@ -106,7 +106,11 @@ func add(cmd *kingpin.CmdClause) {
 			return errors.Wrap(err, "initializing")
 		}
 
-		stats.Track("Add Secret", nil)
+		stats.Track("Add Secret", map[string]interface{}{
+			"cleartext": *plain,
+			"stage":     *stage,
+			"has_desc":  *desc != "",
+		})
 
 		if err := p.Secrets(*stage).Add(*key, *val, *desc, *plain); err != nil {
 			return errors.Wrap(err, "adding secret")
