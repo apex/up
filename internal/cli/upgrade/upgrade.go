@@ -7,14 +7,20 @@ import (
 
 	"github.com/pkg/errors"
 	"github.com/tj/go-update"
+	"github.com/tj/go-update/stores/apex"
+	"github.com/tj/go-update/stores/github"
+	"github.com/tj/go/env"
 	"github.com/tj/go/term"
 	"github.com/tj/kingpin"
 
 	"github.com/apex/up/internal/cli/root"
 	"github.com/apex/up/internal/progressreader"
 	"github.com/apex/up/internal/stats"
+	"github.com/apex/up/internal/userconfig"
 	"github.com/apex/up/internal/util"
 )
+
+var releasesAPI = env.GetDefault("APEX_RELEASES_API", "https://releases.apex.sh")
 
 func init() {
 	cmd := root.Command("upgrade", "Install the latest release of Up.")
@@ -26,12 +32,30 @@ func init() {
 		term.HideCursor()
 		defer term.ShowCursor()
 
+		var config userconfig.Config
+		if err := config.Load(); err != nil {
+			return errors.Wrap(err, "loading user config")
+		}
+
 		// update polls(1) from tj/gh-polls on github
-		p := &update.Project{
-			Owner:   "apex",
-			Repo:    "up",
+		p := &update.Manager{
 			Command: "up",
-			Version: version,
+			Store: &github.Store{
+				Owner:   "apex",
+				Repo:    "up",
+				Version: version,
+			},
+		}
+
+		// commercial plan
+		if config.Plan != "" {
+			p.Store = &apex.Store{
+				URL:       releasesAPI,
+				Product:   "up",
+				Version:   version,
+				Plan:      config.Plan,
+				AccessKey: config.Token,
+			}
 		}
 
 		// fetch the new releases

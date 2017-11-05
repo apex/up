@@ -2,6 +2,56 @@
 title: Guides
 ---
 
+## Subscribing to Up Pro
+
+Up Pro provides additional features which are not available in the open-source version, such as encrypted environment variables, alerting support and more.
+
+First sign in to the platform with the following command, you'll receive an email for confirmation.
+
+```
+$ up account login
+
+     email: tj@apex.sh
+  ⠋ verify: Check your email for a confirmation link
+
+```
+
+Click the link in your email and you're signed in! Next you'll need to add a credit card. Note that this information is transmitted to Stripe directly via HTTPS, it never touches the Apex servers.
+
+```
+$ up account cards add
+
+   Name: TJ Holowaychuk
+   Number: 5555555555554444
+   CVC: 123
+   Expiration month: 05
+   Expiration year: 2019
+   Country: Canada
+   City: Victoria
+   State: BC
+   Address: Your address here
+   Zip: V5B 7R2
+
+ ```
+
+Then subscribe to Pro!
+
+```
+$ up account subscribe
+```
+
+Now whenever you upgrade via `up upgrade`, you'll receive the latest version of Up Pro instead of the open-source distribution:
+
+```
+$ up upgrade
+```
+
+To view the status of your account at any time run the following:
+
+```
+$ up account
+```
+
 ## Development to Production Workflow
 
 This section guides you through taking a small application from development, to production, complete with purchasing and mapping a custom domain.

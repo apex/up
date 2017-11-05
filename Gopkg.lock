@@ -40,8 +40,8 @@
 [[projects]]
   name = "github.com/aws/aws-sdk-go"
   packages = ["aws","aws/awserr","aws/awsutil","aws/client","aws/client/metadata","aws/corehandlers","aws/credentials","aws/credentials/ec2rolecreds","aws/credentials/endpointcreds","aws/credentials/stscreds","aws/defaults","aws/ec2metadata","aws/endpoints","aws/request","aws/session","aws/signer/v4","internal/shareddefaults","private/protocol","private/protocol/json/jsonutil","private/protocol/jsonrpc","private/protocol/query","private/protocol/query/queryutil","private/protocol/rest","private/protocol/restjson","private/protocol/restxml","private/protocol/xml/xmlutil","service/acm","service/apigateway","service/cloudformation","service/cloudwatch","service/cloudwatchlogs","service/cloudwatchlogs/cloudwatchlogsiface","service/iam","service/lambda","service/route53","service/route53domains","service/sts"]
-  revision = "044a61f1536640ce1def6088c0914f5905990202"
-  version = "v1.12.12"
+  revision = "ee1f179877b2daf2aaabf71fa900773bf8842253"
+  version = "v1.12.19"
 
 [[projects]]
   branch = "master"
@@ -106,8 +106,8 @@
 [[projects]]
   name = "github.com/go-ini/ini"
   packages = ["."]
-  revision = "5b3e00af70a9484542169a976dcab8d03e601a17"
-  version = "v1.30.0"
+  revision = "f280b3ba517bf5fc98922624f21fb0e7a92adaec"
+  version = "v1.30.3"
 
 [[projects]]
   branch = "master"
@@ -119,7 +119,7 @@
   branch = "master"
   name = "github.com/google/go-github"
   packages = ["github"]
-  revision = "a021c14a5f1960591b0e1773a4a2ef8257ec93b8"
+  revision = "996760c56486beb81e91bb7bdb816f8c6f29284e"
 
 [[projects]]
   branch = "master"
@@ -247,6 +247,12 @@
   version = "v1.1.4"
 
 [[projects]]
+  name = "github.com/stripe/stripe-go"
+  packages = [".","form","orderitem","token"]
+  revision = "8cbbbec08923b0f7d768686bc81f7fc9000c4152"
+  version = "v28.5.0"
+
+[[projects]]
   branch = "master"
   name = "github.com/timewasted/go-accept-headers"
   packages = ["."]
@@ -266,7 +272,7 @@
 
 [[projects]]
   name = "github.com/tj/go"
-  packages = ["clipboard","term"]
+  packages = ["clipboard","env","http/request","term"]
   revision = "e0123f1a604cfd5f49721128fd89169ae277e181"
   version = "v1.4.0"
 
@@ -292,7 +298,7 @@
   branch = "master"
   name = "github.com/tj/go-progress"
   packages = ["."]
-  revision = "9a6afd4e6278b44269c012a913f910c5de98c734"
+  revision = "333acdb6fe9f11be4de6251420b25e496c7980b8"
 
 [[projects]]
   name = "github.com/tj/go-prompt"
@@ -308,21 +314,21 @@
 
 [[projects]]
   name = "github.com/tj/go-update"
-  packages = ["."]
-  revision = "8831a6e7cfe17e95cc0e3cffdb541518e5985927"
-  version = "v1.0.0"
+  packages = [".","stores/apex","stores/github"]
+  revision = "16ffc4d723e7aa4d6a50f573b2c3a9ac9ff38e69"
+  version = "v2.0.1"
 
 [[projects]]
   name = "github.com/tj/kingpin"
   packages = ["."]
-  revision = "bb405bcf7289b9234e0f89b8703435a8b4c8cdf8"
-  version = "v2.4.3"
+  revision = "c8a3992d9b6566880d0e7c81952b69290547af0c"
+  version = "v2.4.4"
 
 [[projects]]
   name = "github.com/tj/survey"
   packages = [".","core","terminal"]
-  revision = "cc8db15e46206f2e66b067af4943028d40c41de7"
-  version = "v2.0.2"
+  revision = "e57b07d19e552706bbdd0c18911f97e3a3fa9d14"
+  version = "v2.0.4"
 
 [[projects]]
   name = "github.com/ulikunitz/xz"
@@ -340,23 +346,23 @@
   branch = "master"
   name = "golang.org/x/crypto"
   packages = ["ssh/terminal"]
-  revision = "ed5229da99e3a6df35c756cd64b6982d19505d86"
+  revision = "bd6f299fb381e4c3393d1c4b1f0b94f5e77650c8"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/net"
   packages = ["context"]
-  revision = "1087133bc4af3073e18add999345c6ae75918503"
+  revision = "c73622c77280266305273cb545f54516ced95b93"
 
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
   packages = ["unix","windows"]
-  revision = "8dbc5d05d6edcc104950cc299a1ce6641235bc86"
+  revision = "95c6576299259db960f6c5b9b69ea52422860fce"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "a09e9daa18d248badbd56f2856f5aacb7aeeb4498ffb84c5d92a06f452babee1"
+  inputs-digest = "d93bd83feb786d911655eaff5122c11092f8d85aa1554d5622ce50766516c9d8"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -228,3 +228,19 @@ func StringsContains(list []string, s string) bool {
 func BasePath(s string) string {
 	return strings.TrimLeft(s, "/")
 }
+
+// LogPad outputs a log message with padding.
+func LogPad(msg string, v ...interface{}) {
+	defer Pad()()
+	Log(msg, v...)
+}
+
+// Log outputs a log message.
+func Log(msg string, v ...interface{}) {
+	fmt.Printf("     %s\n", colors.Purple(fmt.Sprintf(msg, v...)))
+}
+
+// LogName outputs a log message with name.
+func LogName(name, msg string, v ...interface{}) {
+	fmt.Printf("     %s %s\n", colors.Purple(name+":"), fmt.Sprintf(msg, v...))
+}

@@ -161,7 +161,7 @@ func check(cmd *kingpin.CmdClause) {
 }
 
 func list(cmd *kingpin.CmdClause) {
-	c := cmd.Command("list", "List purchased domains.").Default()
+	c := cmd.Command("ls", "List purchased domains.").Alias("list").Default()
 
 	c.Action(func(_ *kingpin.ParseContext) error {
 		defer util.Pad()()

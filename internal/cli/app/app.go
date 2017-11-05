@@ -11,7 +11,7 @@ import (
 
 // Run the command.
 func Run(version string) error {
-	defer stats.Client.ConditionalFlush(500, 24*time.Hour)
+	defer stats.Client.ConditionalFlush(100, 12*time.Hour)
 	root.Cmd.Version(version)
 	_, err := root.Cmd.Parse(os.Args[1:])
 	return err
