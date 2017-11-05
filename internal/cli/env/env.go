@@ -72,6 +72,9 @@ func list(cmd *kingpin.CmdClause) {
 			for _, s := range secrets {
 				mod := fmt.Sprintf("Modified %s by %s", humanize.Time(s.LastModified), s.LastModifiedUser)
 				desc := colors.Gray(util.DefaultString(&s.Description, "No description"))
+				if s.Value != "" {
+					desc = s.Value
+				}
 				name := colors.Purple(s.Name)
 				fmt.Printf("  %-30s %-40s %s\n", name, desc, mod)
 			}
@@ -89,6 +92,7 @@ func add(cmd *kingpin.CmdClause) {
 	val := c.Arg("value", "Variable value.").Required().String()
 	stage := c.Flag("stage", "Stage name.").Short('s').String()
 	desc := c.Flag("desc", "Variable description message.").Short('d').String()
+	plain := c.Flag("plain", "Store as cleartext (unencrypted).").Short('c').Bool()
 
 	c.Action(func(_ *kingpin.ParseContext) error {
 		if err := validate.OptionalStage(*stage); err != nil {
@@ -104,7 +108,7 @@ func add(cmd *kingpin.CmdClause) {
 
 		stats.Track("Add Secret", nil)
 
-		if err := p.Secrets(*stage).Add(*key, *val, *desc); err != nil {
+		if err := p.Secrets(*stage).Add(*key, *val, *desc, *plain); err != nil {
 			return errors.Wrap(err, "adding secret")
 		}
 
