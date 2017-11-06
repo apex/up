@@ -63,9 +63,8 @@ func (r *Runtime) Init(stage string) error {
 
 	for _, name := range precedence {
 		if secrets := stages[name]; len(secrets) > 0 {
-			log.Infof("  %s %d variables", name, len(secrets))
+			log.Infof("loaded %d variables for %s stage(s)", len(secrets), name)
 			for _, s := range secrets {
-				log.Infof("    - %s", s.Name)
 				os.Setenv(s.Name, s.Value)
 			}
 		}
