@@ -5,11 +5,13 @@ import (
 	"fmt"
 	"io"
 	"sync"
+	"time"
 
 	"github.com/apex/log"
 	"github.com/dustin/go-humanize"
 
 	"github.com/apex/up/internal/colors"
+	"github.com/apex/up/internal/util"
 )
 
 // TODO: rename since it's specific to log querying ATM
@@ -91,8 +93,11 @@ func (h *Handler) HandleLog(e *log.Entry) error {
 			continue
 		}
 
-		if n, ok := v.(float64); ok && name == "size" {
-			v = humanize.Bytes(uint64(n))
+		switch name {
+		case "size":
+			v = humanize.Bytes(uint64(util.ToFloat(v)))
+		case "duration":
+			v = time.Millisecond * time.Duration(util.ToFloat(v))
 		}
 
 		fmt.Fprintf(h.Writer, " %s%s%v", color(name), colors.Gray(": "), v)

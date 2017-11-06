@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"math"
 	"net"
 	"net/http"
 	"net/url"
@@ -243,4 +244,36 @@ func Log(msg string, v ...interface{}) {
 // LogName outputs a log message with name.
 func LogName(name, msg string, v ...interface{}) {
 	fmt.Printf("     %s %s\n", colors.Purple(name+":"), fmt.Sprintf(msg, v...))
+}
+
+// ToFloat returns a float or NaN.
+func ToFloat(v interface{}) float64 {
+	switch n := v.(type) {
+	case int:
+		return float64(n)
+	case int8:
+		return float64(n)
+	case int16:
+		return float64(n)
+	case int32:
+		return float64(n)
+	case int64:
+		return float64(n)
+	case uint:
+		return float64(n)
+	case uint8:
+		return float64(n)
+	case uint16:
+		return float64(n)
+	case uint32:
+		return float64(n)
+	case uint64:
+		return float64(n)
+	case float32:
+		return float64(n)
+	case float64:
+		return n
+	default:
+		return math.NaN()
+	}
 }
