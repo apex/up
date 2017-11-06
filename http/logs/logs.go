@@ -10,6 +10,7 @@ import (
 
 	"github.com/apex/up"
 	"github.com/apex/up/internal/logs"
+	"github.com/apex/up/internal/util"
 )
 
 // TODO: optional verbose mode with req/res header etc?
@@ -86,7 +87,7 @@ func logRequest(ctx log.Interface, r *http.Request) {
 // logResponse logs the response.
 func logResponse(ctx log.Interface, res *response, r *http.Request) {
 	ctx = ctx.WithFields(log.Fields{
-		"duration": int(res.duration / time.Millisecond),
+		"duration": util.Milliseconds(res.duration),
 		"size":     res.written,
 		"status":   res.code,
 	})

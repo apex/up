@@ -277,3 +277,13 @@ func ToFloat(v interface{}) float64 {
 		return math.NaN()
 	}
 }
+
+// Milliseconds returns the duration as milliseconds.
+func Milliseconds(d time.Duration) int {
+	return int(d / time.Millisecond)
+}
+
+// MillisecondsSince returns the duration as milliseconds relative to time t.
+func MillisecondsSince(t time.Time) int {
+	return int(time.Since(t) / time.Millisecond)
+}

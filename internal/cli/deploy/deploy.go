@@ -29,7 +29,7 @@ func init() {
 		start := time.Now()
 
 		stats.Track("Deploy", map[string]interface{}{
-			"duration":             time.Since(start) / time.Millisecond,
+			"duration":             util.MillisecondsSince(start),
 			"type":                 c.Type,
 			"regions":              c.Regions,
 			"stage":                *stage,
