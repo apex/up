@@ -3,7 +3,6 @@
 Before contributing to Up you'll need a few things:
 
 - Install [Golang 1.9](https://golang.org/dl/) for that Go thing if you don't have it
-- Install [GIT LFS](https://git-lfs.github.com/) for large file management
 - Install [golang/dep](https://github.com/golang/dep) for dependency management
 
 The following are optional:
