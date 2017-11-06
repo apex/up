@@ -3,6 +3,7 @@ package logs
 
 import (
 	"net/http"
+	"strconv"
 	"time"
 
 	"github.com/apex/log"
@@ -44,36 +45,60 @@ func New(c *up.Config, next http.Handler) (http.Handler, error) {
 	}
 
 	h := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		ctx := logContext(r)
+		logRequest(ctx, r)
+
 		start := time.Now()
 		res := &response{ResponseWriter: w, code: 200}
 		next.ServeHTTP(res, r)
 		res.duration = time.Since(start)
-		logResponse(res, r)
+
+		logResponse(ctx, res, r)
 	})
 
 	return h, nil
 }
 
+// logContext returns the common log context for a request.
+func logContext(r *http.Request) log.Interface {
+	return ctx.WithFields(log.Fields{
+		"stage":  r.Header.Get("X-Stage"),
+		"id":     r.Header.Get("X-Request-Id"),
+		"method": r.Method,
+		"path":   r.URL.Path,
+		"query":  r.URL.Query().Encode(),
+		"ip":     r.RemoteAddr,
+	})
+}
+
+// logRequest logs the request.
+func logRequest(ctx log.Interface, r *http.Request) {
+	ctx = ctx.WithField("size", 0)
+
+	if s := r.Header.Get("Content-Length"); s != "" {
+		n, err := strconv.Atoi(s)
+		if err == nil {
+			ctx = ctx.WithField("size", n)
+		}
+	}
+
+	ctx.Info("request")
+}
+
 // logResponse logs the response.
-func logResponse(res *response, r *http.Request) {
-	c := ctx.WithFields(log.Fields{
-		"stage":    r.Header.Get("X-Stage"),
-		"id":       r.Header.Get("X-Request-Id"),
-		"method":   r.Method,
-		"path":     r.URL.Path,
-		"query":    r.URL.Query().Encode(),
+func logResponse(ctx log.Interface, res *response, r *http.Request) {
+	ctx = ctx.WithFields(log.Fields{
 		"duration": int(res.duration / time.Millisecond),
 		"size":     res.written,
-		"ip":       r.RemoteAddr,
 		"status":   res.code,
 	})
 
 	switch {
 	case res.code >= 500:
-		c.Error("response")
+		ctx.Error("response")
 	case res.code >= 400:
-		c.Warn("response")
+		ctx.Warn("response")
 	default:
-		c.Info("response")
+		ctx.Info("response")
 	}
 }
