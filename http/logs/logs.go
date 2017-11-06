@@ -19,8 +19,9 @@ var ctx = logs.Plugin("logs")
 // response wrapper.
 type response struct {
 	http.ResponseWriter
-	written int
-	code    int
+	written  int
+	code     int
+	duration time.Duration
 }
 
 // Write implementation.
@@ -45,30 +46,34 @@ func New(c *up.Config, next http.Handler) (http.Handler, error) {
 	h := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		start := time.Now()
 		res := &response{ResponseWriter: w, code: 200}
-
 		next.ServeHTTP(res, r)
-
-		c := ctx.WithFields(log.Fields{
-			"stage":    r.Header.Get("X-Stage"),
-			"id":       r.Header.Get("X-Request-Id"),
-			"method":   r.Method,
-			"path":     r.URL.Path,
-			"query":    r.URL.Query().Encode(),
-			"duration": int(time.Since(start) / time.Millisecond),
-			"size":     res.written,
-			"ip":       r.RemoteAddr,
-			"status":   res.code,
-		})
-
-		switch {
-		case res.code >= 500:
-			c.Error("response")
-		case res.code >= 400:
-			c.Warn("response")
-		default:
-			c.Info("response")
-		}
+		res.duration = time.Since(start)
+		logResponse(res, r)
 	})
 
 	return h, nil
+}
+
+// logResponse logs the response.
+func logResponse(res *response, r *http.Request) {
+	c := ctx.WithFields(log.Fields{
+		"stage":    r.Header.Get("X-Stage"),
+		"id":       r.Header.Get("X-Request-Id"),
+		"method":   r.Method,
+		"path":     r.URL.Path,
+		"query":    r.URL.Query().Encode(),
+		"duration": int(res.duration / time.Millisecond),
+		"size":     res.written,
+		"ip":       r.RemoteAddr,
+		"status":   res.code,
+	})
+
+	switch {
+	case res.code >= 500:
+		c.Error("response")
+	case res.code >= 400:
+		c.Warn("response")
+	default:
+		c.Info("response")
+	}
 }
