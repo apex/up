@@ -152,7 +152,7 @@ $ up config
 Show or tail log output with optional query for filtering. When viewing or tailing logs, you are viewing them from _all_ stages, see the examples below to filter on a stage name.
 
 ```
- Usage:
+Usage:
 
    up logs [<flags>] [<query>]
 
@@ -164,10 +164,47 @@ Show or tail log output with optional query for filtering. When viewing or taili
    -v, --verbose        Enable verbose log output.
        --version        Show application version.
    -f, --follow         Follow or tail the live logs.
+   -s, --since=5m       Show logs since duration (30s, 5m, 2h, 1h30m).
+   -e, --expand         Show expanded logs.
 
  Args:
 
    [<query>]  Query pattern for filtering logs.
+```
+
+### Expanded Output
+
+Use the `-e` or `--expand` flag to expand log fields:
+
+```
+$ up -e 'path = "/static/*"'
+
+1:36:34pm INFO request
+           id: 8ff53267-c33a-11e7-9685-15d48d102ae9
+           ip: 70.66.179.182
+       method: GET
+         path: /static/3.jpg
+        stage: development
+      version: $LATEST
+
+1:36:34pm INFO response
+     duration: 1ms
+           id: 8ff53267-c33a-11e7-9685-15d48d102ae9
+           ip: 70.66.179.182
+       method: GET
+         path: /static/3.jpg
+         size: 0 B
+        stage: development
+       status: 304
+      version: $LATEST
+
+1:36:34pm INFO request
+           id: 8ff4bd57-c33a-11e7-bf4b-4f0d97c427c5
+           ip: 70.66.179.182
+       method: GET
+         path: /static/1.png
+        stage: development
+      version: $LATEST
 ```
 
 ### JSON Output

@@ -53,6 +53,7 @@ var Strings = [...]string{
 type Handler struct {
 	mu     sync.Mutex
 	Writer io.Writer
+	expand bool
 	layout string
 }
 
@@ -70,8 +71,55 @@ func (h *Handler) WithFormat(s string) *Handler {
 	return h
 }
 
+// WithExpandedFields sets the expanded field state.
+func (h *Handler) WithExpandedFields(v bool) *Handler {
+	h.expand = v
+	return h
+}
+
 // HandleLog implements log.Handler.
 func (h *Handler) HandleLog(e *log.Entry) error {
+	switch {
+	case h.expand:
+		return h.handleExpanded(e)
+	default:
+		return h.handleInline(e)
+	}
+}
+
+// handleExpanded fields.
+func (h *Handler) handleExpanded(e *log.Entry) error {
+	color := Colors[e.Level]
+	level := Strings[e.Level]
+	names := e.Fields.Names()
+
+	h.mu.Lock()
+	defer h.mu.Unlock()
+
+	ts := e.Timestamp.Local().Format(h.layout)
+	fmt.Fprintf(h.Writer, "  %s %s %s\n", colors.Gray(ts), color(level), e.Message)
+
+	for _, name := range names {
+		if omit[name] {
+			continue
+		}
+
+		v := e.Fields.Get(name)
+
+		if v == "" {
+			continue
+		}
+
+		fmt.Fprintf(h.Writer, "  %30s%s%v\n", color(name), colors.Gray(": "), value(name, v))
+	}
+
+	fmt.Fprintln(h.Writer)
+
+	return nil
+}
+
+// handleInline fields.
+func (h *Handler) handleInline(e *log.Entry) error {
 	color := Colors[e.Level]
 	level := Strings[e.Level]
 	names := e.Fields.Names()
@@ -93,17 +141,22 @@ func (h *Handler) HandleLog(e *log.Entry) error {
 			continue
 		}
 
-		switch name {
-		case "size":
-			v = humanize.Bytes(uint64(util.ToFloat(v)))
-		case "duration":
-			v = time.Millisecond * time.Duration(util.ToFloat(v))
-		}
-
-		fmt.Fprintf(h.Writer, " %s%s%v", color(name), colors.Gray(": "), v)
+		fmt.Fprintf(h.Writer, " %s%s%v", color(name), colors.Gray(": "), value(name, v))
 	}
 
 	fmt.Fprintln(h.Writer)
 
 	return nil
+}
+
+// value returns the formatted value.
+func value(name string, v interface{}) interface{} {
+	switch name {
+	case "size":
+		return humanize.Bytes(uint64(util.ToFloat(v)))
+	case "duration":
+		return time.Millisecond * time.Duration(util.ToFloat(v))
+	default:
+		return v
+	}
 }

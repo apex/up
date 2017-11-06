@@ -36,6 +36,7 @@ func init() {
 	query := cmd.Arg("query", "Query pattern for filtering logs.").String()
 	follow := cmd.Flag("follow", "Follow or tail the live logs.").Short('f').Bool()
 	since := cmd.Flag("since", "Show logs since duration (30s, 5m, 2h, 1h30m).").Short('s').Default("5m").Duration()
+	expand := cmd.Flag("expand", "Show expanded logs.").Short('e').Bool()
 
 	cmd.Action(func(_ *kingpin.ParseContext) error {
 		c, p, err := root.Init()
@@ -55,12 +56,17 @@ func init() {
 			"query_length": len(q),
 			"follow":       *follow,
 			"since":        s.Round(time.Second),
+			"expand":       *expand,
 		})
 
 		// TODO: region flag
 		region := c.Regions[0]
 		logs := p.Logs(region, q)
 		logs.Since(time.Now().Add(-s))
+
+		if *expand {
+			logs.Expand()
+		}
 
 		if *follow {
 			logs.Follow()

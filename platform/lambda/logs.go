@@ -31,6 +31,7 @@ type Logs struct {
 	region   string
 	query    string
 	follow   bool
+	expand   bool
 	since    time.Time
 	w        io.WriteCloser
 	io.Reader
@@ -70,6 +71,12 @@ func (l *Logs) Follow() {
 	l.follow = true
 }
 
+// Expand implementation.
+func (l *Logs) Expand() {
+	log.Debug("expand")
+	l.expand = true
+}
+
 // start fetching logs.
 func (l *Logs) start() {
 	// TODO: flag to override and allow querying other groups
@@ -94,12 +101,13 @@ func (l *Logs) start() {
 	var handler log.Handler
 
 	if term.IsTerminal() {
-		handler = text.New(os.Stdout)
+		handler = text.New(os.Stdout).WithExpandedFields(l.expand)
 	} else {
 		handler = jsonlog.New(os.Stdout)
 	}
 
 	// TODO: transform to reader of nl-delimited json, move to apex/log?
+	// TODO: marshal/unmarshal as JSON so that numeric values are always float64... remove util.ToFloat()
 	for l := range tailer.Start() {
 		line := strings.TrimSpace(l.Message)
 
