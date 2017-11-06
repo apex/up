@@ -113,8 +113,6 @@ func (h *Handler) handleExpanded(e *log.Entry) error {
 		fmt.Fprintf(h.Writer, "  %30s%s%v\n", color(name), colors.Gray(": "), value(name, v))
 	}
 
-	fmt.Fprintln(h.Writer)
-
 	return nil
 }
 
