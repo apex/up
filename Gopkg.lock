@@ -135,12 +135,6 @@
 
 [[projects]]
   branch = "master"
-  name = "github.com/howeyc/gopass"
-  packages = ["."]
-  revision = "bf9dde6d0d2c004a008c27aaee91170c786f6db8"
-
-[[projects]]
-  branch = "master"
   name = "github.com/jehiah/go-strftime"
   packages = ["."]
   revision = "2efbe75097a505e2789f7e39cb9da067b5be8e3e"
@@ -301,12 +295,6 @@
   revision = "333acdb6fe9f11be4de6251420b25e496c7980b8"
 
 [[projects]]
-  name = "github.com/tj/go-prompt"
-  packages = ["."]
-  revision = "0d6b6628b949eeb2e85fd0ab97152656cd3d2d0e"
-  version = "v1.3.0"
-
-[[projects]]
   name = "github.com/tj/go-spin"
   packages = ["."]
   revision = "30574f5fadef1aa5c61d4c42e936785af9f03ada"
@@ -344,12 +332,6 @@
 
 [[projects]]
   branch = "master"
-  name = "golang.org/x/crypto"
-  packages = ["ssh/terminal"]
-  revision = "bd6f299fb381e4c3393d1c4b1f0b94f5e77650c8"
-
-[[projects]]
-  branch = "master"
   name = "golang.org/x/net"
   packages = ["context"]
   revision = "c73622c77280266305273cb545f54516ced95b93"
@@ -357,12 +339,12 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/sys"
-  packages = ["unix","windows"]
+  packages = ["unix"]
   revision = "95c6576299259db960f6c5b9b69ea52422860fce"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "d93bd83feb786d911655eaff5122c11092f8d85aa1554d5622ce50766516c9d8"
+  inputs-digest = "b3bb9746a9f68e2676451e3bbd8ed77cc33298d2b84ab455e5830e8d303c9796"
   solver-name = "gps-cdcl"
   solver-version = 1
