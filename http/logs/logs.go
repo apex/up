@@ -73,8 +73,6 @@ func logContext(r *http.Request) log.Interface {
 
 // logRequest logs the request.
 func logRequest(ctx log.Interface, r *http.Request) {
-	ctx = ctx.WithField("size", 0)
-
 	if s := r.Header.Get("Content-Length"); s != "" {
 		n, err := strconv.Atoi(s)
 		if err == nil {
