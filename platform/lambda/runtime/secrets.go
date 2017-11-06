@@ -80,25 +80,36 @@ func (s *Secrets) List() (v []*platform.Secret, err error) {
 
 // Load implementation.
 func (s *Secrets) Load() (v []*platform.Secret, err error) {
-	res, err := s.client.GetParametersByPath(&ssm.GetParametersByPathInput{
-		MaxResults:     aws.Int64(50),
-		Path:           aws.String("/up/" + s.name + "/"),
-		WithDecryption: aws.Bool(true),
-		Recursive:      aws.Bool(true),
-	})
+	var token *string
 
-	if err != nil {
-		return
-	}
-
-	for _, p := range res.Parameters {
-		app, stage, name := secret.Parse(*p.Name)
-		v = append(v, &platform.Secret{
-			App:   app,
-			Name:  name,
-			Stage: stage,
-			Value: *p.Value,
+	for {
+		res, err := s.client.GetParametersByPath(&ssm.GetParametersByPathInput{
+			MaxResults:     aws.Int64(10),
+			Path:           aws.String("/up/" + s.name + "/"),
+			WithDecryption: aws.Bool(true),
+			Recursive:      aws.Bool(true),
+			NextToken:      token,
 		})
+
+		if err != nil {
+			return nil, err
+		}
+
+		for _, p := range res.Parameters {
+			app, stage, name := secret.Parse(*p.Name)
+			v = append(v, &platform.Secret{
+				App:   app,
+				Name:  name,
+				Stage: stage,
+				Value: *p.Value,
+			})
+		}
+
+		token = res.NextToken
+
+		if token == nil {
+			break
+		}
 	}
 
 	return
