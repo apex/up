@@ -11,17 +11,19 @@ import (
 	"github.com/apex/up"
 	"github.com/apex/up/handler"
 	"github.com/apex/up/internal/proxy"
+	"github.com/apex/up/internal/util"
 	"github.com/apex/up/platform/lambda/runtime"
 )
 
 func main() {
+	stage := os.Getenv("UP_STAGE")
+
 	if s := os.Getenv("LOG_LEVEL"); s != "" {
 		log.SetLevelFromString(s)
 	}
 
 	log.SetHandler(json.Default)
-	stage := os.Getenv("UP_STAGE")
-	log.WithField("stage", stage).Info("initialize")
+	log.Info("initializing")
 
 	// read config
 	c, err := up.ReadConfig("up.json")
@@ -37,7 +39,7 @@ func main() {
 	if err := p.Init(stage); err != nil {
 		log.Fatalf("error initializing: %s", err)
 	}
-	log.Infof("initialized in %s", time.Since(start))
+	log.WithField("duration", util.MillisecondsSince(start)).Info("initialized")
 
 	// init handler
 	h, err := handler.New()
