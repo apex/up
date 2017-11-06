@@ -37,7 +37,6 @@ func init() {
 	cmd.Example(`up account cards add`, "Add credit card to Stripe.")
 	cmd.Example(`up account cards rm ID`, "Remove credit card from Stripe.")
 	cmd.Example(`up account subscribe`, "Subscribe to the Pro plan.")
-
 	status(cmd)
 	login(cmd)
 	logout(cmd)
@@ -46,6 +45,15 @@ func init() {
 	unsubscribe(cmd)
 }
 
+// card commands.
+func cards(cmd *kingpin.CmdClause) {
+	c := cmd.Command("cards", "Card management.")
+	addCard(c)
+	removeCard(c)
+	listCards(c)
+}
+
+// status of account.
 func status(cmd *kingpin.CmdClause) {
 	c := cmd.Command("status", "Status of your account.").Default()
 
@@ -87,13 +95,7 @@ func status(cmd *kingpin.CmdClause) {
 	})
 }
 
-func cards(cmd *kingpin.CmdClause) {
-	c := cmd.Command("cards", "Card management.")
-	addCard(c)
-	removeCard(c)
-	listCards(c)
-}
-
+// remove card.
 func removeCard(cmd *kingpin.CmdClause) {
 	c := cmd.Command("rm", "Remove credit card.").Alias("remove")
 	id := c.Arg("id", "Card ID.").Required().String()
@@ -116,8 +118,10 @@ func removeCard(cmd *kingpin.CmdClause) {
 	})
 }
 
+// list cards.
 func listCards(cmd *kingpin.CmdClause) {
 	c := cmd.Command("ls", "List credit cards.").Alias("list").Default()
+
 	c.Action(func(_ *kingpin.ParseContext) error {
 		config, err := userconfig.Require()
 		if err != nil {
@@ -141,6 +145,7 @@ func listCards(cmd *kingpin.CmdClause) {
 	})
 }
 
+// add card.
 func addCard(cmd *kingpin.CmdClause) {
 	c := cmd.Command("add", "Add credit card.")
 	c.Action(func(_ *kingpin.ParseContext) error {
@@ -174,6 +179,7 @@ func addCard(cmd *kingpin.CmdClause) {
 	})
 }
 
+// login user.
 func login(cmd *kingpin.CmdClause) {
 	c := cmd.Command("login", "Sign in to your account.")
 
@@ -224,6 +230,7 @@ func login(cmd *kingpin.CmdClause) {
 	})
 }
 
+// logout user.
 func logout(cmd *kingpin.CmdClause) {
 	c := cmd.Command("logout", "Sign out of your account.")
 
@@ -241,6 +248,7 @@ func logout(cmd *kingpin.CmdClause) {
 	})
 }
 
+// subscribe to plan.
 func subscribe(cmd *kingpin.CmdClause) {
 	c := cmd.Command("subscribe", "Subscribe to the Pro plan.")
 
@@ -299,6 +307,7 @@ func subscribe(cmd *kingpin.CmdClause) {
 	})
 }
 
+// unsubscribe from plan.
 func unsubscribe(cmd *kingpin.CmdClause) {
 	c := cmd.Command("unsubscribe", "Unsubscribe from the Pro plan.")
 

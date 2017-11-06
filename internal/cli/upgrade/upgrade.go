@@ -28,7 +28,6 @@ func init() {
 		version := root.Cmd.GetVersion()
 		start := time.Now()
 
-		defer util.Pad()()
 		term.HideCursor()
 		defer term.ShowCursor()
 
@@ -91,7 +90,8 @@ func init() {
 		}
 
 		term.ClearAll()
-		fmt.Printf("\n  Updated %s to %s :)\n", version, latest.Version)
+
+		util.LogPad("Updated %s to %s :)", version, latest.Version)
 
 		stats.Track("Upgrade", map[string]interface{}{
 			"from":     version,

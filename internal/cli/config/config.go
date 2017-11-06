@@ -22,7 +22,6 @@ func init() {
 
 		stats.Track("Show Config", nil)
 
-		// note that config is already read in root.go
 		enc := json.NewEncoder(os.Stdout)
 		enc.SetIndent("", "  ")
 		enc.Encode(c)

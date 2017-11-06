@@ -8,7 +8,7 @@ import (
 	"os"
 	"sort"
 
-	humanize "github.com/dustin/go-humanize"
+	"github.com/dustin/go-humanize"
 	"github.com/pkg/errors"
 	"github.com/tj/go/term"
 	"github.com/tj/kingpin"
