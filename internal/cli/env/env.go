@@ -16,11 +16,10 @@ import (
 )
 
 // TODO: logging utils
+// TODO: differentiate between ADD and SET ... one overrides
 // TODO: rename --desc? util...
 // TODO: add prompt for remove and --force
 // TODO: add option for viewing secret history
-// TODO: add --override option or separate 'set' command?
-// TODO: add --global option
 // TODO: date format util for domains too
 // TODO: prefix for the project or document the lack of prefix?
 // TODO: add docs
@@ -45,6 +44,7 @@ func init() {
 	remove(cmd)
 }
 
+// list variables.
 func list(cmd *kingpin.CmdClause) {
 	c := cmd.Command("ls", "List variables.").Alias("list").Default()
 
@@ -86,6 +86,7 @@ func list(cmd *kingpin.CmdClause) {
 	})
 }
 
+// add variables.
 func add(cmd *kingpin.CmdClause) {
 	c := cmd.Command("add", "Add a variable.").Alias("set")
 	key := c.Arg("name", "Variable name.").Required().String()
@@ -98,8 +99,6 @@ func add(cmd *kingpin.CmdClause) {
 		if err := validate.OptionalStage(*stage); err != nil {
 			return err
 		}
-
-		defer util.Pad()()
 
 		_, p, err := root.Init()
 		if err != nil {
@@ -116,12 +115,13 @@ func add(cmd *kingpin.CmdClause) {
 			return errors.Wrap(err, "adding secret")
 		}
 
-		fmt.Printf("  %30s %s\n", colors.Purple("added"), *key)
+		util.LogPad("Added " + *key)
 
 		return nil
 	})
 }
 
+// remove variables.
 func remove(cmd *kingpin.CmdClause) {
 	c := cmd.Command("rm", "Remove a variable.").Alias("remove")
 	stage := c.Flag("stage", "Stage name.").Short('s').String()
@@ -145,7 +145,7 @@ func remove(cmd *kingpin.CmdClause) {
 			return errors.Wrap(err, "removing secret")
 		}
 
-		fmt.Printf("  %30s %s\n", colors.Purple("removed"), *key)
+		util.LogPad("Removed " + *key)
 
 		return nil
 	})
