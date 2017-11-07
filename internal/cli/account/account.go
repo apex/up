@@ -2,6 +2,7 @@ package account
 
 import (
 	"context"
+	"fmt"
 	"strings"
 	"time"
 
@@ -9,6 +10,7 @@ import (
 	"github.com/stripe/stripe-go"
 	"github.com/stripe/stripe-go/token"
 	"github.com/tj/go/env"
+	"github.com/tj/go/http/request"
 	"github.com/tj/kingpin"
 	"github.com/tj/survey"
 
@@ -85,8 +87,9 @@ func status(cmd *kingpin.CmdClause) {
 
 		defer util.Pad()()
 
+		// TODO: amount should reflect any coupon discount present
 		for _, p := range plans {
-			util.LogName("name", p.PlanName)
+			util.LogName("subscription", p.PlanName)
 			util.LogName("amount", "$%0.2f/mo USD", float64(p.Amount)/100)
 			util.LogName("created", p.CreatedAt.Format("January 2, 2006"))
 		}
@@ -260,20 +263,34 @@ func subscribe(cmd *kingpin.CmdClause) {
 
 		defer util.Pad()()
 
+		// TODO: fetch from plan
+		amount := 2000
+
 		// coupon
-		var coupon string
+		var couponID string
 		err = survey.AskOne(&survey.Input{
 			Message: "Coupon (optional):",
-		}, &coupon, nil)
+		}, &couponID, nil)
 
 		if err != nil {
 			return err
 		}
 
+		coupon, err := a.GetCoupon(couponID)
+		if err != nil && !request.IsNotFound(err) {
+			return errors.Wrap(err, "fetching coupon")
+		}
+
+		if coupon != nil {
+			amount = coupon.Discount(amount)
+			util.Log("Coupon savings: %s", coupon.Description())
+		}
+
 		// confirm
 		var ok bool
+		total := fmt.Sprintf("%0.2f", float64(amount)/100)
 		err = survey.AskOne(&survey.Confirm{
-			Message: "Subscribe to Up Pro for $20/mo USD?",
+			Message: fmt.Sprintf("Subscribe to Up Pro for $%s/mo USD?", total),
 		}, &ok, nil)
 
 		if err != nil {
@@ -287,10 +304,10 @@ func subscribe(cmd *kingpin.CmdClause) {
 		}
 
 		stats.Track("Subscribe", map[string]interface{}{
-			"coupon": coupon,
+			"coupon": couponID,
 		})
 
-		if err := a.AddPlan(config.Token, "up", "pro", coupon); err != nil {
+		if err := a.AddPlan(config.Token, "up", "pro", couponID); err != nil {
 			return errors.Wrap(err, "subscribing")
 		}
 
@@ -318,13 +335,30 @@ func unsubscribe(cmd *kingpin.CmdClause) {
 			return err
 		}
 
+		defer util.Pad()()
+
+		// confirm
+		var ok bool
+		err = survey.AskOne(&survey.Confirm{
+			Message: "Are you sure you want to unsubscribe?",
+		}, &ok, nil)
+
+		if err != nil {
+			return err
+		}
+
+		if !ok {
+			util.LogPad("Aborted")
+			return nil
+		}
+
 		stats.Track("Unsubscribe", nil)
 
 		if err := a.RemovePlan(config.Token, "up", "pro"); err != nil {
 			return errors.Wrap(err, "unsubscribing")
 		}
 
-		util.LogPad("Unsubscribed")
+		util.Log("Unsubscribed")
 
 		return nil
 	})

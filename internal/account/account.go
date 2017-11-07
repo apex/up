@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/pkg/errors"
@@ -18,6 +19,54 @@ type Card struct {
 	ID       string `json:"id"`
 	Brand    string `json:"brand"`
 	LastFour string `json:"last_four"`
+}
+
+// CouponDuration is the coupon duration.
+type CouponDuration string
+
+// Durations.
+const (
+	Forever   CouponDuration = "forever"
+	Once                     = "once"
+	Repeating                = "repeating"
+)
+
+// Coupon model.
+type Coupon struct {
+	ID             string         `json:"id"`
+	Amount         int            `json:"amount"`
+	Percent        int            `json:"percent"`
+	Duration       CouponDuration `json:"duration"`
+	DurationPeriod int            `json:"duration_period"`
+}
+
+// Discount returns the final price from the given amount.
+func (c *Coupon) Discount(n int) int {
+	if c.Amount != 0 {
+		return n - c.Amount
+	}
+
+	return n - int(float64(n)*(float64(c.Percent)/100))
+}
+
+// Description returns a humanized description of the savings.
+func (c *Coupon) Description() (s string) {
+	switch {
+	case c.Amount != 0:
+		n := fmt.Sprintf("%0.2f", float64(c.Amount)/100)
+		s += fmt.Sprintf("$%s off", strings.Replace(n, ".00", "", 1))
+	case c.Percent != 0:
+		s += fmt.Sprintf("%d%% off", c.Percent)
+	}
+
+	switch c.Duration {
+	case Repeating:
+		s += fmt.Sprintf(" for %d months", c.DurationPeriod)
+	default:
+		s += fmt.Sprintf(" %s", c.Duration)
+	}
+
+	return s
 }
 
 // Plan model.
@@ -43,6 +92,25 @@ func New(url string) *Client {
 	return &Client{
 		url: url,
 	}
+}
+
+// GetCoupon by id.
+func (c *Client) GetCoupon(id string) (coupon *Coupon, err error) {
+	url := fmt.Sprintf("%s/billing/coupons/%s", c.url, id)
+
+	res, err := http.Get(url)
+	if err != nil {
+		return nil, errors.Wrap(err, "requesting")
+	}
+	defer res.Body.Close()
+
+	if res.StatusCode >= 400 {
+		return nil, request.Error(res.StatusCode)
+	}
+
+	coupon = new(Coupon)
+	err = json.NewDecoder(res.Body).Decode(coupon)
+	return
 }
 
 // AddCard adds the card via stripe token.
@@ -74,7 +142,7 @@ func (c *Client) AddCard(token, cardToken string) error {
 	defer res.Body.Close()
 
 	if res.StatusCode >= 400 {
-		return request.Error{Status: res.StatusCode}
+		return request.Error(res.StatusCode)
 	}
 
 	return nil
@@ -95,7 +163,7 @@ func (c *Client) GetCards(token string) (cards []Card, err error) {
 	defer res.Body.Close()
 
 	if res.StatusCode >= 400 {
-		return nil, request.Error{Status: res.StatusCode}
+		return nil, request.Error(res.StatusCode)
 	}
 
 	err = json.NewDecoder(res.Body).Decode(&cards)
@@ -117,7 +185,7 @@ func (c *Client) GetPlans(token string) (plans []Plan, err error) {
 	defer res.Body.Close()
 
 	if res.StatusCode >= 400 {
-		return nil, request.Error{Status: res.StatusCode}
+		return nil, request.Error(res.StatusCode)
 	}
 
 	err = json.NewDecoder(res.Body).Decode(&plans)
@@ -139,7 +207,7 @@ func (c *Client) RemoveCard(token, id string) error {
 	defer res.Body.Close()
 
 	if res.StatusCode >= 400 {
-		return request.Error{Status: res.StatusCode}
+		return request.Error(res.StatusCode)
 	}
 
 	return nil
@@ -176,7 +244,7 @@ func (c *Client) AddPlan(token, product, plan, coupon string) error {
 	defer res.Body.Close()
 
 	if res.StatusCode >= 400 {
-		return request.Error{Status: res.StatusCode}
+		return request.Error(res.StatusCode)
 	}
 
 	return nil
@@ -199,7 +267,7 @@ func (c *Client) RemovePlan(token, product, plan string) error {
 	defer res.Body.Close()
 
 	if res.StatusCode >= 400 {
-		return request.Error{Status: res.StatusCode}
+		return request.Error(res.StatusCode)
 	}
 
 	return nil
@@ -227,7 +295,7 @@ func (c *Client) Login(email string) (code string, err error) {
 	defer res.Body.Close()
 
 	if res.StatusCode >= 400 {
-		return "", request.Error{Status: res.StatusCode}
+		return "", request.Error(res.StatusCode)
 	}
 
 	var out struct {
@@ -261,7 +329,7 @@ func (c *Client) GetAccessKey(email, code string) (key string, err error) {
 	defer res.Body.Close()
 
 	if res.StatusCode >= 400 {
-		return "", request.Error{Status: res.StatusCode}
+		return "", request.Error(res.StatusCode)
 	}
 
 	b, err = ioutil.ReadAll(res.Body)
@@ -281,7 +349,7 @@ func (c *Client) PollAccessKey(ctx context.Context, email, code string) (key str
 		for range time.Tick(5 * time.Second) {
 			key, err = c.GetAccessKey(email, code)
 
-			if err, ok := err.(request.Error); ok && err.Status == http.StatusUnauthorized {
+			if err, ok := err.(request.Error); ok && err == http.StatusUnauthorized {
 				continue
 			}
 
