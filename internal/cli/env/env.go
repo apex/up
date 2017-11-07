@@ -3,12 +3,13 @@ package env
 import (
 	"fmt"
 
-	humanize "github.com/dustin/go-humanize"
+	"github.com/dustin/go-humanize"
 	"github.com/pkg/errors"
 	"github.com/tj/kingpin"
-	"github.com/tj/prompt/colors"
+	"github.com/tj/simpletable"
 
 	"github.com/apex/up/internal/cli/root"
+	"github.com/apex/up/internal/colors"
 	"github.com/apex/up/internal/secret"
 	"github.com/apex/up/internal/stats"
 	"github.com/apex/up/internal/util"
@@ -67,33 +68,55 @@ func list(cmd *kingpin.CmdClause) {
 		}
 
 		grouped := secret.GroupByStage(secret.FilterByApp(secrets, c.Name))
+		table := simpletable.New()
 
 		for _, name := range []string{"all", "staging", "production"} {
-			s, ok := grouped[name]
+
+			secrets, ok := grouped[name]
 			if !ok {
 				continue
 			}
 
-			util.LogTitle(name)
-			outputSecrets(s)
+			table.Body.Cells = append(table.Body.Cells, []*simpletable.Cell{
+				{
+					Text: colors.Bold(fmt.Sprintf("\n%s\n", name)),
+					Span: 3,
+				},
+			})
+
+			rows(table, secrets)
 		}
 
+		table.SetStyle(simpletable.StyleCompact)
+		table.Println()
 		println()
 
 		return nil
 	})
 }
 
-func outputSecrets(secrets []*platform.Secret) {
+func rows(table *simpletable.Table, secrets []*platform.Secret) {
 	for _, s := range secrets {
 		mod := fmt.Sprintf("Modified %s by %s", humanize.Time(s.LastModified), s.LastModifiedUser)
+
 		desc := colors.Gray(util.DefaultString(&s.Description, "No description"))
 		if s.Value != "" {
 			desc = s.Value
 		}
-		name := colors.Purple(s.Name)
-		_ = desc
-		util.LogName(name, mod)
+
+		row := []*simpletable.Cell{
+			{
+				Text: colors.Purple(s.Name),
+			},
+			{
+				Text: desc,
+			},
+			{
+				Text: mod,
+			},
+		}
+
+		table.Body.Cells = append(table.Body.Cells, row)
 	}
 }
 
