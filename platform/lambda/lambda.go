@@ -385,12 +385,20 @@ func (p *Platform) createCerts() error {
 
 // deploy to the given region.
 func (p *Platform) deploy(region, stage string) (version string, err error) {
+	start := time.Now()
+
 	fields := event.Fields{
 		"stage":  stage,
 		"region": region,
 	}
 
-	defer p.events.Time("platform.deploy", fields)()
+	p.events.Emit("platform.deploy", fields)
+
+	defer func() {
+		fields["duration"] = time.Since(start)
+		fields["version"] = version
+		p.events.Emit("platform.deploy.complete", fields)
+	}()
 
 	ctx := log.WithField("region", region)
 	s := session.New(aws.NewConfig().WithRegion(region))
