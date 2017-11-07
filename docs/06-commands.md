@@ -22,24 +22,35 @@ Flags:
 
 Commands:
 
-  help            Show help for a command.
-  build           Build zip file.
-  config          Show configuration after defaults and validation.
-  deploy          Deploy the project.
-  domains list    List purchased domains.
-  domains check   Check availability of a domain.
-  domains buy     Purchase a domain.
-  logs            Show log output.
-  metrics         Show project metrics.
-  run             Run a hook.
-  stack plan      Plan configuration changes.
-  stack apply     Apply configuration changes.
-  stack delete    Delete configured resources.
-  stack status    Show status of resources.
-  start           Start development server.
-  upgrade         Install the latest release of Up.
-  url             Show, open, or copy a stage endpoint.
-  version         Show version.
+  help                 Show help for a command.
+  account status       Status of your account.
+  account login        Sign in to your account.
+  account logout       Sign out of your account.
+  account cards add    Add credit card.
+  account cards rm     Remove credit card.
+  account cards ls     List credit cards.
+  account subscribe    Subscribe to the Pro plan.
+  account unsubscribe  Unsubscribe from the Pro plan.
+  build                Build zip file.
+  config               Show configuration after defaults and validation.
+  deploy               Deploy the project.
+  domains ls           List purchased domains.
+  domains check        Check availability of a domain.
+  domains buy          Purchase a domain.
+  env ls               List variables.
+  env add              Add a variable.
+  env rm               Remove a variable.
+  logs                 Show log output.
+  metrics              Show project metrics.
+  run                  Run a hook.
+  stack plan           Plan configuration changes.
+  stack apply          Apply configuration changes.
+  stack delete         Delete configured resources.
+  stack status         Show status of resources.
+  start                Start development server.
+  upgrade              Install the latest release of Up.
+  url                  Show, open, or copy a stage endpoint.
+  version              Show version.
 ```
 
 ## Deploy
@@ -154,22 +165,22 @@ Show or tail log output with optional query for filtering. When viewing or taili
 ```
 Usage:
 
-   up logs [<flags>] [<query>]
+  up logs [<flags>] [<query>]
 
- Flags:
+Flags:
 
-   -h, --help           Output usage information.
-   -r, --region=REGION  Override the region.
-   -C, --chdir="."      Change working directory.
-   -v, --verbose        Enable verbose log output.
-       --version        Show application version.
-   -f, --follow         Follow or tail the live logs.
-   -s, --since=5m       Show logs since duration (30s, 5m, 2h, 1h30m, 3d, 1M).
-   -e, --expand         Show expanded logs.
+  -h, --help           Output usage information.
+  -r, --region=REGION  Override the region.
+  -C, --chdir="."      Change working directory.
+  -v, --verbose        Enable verbose log output.
+      --version        Show application version.
+  -f, --follow         Follow or tail the live logs.
+  -s, --since="5m"     Show logs since duration (30s, 5m, 2h, 1h30m, 3d, 1M).
+  -e, --expand         Show expanded logs.
 
- Args:
+Args:
 
-   [<query>]  Query pattern for filtering logs.
+  [<query>]  Query pattern for filtering logs.
 ```
 
 ### Expanded Output
