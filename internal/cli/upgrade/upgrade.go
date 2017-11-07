@@ -47,12 +47,12 @@ func init() {
 		}
 
 		// commercial plan
-		if config.Plan != "" {
+		if config.Token != "" {
 			p.Store = &apex.Store{
 				URL:       releasesAPI,
 				Product:   "up",
 				Version:   version,
-				Plan:      config.Plan,
+				Plan:      "pro",
 				AccessKey: config.Token,
 			}
 		}
