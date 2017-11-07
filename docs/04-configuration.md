@@ -451,8 +451,8 @@ The following settings are available:
 {
   "proxy": {
     "command": "node app.js",
-    "timeout": 5,
-    "listen_timeout": 20,
+    "timeout": 10,
+    "listen_timeout": 5,
     "shutdown_timeout": 5
   }
 }
