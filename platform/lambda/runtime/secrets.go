@@ -116,11 +116,11 @@ func (s *Secrets) Load() (v []*platform.Secret, err error) {
 }
 
 // Add implementation.
-func (s *Secrets) Add(key, val, desc string, plain bool) error {
+func (s *Secrets) Add(key, val, desc string, clear bool) error {
 	key = s.secretName(key)
 
 	kind := "SecureString"
-	if plain {
+	if clear {
 		kind = "String"
 	}
 

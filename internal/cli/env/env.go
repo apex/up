@@ -125,7 +125,7 @@ func add(cmd *kingpin.CmdClause) {
 	val := c.Arg("value", "Variable value.").Required().String()
 	stage := c.Flag("stage", "Stage name.").Short('s').String()
 	desc := c.Flag("desc", "Variable description message.").Short('d').String()
-	plain := c.Flag("plain", "Store as cleartext (unencrypted).").Short('c').Bool()
+	clear := c.Flag("clear", "Store as cleartext (unencrypted).").Short('c').Bool()
 
 	c.Action(func(_ *kingpin.ParseContext) error {
 		if err := validate.OptionalStage(*stage); err != nil {
@@ -138,12 +138,12 @@ func add(cmd *kingpin.CmdClause) {
 		}
 
 		stats.Track("Add Secret", map[string]interface{}{
-			"cleartext": *plain,
+			"cleartext": *clear,
 			"stage":     *stage,
 			"has_desc":  *desc != "",
 		})
 
-		if err := p.Secrets(*stage).Add(*key, *val, *desc, *plain); err != nil {
+		if err := p.Secrets(*stage).Add(*key, *val, *desc, *clear); err != nil {
 			return errors.Wrap(err, "adding secret")
 		}
 
