@@ -287,3 +287,27 @@ func Milliseconds(d time.Duration) int {
 func MillisecondsSince(t time.Time) int {
 	return int(time.Since(t) / time.Millisecond)
 }
+
+// ParseDuration string with day and month approximation support.
+func ParseDuration(s string) (d time.Duration, err error) {
+	r := strings.NewReader(s)
+
+	switch {
+	case strings.HasSuffix(s, "d"):
+		var v float64
+		_, err = fmt.Fscanf(r, "%fd", &v)
+		d = time.Duration(v * float64(24*time.Hour))
+	case strings.HasSuffix(s, "mo"):
+		var v float64
+		_, err = fmt.Fscanf(r, "%fmo", &v)
+		d = time.Duration(v * float64(30*24*time.Hour))
+	case strings.HasSuffix(s, "M"):
+		var v float64
+		_, err = fmt.Fscanf(r, "%fM", &v)
+		d = time.Duration(v * float64(30*24*time.Hour))
+	default:
+		d, err = time.ParseDuration(s)
+	}
+
+	return
+}
