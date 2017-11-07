@@ -10,16 +10,6 @@ import (
 // delimiter.
 const delim = "/"
 
-// Reserved env variables.
-var Reserved = []string{
-	"UP_STAGE",
-	"PATH",
-	"LANG",
-	"AWS_ACCESS_KEY_ID",
-	"AWS_SECRET_ACCESS_KEY",
-	"AWS_SESSION_TOKEN",
-}
-
 // Format returns a normalized env var name.
 func Format(app, stage, name string) string {
 	if stage == "" {
