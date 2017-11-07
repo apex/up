@@ -170,14 +170,7 @@ func (p *Project) Init(stage string) error {
 		return nil
 	}
 
-	start := time.Now()
-	log.Info("initializing runtime")
-	if err := r.Init(stage); err != nil {
-		return err
-	}
-
-	log.Infof("initialized runtime in %s", time.Since(start))
-	return nil
+	return r.Init(stage)
 }
 
 // Zip returns the zip if supported by the platform.
