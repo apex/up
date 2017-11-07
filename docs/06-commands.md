@@ -637,6 +637,27 @@ $ up build --size > /dev/null
 
 Manage encrypted environment variables. Environment variables are scoped to all stages by default, with stage-level overrides.
 
+
+```
+Usage:
+
+  up env <command> [<args> ...]
+
+Flags:
+
+  -h, --help           Output usage information.
+  -r, --region=REGION  Override the region.
+  -C, --chdir="."      Change working directory.
+  -v, --verbose        Enable verbose log output.
+      --version        Show application version.
+
+Subcommands:
+
+  env ls               List variables.
+  env add              Add a variable.
+  env rm               Remove a variable.
+```
+
 ```
 $ up env add DB_NAME users
 $ up env add DB_USER sloth
