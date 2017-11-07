@@ -260,21 +260,6 @@ func subscribe(cmd *kingpin.CmdClause) {
 
 		defer util.Pad()()
 
-		// confirm
-		var ok bool
-		err = survey.AskOne(&survey.Confirm{
-			Message: "Subscribe to Up Pro",
-		}, &ok, nil)
-
-		if err != nil {
-			return err
-		}
-
-		if !ok {
-			util.LogPad("Aborted")
-			return nil
-		}
-
 		// coupon
 		var coupon string
 		err = survey.AskOne(&survey.Input{
@@ -288,6 +273,21 @@ func subscribe(cmd *kingpin.CmdClause) {
 		stats.Track("Subscribe", map[string]interface{}{
 			"coupon": coupon,
 		})
+
+		// confirm
+		var ok bool
+		err = survey.AskOne(&survey.Confirm{
+			Message: "Subscribe to Up Pro for $20/mo USD?",
+		}, &ok, nil)
+
+		if err != nil {
+			return err
+		}
+
+		if !ok {
+			util.LogPad("Aborted")
+			return nil
+		}
 
 		if err := a.AddPlan(config.Token, "up", "pro", coupon); err != nil {
 			return errors.Wrap(err, "subscribing")
