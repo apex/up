@@ -39,6 +39,8 @@ func init() {
 	cmd.Example(`up env add MONGO_URL "mongodb://db2.example.net:2500/" -s staging`, "Add a staging env variable.")
 	cmd.Example(`up env add S3_KEY xxxxxxx`, "Add add a global env variable for all stages.")
 	cmd.Example(`up env add S3_KEY xxxxxxx -s production`, "Add a stage specific env var to override the previous.")
+	cmd.Example(`up env add -c DB_USER tobi`, "Add a cleartext env var.")
+	cmd.Example(`up env add -d 'Mongo password' DB_PASS xxxxxxx`, "Add a description.")
 	cmd.Example(`up env rm S3_KEY`, "Remove a variable.")
 	cmd.Example(`up env rm S3_KEY -s production`, "Remove a production variable.")
 	list(cmd)
