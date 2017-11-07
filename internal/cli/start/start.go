@@ -43,7 +43,7 @@ func init() {
 			return errors.Wrap(err, "initializing handler")
 		}
 
-		log.WithField("address", *addr).Infof("listening")
+		log.WithField("address", *addr).Info("listening")
 		if err := http.ListenAndServe(*addr, h); err != nil {
 			return errors.Wrap(err, "binding")
 		}
