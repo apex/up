@@ -21,7 +21,6 @@ var configDir = ".up"
 type Config struct {
 	Token string `json:"token"`
 	Email string `json:"email"`
-	Plan  string `json:"plan"`
 }
 
 // Require returns the user config and errors when unauthenticated.

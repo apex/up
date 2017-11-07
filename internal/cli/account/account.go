@@ -311,14 +311,6 @@ func subscribe(cmd *kingpin.CmdClause) {
 			return errors.Wrap(err, "subscribing")
 		}
 
-		err = userconfig.Alter(func(c *userconfig.Config) {
-			c.Plan = "pro"
-		})
-
-		if err != nil {
-			return errors.Wrap(err, "saving config")
-		}
-
 		util.Log("Subscribed")
 
 		return nil
