@@ -6,12 +6,12 @@ import (
 	"github.com/dustin/go-humanize"
 	"github.com/pkg/errors"
 	"github.com/tj/kingpin"
-	"github.com/tj/simpletable"
 
 	"github.com/apex/up/internal/cli/root"
 	"github.com/apex/up/internal/colors"
 	"github.com/apex/up/internal/secret"
 	"github.com/apex/up/internal/stats"
+	"github.com/apex/up/internal/table"
 	"github.com/apex/up/internal/util"
 	"github.com/apex/up/internal/validate"
 	"github.com/apex/up/platform"
@@ -68,7 +68,7 @@ func list(cmd *kingpin.CmdClause) {
 		}
 
 		grouped := secret.GroupByStage(secret.FilterByApp(secrets, c.Name))
-		table := simpletable.New()
+		t := table.New()
 
 		for _, name := range []string{"all", "staging", "production"} {
 
@@ -77,25 +77,25 @@ func list(cmd *kingpin.CmdClause) {
 				continue
 			}
 
-			table.Body.Cells = append(table.Body.Cells, []*simpletable.Cell{
+			t.AddRow(table.Row{
 				{
 					Text: colors.Bold(fmt.Sprintf("\n%s\n", name)),
 					Span: 3,
 				},
 			})
 
-			rows(table, secrets)
+			rows(t, secrets)
 		}
 
-		table.SetStyle(simpletable.StyleCompact)
-		table.Println()
+		t.Println()
 		println()
 
 		return nil
 	})
 }
 
-func rows(table *simpletable.Table, secrets []*platform.Secret) {
+// rows helper.
+func rows(t *table.Table, secrets []*platform.Secret) {
 	for _, s := range secrets {
 		mod := fmt.Sprintf("Modified %s by %s", humanize.Time(s.LastModified), s.LastModifiedUser)
 
@@ -104,7 +104,7 @@ func rows(table *simpletable.Table, secrets []*platform.Secret) {
 			desc = s.Value
 		}
 
-		row := []*simpletable.Cell{
+		t.AddRow(table.Row{
 			{
 				Text: colors.Purple(s.Name),
 			},
@@ -114,9 +114,7 @@ func rows(table *simpletable.Table, secrets []*platform.Secret) {
 			{
 				Text: mod,
 			},
-		}
-
-		table.Body.Cells = append(table.Body.Cells, row)
+		})
 	}
 }
 
