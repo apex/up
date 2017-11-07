@@ -43,6 +43,8 @@ cloc:
 release: build
 	@echo "==> Releasing"
 	@goreleaser -p 1 --rm-dist -config .goreleaser.yml --skip-publish
+	@echo "==> Publishing"
+	@AWS_REGION=us-west-2 AWS_PROFILE=apex apex-release add up pro --version $(git describe --tag | tr -d 'v') dist/*.tar.gz dist/*.txt
 	@echo "==> Complete"
 .PHONY: release
 
