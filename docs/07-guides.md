@@ -69,6 +69,13 @@ $ up account switch
      tj@apex.sh
 ```
 
+To view the status of your `up` binary run the following, you should see the "pro" designation.
+
+```
+$ up version
+0.1.0 pro
+```
+
 ## Development to Production Workflow
 
 This section guides you through taking a small application from development, to production, complete with purchasing and mapping a custom domain.
