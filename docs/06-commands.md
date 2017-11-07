@@ -813,7 +813,7 @@ $ up upgrade -t 0.4.4
 
 ## Env
 
-Manage encrypted environment variables. Environment variables are scoped to all stages by default, with stage-level overrides.
+Manage encrypted environment variables. Environment variables are scoped to all stages by default, with stage-level overrides. The `up env` command is available in the Pro plan.
 
 
 ```
