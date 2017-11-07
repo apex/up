@@ -6,13 +6,14 @@ import (
 	humanize "github.com/dustin/go-humanize"
 	"github.com/pkg/errors"
 	"github.com/tj/kingpin"
+	"github.com/tj/prompt/colors"
 
 	"github.com/apex/up/internal/cli/root"
-	"github.com/apex/up/internal/colors"
 	"github.com/apex/up/internal/secret"
 	"github.com/apex/up/internal/stats"
 	"github.com/apex/up/internal/util"
 	"github.com/apex/up/internal/validate"
+	"github.com/apex/up/platform"
 )
 
 // TODO: logging utils
@@ -65,25 +66,35 @@ func list(cmd *kingpin.CmdClause) {
 			return nil
 		}
 
-		// TODO: finish formatting... use table abstraction or remove simpletable dep
-		for stage, secrets := range secret.GroupByStage(secret.FilterByApp(secrets, c.Name)) {
-			fmt.Printf("\n  %s\n\n", stage)
+		grouped := secret.GroupByStage(secret.FilterByApp(secrets, c.Name))
 
-			for _, s := range secrets {
-				mod := fmt.Sprintf("Modified %s by %s", humanize.Time(s.LastModified), s.LastModifiedUser)
-				desc := colors.Gray(util.DefaultString(&s.Description, "No description"))
-				if s.Value != "" {
-					desc = s.Value
-				}
-				name := colors.Purple(s.Name)
-				fmt.Printf("  %-30s %-40s %s\n", name, desc, mod)
+		for _, name := range []string{"all", "staging", "production"} {
+			s, ok := grouped[name]
+			if !ok {
+				continue
 			}
+
+			util.LogTitle(name)
+			outputSecrets(s)
 		}
 
-		fmt.Printf("\n")
+		println()
 
 		return nil
 	})
+}
+
+func outputSecrets(secrets []*platform.Secret) {
+	for _, s := range secrets {
+		mod := fmt.Sprintf("Modified %s by %s", humanize.Time(s.LastModified), s.LastModifiedUser)
+		desc := colors.Gray(util.DefaultString(&s.Description, "No description"))
+		if s.Value != "" {
+			desc = s.Value
+		}
+		name := colors.Purple(s.Name)
+		_ = desc
+		util.LogName(name, mod)
+	}
 }
 
 // add variables.
