@@ -80,7 +80,7 @@ func list(cmd *kingpin.CmdClause) {
 			t.AddRow(table.Row{
 				{
 					Text: colors.Bold(fmt.Sprintf("\n%s\n", name)),
-					Span: 3,
+					Span: 4,
 				},
 			})
 
@@ -98,15 +98,15 @@ func list(cmd *kingpin.CmdClause) {
 func rows(t *table.Table, secrets []*platform.Secret) {
 	for _, s := range secrets {
 		mod := fmt.Sprintf("Modified %s by %s", humanize.Time(s.LastModified), s.LastModifiedUser)
-
-		desc := colors.Gray(util.DefaultString(&s.Description, "No description"))
-		if s.Value != "" {
-			desc = s.Value
-		}
+		desc := colors.Gray(util.DefaultString(&s.Description, "-"))
+		val := colors.Gray(util.DefaultString(&s.Value, "-"))
 
 		t.AddRow(table.Row{
 			{
 				Text: colors.Purple(s.Name),
+			},
+			{
+				Text: val,
 			},
 			{
 				Text: desc,
