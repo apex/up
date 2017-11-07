@@ -635,7 +635,7 @@ $ up build --size > /dev/null
 
 ## Env
 
-Manage encrypted environment variables. Environment variables are scoped to all stages by default, with stage-level overrides.
+Manage encrypted environment variables. Environment variables are scoped to all stages by default, with stage-level overrides. The `up env` command is available in the Pro plan.
 
 
 ```
