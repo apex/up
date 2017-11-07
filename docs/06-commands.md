@@ -164,7 +164,7 @@ Usage:
    -v, --verbose        Enable verbose log output.
        --version        Show application version.
    -f, --follow         Follow or tail the live logs.
-   -s, --since=5m       Show logs since duration (30s, 5m, 2h, 1h30m).
+   -s, --since=5m       Show logs since duration (30s, 5m, 2h, 1h30m, 3d, 1M).
    -e, --expand         Show expanded logs.
 
  Args:
