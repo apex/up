@@ -17,7 +17,7 @@ func init() {
 	cmd.Example(`up metrics production`, "Show metrics for production stage.")
 
 	stage := cmd.Arg("stage", "Name of the stage.").Default("development").String()
-	since := cmd.Flag("since", "Show logs since duration (30s, 5m, 2h, 1h30m, 3d, 1M).").Short('s').Default("1d").String()
+	since := cmd.Flag("since", "Show logs since duration (30s, 5m, 2h, 1h30m, 3d, 1M).").Short('s').Default("1M").String()
 
 	cmd.Action(func(_ *kingpin.ParseContext) error {
 		c, p, err := root.Init()
