@@ -117,7 +117,11 @@ func (r *reporter) Start() {
 			case "platform.deploy":
 				r.pending("deploy", "")
 			case "platform.deploy.complete":
-				r.complete("deploy", "version "+e.String("version"), e.Duration("duration"))
+				s := "complete"
+				if v := e.String("version"); v != "" {
+					s = "version " + v
+				}
+				r.complete("deploy", s, e.Duration("duration"))
 			case "platform.function.create":
 				r.inlineProgress = true
 			case "stack.create":
