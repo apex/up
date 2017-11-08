@@ -414,6 +414,46 @@ Copy the production endpoint to the clipboard.
 $ up url -c production
 ```
 
+## Metrics
+
+Show project metrics and estimated cost breakdown for requests, invocation count and the time spent for Lambda invocations.
+
+```
+Usage:
+
+  up metrics [<flags>] [<stage>]
+
+Flags:
+
+  -h, --help           Output usage information.
+  -r, --region=REGION  Override the region.
+  -C, --chdir="."      Change working directory.
+  -v, --verbose        Enable verbose log output.
+      --version        Show application version.
+  -s, --since="1M"     Show logs since duration (30s, 5m, 2h, 1h30m, 3d, 1M).
+
+Args:
+
+  [<stage>]  Name of the stage.
+```
+
+For example:
+
+```
+$ up metrics production -s 15d
+
+  Requests: 13,653 ($0.01)
+  Duration min: 0ms
+  Duration avg: 48ms
+  Duration max: 15329ms
+  Duration sum: 3m6.611s ($0.00)
+  Errors 4xx: 1,203
+  Errors 5xx: 2
+  Invocations: 12,787 ($0.00)
+  Errors: 0
+  Throttles: 0
+```
+
 ## Start
 
 Start development server. The development server runs the same proxy that is used in production for serving, so you can test a static site or application locally with the same feature-set.
