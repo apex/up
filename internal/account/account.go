@@ -116,12 +116,7 @@ func (c *Client) AddCard(token, cardToken string) error {
 		Token: cardToken,
 	}
 
-	b, err := json.Marshal(in)
-	if err != nil {
-		return errors.Wrap(err, "marshaling")
-	}
-
-	res, err := c.request(token, "POST", "/billing/cards", bytes.NewReader(b))
+	res, err := c.requestJSON(token, "POST", "/billing/cards", in)
 	if err != nil {
 		return err
 	}
@@ -177,12 +172,7 @@ func (c *Client) AddPlan(token, product, plan, coupon string) error {
 		Coupon:  coupon,
 	}
 
-	b, err := json.Marshal(in)
-	if err != nil {
-		return errors.Wrap(err, "marshaling")
-	}
-
-	res, err := c.request(token, "PUT", "/billing/plans", bytes.NewReader(b))
+	res, err := c.requestJSON(token, "PUT", "/billing/plans", in)
 	if err != nil {
 		return err
 	}
@@ -213,12 +203,7 @@ func (c *Client) Login(email string) (code string, err error) {
 		Email: email,
 	}
 
-	b, err := json.Marshal(in)
-	if err != nil {
-		return "", errors.Wrap(err, "marshaling")
-	}
-
-	res, err := c.request("", "POST", "/login", bytes.NewReader(b))
+	res, err := c.requestJSON("", "POST", "/login", in)
 	if err != nil {
 		return "", err
 	}
@@ -243,18 +228,13 @@ func (c *Client) GetAccessKey(email, code string) (key string, err error) {
 		Code:  code,
 	}
 
-	b, err := json.Marshal(in)
-	if err != nil {
-		return "", errors.Wrap(err, "marshaling")
-	}
-
-	res, err := c.request("", "POST", "/access_key", bytes.NewReader(b))
+	res, err := c.requestJSON("", "POST", "/access_key", in)
 	if err != nil {
 		return "", err
 	}
 	defer res.Body.Close()
 
-	b, err = ioutil.ReadAll(res.Body)
+	b, err := ioutil.ReadAll(res.Body)
 	if err != nil {
 		return "", err
 	}
@@ -292,6 +272,16 @@ func (c *Client) PollAccessKey(ctx context.Context, email, code string) (key str
 	case k := <-keyC:
 		return k, nil
 	}
+}
+
+// requestJSON helper.
+func (c *Client) requestJSON(token, method, path string, v interface{}) (*http.Response, error) {
+	b, err := json.Marshal(v)
+	if err != nil {
+		return nil, errors.Wrap(err, "marshaling")
+	}
+
+	return c.request(token, method, path, bytes.NewReader(b))
 }
 
 // request helper.
