@@ -4,8 +4,6 @@ package reporter
 
 import (
 	"fmt"
-	"io"
-	"os"
 	"strings"
 	"time"
 
@@ -61,7 +59,7 @@ func (r *reporter) pending(name, value string) {
 	r.pendingName = name
 	r.pendingValue = value
 	term.ClearLine()
-	fmt.Printf("\r %35s %s", colors.Purple(r.spinner.Next()+" "+name+":"), value)
+	fmt.Printf("\r   %s %s", colors.Purple(r.spinner.Next()+" "+name+":"), value)
 }
 
 // complete log with duration.
@@ -70,12 +68,20 @@ func (r *reporter) complete(name, value string, d time.Duration) {
 	r.pendingValue = ""
 	term.ClearLine()
 	duration := fmt.Sprintf("(%s)", d.Round(time.Millisecond))
-	fmt.Printf("\r %35s %s %s\n", colors.Purple(name+":"), value, colors.Gray(duration))
+	fmt.Printf("\r     %s %s %s\n", colors.Purple(name+":"), value, colors.Gray(duration))
+}
+
+// completeWithoutDuration log without duration.
+func (r *reporter) completeWithoutDuration(name, value string) {
+	r.pendingName = ""
+	r.pendingValue = ""
+	term.ClearLine()
+	fmt.Printf("\r     %s %s\n", colors.Purple(name+":"), value)
 }
 
 // log line
 func (r *reporter) log(name, value string) {
-	fmt.Printf("\r %35s %s\n", colors.Purple(name+":"), value)
+	fmt.Printf("\r     %s %s\n", colors.Purple(name+":"), value)
 }
 
 // Start handling events.
@@ -83,12 +89,18 @@ func (r *reporter) Start() {
 	tick := time.NewTicker(150 * time.Millisecond)
 	defer tick.Stop()
 
+	render := term.Renderer()
+
 	for {
 		select {
 		case <-tick.C:
 			r.spin()
 		case e := <-r.events:
 			switch e.Name {
+			case "account.login.verify":
+				r.pending("verify", "Check your email for a confirmation link")
+			case "account.login.verified":
+				r.completeWithoutDuration("verify", "complete")
 			case "hook":
 				r.pending("hook", e.String("name"))
 			case "hook.complete":
@@ -105,7 +117,11 @@ func (r *reporter) Start() {
 			case "platform.deploy":
 				r.pending("deploy", "")
 			case "platform.deploy.complete":
-				r.complete("deploy", "complete", e.Duration("duration"))
+				s := "complete"
+				if v := e.String("version"); v != "" {
+					s = "version " + v
+				}
+				r.complete("deploy", s, e.Duration("duration"))
 			case "platform.function.create":
 				r.inlineProgress = true
 			case "stack.create":
@@ -115,8 +131,9 @@ func (r *reporter) Start() {
 					r.bar = util.NewInlineProgressInt(e.Int("total"))
 					r.pending("stack", r.bar.String())
 				} else {
+					term.ClearAll()
 					r.bar = util.NewProgressInt(e.Int("total"))
-					io.WriteString(os.Stdout, term.CenterLine(r.bar.String()))
+					render(term.CenterLine(r.bar.String()))
 				}
 			case "platform.stack.report.event":
 				if r.inlineProgress {
@@ -124,7 +141,7 @@ func (r *reporter) Start() {
 					r.pending("stack", r.bar.String())
 				} else {
 					r.bar.ValueInt(e.Int("complete"))
-					io.WriteString(os.Stdout, term.CenterLine(r.bar.String()))
+					render(term.CenterLine(r.bar.String()))
 				}
 			case "platform.stack.report.complete":
 				if r.inlineProgress {

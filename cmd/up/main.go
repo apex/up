@@ -8,9 +8,12 @@ import (
 	"strings"
 	"syscall"
 
+	"github.com/stripe/stripe-go"
+	"github.com/tj/go/env"
 	"github.com/tj/go/term"
 
 	// commands
+	_ "github.com/apex/up/internal/cli/account"
 	_ "github.com/apex/up/internal/cli/build"
 	_ "github.com/apex/up/internal/cli/config"
 	_ "github.com/apex/up/internal/cli/deploy"
@@ -33,6 +36,9 @@ var version = "master"
 
 func main() {
 	trap()
+
+	stripe.Key = env.GetDefault("STRIPE_KEY", "pk_live_23pGrHcZ2QpfX525XYmiyzmx")
+	stripe.LogLevel = 1
 
 	err := run()
 

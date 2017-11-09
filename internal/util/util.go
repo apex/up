@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
+	"math"
 	"net"
 	"net/http"
 	"net/url"
@@ -105,7 +106,7 @@ func Pad() func() {
 
 // Fatal error.
 func Fatal(err error) {
-	fmt.Fprintf(os.Stderr, "\n  %s %s\n\n", colors.Red("Error:"), err)
+	fmt.Fprintf(os.Stderr, "\n     %s %s\n\n", colors.Red("Error:"), err)
 	os.Exit(1)
 }
 
@@ -227,4 +228,86 @@ func StringsContains(list []string, s string) bool {
 // stripping the leading '/' if present.
 func BasePath(s string) string {
 	return strings.TrimLeft(s, "/")
+}
+
+// LogPad outputs a log message with padding.
+func LogPad(msg string, v ...interface{}) {
+	defer Pad()()
+	Log(msg, v...)
+}
+
+// Log outputs a log message.
+func Log(msg string, v ...interface{}) {
+	fmt.Printf("     %s\n", colors.Purple(fmt.Sprintf(msg, v...)))
+}
+
+// LogName outputs a log message with name.
+func LogName(name, msg string, v ...interface{}) {
+	fmt.Printf("     %s %s\n", colors.Purple(name+":"), fmt.Sprintf(msg, v...))
+}
+
+// ToFloat returns a float or NaN.
+func ToFloat(v interface{}) float64 {
+	switch n := v.(type) {
+	case int:
+		return float64(n)
+	case int8:
+		return float64(n)
+	case int16:
+		return float64(n)
+	case int32:
+		return float64(n)
+	case int64:
+		return float64(n)
+	case uint:
+		return float64(n)
+	case uint8:
+		return float64(n)
+	case uint16:
+		return float64(n)
+	case uint32:
+		return float64(n)
+	case uint64:
+		return float64(n)
+	case float32:
+		return float64(n)
+	case float64:
+		return n
+	default:
+		return math.NaN()
+	}
+}
+
+// Milliseconds returns the duration as milliseconds.
+func Milliseconds(d time.Duration) int {
+	return int(d / time.Millisecond)
+}
+
+// MillisecondsSince returns the duration as milliseconds relative to time t.
+func MillisecondsSince(t time.Time) int {
+	return int(time.Since(t) / time.Millisecond)
+}
+
+// ParseDuration string with day and month approximation support.
+func ParseDuration(s string) (d time.Duration, err error) {
+	r := strings.NewReader(s)
+
+	switch {
+	case strings.HasSuffix(s, "d"):
+		var v float64
+		_, err = fmt.Fscanf(r, "%fd", &v)
+		d = time.Duration(v * float64(24*time.Hour))
+	case strings.HasSuffix(s, "mo"):
+		var v float64
+		_, err = fmt.Fscanf(r, "%fmo", &v)
+		d = time.Duration(v * float64(30*24*time.Hour))
+	case strings.HasSuffix(s, "M"):
+		var v float64
+		_, err = fmt.Fscanf(r, "%fM", &v)
+		d = time.Duration(v * float64(30*24*time.Hour))
+	default:
+		d, err = time.ParseDuration(s)
+	}
+
+	return
 }

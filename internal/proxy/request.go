@@ -4,6 +4,7 @@ import (
 	"encoding/base64"
 	"net/http"
 	"net/url"
+	"strconv"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -46,6 +47,11 @@ func NewRequest(e *Input) (*http.Request, error) {
 	// header fields
 	for k, v := range e.Headers {
 		req.Header.Set(k, v)
+	}
+
+	// content-length
+	if req.Header.Get("Content-Length") == "" && body != "" {
+		req.Header.Set("Content-Length", strconv.Itoa(len(body)))
 	}
 
 	// custom fields

@@ -378,7 +378,13 @@ func (p *Platform) deploy(region, stage string) (err error) {
 		"region": region,
 	}
 
-	defer p.events.Time("platform.deploy", fields)()
+	p.events.Emit("platform.deploy", fields)
+
+	defer func() {
+		fields["duration"] = time.Since(start)
+		fields["version"] = version
+		p.events.Emit("platform.deploy.complete", fields)
+	}()
 
 	ctx := log.WithField("region", region)
 	s := session.New(aws.NewConfig().WithRegion(region))

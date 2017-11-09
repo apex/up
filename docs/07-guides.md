@@ -2,6 +2,56 @@
 title: Guides
 ---
 
+## Subscribing to Up Pro
+
+Up Pro provides additional features which are not available in the open-source version, such as encrypted environment variables, alerting support and more.
+
+First sign in to the platform with the following command, you'll receive an email for confirmation.
+
+```
+$ up account login
+
+     email: tj@apex.sh
+  ⠋ verify: Check your email for a confirmation link
+
+```
+
+Click the link in your email and you're signed in! Next you'll need to add a credit card. Note that this information is transmitted to Stripe directly via HTTPS, it never touches the Apex servers.
+
+```
+$ up account cards add
+
+   Name: TJ Holowaychuk
+   Number: 5555555555554444
+   CVC: 123
+   Expiration month: 05
+   Expiration year: 2019
+   Country: Canada
+   City: Victoria
+   State: BC
+   Address: Your address here
+   Zip: V5B 7R2
+
+ ```
+
+Then subscribe to Pro!
+
+```
+$ up account subscribe
+```
+
+Now whenever you upgrade via `up upgrade`, you'll receive the latest version of Up Pro instead of the open-source distribution:
+
+```
+$ up upgrade
+```
+
+To view the status of your account at any time run the following:
+
+```
+$ up account
+```
+
 ## Development to Production Workflow
 
 This section guides you through taking a small application from development, to production, complete with purchasing and mapping a custom domain.
@@ -80,7 +130,7 @@ $ up domains check up-example.com
   Domain up-example.com is available for $12.00 USD
 ```
 
-Purchase it with the following command, and fill out the details required by the registrar.
+Purchase it with the following command and fill out the details required by the registrar:
 
 ```
 $ up domains buy
@@ -97,7 +147,7 @@ $ up domains buy
   Address: Some address here
 ```
 
-It can take a few minutes for AWS to finalize the purchase, you should receive an email, then you'll see it in the `up domains` output, along with the automatic renewal time.
+It can take a few minutes for AWS to finalize the purchase after which you should receive an email. Then you'll see it in the `up domains` output along with the automatic renewal time.
 
 ```
 $ up domains
@@ -274,7 +324,7 @@ $ up stack delete
 
 ## Logging
 
-This section describes how you can log from you application in a way that Up will recognize. In the future Up will support forwarding your logs to services such as Loggly, Papertrail or ELK.
+This section describes how you can log from your application in a way that Up will recognize. In the future Up will support forwarding your logs to services such as Loggly, Papertrail or ELK.
 
 ### Plain Text
 
@@ -352,7 +402,7 @@ Or:
 $ up logs 'name = "Tobi" or email = "tobi@*"'
 ```
 
-Here's a simple JavaScript logger for reference, all you need to do is output some JSON to stdout and Up will handle the rest!
+Here's a simple JavaScript logger for reference. All you need to do is output some JSON to stdout and Up will handle the rest!
 
 ```js
 function log(level, message, fields = {}) {
@@ -361,7 +411,7 @@ function log(level, message, fields = {}) {
 }
 ```
 
-For example with the Go [apex/log](https://github.com/apex/log) package you'd use the `json` handler, which outputs this format.
+For example, with the Go [apex/log](https://github.com/apex/log) package you'd use the `json` handler, which outputs this format.
 
 ## Log Query Language
 
@@ -431,7 +481,7 @@ The keywords `production`, `staging`, and `development` expand to:
 stage = "production"
 ```
 
-For example filtering on slow production responses:
+For example, filtering on slow production responses:
 
 ```
 production duration >= 1s
@@ -445,7 +495,7 @@ stage = "production" duration >= 1s
 
 ### Severity Levels
 
-Up provides request level logging with severity levels applied automatically, for example a 5xx response is an ERROR level, while 4xx is a WARN, and 3xx or 2xx are the INFO level.
+Up provides request level logging with severity levels applied automatically. For example, a 5xx response is an ERROR level, while 4xx is a WARN, and 3xx or 2xx are the INFO level.
 
 This means that instead of using the following for showing production errors:
 
@@ -461,7 +511,7 @@ production error
 
 ### In Operator
 
-The `in` operator checks for the presence of a field within the set provided. For example showing only POST, PUT and PATCH requests:
+The `in` operator checks for the presence of a field within the set provided. For example, showing only POST, PUT and PATCH requests:
 
 ```
 method in ("POST", "PUT", "PATCH")
@@ -469,7 +519,7 @@ method in ("POST", "PUT", "PATCH")
 
 ### Units
 
-The log grammar supports units for bytes and durations, for example showing responses larger than 56kb:
+The log grammar supports units for bytes and durations. For example, showing responses larger than 56kb:
 
 ```
 size > 56kb

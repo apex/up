@@ -145,6 +145,10 @@ func (c *Config) Default() error {
 	switch {
 	case util.Exists("main.go"):
 		golang(c)
+	case util.Exists("pom.xml"):
+		javaMaven(c)
+	case util.Exists("build.gradle"):
+		javaGradle(c)
 	case util.Exists("main.cr"):
 		crystal(c)
 	case util.Exists("package.json"):
@@ -320,6 +324,46 @@ func golang(c *Config) {
 
 	if c.Hooks.Clean.IsEmpty() {
 		c.Hooks.Clean = config.Hook{`rm server`}
+	}
+}
+
+// java gradle config.
+func javaGradle(c *Config) {
+	if c.Proxy.Command == "" {
+		c.Proxy.Command = "java -jar server.jar"
+	}
+
+	if c.Hooks.Build.IsEmpty() {
+		// assumes build results in a shaded jar named server.jar		
+		if util.Exists("gradlew") {
+			c.Hooks.Build = config.Hook{`./gradlew clean build && cp build/libs/server.jar .`}
+		} else {
+			c.Hooks.Build = config.Hook{`gradle clean build && cp build/libs/server.jar .`}
+		}		
+	}
+
+	if c.Hooks.Clean.IsEmpty() {
+		c.Hooks.Clean = config.Hook{`rm server.jar && gradle clean`}
+	}
+}
+
+// java maven config.
+func javaMaven(c *Config) {
+	if c.Proxy.Command == "" {
+		c.Proxy.Command = "java -jar server.jar"
+	}
+	
+	if c.Hooks.Build.IsEmpty() {
+		// assumes package results in a shaded jar named server.jar		
+		if util.Exists("mvnw") {
+			c.Hooks.Build = config.Hook{`./mvnw clean package && cp target/server.jar .`}
+		} else {
+			c.Hooks.Build = config.Hook{`mvn clean package && cp target/server.jar .`}	
+		}						
+	}
+
+	if c.Hooks.Clean.IsEmpty() {
+		c.Hooks.Clean = config.Hook{`rm server.jar && mvn clean`}
 	}
 }
 

@@ -7,6 +7,7 @@ import (
 
 	"github.com/apex/up/internal/cli/root"
 	"github.com/apex/up/internal/stats"
+	"github.com/apex/up/internal/util"
 	"github.com/pkg/errors"
 	"github.com/tj/kingpin"
 )
@@ -35,7 +36,8 @@ func init() {
 	// TODO: query arg should join remaining args
 	query := cmd.Arg("query", "Query pattern for filtering logs.").String()
 	follow := cmd.Flag("follow", "Follow or tail the live logs.").Short('f').Bool()
-	since := cmd.Flag("since", "Show logs since duration (30s, 5m, 2h, 1h30m).").Short('s').Default("5m").Duration()
+	since := cmd.Flag("since", "Show logs since duration (30s, 5m, 2h, 1h30m, 3d, 1M).").Short('s').Default("5m").String()
+	expand := cmd.Flag("expand", "Show expanded logs.").Short('e').Bool()
 
 	cmd.Action(func(_ *kingpin.ParseContext) error {
 		c, p, err := root.Init()
@@ -43,8 +45,16 @@ func init() {
 			return errors.Wrap(err, "initializing")
 		}
 
+		var s time.Duration
+
+		if *since != "" {
+			s, err = util.ParseDuration(*since)
+			if err != nil {
+				return errors.Wrap(err, "parsing --since duration")
+			}
+		}
+
 		q := *query
-		s := *since
 
 		if *follow {
 			s = time.Duration(0)
@@ -55,12 +65,17 @@ func init() {
 			"query_length": len(q),
 			"follow":       *follow,
 			"since":        s.Round(time.Second),
+			"expand":       *expand,
 		})
 
 		// TODO: region flag
 		region := c.Regions[0]
 		logs := p.Logs(region, q)
 		logs.Since(time.Now().Add(-s))
+
+		if *expand {
+			logs.Expand()
+		}
 
 		if *follow {
 			logs.Follow()

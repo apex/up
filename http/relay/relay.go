@@ -114,6 +114,7 @@ func (p *Proxy) Start() error {
 	p.ReverseProxy = httputil.NewSingleHostReverseProxy(p.target)
 	p.ReverseProxy.Transport = p
 
+	start := time.Now()
 	timeout := time.Duration(p.config.Proxy.ListenTimeout) * time.Second
 	ctx.WithField("url", p.target.String()).Info("waiting for server to listen")
 
@@ -121,6 +122,7 @@ func (p *Proxy) Start() error {
 		return errors.Wrapf(err, "waiting for %s to be in listening state", p.target.String())
 	}
 
+	ctx.WithField("duration", util.MillisecondsSince(start)).Info("server is listening")
 	return nil
 }
 

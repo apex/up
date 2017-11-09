@@ -29,15 +29,22 @@ func init() {
 		start := time.Now()
 
 		stats.Track("Deploy", map[string]interface{}{
-			"duration":             time.Since(start) / time.Millisecond,
+			"duration":             util.MillisecondsSince(start),
 			"type":                 c.Type,
 			"regions":              c.Regions,
 			"stage":                *stage,
+			"proxy_timeout":        c.Proxy.Timeout,
 			"header_rules_count":   len(c.Headers),
 			"redirect_rules_count": len(c.Redirects),
 			"inject_rules_count":   len(c.Inject),
+			"environment_count":    len(c.Environment),
+			"dns_zone_count":       len(c.DNS.Zones),
+			"stage_count":          len(c.Stages.List()),
+			"stage_domain_count":   len(c.Stages.Domains()),
 			"has_cors":             c.CORS != nil,
 			"has_logs":             !c.Logs.Disable,
+			"has_profile":          c.Profile != "",
+			"has_error_pages":      c.ErrorPages.Enable,
 		})
 
 		done := make(chan bool)

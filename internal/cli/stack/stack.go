@@ -4,10 +4,9 @@ import (
 	"fmt"
 
 	"github.com/pkg/errors"
-	"github.com/tj/go-prompt"
 	"github.com/tj/kingpin"
+	"github.com/tj/survey"
 
-	"github.com/apex/log"
 	"github.com/apex/up/internal/cli/root"
 	"github.com/apex/up/internal/stats"
 	"github.com/apex/up/internal/util"
@@ -27,6 +26,7 @@ func init() {
 	status(cmd)
 }
 
+// plan changes.
 func plan(cmd *kingpin.CmdClause) {
 	c := cmd.Command("plan", "Plan configuration changes.")
 	c.Example(`up stack plan`, "Show changes planned.")
@@ -44,6 +44,7 @@ func plan(cmd *kingpin.CmdClause) {
 	})
 }
 
+// apply changes.
 func apply(cmd *kingpin.CmdClause) {
 	c := cmd.Command("apply", "Apply configuration changes.")
 	c.Example(`up stack apply`, "Apply the changes of the previous plan.")
@@ -61,6 +62,7 @@ func apply(cmd *kingpin.CmdClause) {
 	})
 }
 
+// delete resources.
 func delete(cmd *kingpin.CmdClause) {
 	c := cmd.Command("delete", "Delete configured resources.")
 	c.Example(`up stack delete`, "Delete stack with confirmation prompt.")
@@ -85,17 +87,30 @@ func delete(cmd *kingpin.CmdClause) {
 			"wait":  wait,
 		})
 
-		if !*force && !prompt.Confirm("  Really destroy the stack %q?  ", c.Name) {
-			fmt.Printf("\n")
-			log.Info("aborting")
+		if *force {
+			// TODO: multi-region
+			return p.DeleteStack(c.Regions[0], wait)
+		}
+
+		prompt := &survey.Confirm{
+			Message: fmt.Sprintf("Really destroy stack %q?", c.Name),
+		}
+
+		var ok bool
+		if err := survey.AskOne(prompt, &ok, nil); err != nil {
+			return err
+		}
+
+		if !ok {
+			util.LogPad("Aborted")
 			return nil
 		}
 
-		// TODO: multi-region
 		return p.DeleteStack(c.Regions[0], wait)
 	})
 }
 
+// status of the stack.
 func status(cmd *kingpin.CmdClause) {
 	c := cmd.Command("status", "Show status of resources.").Default()
 

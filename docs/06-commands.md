@@ -22,24 +22,35 @@ Flags:
 
 Commands:
 
-  help            Show help for a command.
-  build           Build zip file.
-  config          Show configuration after defaults and validation.
-  deploy          Deploy the project.
-  domains list    List purchased domains.
-  domains check   Check availability of a domain.
-  domains buy     Purchase a domain.
-  logs            Show log output.
-  metrics         Show project metrics.
-  run             Run a hook.
-  stack plan      Plan configuration changes.
-  stack apply     Apply configuration changes.
-  stack delete    Delete configured resources.
-  stack status    Show status of resources.
-  start           Start development server.
-  upgrade         Install the latest release of Up.
-  url             Show, open, or copy a stage endpoint.
-  version         Show version.
+  help                 Show help for a command.
+  account status       Status of your account.
+  account login        Sign in to your account.
+  account logout       Sign out of your account.
+  account cards add    Add credit card.
+  account cards rm     Remove credit card.
+  account cards ls     List credit cards.
+  account subscribe    Subscribe to the Pro plan.
+  account unsubscribe  Unsubscribe from the Pro plan.
+  build                Build zip file.
+  config               Show configuration after defaults and validation.
+  deploy               Deploy the project.
+  domains ls           List purchased domains.
+  domains check        Check availability of a domain.
+  domains buy          Purchase a domain.
+  env ls               List variables.
+  env add              Add a variable.
+  env rm               Remove a variable.
+  logs                 Show log output.
+  metrics              Show project metrics.
+  run                  Run a hook.
+  stack plan           Plan configuration changes.
+  stack apply          Apply configuration changes.
+  stack delete         Delete configured resources.
+  stack status         Show status of resources.
+  start                Start development server.
+  upgrade              Install the latest release of Up.
+  url                  Show, open, or copy a stage endpoint.
+  version              Show version.
 ```
 
 ## Deploy
@@ -152,22 +163,59 @@ $ up config
 Show or tail log output with optional query for filtering. When viewing or tailing logs, you are viewing them from _all_ stages, see the examples below to filter on a stage name.
 
 ```
- Usage:
+Usage:
 
-   up logs [<flags>] [<query>]
+  up logs [<flags>] [<query>]
 
- Flags:
+Flags:
 
-   -h, --help           Output usage information.
-   -r, --region=REGION  Override the region.
-   -C, --chdir="."      Change working directory.
-   -v, --verbose        Enable verbose log output.
-       --version        Show application version.
-   -f, --follow         Follow or tail the live logs.
+  -h, --help           Output usage information.
+  -r, --region=REGION  Override the region.
+  -C, --chdir="."      Change working directory.
+  -v, --verbose        Enable verbose log output.
+      --version        Show application version.
+  -f, --follow         Follow or tail the live logs.
+  -s, --since="5m"     Show logs since duration (30s, 5m, 2h, 1h30m, 3d, 1M).
+  -e, --expand         Show expanded logs.
 
- Args:
+Args:
 
-   [<query>]  Query pattern for filtering logs.
+  [<query>]  Query pattern for filtering logs.
+```
+
+### Expanded Output
+
+Use the `-e` or `--expand` flag to expand log fields:
+
+```
+$ up -e 'path = "/static/*"'
+
+1:36:34pm INFO request
+           id: 8ff53267-c33a-11e7-9685-15d48d102ae9
+           ip: 70.66.179.182
+       method: GET
+         path: /static/3.jpg
+        stage: development
+      version: $LATEST
+
+1:36:34pm INFO response
+     duration: 1ms
+           id: 8ff53267-c33a-11e7-9685-15d48d102ae9
+           ip: 70.66.179.182
+       method: GET
+         path: /static/3.jpg
+         size: 0 B
+        stage: development
+       status: 304
+      version: $LATEST
+
+1:36:34pm INFO request
+           id: 8ff4bd57-c33a-11e7-bf4b-4f0d97c427c5
+           ip: 70.66.179.182
+       method: GET
+         path: /static/1.png
+        stage: development
+      version: $LATEST
 ```
 
 ### JSON Output
@@ -364,6 +412,46 @@ Copy the production endpoint to the clipboard.
 
 ```
 $ up url -c production
+```
+
+## Metrics
+
+Show project metrics and estimated cost breakdown for requests, invocation count and the time spent for Lambda invocations.
+
+```
+Usage:
+
+  up metrics [<flags>] [<stage>]
+
+Flags:
+
+  -h, --help           Output usage information.
+  -r, --region=REGION  Override the region.
+  -C, --chdir="."      Change working directory.
+  -v, --verbose        Enable verbose log output.
+      --version        Show application version.
+  -s, --since="1M"     Show logs since duration (30s, 5m, 2h, 1h30m, 3d, 1M).
+
+Args:
+
+  [<stage>]  Name of the stage.
+```
+
+For example:
+
+```
+$ up metrics production -s 15d
+
+  Requests: 13,653 ($0.01)
+  Duration min: 0ms
+  Duration avg: 48ms
+  Duration max: 15329ms
+  Duration sum: 3m6.611s ($0.00)
+  Errors 4xx: 1,203
+  Errors 5xx: 2
+  Invocations: 12,787 ($0.00)
+  Errors: 0
+  Throttles: 0
 ```
 
 ## Start

@@ -83,6 +83,7 @@ var questions = []*survey.Question{
 	},
 }
 
+// buy a domain.
 func buy(cmd *kingpin.CmdClause) {
 	c := cmd.Command("buy", "Purchase a domain.")
 
@@ -114,6 +115,7 @@ func buy(cmd *kingpin.CmdClause) {
 	})
 }
 
+// check domain availability.
 func check(cmd *kingpin.CmdClause) {
 	c := cmd.Command("check", "Check availability of a domain.")
 	domain := c.Arg("domain", "Domain name.").Required().String()
@@ -160,8 +162,9 @@ func check(cmd *kingpin.CmdClause) {
 	})
 }
 
+// list domains purchased.
 func list(cmd *kingpin.CmdClause) {
-	c := cmd.Command("list", "List purchased domains.").Default()
+	c := cmd.Command("ls", "List purchased domains.").Alias("list").Default()
 
 	c.Action(func(_ *kingpin.ParseContext) error {
 		defer util.Pad()()
@@ -181,9 +184,9 @@ func list(cmd *kingpin.CmdClause) {
 		for _, d := range domains {
 			s := "expires"
 			if d.AutoRenew {
-				s = " renews"
+				s = "renews"
 			}
-			fmt.Printf("  %-40s %s %s\n", colors.Purple(d.Name), s, d.Expiry.Format(time.Stamp))
+			util.LogName(d.Name, "%s %s", s, d.Expiry.Format(time.Stamp))
 		}
 
 		return nil

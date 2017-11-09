@@ -44,6 +44,13 @@ title: FAQ
 </details>
 
 <details>
+  <summary>Can I remove the /development and /production paths?</summary>
+  <p>Up uses AWS API Gateway, which imposes the stage base paths. Currently there is no way to remove them, however when you use
+  custom domains these paths are not present.</p>
+</details>
+
+
+<details>
   <summary>Do the servers stay active while idle?</summary>
   <p>This depends on the platform, and with Lambda being the initial platform provided the current answer is no, the server(s) are frozen when inactive and are otherwise "stateless".</p>
 

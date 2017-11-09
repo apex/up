@@ -11,6 +11,7 @@ import (
 // Logs is the interface for viewing logs.
 type Logs interface {
 	Follow()
+	Expand()
 	Since(time.Time)
 	io.Reader
 }

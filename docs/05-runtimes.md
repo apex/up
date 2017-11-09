@@ -8,6 +8,7 @@ Up supports a number of interpreted languages, and virtually any language which 
 - Golang
 - Node.js
 - Crystal
+- Java
 - Static sites
 
 ## Node.js
@@ -71,6 +72,10 @@ The `clean` hook becomes:
 ```
 $ rm server
 ```
+
+## Java
+
+When a `build.gradle` file is detected, Gradle is assumed, otherwise if `pom.xml` is found then Maven is used.
 
 ## Static
 

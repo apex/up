@@ -5,6 +5,7 @@ package handler
 
 import (
 	"net/http"
+	"time"
 
 	"github.com/apex/log"
 	"github.com/pkg/errors"
@@ -20,11 +21,14 @@ import (
 	"github.com/apex/up/http/redirects"
 	"github.com/apex/up/http/relay"
 	"github.com/apex/up/http/static"
+	"github.com/apex/up/internal/util"
 )
 
 // New reads up.json to configure and initialize
 // the http handler chain for serving an Up application.
 func New() (http.Handler, error) {
+	start := time.Now()
+
 	c, err := up.ReadConfig("up.json")
 	if err != nil {
 		return nil, errors.Wrap(err, "reading config")
@@ -77,6 +81,8 @@ func New() (http.Handler, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "initializing logs")
 	}
+
+	log.WithField("duration", util.MillisecondsSince(start)).Info("started")
 
 	return h, nil
 }

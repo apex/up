@@ -12,16 +12,13 @@ import (
 )
 
 var transform = archive.TransformFunc(func(r io.Reader, i os.FileInfo) (io.Reader, os.FileInfo) {
-	switch i.Name() {
-	case "main", "server":
-		i = archive.Info{
-			Name:     i.Name(),
-			Size:     i.Size(),
-			Mode:     i.Mode() | 0555,
-			Modified: i.ModTime(),
-			Dir:      i.IsDir(),
-		}.FileInfo()
-	}
+	i = archive.Info{
+		Name:     i.Name(),
+		Size:     i.Size(),
+		Mode:     i.Mode() | 0555,
+		Modified: i.ModTime(),
+		Dir:      i.IsDir(),
+	}.FileInfo()
 
 	return r, i
 })
@@ -45,7 +42,7 @@ func Build(dir string) (io.ReadCloser, *archive.Stats, error) {
 		gitignore,
 		strings.NewReader("\n!node_modules/**\n!.pypath/**\n"),
 		upignore,
-		strings.NewReader("\n!main\n!server\n!_proxy.js\n!byline.js\n!up.json\n"))
+		strings.NewReader("\n!main\n!server\n!_proxy.js\n!byline.js\n!up.json\n!pom.xml\nbuild.gradle\n"))
 
 	filter, err := archive.FilterPatterns(r)
 	if err != nil {

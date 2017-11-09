@@ -189,6 +189,7 @@ These become available to you via `process.env.API_FEATURES_FOO`, `os.Getenv("AP
 The following environment variables are provided by Up:
 
 - `PORT` – port number such as "3000"
+- `UP_STAGE` – stage name such as "development" or "production"
 
 ## Header Injection
 
@@ -450,8 +451,8 @@ The following settings are available:
 {
   "proxy": {
     "command": "node app.js",
-    "timeout": 5,
-    "listen_timeout": 20,
+    "timeout": 10,
+    "listen_timeout": 5,
     "shutdown_timeout": 5
   }
 }
