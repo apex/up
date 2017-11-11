@@ -156,6 +156,8 @@ $ up domains
   up-example.com           renews Sep 19 19:40:50
 ```
 
+By default domains purchased with Up have privacy protection enabled, hiding your contact information from [WHOIS](https://en.wikipedia.org/wiki/WHOIS).
+
 ### Deploying to Stages
 
 Before deploying to the staging and production stages, first tweak the application a little to include the `UP_STAGE` environment variable:
