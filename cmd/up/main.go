@@ -38,7 +38,7 @@ func main() {
 	trap()
 
 	stripe.Key = env.GetDefault("STRIPE_KEY", "pk_live_23pGrHcZ2QpfX525XYmiyzmx")
-	stripe.LogLevel = 1
+	stripe.LogLevel = 0
 
 	err := run()
 
