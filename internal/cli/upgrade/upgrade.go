@@ -9,6 +9,7 @@ import (
 	"github.com/tj/go-update/stores/apex"
 	"github.com/tj/go-update/stores/github"
 	"github.com/tj/go/env"
+	"github.com/tj/go/http/request"
 	"github.com/tj/go/term"
 	"github.com/tj/kingpin"
 
@@ -58,6 +59,11 @@ func init() {
 
 		// fetch the new releases
 		releases, err := p.LatestReleases()
+
+		if request.IsClient(err) {
+			return errors.Wrap(err, "You're not subscribed to Up Pro")
+		}
+
 		if err != nil {
 			return errors.Wrap(err, "fetching releases")
 		}
