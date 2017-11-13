@@ -50,6 +50,23 @@ To view the status of your account at any time run the following:
 
 ```
 $ up account
+
+  status: Signed in
+  active team: tj@apex.sh
+
+  subscription: Up Pro
+  amount: $10.00/mo USD
+  created: November 12, 2017
+```
+
+To switch to another team run the following and select the active team.
+
+```
+$ up account switch
+
+
+   ❯ apex
+     tj@apex.sh
 ```
 
 ## Development to Production Workflow

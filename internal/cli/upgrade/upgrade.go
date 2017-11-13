@@ -47,13 +47,13 @@ func init() {
 		}
 
 		// commercial plan
-		if config.Token != "" {
+		if t := config.GetActiveTeam(); t != nil {
 			p.Store = &apex.Store{
 				URL:       releasesAPI,
 				Product:   "up",
 				Version:   version,
 				Plan:      "pro",
-				AccessKey: config.Token,
+				AccessKey: t.Token,
 			}
 		}
 

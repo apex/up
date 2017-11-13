@@ -25,15 +25,15 @@ func TestConfig(t *testing.T) {
 	t.Run("save", func(t *testing.T) {
 		c := Config{}
 		assert.NoError(t, c.Load(), "load")
-		assert.Equal(t, "", c.Token)
+		assert.Equal(t, "", c.Team)
 
-		c.Token = "foo-bar-baz"
+		c.Team = "apex"
 		assert.NoError(t, c.Save(), "save")
 	})
 
 	t.Run("load after save", func(t *testing.T) {
 		c := Config{}
 		assert.NoError(t, c.Load(), "save")
-		assert.Equal(t, "foo-bar-baz", c.Token)
+		assert.Equal(t, "apex", c.Team)
 	})
 }
