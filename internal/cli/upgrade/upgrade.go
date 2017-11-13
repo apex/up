@@ -35,7 +35,7 @@ func init() {
 			return errors.Wrap(err, "loading user config")
 		}
 
-		// update polls(1) from tj/gh-polls on github
+		// open-source edition
 		p := &update.Manager{
 			Command: "up",
 			Store: &github.Store{
@@ -45,7 +45,7 @@ func init() {
 			},
 		}
 
-		// commercial plan
+		// commercial edition
 		if t := config.GetActiveTeam(); t != nil {
 			p.Store = &apex.Store{
 				URL:       releasesAPI,
