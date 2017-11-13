@@ -1,7 +1,6 @@
 package upgrade
 
 import (
-	"fmt"
 	"runtime"
 	"time"
 
@@ -65,7 +64,7 @@ func init() {
 
 		// no updates
 		if len(releases) == 0 {
-			fmt.Printf("  No updates required, you're good :)\n")
+			util.LogPad("No updates available, you're good :)")
 			return nil
 		}
 

@@ -267,8 +267,8 @@
 [[projects]]
   name = "github.com/tj/go"
   packages = ["clipboard","env","http/request","term"]
-  revision = "a3a2ffd2b99f43c5509f527f76fe0cfe91b720c9"
-  version = "v1.5.0"
+  revision = "3df4b7670a52b88fcd170815ff00755ff4235ac6"
+  version = "v1.6.0"
 
 [[projects]]
   name = "github.com/tj/go-archive"
@@ -345,6 +345,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "9803762328f6448d9b12e9fa83869f6c1f17d5196ea885aec0593c736ed23b85"
+  inputs-digest = "3109916486e9896a7728432d89ce7671ee9da0a4b43c8aa0b3d62a5b9e81b0b3"
   solver-name = "gps-cdcl"
   solver-version = 1
