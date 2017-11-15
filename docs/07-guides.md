@@ -76,6 +76,8 @@ $ up version
 0.1.1-pro
 ```
 
+Note that AWS charges for your resource usage, and is not associated to Up Pro's subscription. Most small to medium applications will fit within AWS' free tier, however you should consult AWS' pricing documentation for details.
+
 ## Inviting Team Members
 
 Once you have subscribed to Up Pro, you may invite team members so they have access to Up Pro as well. By default you have a personal team, the team id is your email address.
