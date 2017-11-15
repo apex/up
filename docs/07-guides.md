@@ -91,6 +91,18 @@ $ up team login --email tobi@apex.sh --team apex
 
 Your co-worker will receive an email with installation instructions. There is currently no limit to the number of team members.
 
+For example if your email is "tj@apex.sh", and you invite "tobi@apex.sh", they will need to run the following to join your personal team.
+
+```
+$ up account login --email tobi@apex.sh --team tj@apex.sh
+```
+
+If your team name is "netflix" they would run:
+
+```
+$ up account login --email tobi@apex.sh --team netflix
+```
+
 ## Development to Production Workflow
 
 This section guides you through taking a small application from development, to production, complete with purchasing and mapping a custom domain.
