@@ -55,6 +55,13 @@ $ up team switch
      tj@apex.sh
 ```
 
+At any time you can ensure you're on Up Pro `up version`:
+
+```
+$ up version
+0.1.1-pro
+```
+
 ## Inviting Team Members
 
 To invite members use the following command:
