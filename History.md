@@ -66,6 +66,11 @@ v0.3.1 / 2017-11-15
   * refactor progress bar with diffing, making it more responsive
   * fix missing logs when json does not take the shape of a log. Closes #411
 
+v0.1.0-pro / 2017-11-15
+=======================
+
+  * add `env` command
+
 v0.3.0 / 2017-10-19
 ===================
 
