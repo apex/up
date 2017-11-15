@@ -112,7 +112,7 @@ func (l *Logs) start() {
 		line := strings.TrimSpace(l.Message)
 
 		// json log
-		if util.IsJSON(line) {
+		if util.IsJSONLog(line) {
 			var e log.Entry
 			err := json.Unmarshal([]byte(line), &e)
 			if err != nil {

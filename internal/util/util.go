@@ -112,9 +112,14 @@ func Fatal(err error) {
 	os.Exit(1)
 }
 
-// IsJSON returns true if the msg looks like json.
+// IsJSON returns true if the string looks like json.
 func IsJSON(s string) bool {
 	return len(s) > 1 && s[0] == '{' && s[len(s)-1] == '}'
+}
+
+// IsJSONLog returns true if the string looks likes a json log.
+func IsJSONLog(s string) bool {
+	return IsJSON(s) && strings.Contains(s, `"level"`)
 }
 
 // IsNotFound returns true if err is not nil and represents a missing resource.
