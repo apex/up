@@ -2,6 +2,8 @@
 package util
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -310,4 +312,11 @@ func ParseDuration(s string) (d time.Duration, err error) {
 	}
 
 	return
+}
+
+// Md5 returns an md5 hash for s.
+func Md5(s string) string {
+	h := md5.New()
+	h.Write([]byte(s))
+	return hex.EncodeToString(h.Sum(nil))
 }
