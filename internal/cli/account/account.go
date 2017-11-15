@@ -15,6 +15,7 @@ import (
 	"github.com/tj/kingpin"
 	"github.com/tj/survey"
 
+	"github.com/apex/log"
 	"github.com/apex/up/internal/account"
 	"github.com/apex/up/internal/cli/root"
 	"github.com/apex/up/internal/stats"
@@ -309,15 +310,24 @@ func login(cmd *kingpin.CmdClause) {
 			*email = s
 		}
 
+		// events
 		events := make(event.Events)
 		go reporter.Text(events)
 		events.Emit("account.login.verify", nil)
 
+		// log context
+		l := log.WithFields(log.Fields{
+			"email": *email,
+			"team":  *team,
+		})
+
 		// authenticate
 		var code string
 		if t := config.GetActiveTeam(); t != nil {
+			l.Debug("login with token")
 			code, err = a.LoginWithToken(t.Token, *email, *team)
 		} else {
+			l.Debug("login without token")
 			code, err = a.Login(*email, *team)
 		}
 
@@ -334,6 +344,7 @@ func login(cmd *kingpin.CmdClause) {
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 		defer cancel()
 
+		l.WithField("team", *team).Debug("poll for access token")
 		token, err := a.PollAccessToken(ctx, *email, *team, code)
 		if err != nil {
 			return errors.Wrap(err, "getting access token")
