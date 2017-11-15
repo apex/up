@@ -18,15 +18,9 @@ Open source community edition.
 
 ## Pro Features
 
-Close sourced pro edition: Coming less soon.
+Up Pro is $20/mo USD for unlimited use, with no additional cost per team member. Up Pro is currently in early-access alpha, please use the "up-early-adopter-57AAA8693354" coupon for 50% off indefinitely. Head over to [Subscribing to Up Pro](https://up.docs.apex.sh/#guides.subscribing_to_up_pro) to get started.
 
 ![Pro edition features](assets/features-pro.png)
-
-## Pricing
-
-Updated as of July 2017 based on public information. Some services offer a restricted free version, or free access for solo developers – this table is based on commercial use.
-
-![Pricing comparison table](assets/pricing.png)
 
 ## Quick Start
 
