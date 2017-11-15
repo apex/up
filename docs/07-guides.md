@@ -62,6 +62,8 @@ $ up version
 0.1.1-pro
 ```
 
+Note that AWS charges for your resource usage, and is not associated to Up Pro's subscription. Most small to medium applications will fit within AWS' free tier, however you should consult AWS' pricing documentation for details.
+
 ## Inviting Team Members
 
 To invite members use the following command:
