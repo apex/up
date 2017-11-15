@@ -71,15 +71,27 @@ $ up account switch
 
 ## Inviting Team Members
 
-Once you have subscribed to Up Pro, you may invite team members so they have access to Up Pro as well.
+Once you have subscribed to Up Pro, you may invite team members so they have access to Up Pro as well. By default you have a personal team, the team id is your email address.
 
 Run the following command to create and invite and send an email with installation instructions:
 
 ```
-$ up account invite --email tj@tjholowaychuk.com
+$ up account invite --email tobi@apex.sh
 ```
 
 Your co-worker will receive an email with installation instructions. There is currently no limit to the number of team members.
+
+For example if your email is "tj@apex.sh", and you invite "tobi@apex.sh", they will need to run the following to join your personal team.
+
+```
+$ up account login --email tobi@apex.sh --team tj@apex.sh
+```
+
+If your team name is "netflix" they would run:
+
+```
+$ up account login --email tobi@apex.sh --team netflix
+```
 
 ## Development to Production Workflow
 
