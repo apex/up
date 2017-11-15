@@ -286,12 +286,15 @@ func login(cmd *kingpin.CmdClause) {
 		}
 
 		defer util.Pad()()
-		stats.Track("Login", nil)
 
 		var config userconfig.Config
 		if err := config.Load(); err != nil {
 			return errors.Wrap(err, "loading user config")
 		}
+
+		stats.Track("Login", map[string]interface{}{
+			"team_count": len(config.GetTeams()),
+		})
 
 		// email from config
 		if t := config.GetActiveTeam(); *email == "" && t != nil {
