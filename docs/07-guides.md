@@ -89,6 +89,8 @@ Your team members will receive an email with installation instructions, where th
 $ up team login --email tobi@apex.sh --team apex
 ```
 
+Your co-worker will receive an email with installation instructions. There is currently no limit to the number of team members.
+
 ## Development to Production Workflow
 
 This section guides you through taking a small application from development, to production, complete with purchasing and mapping a custom domain.
