@@ -69,6 +69,13 @@ $ up account switch
      tj@apex.sh
 ```
 
+At any time you can ensure you're on Up Pro `up version`:
+
+```
+$ up version
+0.1.1-pro
+```
+
 ## Inviting Team Members
 
 Once you have subscribed to Up Pro, you may invite team members so they have access to Up Pro as well. By default you have a personal team, the team id is your email address.
