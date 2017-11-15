@@ -69,12 +69,17 @@ $ up account switch
      tj@apex.sh
 ```
 
-To view the status of your `up` binary run the following, you should see the "pro" designation.
+## Inviting Team Members
+
+Once you have subscribed to Up Pro, you may invite team members so they have access to Up Pro as well.
+
+Run the following command to create and invite and send an email with installation instructions:
 
 ```
-$ up version
-0.1.0 pro
+$ up account invite --email tj@tjholowaychuk.com
 ```
+
+Your co-worker will receive an email with installation instructions. There is currently no limit to the number of team members.
 
 ## Development to Production Workflow
 
