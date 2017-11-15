@@ -62,7 +62,7 @@ $ up version
 0.1.1-pro
 ```
 
-Note that AWS charges for your resource usage, and is not associated to Up Pro's subscription. Most small to medium applications will fit within AWS' free tier, however you should consult AWS' pricing documentation for details.
+Note that AWS charges for your resource usage, and is not associated to Up Pro's subscription. Most small to medium applications will fit within AWS' free tier, however you should consult AWS' pricing documentation for details. The [Serverless Calc](http://serverlesscalc.com/) is a useful tool for estimating the API Gateway and Lambda charges.
 
 ## Inviting Team Members
 
