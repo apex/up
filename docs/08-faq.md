@@ -8,6 +8,13 @@ title: FAQ
 </details>
 
 <details>
+  <summary>How much does Up Pro cost?</summary>
+  <p>Up's subscription fee is currently $20/mo USD. When subscribed your team has access to Up Pro updates until the subscription is cancelled. When cancelled you receive access until the end if your billing period. You may still use Up Pro after cancelling, however you will no longer receive updates.</p>
+
+  <p>Note that AWS charges for use of its resources, however most small to medium applications will fit within the AWS free tier.</p>
+</details>
+
+<details>
   <summary>What platforms does Up support?</summary>
   <p>Currently AWS via API Gateway and Lambda are supported, this is the focus until Up is nearing feature completion, after which additional providers such as GCP and Azure will be added.</p>
 </details>
