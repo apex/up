@@ -309,8 +309,8 @@
 [[projects]]
   name = "github.com/tj/kingpin"
   packages = ["."]
-  revision = "c8a3992d9b6566880d0e7c81952b69290547af0c"
-  version = "v2.4.4"
+  revision = "107d868d296fec726c840e10d1dd5e55c9397186"
+  version = "v2.4.5"
 
 [[projects]]
   name = "github.com/tj/survey"
@@ -345,6 +345,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "3109916486e9896a7728432d89ce7671ee9da0a4b43c8aa0b3d62a5b9e81b0b3"
+  inputs-digest = "fe638a9dfdf566b477c8131f708ec1f88947109d0559affe41eba726ab4cc7a9"
   solver-name = "gps-cdcl"
   solver-version = 1
