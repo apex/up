@@ -9,7 +9,7 @@ title: FAQ
 
 <details>
   <summary>How much does Up Pro cost?</summary>
-  <p>Up's subscription fee is currently $20/mo USD. When subscribed your team has access to Up Pro updates until the subscription is cancelled. When cancelled you receive access until the end if your billing period. You may still use Up Pro after cancelling, however you will no longer receive updates.</p>
+  <p>Up's subscription fee is currently $20/mo USD. When subscribed your team has access to Up Pro updates until the subscription is cancelled. When cancelled you receive access until the end if your billing period.</p>
 
   <p>For the subscription you get unlimited access within your organization, there is no additional fee per team member or "seat". You can deploy any number of applications as you wish.</p>
 
