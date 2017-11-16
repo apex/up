@@ -1,4 +1,18 @@
 
+v0.3.1 / 2017-11-15
+===================
+
+  * add `up account` and sub-commands
+  * add extended duration parsing for `--since` flags. Closes #401
+  * add log expansion. Closes #399
+  * add Content-Length request header
+  * add request logs
+  * add pom.xml and build.grade to whitelist which cannot be ignored
+  * change metrics `--since` default to 1 month
+  * refactor: remove .size defaulting of 0
+  * refactor progress bar with diffing, making it more responsive
+  * fix missing logs when json does not take the shape of a log. Closes #411
+
 v0.3.0 / 2017-10-19
 ===================
 
