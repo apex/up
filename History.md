@@ -1,4 +1,12 @@
 
+v0.3.2 / 2017-11-18
+===================
+
+  * add support for UP_CONFIG from environment
+  * add `up docs` command back for opening documentation in the browser
+  * change logs `--since` default to 1 day
+  * fix intermittent metrics failure. Closes #414
+
 v0.3.1 / 2017-11-15
 ===================
 
