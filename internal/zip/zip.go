@@ -12,8 +12,10 @@ import (
 )
 
 var transform = archive.TransformFunc(func(r io.Reader, i os.FileInfo) (io.Reader, os.FileInfo) {
+	name := strings.Replace(i.Name(), "\\", "/", -1)
+
 	i = archive.Info{
-		Name:     i.Name(),
+		Name:     name,
 		Size:     i.Size(),
 		Mode:     i.Mode() | 0555,
 		Modified: i.ModTime(),
