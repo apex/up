@@ -11,10 +11,14 @@ import (
 	"github.com/pkg/errors"
 )
 
-// TODO: support env var for CI
+var (
+	// configDir is the dir name where up config is stored relative to HOME.
+	configDir = ".up"
 
-// configDir is the dir name where up config is stored relative to HOME.
-var configDir = ".up"
+	// envName is the environment variable which can be used to store
+	// Up's configuration, primarily for continuous integration.
+	envName = "UP_CONFIG"
+)
 
 // Team is the user configuration for a given team.
 type Team struct {
@@ -121,6 +125,15 @@ func (c *Config) Load() error {
 		return errors.Wrap(err, "getting path")
 	}
 
+	// env
+	if s := os.Getenv(envName); s != "" {
+		if err := json.Unmarshal([]byte(s), &c); err != nil {
+			return errors.Wrap(err, "unmarshaling")
+		}
+		return nil
+	}
+
+	// file
 	b, err := ioutil.ReadFile(path)
 
 	if os.IsNotExist(err) {
