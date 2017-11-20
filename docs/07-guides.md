@@ -351,7 +351,45 @@ After you're done messing around, you may want to remove all the resources and t
 $ up stack delete
 ```
 
-## Logging
+## Deploying Applications from Continuous Integration
+
+Up makes it easy to deploy your applications from CI, thanks to its Go binaries you can install Up in seconds in any CI provider such as Travis, Circle, Semaphore among others.
+
+### Environment Variables
+
+The first step is to set up environment variables so that you have access to your AWS account. You can get these values from `cat ~/.aws/credentials`:
+
+- `AWS_ACCESS_KEY_ID` – AWS access key
+- `AWS_SECRET_ACCESS_KEY` – AWS secret key
+
+If using running Up Pro you'll need your Up credentials:
+
+- `UP_CONFIG` – Up configuration
+
+To obtain this run `up account ci` or `up account ci --copy` to copy it directly to your clipboard, then paste this as the env var's value.
+
+### Commands
+
+Now that configuration is prepared, you'll need to install Up using the following two commands:
+
+```
+$ sudo chown -R $(whoami) /usr/local/bin
+$ curl -sfL https://raw.githubusercontent.com/apex/up/master/install.sh | sh
+```
+
+If you're on Up Pro you'll need to upgrade to install the Pro binary:
+
+```
+$ up upgrade
+```
+
+After that all you need to do is deploy to your desired stage!
+
+```
+$ up deploy production
+```
+
+## Mastering Logging
 
 This section describes how you can log from your application in a way that Up will recognize. In the future Up will support forwarding your logs to services such as Loggly, Papertrail or ELK.
 
