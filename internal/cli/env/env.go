@@ -57,8 +57,7 @@ func list(cmd *kingpin.CmdClause) {
 		grouped := secret.GroupByStage(secret.FilterByApp(secrets, c.Name))
 		t := table.New()
 
-		for _, name := range []string{"all", "staging", "production"} {
-
+		for _, name := range []string{"all", "development", "staging", "production"} {
 			secrets, ok := grouped[name]
 			if !ok {
 				continue
