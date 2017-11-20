@@ -13,6 +13,7 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
+	"sort"
 	"strings"
 	"syscall"
 	"time"
@@ -355,4 +356,13 @@ func Domain(s string) string {
 	}
 
 	return d
+}
+
+// StringMapKeys returns keys for m.
+func StringMapKeys(m map[string]string) (keys []string) {
+	for k := range m {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	return
 }
