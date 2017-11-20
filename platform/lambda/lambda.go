@@ -10,6 +10,8 @@ import (
 	"strings"
 	"time"
 
+	"golang.org/x/net/publicsuffix"
+
 	"github.com/apex/log"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -342,9 +344,25 @@ func (p *Platform) createCerts() error {
 			continue
 		}
 
+		// determine the parent domain for validation
+		parentDomain, err := publicsuffix.EffectiveTLDPlusOne(s.Domain)
+		if err != nil {
+			return errors.Wrapf(err, "getting parent domain for %s", s.Domain)
+		}
+
+		option := acm.DomainValidationOption{
+			DomainName:       &s.Domain,
+			ValidationDomain: &parentDomain,
+		}
+
+		options := []*acm.DomainValidationOption{
+			&option,
+		}
+
 		// request the cert
 		res, err := a.RequestCertificate(&acm.RequestCertificateInput{
-			DomainName: &s.Domain,
+			DomainName:              &s.Domain,
+			DomainValidationOptions: options,
 		})
 
 		if err != nil {
