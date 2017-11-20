@@ -1,5 +1,7 @@
 package parser
 
+//go:generate peg -inline -switch grammar.peg
+
 import (
 	"github.com/apex/up/internal/logs/parser/ast"
 	"fmt"
