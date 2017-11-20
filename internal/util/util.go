@@ -15,6 +15,7 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
+	"sort"
 	"strings"
 	"syscall"
 	"time"
@@ -448,7 +449,15 @@ func ParseSections(r io.Reader) (sections []string, err error) {
 	}
 
 	err = s.Err()
+	return
+}
 
+// StringMapKeys returns keys for m.
+func StringMapKeys(m map[string]string) (keys []string) {
+	for k := range m {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
 	return
 }
 
