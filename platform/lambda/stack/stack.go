@@ -130,6 +130,7 @@ func (s *Stack) Delete(wait bool) error {
 func (s *Stack) Show() error {
 	defer s.events.Time("platform.stack.show", nil)()
 
+	// show stack status
 	stack, err := s.getStack()
 	if err != nil {
 		return errors.Wrap(err, "fetching stack")
@@ -139,8 +140,30 @@ func (s *Stack) Show() error {
 		"stack": stack,
 	})
 
+	// show nameservers
 	if err := s.showNameservers(); err != nil {
 		return errors.Wrap(err, "showing nameservers")
+	}
+
+	// skip events if everything is ok
+	if Status(*stack.StackStatus).State() == Success {
+		return nil
+	}
+
+	// show events
+	events, err := s.getFailedEvents()
+	if err != nil {
+		return errors.Wrap(err, "fetching latest events")
+	}
+
+	for _, e := range events {
+		if *e.LogicalResourceId == s.config.Name {
+			continue
+		}
+
+		s.events.Emit("platform.stack.show.stack.event", event.Fields{
+			"event": e,
+		})
 	}
 
 	return nil
@@ -440,6 +463,22 @@ func (s *Stack) getLatestEvents() (v []*cloudformation.StackEvent, err error) {
 
 		hit[id] = true
 		v = append(v, e)
+	}
+
+	return
+}
+
+// getFailedEvents returns failed events.
+func (s *Stack) getFailedEvents() (v []*cloudformation.StackEvent, err error) {
+	events, err := s.getEvents()
+	if err != nil {
+		return
+	}
+
+	for _, e := range events {
+		if Status(*e.ResourceStatus).State() == Failure {
+			v = append(v, e)
+		}
 	}
 
 	return

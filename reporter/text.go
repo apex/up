@@ -79,9 +79,14 @@ func (r *reporter) completeWithoutDuration(name, value string) {
 	fmt.Printf("\r     %s %s\n", colors.Purple(name+":"), value)
 }
 
-// log line
+// log line.
 func (r *reporter) log(name, value string) {
 	fmt.Printf("\r     %s %s\n", colors.Purple(name+":"), value)
+}
+
+// error line.
+func (r *reporter) error(name, value string) {
+	fmt.Printf("\r     %s %s\n", colors.Red(name+":"), value)
 }
 
 // Start handling events.
@@ -154,9 +159,17 @@ func (r *reporter) Start() {
 				fmt.Printf("\n")
 			case "platform.stack.show.stack":
 				s := e.Fields["stack"].(*cloudformation.Stack)
-				fmt.Printf("  %s: %s\n", colors.Purple("status"), stack.Status(*s.StackStatus))
+				util.LogName("status", "%s", stack.Status(*s.StackStatus))
 				if reason := s.StackStatusReason; reason != nil {
-					fmt.Printf("  %s: %s\n", colors.Purple("reason"), *reason)
+					util.LogName("reason", *reason)
+				}
+			case "platform.stack.show.stack.event":
+				event := e.Fields["event"].(*cloudformation.StackEvent)
+				status := stack.Status(*event.ResourceStatus)
+				if status.State() == stack.Failure {
+					r.error(*event.LogicalResourceId, *event.ResourceStatusReason)
+				} else {
+					r.log(*event.LogicalResourceId, status.String())
 				}
 			case "platform.stack.show.nameserver":
 				fmt.Printf("  • %s\n", e.String("nameserver"))
