@@ -17,7 +17,7 @@ func alertActionID(name string) string {
 func alert(c *up.Config, a *config.Alert, m Map) {
 	period := a.Period.Seconds()
 	alertAction := ref(alertActionID(a.Action))
-	id := util.Camelcase("alert_%s_%s_%s_period_%d", a.Namespace, a.Metric, a.Statistic, int(period))
+	id := util.Camelcase("alert_%s_%s_%s_period_%d_threshold_%d", a.Namespace, a.Metric, a.Statistic, int(period), a.Threshold)
 
 	m[id] = Map{
 		"Type": "AWS::CloudWatch::Alarm",
