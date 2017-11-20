@@ -17,21 +17,6 @@ import (
 	"github.com/apex/up/platform"
 )
 
-// TODO: logging utils
-// TODO: differentiate between ADD and SET ... one overrides
-// TODO: rename --desc? util...
-// TODO: add prompt for remove and --force
-// TODO: add option for viewing secret history
-// TODO: date format util for domains too
-// TODO: prefix for the project or document the lack of prefix?
-// TODO: add docs
-// TODO: optional '=' ?
-// TODO: restart without redeploy?
-// TODO: do this automatically for env var changes?
-// TODO: multiple env vars with '=' ? rm too?
-// TODO: better errors when not found....
-// TODO: option to require them for an env before deploying / starting
-
 func init() {
 	cmd := root.Command("env", "Manage encrypted env variables.")
 	cmd.Example(`up env`, "List variables available to all stages.")
