@@ -333,7 +333,7 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/net"
-  packages = ["context"]
+  packages = ["context","idna","publicsuffix"]
   revision = "c73622c77280266305273cb545f54516ced95b93"
 
 [[projects]]
@@ -342,9 +342,15 @@
   packages = ["unix"]
   revision = "95c6576299259db960f6c5b9b69ea52422860fce"
 
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/text"
+  packages = ["collate","collate/build","internal/colltab","internal/gen","internal/tag","internal/triegen","internal/ucd","language","secure/bidirule","transform","unicode/bidi","unicode/cldr","unicode/norm","unicode/rangetable"]
+  revision = "88f656faf3f37f690df1a32515b479415e1a6769"
+
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "b3bb9746a9f68e2676451e3bbd8ed77cc33298d2b84ab455e5830e8d303c9796"
+  inputs-digest = "204fa3bc4ee08693c4d68045ef0aee551af08a6fe2748f03c7d190ab0f0e1da6"
   solver-name = "gps-cdcl"
   solver-version = 1
