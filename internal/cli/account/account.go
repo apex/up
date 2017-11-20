@@ -2,6 +2,7 @@ package account
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
 	"sort"
 	"strings"
@@ -10,6 +11,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/stripe/stripe-go"
 	"github.com/stripe/stripe-go/token"
+	"github.com/tj/go/clipboard"
 	"github.com/tj/go/env"
 	"github.com/tj/go/http/request"
 	"github.com/tj/kingpin"
@@ -49,6 +51,39 @@ func init() {
 	cards(cmd)
 	subscribe(cmd)
 	unsubscribe(cmd)
+	copy(cmd)
+}
+
+// copy commands.
+func copy(cmd *kingpin.CmdClause) {
+	c := cmd.Command("ci", "Credentials for CI.")
+	copy := c.Flag("copy", "Credentials to the clipboard.").Short('c').Bool()
+
+	c.Action(func(_ *kingpin.ParseContext) error {
+		var config userconfig.Config
+		if err := config.Load(); err != nil {
+			return errors.Wrap(err, "loading")
+		}
+
+		stats.Track("Copy Credentials", map[string]interface{}{
+			"copy": *copy,
+		})
+
+		b, err := json.Marshal(config)
+		if err != nil {
+			return errors.Wrap(err, "marshaling")
+		}
+
+		if *copy {
+			clipboard.Write(string(b))
+			fmt.Println("Copied to clipboard!")
+			return nil
+		}
+
+		fmt.Printf("%s\n", string(b))
+
+		return nil
+	})
 }
 
 // card commands.
