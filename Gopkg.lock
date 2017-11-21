@@ -313,6 +313,12 @@
   version = "v2.4.6"
 
 [[projects]]
+  name = "github.com/tj/simpletable"
+  packages = ["."]
+  revision = "814d668bd09822de839026562f7f80c8c9a1ec7a"
+  version = "v1.0.0"
+
+[[projects]]
   name = "github.com/tj/survey"
   packages = [".","core","terminal"]
   revision = "e57b07d19e552706bbdd0c18911f97e3a3fa9d14"
@@ -351,6 +357,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "204fa3bc4ee08693c4d68045ef0aee551af08a6fe2748f03c7d190ab0f0e1da6"
+  inputs-digest = "96b1091b0ea3796726e2ce706896fbb3a7c90395a7e1da446c06dc8aa54c85b2"
   solver-name = "gps-cdcl"
   solver-version = 1

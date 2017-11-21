@@ -32,6 +32,11 @@ v0.3.5 / 2017-11-21
   * fix DNS record logical id collision. Closes #420
   * refactor `up stack` output
 
+v0.1.6-pro / 2017-11-20
+=======================
+
+  * add initial alerting support
+
 v0.1.5-pro / 2017-11-20
 =======================
 
