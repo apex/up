@@ -171,11 +171,13 @@ func (r *reporter) Start() {
 				} else {
 					r.log(*event.LogicalResourceId, status.String())
 				}
-			case "platform.stack.show.nameserver":
-				fmt.Printf("  • %s\n", e.String("nameserver"))
 			case "platform.stack.show.stage":
 				stage := e.Fields["stage"].(*config.Stage)
-				fmt.Printf("\n  %s (%s):\n\n", colors.Purple(stage.Name), stage.Domain)
+				util.LogPad("%s (%s) nameservers:", colors.Purple(stage.Name), stage.Domain)
+			case "platform.stack.show.stage.complete":
+				fmt.Printf("\n")
+			case "platform.stack.show.nameserver":
+				fmt.Printf("      • %s\n", e.String("nameserver"))
 			case "stack.plan":
 				fmt.Printf("\n")
 			case "platform.stack.plan.change":

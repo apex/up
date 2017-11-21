@@ -418,9 +418,9 @@ func (s *Stack) showNameservers() error {
 			return errors.Wrap(err, "fetching hosted zone")
 		}
 
-		s.events.Emit("platform.stack.show.stage", event.Fields{
+		defer s.events.Time("platform.stack.show.stage", event.Fields{
 			"stage": stage,
-		})
+		})()
 
 		for _, ns := range zone.DelegationSet.NameServers {
 			s.events.Emit("platform.stack.show.nameserver", event.Fields{
