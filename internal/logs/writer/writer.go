@@ -13,10 +13,8 @@ import (
 	"github.com/pkg/errors"
 )
 
-// TODO: rename "app" field
-
 // New writer with the given log level.
-func New(l log.Level) *Writer {
+func New(l log.Level, ctx log.Interface) *Writer {
 	pr, pw := io.Pipe()
 
 	w := &Writer{
@@ -26,7 +24,7 @@ func New(l log.Level) *Writer {
 	}
 
 	lw := &logWriter{
-		log:   log.WithField("app", true),
+		log:   ctx,
 		level: l,
 	}
 

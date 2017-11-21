@@ -23,7 +23,7 @@ func TestWriter_plainTextFlat(t *testing.T) {
 
 	log.SetHandler(json.New(&buf))
 
-	w := New(log.InfoLevel)
+	w := New(log.InfoLevel, log.Log)
 
 	input := `GET /
 GET /account
@@ -37,11 +37,11 @@ POST /logout
 
 	assert.NoError(t, w.Close(), `close`)
 
-	expected := `{"fields":{"app":true},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"GET /"}
-{"fields":{"app":true},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"GET /account"}
-{"fields":{"app":true},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"GET /login"}
-{"fields":{"app":true},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"POST /"}
-{"fields":{"app":true},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"POST /logout"}
+	expected := `{"fields":{},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"GET /"}
+{"fields":{},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"GET /account"}
+{"fields":{},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"GET /login"}
+{"fields":{},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"POST /"}
+{"fields":{},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"POST /logout"}
 `
 
 	assert.Equal(t, expected, buf.String())
@@ -52,7 +52,7 @@ func TestWriter_plainTextIndented(t *testing.T) {
 
 	log.SetHandler(json.New(&buf))
 
-	w := New(log.InfoLevel)
+	w := New(log.InfoLevel, log.Log)
 
 	input := `GET /
 GET /account
@@ -78,13 +78,13 @@ SomethingError: three
 
 	assert.NoError(t, w.Close(), `close`)
 
-	expected := `{"fields":{"app":true},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"GET /"}
-{"fields":{"app":true},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"GET /account"}
-{"fields":{"app":true},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"SomethingError: one\n  at foo\n  at bar\n  at baz\n  at raz"}
-{"fields":{"app":true},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"GET /login"}
-{"fields":{"app":true},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"SomethingError: two\n  at foo\n  at bar\n  at baz"}
-{"fields":{"app":true},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"POST /"}
-{"fields":{"app":true},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"SomethingError: three\n  at foo\n  at bar\n  at baz"}
+	expected := `{"fields":{},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"GET /"}
+{"fields":{},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"GET /account"}
+{"fields":{},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"SomethingError: one\n  at foo\n  at bar\n  at baz\n  at raz"}
+{"fields":{},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"GET /login"}
+{"fields":{},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"SomethingError: two\n  at foo\n  at bar\n  at baz"}
+{"fields":{},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"POST /"}
+{"fields":{},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"SomethingError: three\n  at foo\n  at bar\n  at baz"}
 `
 
 	assert.Equal(t, expected, buf.String())
@@ -95,7 +95,7 @@ func TestWriter_json(t *testing.T) {
 
 	log.SetHandler(json.New(&buf))
 
-	w := New(log.InfoLevel)
+	w := New(log.InfoLevel, log.Log)
 
 	input := `{ "level": "info", "message": "request", "fields": { "method": "GET", "path": "/" } }
 { "level": "info", "message": "request", "fields": { "method": "GET", "path": "/login" } }
@@ -107,9 +107,9 @@ func TestWriter_json(t *testing.T) {
 
 	assert.NoError(t, w.Close(), `close`)
 
-	expected := `{"fields":{"app":true,"method":"GET","path":"/"},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"request"}
-{"fields":{"app":true,"method":"GET","path":"/login"},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"request"}
-{"fields":{"app":true,"method":"POST","path":"/login"},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"request"}
+	expected := `{"fields":{"method":"GET","path":"/"},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"request"}
+{"fields":{"method":"GET","path":"/login"},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"request"}
+{"fields":{"method":"POST","path":"/login"},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"request"}
 `
 
 	assert.Equal(t, expected, buf.String())

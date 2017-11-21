@@ -92,8 +92,8 @@ func New(c *up.Config) (http.Handler, error) {
 		maxRetries:      c.Proxy.Backoff.Attempts,
 		timeout:         time.Duration(c.Proxy.Timeout) * time.Second,
 		shutdownTimeout: time.Duration(c.Proxy.ShutdownTimeout) * time.Second,
-		stdout:          writer.New(log.InfoLevel),
-		stderr:          writer.New(log.ErrorLevel),
+		stdout:          writer.New(log.InfoLevel, ctx),
+		stderr:          writer.New(log.ErrorLevel, ctx),
 	}
 
 	if err := p.Start(); err != nil {
