@@ -757,7 +757,7 @@ Here's a simple example emailing the backend team when we encounter a spike of o
 }
 ```
 
-Required settings:
+#### Required settings
 
 - `metric` – Metric to alert against
   - `http.count` – Request count
@@ -768,7 +768,7 @@ Required settings:
 - `threshold` – Threshold which is compared to `operator`
 - `action` – Name of the action to perform
 
-Optional settings:
+#### Optional settings
 
 - `period` – Period is the alert query time-span (default: `5m`)
 - `operator` – Operator is the comparison operator (default `>`)
