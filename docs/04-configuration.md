@@ -675,7 +675,7 @@ Files can be matched recursively using `**`, for example ignoring everything exc
 
 ## Alerting
 
-The Pro version of Up supports defining alerts, which can notify your team when your service is producing errors, responding slowly, or receiving traffic spikes.
+The Pro version of Up supports defining alerts which can notify your team when your service is failing, responding slowly, or receiving traffic spikes.
 
 ```json
 {
@@ -721,7 +721,7 @@ The Pro version of Up supports defining alerts, which can notify your team when 
       "statistic": "sum",
       "threshold": 500,
       "action": "email.backend",
-      "description": "Note how you can use AWS namespaces and metrics directly if necessary."
+      "description": "Some description here."
     }
   ]
 }
