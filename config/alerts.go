@@ -9,10 +9,12 @@ import (
 	"github.com/pkg/errors"
 )
 
+// namespace mappings.
 var namespaceMap = map[string]string{
 	"http": "AWS/ApiGateway",
 }
 
+// metrics mappings.
 var metricsMap = map[string]string{
 	"http.count":   "Count",
 	"http.latency": "Latency",
@@ -20,6 +22,7 @@ var metricsMap = map[string]string{
 	"http.5xx":     "5XXError",
 }
 
+// operator mappings.
 var operatorMap = map[string]string{
 	">":  "GreaterThanThreshold",
 	"<":  "LessThanThreshold",
@@ -27,6 +30,7 @@ var operatorMap = map[string]string{
 	"<=": "LessThanOrEqualToThreshold",
 }
 
+// statistic mappings.
 var statisticMap = map[string]string{
 	"count":   "SampleCount",
 	"sum":     "Sum",
