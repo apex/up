@@ -31,6 +31,7 @@ func alert(c *up.Config, a *config.Alert, m Map) {
 			"EvaluationPeriods":  "1",
 			"Threshold":          strconv.Itoa(a.Threshold),
 			"ComparisonOperator": a.Operator,
+			"TreatMissingData":   a.Missing,
 			"OKActions":          []Map{alertAction},
 			"AlarmActions":       []Map{alertAction},
 			"Dimensions": []Map{
