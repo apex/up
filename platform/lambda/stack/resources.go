@@ -279,7 +279,7 @@ func dns(c *up.Config, m Map) {
 		zoneID := conditionalDNSZone(c, m, z.Name)
 
 		for _, r := range z.Records {
-			id := util.Camelcase("dns_zone_%s_record_%s", z.Name, r.Name)
+			id := util.Camelcase("dns_zone_%s_record_%s_%s", z.Name, r.Name, r.Type)
 
 			m[id] = Map{
 				"Type": "AWS::Route53::RecordSet",
