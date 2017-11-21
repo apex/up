@@ -331,6 +331,12 @@
   version = "v2.5.0"
 
 [[projects]]
+  name = "github.com/tj/simpletable"
+  packages = ["."]
+  revision = "814d668bd09822de839026562f7f80c8c9a1ec7a"
+  version = "v1.0.0"
+
+[[projects]]
   name = "github.com/tj/survey"
   packages = [".","core","terminal"]
   revision = "c1bf7ee1b7e64ab270097e5221eef48b36a17ef0"
