@@ -80,12 +80,17 @@ type Alert struct {
 	Period      Duration `json:"period"` // TODO: must be multiple of 60?
 	Stage       string   `json:"stage"`
 	Action      string   `json:"action"`
+	Missing     string   `json:"missing"`
 }
 
 // Default implementation.
 func (a *Alert) Default() error {
 	if a.Operator == "" {
 		a.Operator = ">"
+	}
+
+	if a.Missing == "" {
+		a.Missing = "ignore"
 	}
 
 	if a.Period == 0 {

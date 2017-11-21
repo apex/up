@@ -136,7 +136,8 @@ Below is a policy for [AWS Identity and Access Management](https://aws.amazon.co
     {
       "Effect": "Allow",
       "Action": [
-        "cloudwatch:Get*"
+        "cloudwatch:Get*",
+        "cloudwatch:Put*"
       ],
       "Resource": "*"
     },
