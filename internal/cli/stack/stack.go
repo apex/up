@@ -59,6 +59,8 @@ func apply(cmd *kingpin.CmdClause) {
 			"dns_zone_count":     len(c.DNS.Zones),
 			"stage_count":        len(c.Stages.List()),
 			"stage_domain_count": len(c.Stages.Domains()),
+			"alerts_count":       len(c.Alerts),
+			"actions_count":      len(c.Actions),
 		})
 
 		// TODO: multi-region
