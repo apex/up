@@ -64,8 +64,8 @@ func action(c *up.Config, a *config.AlertAction, m Map) {
 		m[sub] = Map{
 			"Type": "AWS::SNS::Subscription",
 			"Properties": Map{
-				"Endpoint": "arn:aws:lambda:us-west-2:331716780262:function:apex_alert_email",
-				"Protocol": "lambda",
+				"Endpoint": email,
+				"Protocol": "email",
 				"TopicArn": ref(id),
 			},
 		}
