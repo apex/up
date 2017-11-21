@@ -835,7 +835,7 @@ The Pro version of Up supports defining alerts which can notify your team when y
 
 ### Defining Actions
 
-An action must be defined in order to notify your team of triggered and resolved alerts.
+An action must be defined in order to notify your team of triggered and resolved  alerts. The action requires a `name`, which can be any string such "backend", "frontend_team", "email.backend", anything you prefer. Currently the only `type` available is "email", which requires that you define one or more `emails`.
 
 
 ```json
@@ -846,13 +846,9 @@ An action must be defined in order to notify your team of triggered and resolved
 }
 ```
 
-The action requires a `name`, which can be any string such "backend", "frontend_team", "email.backend", anything you prefer. Currently the only `type` available is "email", which requires that you define one or more `emails`.
-
 ### Defining Alerts
 
-An alert requires a `metric` such as request count or latency, statistic such as sum or svg, threshold, and an action to perform when the alert is triggered.
-
-Here's a simple example emailing the backend team when we encounter a spike of over 1000 requests.
+An alert requires a `metric` such as request count or latency, statistic such as sum or svg, threshold, and an action to perform when the alert is triggered. Here's a simple example emailing the backend team when we encounter a spike of over 1000 requests.
 
 ```json
 {
