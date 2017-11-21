@@ -436,7 +436,7 @@ The second option is structured logging with JSON events, which is preferred as 
 JSON logs require a `level` and `message` field:
 
 ```js
-console.log(`{ "level": "info", "message": "User signin" }`)
+console.log(`{ "level": "info", "message": "User login" }`)
 ```
 
 Would be collected as:
