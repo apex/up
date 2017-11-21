@@ -32,6 +32,11 @@ v0.3.5 / 2017-11-21
   * fix DNS record logical id collision. Closes #420
   * refactor `up stack` output
 
+v0.1.8-pro / 2017-11-20
+=======================
+
+  * add TreatMissingData as ignore by default
+
 v0.1.7-pro / 2017-11-20
 =======================
 
