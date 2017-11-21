@@ -672,3 +672,106 @@ Files can be matched recursively using `**`, for example ignoring everything exc
 *
 !dist/**
 ```
+
+## Alerting
+
+The Pro version of Up supports defining alerts, which can notify your team when your service is producing errors, responding slowly, or receiving traffic spikes.
+
+```json
+{
+  "name": "app",
+  "actions": [
+    {
+      "name": "email.backend",
+      "type": "email",
+      "emails": ["tj@apex.sh"]
+    }
+  ],
+  "alerts": [
+    {
+      "metric": "http.count",
+      "statistic": "sum",
+      "threshold": 100,
+      "action": "email.backend"
+    },
+    {
+      "metric": "http.5xx",
+      "statistic": "sum",
+      "threshold": 1,
+      "period": "1m",
+      "action": "email.backend"
+    },
+    {
+      "metric": "http.4xx",
+      "statistic": "sum",
+      "threshold": 50,
+      "period": "5m",
+      "action": "email.backend"
+    },
+    {
+      "metric": "http.latency",
+      "statistic": "avg",
+      "threshold": 1000,
+      "period": "5m",
+      "action": "email.backend"
+    },
+    {
+      "namespace": "AWS/ApiGateway",
+      "metric": "Count",
+      "statistic": "sum",
+      "threshold": 500,
+      "action": "email.backend",
+      "description": "Note how you can use AWS namespaces and metrics directly if necessary."
+    }
+  ]
+}
+```
+
+### Defining Actions
+
+An action must be defined in order to notify your team of triggered and resolved alerts.
+
+
+```json
+{
+  "name": "email.backend",
+  "type": "email",
+  "emails": ["tj@apex.sh"]
+}
+```
+
+The action requires a `name`, which can be any string such "backend", "frontend_team", "email.backend", anything you prefer. Currently the only `type` available is "email", which requires that you define one or more `emails`.
+
+### Defining Alerts
+
+An alert requires a `metric` such as request count or latency, statistic such as sum or svg, threshold, and an action to perform when the alert is triggered.
+
+Here's a simple example emailing the backend team when we encounter a spike of over 1000 requests.
+
+```json
+{
+  "metric": "http.count",
+  "statistic": "sum",
+  "threshold": 1000,
+  "action": "email.backend"
+}
+```
+
+Required settings:
+
+- `metric` – Metric to alert against
+  - `http.count` – Request count
+  - `http.latency` – Request latency in milliseconds
+  - `http.4xx` – HTTP 4xx client errors
+  - `http.5xx` – HTTP 5xx server errors
+- `statistic` – Statistic name ("sum", "min", "max", "avg", "count")
+- `threshold` – Threshold which is compared to `operator`
+- `action` – Name of the action to perform
+
+Optional settings:
+
+- `period` – Period is the alert query time-span (default: `5m`)
+- `operator` – Operator is the comparison operator (default `>`)
+- `namespace` – Metric namespace (example: "AWS/ApiGateway")
+- `disable` – Disable or mute the alert
+- `description` – Description of the alert
