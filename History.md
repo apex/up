@@ -1,4 +1,11 @@
 
+v0.3.5 / 2017-11-21
+===================
+
+  * add `stage` field to all log contexts (fixes log filtering against `production`)
+  * fix DNS record logical id collision. Closes #420
+  * refactor `up stack` output
+
 v0.3.4 / 2017-11-20
 ===================
 
