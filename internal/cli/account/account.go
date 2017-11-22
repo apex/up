@@ -446,14 +446,19 @@ func subscribe(cmd *kingpin.CmdClause) {
 			return err
 		}
 
-		coupon, err := a.GetCoupon(couponID)
-		if err != nil && !request.IsNotFound(err) {
-			return errors.Wrap(err, "fetching coupon")
-		}
+		// coupon provided
+		if strings.TrimSpace(couponID) != "" {
+			coupon, err := a.GetCoupon(couponID)
+			if err != nil && !request.IsNotFound(err) {
+				return errors.Wrap(err, "fetching coupon")
+			}
 
-		if coupon != nil {
-			amount = coupon.Discount(amount)
-			util.Log("Coupon savings: %s", coupon.Description())
+			if coupon == nil {
+				util.Log("Coupon is invalid")
+			} else {
+				amount = coupon.Discount(amount)
+				util.Log("Coupon savings: %s", coupon.Description())
+			}
 		}
 
 		// confirm
