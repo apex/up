@@ -20,6 +20,13 @@ v0.3.7 / 2017-11-24
   * remove project init from `up account login`
   * fix timestamps for lambda plain text logs
 
+v0.1.10-pro / 2017-11-23
+========================
+
+  * add support for listing secrets without last modified user name
+  * fix secrets listing when user ARN is not present. Closes #433
+  * Rebase
+
 v0.3.6 / 2017-11-22
 ===================
 
