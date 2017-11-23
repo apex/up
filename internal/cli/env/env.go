@@ -83,7 +83,10 @@ func list(cmd *kingpin.CmdClause) {
 // rows helper.
 func rows(t *table.Table, secrets []*platform.Secret) {
 	for _, s := range secrets {
-		mod := fmt.Sprintf("Modified %s by %s", humanize.Time(s.LastModified), s.LastModifiedUser)
+		mod := fmt.Sprintf("Modified %s", humanize.Time(s.LastModified))
+		if u := s.LastModifiedUser; u != "" {
+			mod += fmt.Sprintf(" by %s", u)
+		}
 		desc := colors.Gray(util.DefaultString(&s.Description, "-"))
 		val := colors.Gray(util.DefaultString(&s.Value, "-"))
 
