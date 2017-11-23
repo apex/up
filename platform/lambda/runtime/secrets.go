@@ -62,14 +62,13 @@ func (s *Secrets) List() (v []*platform.Secret, err error) {
 			value = *p.Parameter.Value
 		}
 
-		user := strings.Split(*p.LastModifiedUser, "/")[1]
 		app, stage, name := secret.Parse(*p.Name)
 		v = append(v, &platform.Secret{
 			App:              app,
 			Name:             name,
 			Stage:            stage,
 			Description:      util.DefaultString(p.Description, ""),
-			LastModifiedUser: user,
+			LastModifiedUser: userFromARN(p.LastModifiedUser),
 			LastModified:     *p.LastModifiedDate,
 			Value:            value,
 		})
@@ -153,4 +152,19 @@ func (s *Secrets) Remove(key string) error {
 // secretName returns the secret name normalized.
 func (s *Secrets) secretName(name string) string {
 	return secret.Format(s.name, s.stage, name)
+}
+
+// userFromARN returns the username from ARN if present.
+func userFromARN(arn *string) string {
+	if arn == nil {
+		return ""
+	}
+
+	p := strings.Split(*arn, "/")
+
+	if len(p) >= 2 {
+		return p[1]
+	}
+
+	return ""
 }
