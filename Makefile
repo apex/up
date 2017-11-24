@@ -48,13 +48,7 @@ release: build
 
 # Show to-do items per file.
 todo:
-	@grep \
-		--exclude-dir=vendor \
-		--exclude-dir=node_modules \
-		--exclude=Makefile \
-		--text \
-		--color \
-		-nRo -E ' TODO:.*|SkipNow' .
+	@rg TODO:
 .PHONY: todo
 
 # Show size of imports.
