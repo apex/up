@@ -316,11 +316,6 @@ func login(cmd *kingpin.CmdClause) {
 	team := c.Flag("team", "Team id.").String()
 
 	c.Action(func(_ *kingpin.ParseContext) error {
-		_, _, err := root.Init()
-		if err != nil {
-			return errors.Wrap(err, "initializing")
-		}
-
 		defer util.Pad()()
 
 		var config userconfig.Config
@@ -358,6 +353,7 @@ func login(cmd *kingpin.CmdClause) {
 
 		// authenticate
 		var code string
+		var err error
 		if t := config.GetActiveTeam(); t != nil {
 			l.Debug("login with token")
 			code, err = a.LoginWithToken(t.Token, *email, *team)
