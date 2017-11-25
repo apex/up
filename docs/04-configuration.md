@@ -542,7 +542,7 @@ By defining a stage and its `domain`, Up knows it will need to create a free SSL
 }
 ```
 
- Here's another example mapping each stage to a domain, note that Up will create a wildcard certificate, so sub-domains are fine.
+ Here's another example mapping each stage to a domain:
 
 
 ```json
