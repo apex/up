@@ -158,11 +158,11 @@ var day = time.Hour * 24
 func formatDate(t time.Time) string {
 	switch d := time.Now().Sub(t); {
 	case d >= day*7:
-		return t.Format(`Jan 2` + dateSuffix(t) + ` 3:04:05pm`)
+		return t.Format(`Jan 2` + dateSuffix(t) + ` 03:04:05pm`)
 	case d >= day:
-		return t.Format(`2` + dateSuffix(t) + ` 3:04:05pm`)
+		return t.Format(`2` + dateSuffix(t) + ` 03:04:05pm`)
 	default:
-		return t.Format(`3:04:05pm`)
+		return t.Format(`03:04:05pm`)
 	}
 }
 
