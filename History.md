@@ -1,4 +1,11 @@
 
+v0.3.7 / 2017-11-24
+===================
+
+  * add date formatting for older logs
+  * remove project init from `up account login`
+  * fix timestamps for lambda plain text logs
+
 v0.3.6 / 2017-11-22
 ===================
 
