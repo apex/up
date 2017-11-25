@@ -96,6 +96,7 @@ func New(c *up.Config) (http.Handler, error) {
 		stderr:          writer.New(log.ErrorLevel, ctx),
 	}
 
+	defer p.flushLogs()
 	if err := p.Start(); err != nil {
 		return nil, err
 	}
@@ -128,6 +129,8 @@ func (p *Proxy) Start() error {
 
 // Restart the server.
 func (p *Proxy) Restart() error {
+	defer p.flushLogs()
+
 	ctx.Warn("restarting")
 	p.restarts++
 
@@ -145,8 +148,7 @@ func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	defer p.mu.Unlock()
 
 	p.ReverseProxy.ServeHTTP(w, r)
-	p.stdout.Flush()
-	p.stderr.Flush()
+	p.flushLogs()
 }
 
 // RoundTrip implementation.
@@ -315,6 +317,12 @@ func (p *Proxy) command(s string, env []string) *exec.Cmd {
 	cmd.Stderr = p.stderr
 	cmd.Env = append(os.Environ(), append(env, "PATH=node_modules/.bin:"+os.Getenv("PATH"))...)
 	return cmd
+}
+
+// flushLogs flushes any pending logs.
+func (p *Proxy) flushLogs() {
+	p.stdout.Flush()
+	p.stderr.Flush()
 }
 
 // env returns an environment variable.
