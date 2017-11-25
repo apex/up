@@ -17,7 +17,6 @@ import (
 // TODO: rename since it's specific to log querying ATM
 // TODO: output larger timestamp when older
 // TODO: option to output UTC
-// TODO: option to output expanded fields
 // TODO: option to truncate
 // TODO: move to apex/log?
 
@@ -61,14 +60,7 @@ type Handler struct {
 func New(w io.Writer) *Handler {
 	return &Handler{
 		Writer: w,
-		layout: "3:04:05pm",
 	}
-}
-
-// WithFormat sets the date format.
-func (h *Handler) WithFormat(s string) *Handler {
-	h.layout = s
-	return h
 }
 
 // WithExpandedFields sets the expanded field state.
@@ -96,7 +88,7 @@ func (h *Handler) handleExpanded(e *log.Entry) error {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 
-	ts := e.Timestamp.Local().Format(h.layout)
+	ts := formatDate(e.Timestamp.Local())
 	fmt.Fprintf(h.Writer, "  %s %s %s\n", colors.Gray(ts), color(level), e.Message)
 
 	for _, name := range names {
@@ -125,7 +117,7 @@ func (h *Handler) handleInline(e *log.Entry) error {
 	h.mu.Lock()
 	defer h.mu.Unlock()
 
-	ts := e.Timestamp.Local().Format(h.layout)
+	ts := formatDate(e.Timestamp.Local())
 	fmt.Fprintf(h.Writer, "  %s %s %s", colors.Gray(ts), color(level), e.Message)
 
 	for _, name := range names {
@@ -156,5 +148,34 @@ func value(name string, v interface{}) interface{} {
 		return time.Millisecond * time.Duration(util.ToFloat(v))
 	default:
 		return v
+	}
+}
+
+// day duration.
+var day = time.Hour * 24
+
+// formatDate formats t relative to now.
+func formatDate(t time.Time) string {
+	switch d := time.Now().Sub(t); {
+	case d >= day*7:
+		return t.Format(`Jan 2` + dateSuffix(t) + ` 3:04:05pm`)
+	case d >= day:
+		return t.Format(`2` + dateSuffix(t) + ` 3:04:05pm`)
+	default:
+		return t.Format(`3:04:05pm`)
+	}
+}
+
+// dateSuffix returns the date suffix for t.
+func dateSuffix(t time.Time) string {
+	switch t.Day() {
+	case 1, 21, 31:
+		return "st"
+	case 2, 22:
+		return "nd"
+	case 3, 23:
+		return "rd"
+	default:
+		return "th"
 	}
 }
