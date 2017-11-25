@@ -2,7 +2,6 @@ package lambda
 
 import (
 	"encoding/json"
-	"fmt"
 	"io"
 	"os"
 	"strings"
@@ -16,7 +15,6 @@ import (
 	"github.com/aws/aws-sdk-go/service/cloudwatchlogs"
 	"github.com/tj/go/term"
 
-	"github.com/apex/up/internal/colors"
 	"github.com/apex/up/internal/logs/parser"
 	"github.com/apex/up/internal/logs/text"
 	"github.com/apex/up/internal/util"
@@ -126,7 +124,11 @@ func (l *Logs) start() {
 		}
 
 		// lambda textual logs
-		fmt.Printf("  %s\n", colors.Gray(line))
+		handler.HandleLog(&log.Entry{
+			Timestamp: l.Timestamp,
+			Level:     log.InfoLevel,
+			Message:   strings.TrimRight(l.Message, " \n"),
+		})
 	}
 
 	// TODO: refactor interface to delegate
