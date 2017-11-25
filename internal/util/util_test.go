@@ -41,6 +41,16 @@ func TestParseDuration(t *testing.T) {
 		assert.Equal(t, time.Duration(float64(time.Hour*24)*1.5), v)
 	})
 
+	t.Run("week", func(t *testing.T) {
+		v, err := ParseDuration("1w")
+		assert.NoError(t, err, "parsing")
+		assert.Equal(t, time.Hour*24*7, v)
+
+		v, err = ParseDuration("2w")
+		assert.NoError(t, err, "parsing")
+		assert.Equal(t, time.Hour*24*7*2, v)
+	})
+
 	t.Run("month", func(t *testing.T) {
 		v, err := ParseDuration("1mo")
 		assert.NoError(t, err, "parsing")

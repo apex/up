@@ -304,6 +304,10 @@ func ParseDuration(s string) (d time.Duration, err error) {
 		var v float64
 		_, err = fmt.Fscanf(r, "%fd", &v)
 		d = time.Duration(v * float64(24*time.Hour))
+	case strings.HasSuffix(s, "w"):
+		var v float64
+		_, err = fmt.Fscanf(r, "%fw", &v)
+		d = time.Duration(v * float64(24*time.Hour*7))
 	case strings.HasSuffix(s, "mo"):
 		var v float64
 		_, err = fmt.Fscanf(r, "%fmo", &v)
