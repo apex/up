@@ -18,7 +18,12 @@ Open source community edition.
 
 ## Pro Features
 
-Up Pro is $20/mo USD for unlimited use, with no additional cost per team member. Up Pro is currently in early-access alpha, please use the "up-early-adopter-57AAA8693354" coupon for 50% off indefinitely. Head over to [Subscribing to Up Pro](https://up.docs.apex.sh/#guides.subscribing_to_up_pro) to get started.
+Up Pro is **$20/mo USD** for unlimited use within your company, with no additional cost per team member. Up Pro is currently in early-access alpha, please use the **up-early-adopter-57AAA8693354** coupon for 50% off indefinitely. Head over to [Subscribing to Up Pro](https://up.docs.apex.sh/#guides.subscribing_to_up_pro) to get started.
+
+Note that the following Pro features are currently available:
+
+ - Encrypted env variables
+ - Alerting
 
 ![Pro edition features](assets/features-pro.png)
 
