@@ -5,14 +5,38 @@ import (
 	"errors"
 )
 
-// Hooks for the project.
-type Hooks struct {
-	Build Hook `json:"build"`
-	Clean Hook `json:"clean"`
-}
-
 // Hook is one or more commands.
 type Hook []string
+
+// Hooks for the project.
+type Hooks struct {
+	Build      Hook `json:"build"`
+	Clean      Hook `json:"clean"`
+	PreBuild   Hook `json:"prebuild"`
+	PostBuild  Hook `json:"postbuild"`
+	PreDeploy  Hook `json:"predeploy"`
+	PostDeploy Hook `json:"postdeploy"`
+}
+
+// Get returns the hook by name or nil.
+func (h *Hooks) Get(s string) Hook {
+	switch s {
+	case "build":
+		return h.Build
+	case "clean":
+		return h.Clean
+	case "prebuild":
+		return h.PreBuild
+	case "postbuild":
+		return h.PostBuild
+	case "predeploy":
+		return h.PreDeploy
+	case "postdeploy":
+		return h.PostDeploy
+	default:
+		return nil
+	}
+}
 
 // UnmarshalJSON implementation.
 func (h *Hook) UnmarshalJSON(b []byte) error {

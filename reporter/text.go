@@ -54,6 +54,11 @@ func (r *reporter) spin() {
 	}
 }
 
+// clear the liner.
+func (r *reporter) clear() {
+	term.ClearLine()
+}
+
 // pending log with spinner.
 func (r *reporter) pending(name, value string) {
 	r.pendingName = name
@@ -109,7 +114,7 @@ func (r *reporter) Start() {
 			case "hook":
 				r.pending("hook", e.String("name"))
 			case "hook.complete":
-				r.complete("hook", e.String("name"), e.Duration("duration"))
+				r.clear()
 			case "deploy", "stack.delete", "platform.stack.apply":
 				term.HideCursor()
 			case "deploy.complete", "stack.delete.complete", "platform.stack.apply.complete":

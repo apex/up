@@ -113,8 +113,12 @@ Lambda timeout is implied from the [Reverse Proxy](#configuration.reverse_proxy)
 
 Up provides "hooks" which are commands invoked at certain points within the the deployment workflow for automating builds, linting and so on. The following hooks are available:
 
-- `build` – Run on deploy, before building the zip file
-- `clean` – Run after a build to clean up artifacts
+- `prebuild` – Run before building
+- `build` – Run before building. Overrides inferred build command(s)
+- `postbuild` – Run after building
+- `predeploy` – Run before deploying
+- `postdeploy` – Run after deploying
+- `clean` – Run after a deploy to clean up artifacts. Overrides inferred clean command(s)
 
 Here's an example using Browserify to bundle a Node application. Use the `-v` verbose log flag to see how long each hook takes.
 
@@ -128,7 +132,7 @@ Here's an example using Browserify to bundle a Node application. Use the `-v` ve
 }
 ```
 
-Up performs runtime inference to discover what kind of application you're using, and does its best to provide helpful defaults. See the "Runtimes" section.
+Up performs runtime inference to discover what kind of application you're using, and does its best to provide helpful defaults – see the (Runtimes)(#runtimes) section.
 
 Multiple commands be provided by using arrays, and are run in separate shells:
 
@@ -145,6 +149,8 @@ Multiple commands be provided by using arrays, and are run in separate shells:
   }
 }
 ```
+
+To get a better idea of when hooks run, and how long the command(s) take, you may want to deploy with `-v` for verbose debug logs.
 
 ## Static File Serving
 
