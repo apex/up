@@ -178,14 +178,15 @@ Note that `static.dir` only tells Up which directory to serve – it does not ex
 
 ## Environment Variables
 
-The `environment` object may be used for plain-text environment variables. Note that these are not encrypted, and are stored in up.json which is typically committed to GIT, so do not store secrets here.
+The `environment` object may be used for plain-text environment variables. It’s possible to use environment variables in your shell to populate values. Note that these are not encrypted, and are stored in up.json which is typically committed to GIT, so do not store secrets here.
 
 ```json
 {
   "name": "api",
   "environment": {
     "API_FEATURE_FOO": "1",
-    "API_FEATURE_BAR": "0"
+    "API_FEATURE_BAR": "0",
+    "API_FEATURE_BAZ": "$BAX_ENABLED"
   }
 }
 ```
