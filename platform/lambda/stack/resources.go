@@ -7,6 +7,7 @@ import (
 	"github.com/apex/up"
 	"github.com/apex/up/config"
 	"github.com/apex/up/internal/util"
+	"github.com/aws/aws-sdk-go/service/route53"
 )
 
 // Map .
@@ -54,8 +55,43 @@ func lambdaArnQualifier(name, qualifier string) Map {
 	return join(":", "arn", "aws", "lambda", ref("AWS::Region"), ref("AWS::AccountId"), "function", join(":", ref(name), qualifier))
 }
 
+// getZone returns a zone by domain or nil.
+func getZone(c *Config, domain string) *route53.HostedZone {
+	for _, z := range c.Zones {
+		if *z.Name == domain+"." {
+			return z
+		}
+	}
+	return nil
+}
+
+// dnsZone returns the ref to a new zone, or id to an existing zone.
+func dnsZone(c *Config, m Map, domain string) interface{} {
+	// already exists
+	if z := getZone(c, domain); z != nil {
+		return *z.Id
+	}
+
+	id := util.Camelcase("dns_zone_%s", domain)
+
+	// already registered for creation
+	if m[id] != nil {
+		return ref(id)
+	}
+
+	// new zone
+	m[id] = Map{
+		"Type": "AWS::Route53::HostedZone",
+		"Properties": Map{
+			"Name": domain,
+		},
+	}
+
+	return ref(id)
+}
+
 // API resources.
-func api(c *up.Config, m Map) {
+func api(c *Config, m Map) {
 	desc := util.ManagedByUp(c.Description)
 
 	m["Api"] = Map{
@@ -187,14 +223,14 @@ func api(c *up.Config, m Map) {
 }
 
 // Stages configuration.
-func stages(c *up.Config, m Map) {
+func stages(c *Config, m Map) {
 	for _, s := range c.Stages.List() {
 		stage(c, s, m)
 	}
 }
 
 // Stage configuration.
-func stage(c *up.Config, s *config.Stage, m Map) {
+func stage(c *Config, s *config.Stage, m Map) {
 	id := util.Camelcase("api_domain_%s", s.Name)
 	deploymentID := util.Camelcase("api_deployment_%s", s.Name)
 
@@ -221,9 +257,9 @@ func stage(c *up.Config, s *config.Stage, m Map) {
 }
 
 // stageAliasRecord configuration.
-func stageAliasRecord(c *up.Config, s *config.Stage, m Map, domainID string) {
+func stageAliasRecord(c *Config, s *config.Stage, m Map, domainID string) {
 	id := util.Camelcase("dns_zone_%s_record_%s", s.Domain, s.Domain)
-	zoneID := conditionalDNSZone(c, m, s.Domain)
+	zone := dnsZone(c, m, util.Domain(s.Domain))
 
 	m[id] = Map{
 		"Type": "AWS::Route53::RecordSet",
@@ -231,7 +267,7 @@ func stageAliasRecord(c *up.Config, s *config.Stage, m Map, domainID string) {
 			"Name":         s.Domain,
 			"Type":         "A",
 			"Comment":      util.ManagedByUp(""),
-			"HostedZoneId": zoneID,
+			"HostedZoneId": zone,
 			"AliasTarget": Map{
 				"DNSName":      get(domainID, "DistributionDomainName"),
 				"HostedZoneId": "Z2FDTNDATAQYW2",
@@ -240,43 +276,10 @@ func stageAliasRecord(c *up.Config, s *config.Stage, m Map, domainID string) {
 	}
 }
 
-// Conditionally create a DNS zone for domain, unless it is
-// already present, and return its id or reference.
-
-// Subdomains are stripped, as those records will live in the
-// same zone.
-//
-// TODO: store zone id somewhere else, it doesn't necessarily
-// have to be mapped to a stage, but for now that's what we assume.
-func conditionalDNSZone(c *up.Config, m Map, domain string) interface{} {
-	id := util.Camelcase("dns_zone_%s", domain)
-	s := c.Stages.GetByDomain(domain)
-
-	// already registered for creation
-	if m[id] != nil {
-		return ref(id)
-	}
-
-	// new zone
-	if s == nil || s.HostedZoneID == "" {
-		m[id] = Map{
-			"Type": "AWS::Route53::HostedZone",
-			"Properties": Map{
-				"Name": domain,
-			},
-		}
-
-		return ref(id)
-	}
-
-	// existing zone
-	return s.HostedZoneID
-}
-
 // DNS resources.
-func dns(c *up.Config, m Map) {
+func dns(c *Config, m Map) {
 	for _, z := range c.DNS.Zones {
-		zoneID := conditionalDNSZone(c, m, z.Name)
+		zone := dnsZone(c, m, z.Name)
 
 		for _, r := range z.Records {
 			id := util.Camelcase("dns_zone_%s_record_%s_%s", z.Name, r.Name, r.Type)
@@ -288,7 +291,7 @@ func dns(c *up.Config, m Map) {
 					"Type":            r.Type,
 					"TTL":             strconv.Itoa(r.TTL),
 					"ResourceRecords": r.Value,
-					"HostedZoneId":    zoneID,
+					"HostedZoneId":    zone,
 					"Comment":         util.ManagedByUp(""),
 				},
 			}
@@ -297,7 +300,7 @@ func dns(c *up.Config, m Map) {
 }
 
 // IAM resources.
-func iam(c *up.Config, m Map) {
+func iam(c *Config, m Map) {
 	m["ApiLambdaPermissionDevelopment"] = Map{
 		"Type":      "AWS::Lambda::Permission",
 		"DependsOn": "ApiFunctionAliasDevelopment",
@@ -357,7 +360,7 @@ func iam(c *up.Config, m Map) {
 }
 
 // resources of the stack.
-func resources(c *up.Config) Map {
+func resources(c *Config) Map {
 	m := Map{}
 	api(c, m)
 	iam(c, m)
@@ -366,7 +369,7 @@ func resources(c *up.Config) Map {
 }
 
 // parameters of the stack.
-func parameters(c *up.Config) Map {
+func parameters(c *Config) Map {
 	return Map{
 		"Name": Map{
 			"Description": "Name of application",
@@ -388,7 +391,7 @@ func parameters(c *up.Config) Map {
 }
 
 // outputs of the stack.
-func outputs(c *up.Config) Map {
+func outputs(c *Config) Map {
 	return Map{
 		"ApiName": Map{
 			"Description": "API name",
@@ -405,8 +408,19 @@ func outputs(c *up.Config) Map {
 	}
 }
 
+// Config for the resource template.
+type Config struct {
+	// Zones already present in route53. This is used to
+	// ensure that existing zones previously set up, or
+	// automatically configured when purchasing a domain
+	// are not duplicated.
+	Zones []*route53.HostedZone
+
+	*up.Config
+}
+
 // template for the given config.
-func template(c *up.Config) Map {
+func template(c *Config) Map {
 	return Map{
 		"AWSTemplateFormatVersion": "2010-09-09",
 		"Parameters":               parameters(c),

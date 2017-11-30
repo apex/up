@@ -10,8 +10,6 @@ import (
 	"strings"
 	"time"
 
-	"golang.org/x/net/publicsuffix"
-
 	"github.com/apex/log"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
@@ -222,17 +220,18 @@ func (p *Platform) CreateStack(region, version string) error {
 		return errors.Wrap(err, "creating certs")
 	}
 
-	if err := p.populateZones(); err != nil {
+	zones, err := p.getHostedZone()
+	if err != nil {
 		return errors.Wrap(err, "fetching zones")
 	}
 
-	return stack.New(p.config, p.events, region).Create(version)
+	return stack.New(p.config, p.events, zones, region).Create(version)
 }
 
 // DeleteStack implementation.
 func (p *Platform) DeleteStack(region string, wait bool) error {
 	log.Debug("deleting stack")
-	if err := stack.New(p.config, p.events, region).Delete(wait); err != nil {
+	if err := stack.New(p.config, p.events, nil, region).Delete(wait); err != nil {
 		return errors.Wrap(err, "deleting stack")
 	}
 
@@ -251,7 +250,7 @@ func (p *Platform) DeleteStack(region string, wait bool) error {
 
 // ShowStack implementation.
 func (p *Platform) ShowStack(region string) error {
-	return stack.New(p.config, p.events, region).Show()
+	return stack.New(p.config, p.events, nil, region).Show()
 }
 
 // PlanStack implementation.
@@ -260,11 +259,12 @@ func (p *Platform) PlanStack(region string) error {
 		return errors.Wrap(err, "creating certs")
 	}
 
-	if err := p.populateZones(); err != nil {
+	zones, err := p.getHostedZone()
+	if err != nil {
 		return errors.Wrap(err, "fetching zones")
 	}
 
-	return stack.New(p.config, p.events, region).Plan()
+	return stack.New(p.config, p.events, zones, region).Plan()
 }
 
 // ApplyStack implementation.
@@ -273,39 +273,24 @@ func (p *Platform) ApplyStack(region string) error {
 		return errors.Wrap(err, "creating certs")
 	}
 
-	return stack.New(p.config, p.events, region).Apply()
+	return stack.New(p.config, p.events, nil, region).Apply()
 }
 
-// populateZones fetches the existing hosted zones, storing
-// the HostedZoneId if present.
-//
-// This is required because domains purchased via Route53
-// will already have a hosted zone, and we may already have
-// a hosted zone for the apex (example.com) and we are
-// creating a sub-domain (api.example.com), these should
-// all live in the same zone.
-func (p *Platform) populateZones() error {
+// getHostedZone returns existing hosted zones.
+func (p *Platform) getHostedZone() (zones []*route53.HostedZone, err error) {
 	r := route53.New(session.New(aws.NewConfig()))
 
+	log.Debug("fetching hosted zones")
 	res, err := r.ListHostedZonesByName(&route53.ListHostedZonesByNameInput{
 		MaxItems: aws.String("100"),
 	})
 
 	if err != nil {
-		return errors.Wrap(err, "listing zones")
+		return
 	}
 
-	for _, s := range p.config.Stages.List() {
-		log.Debugf("finding stage dns zones for %s %s", s.Name, s.Domain)
-		for _, z := range res.HostedZones {
-			if strings.Contains(s.Domain+".", *z.Name) {
-				s.HostedZoneID = strings.Replace(*z.Id, "/hostedzone/", "", 1)
-				log.Debugf("found existing dns zone %s (%s)", *z.Name, s.HostedZoneID)
-			}
-		}
-	}
-
-	return nil
+	zones = res.HostedZones
+	return
 }
 
 // createCerts creates the certificates if necessary.
@@ -344,15 +329,9 @@ func (p *Platform) createCerts() error {
 			continue
 		}
 
-		// determine the parent domain for validation
-		parentDomain, err := publicsuffix.EffectiveTLDPlusOne(s.Domain)
-		if err != nil {
-			return errors.Wrapf(err, "getting parent domain for %s", s.Domain)
-		}
-
 		option := acm.DomainValidationOption{
 			DomainName:       &s.Domain,
-			ValidationDomain: &parentDomain,
+			ValidationDomain: aws.String(util.Domain(s.Domain)),
 		}
 
 		options := []*acm.DomainValidationOption{

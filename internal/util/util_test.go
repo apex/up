@@ -73,3 +73,13 @@ func TestParseDuration(t *testing.T) {
 		assert.Equal(t, 15*time.Minute, v)
 	})
 }
+
+func TestDomain(t *testing.T) {
+	assert.Equal(t, "example.com", Domain("example.com"))
+	assert.Equal(t, "example.com", Domain("api.example.com"))
+	assert.Equal(t, "example.com", Domain("v1.api.example.com"))
+
+	assert.Equal(t, "example.co.uk", Domain("example.co.uk"))
+	assert.Equal(t, "example.co.uk", Domain("api.example.co.uk"))
+	assert.Equal(t, "example.co.uk", Domain("v1.api.example.co.uk"))
+}

@@ -22,6 +22,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/tj/backoff"
 	"github.com/tj/go-progress"
+	"golang.org/x/net/publicsuffix"
 )
 
 // Fields retained when clearing.
@@ -328,4 +329,16 @@ func Md5(s string) string {
 	h := md5.New()
 	h.Write([]byte(s))
 	return hex.EncodeToString(h.Sum(nil))
+}
+
+// Domain returns the effective domain. For example
+// the string "api.example.com" becomes "example.com",
+// while "api.example.co.uk" becomes "example.co.uk".
+func Domain(s string) string {
+	d, err := publicsuffix.EffectiveTLDPlusOne(s)
+	if err != nil {
+		panic(errors.Wrap(err, "effective domain"))
+	}
+
+	return d
 }

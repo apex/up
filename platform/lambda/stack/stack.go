@@ -33,25 +33,35 @@ type Stack struct {
 	lambda  *lambda.Lambda
 	route53 *route53.Route53
 	events  event.Events
+	zones   []*route53.HostedZone
 	config  *up.Config
 }
 
 // New stack.
-func New(c *up.Config, events event.Events, region string) *Stack {
+func New(c *up.Config, events event.Events, zones []*route53.HostedZone, region string) *Stack {
 	sess := session.New(aws.NewConfig().WithRegion(region))
 	return &Stack{
 		client:  cloudformation.New(sess),
 		lambda:  lambda.New(sess),
 		route53: route53.New(sess),
 		events:  events,
+		zones:   zones,
 		config:  c,
 	}
+}
+
+// template returns a configured resource template.
+func (s *Stack) template() Map {
+	return template(&Config{
+		Config: s.config,
+		Zones:  s.zones,
+	})
 }
 
 // Create the stack.
 func (s *Stack) Create(version string) error {
 	c := s.config
-	tmpl := template(c)
+	tmpl := s.template()
 	name := c.Name
 
 	b, err := json.MarshalIndent(tmpl, "", "  ")
@@ -117,7 +127,7 @@ func (s *Stack) Delete(wait bool) error {
 	}
 
 	if wait {
-		tmpl := template(s.config)
+		tmpl := s.template()
 		if err := s.report(resourceStateFromTemplate(tmpl, DeleteComplete)); err != nil {
 			return errors.Wrap(err, "reporting")
 		}
@@ -172,7 +182,7 @@ func (s *Stack) Show() error {
 // Plan changes.
 func (s *Stack) Plan() error {
 	c := s.config
-	tmpl := template(c)
+	tmpl := s.template()
 	name := c.Name
 
 	b, err := json.MarshalIndent(tmpl, "", "  ")
