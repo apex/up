@@ -17,6 +17,7 @@ import (
 	"github.com/apex/up"
 	"github.com/apex/up/internal/util"
 	"github.com/apex/up/platform/event"
+	"github.com/apex/up/platform/lambda/stack/resources"
 )
 
 // TODO: refactor a lot
@@ -26,6 +27,9 @@ import (
 
 // defaultChangeset name.
 var defaultChangeset = "changes"
+
+// Map type.
+type Map map[string]interface{}
 
 // Stack represents a single CloudFormation stack.
 type Stack struct {
@@ -52,7 +56,7 @@ func New(c *up.Config, events event.Events, zones []*route53.HostedZone, region 
 
 // template returns a configured resource template.
 func (s *Stack) template() Map {
-	return template(&Config{
+	return resources.New(&resources.Config{
 		Config: s.config,
 		Zones:  s.zones,
 	})

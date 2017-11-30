@@ -1,4 +1,4 @@
-package stack
+package resources
 
 import (
 	"fmt"
@@ -10,8 +10,29 @@ import (
 	"github.com/aws/aws-sdk-go/service/route53"
 )
 
-// Map .
+// Map type.
 type Map map[string]interface{}
+
+// Config for the resource template.
+type Config struct {
+	// Zones already present in route53. This is used to
+	// ensure that existing zones previously set up, or
+	// automatically configured when purchasing a domain
+	// are not duplicated.
+	Zones []*route53.HostedZone
+
+	*up.Config
+}
+
+// New template.
+func New(c *Config) map[string]interface{} {
+	return Map{
+		"AWSTemplateFormatVersion": "2010-09-09",
+		"Parameters":               parameters(c),
+		"Outputs":                  outputs(c),
+		"Resources":                resources(c),
+	}
+}
 
 // ref of id.
 func ref(id string) Map {
@@ -405,26 +426,5 @@ func outputs(c *Config) Map {
 			"Description": "API Lambda function ARN",
 			"Value":       lambdaArn("FunctionName"),
 		},
-	}
-}
-
-// Config for the resource template.
-type Config struct {
-	// Zones already present in route53. This is used to
-	// ensure that existing zones previously set up, or
-	// automatically configured when purchasing a domain
-	// are not duplicated.
-	Zones []*route53.HostedZone
-
-	*up.Config
-}
-
-// template for the given config.
-func template(c *Config) Map {
-	return Map{
-		"AWSTemplateFormatVersion": "2010-09-09",
-		"Parameters":               parameters(c),
-		"Outputs":                  outputs(c),
-		"Resources":                resources(c),
 	}
 }
