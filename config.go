@@ -60,6 +60,9 @@ type Config struct {
 	// Profile is the AWS profile name to reference for credentials.
 	Profile string `json:"profile"`
 
+	// Local indicates if a local dev deployment to LocalStack should be made
+	Local bool `json:"local"`
+
 	// Inject rules.
 	Inject inject.Rules `json:"inject"`
 
@@ -87,6 +90,19 @@ type Config struct {
 	// DNS config.
 	DNS config.DNS `json:"dns"`
 }
+
+const (
+	// Cloudformation represents the Cloudformation API
+	Cloudformation = iota
+	// Route53 represents the Route53 API used for routing
+	Route53
+	// Lambda represents the Lambda API used for lambdas
+	Lambda
+	// Cloudwatch represents the CloudWatch API used for logs
+	Cloudwatch
+	// Metrics represents the Metrics API used for metrics
+	Metrics
+)
 
 // Validate implementation.
 func (c *Config) Validate() error {
@@ -245,6 +261,10 @@ func (c *Config) defaultRegions() error {
 	if len(c.Regions) != 0 {
 		log.Debugf("%d regions from config", len(c.Regions))
 		return nil
+	}
+
+	if c.Local {
+		log.Debug("deploying locally to localstack")
 	}
 
 	s, err := session.NewSessionWithOptions(session.Options{
@@ -445,4 +465,24 @@ func python(c *Config) {
 	if c.Hooks.Clean.IsEmpty() {
 		c.Hooks.Clean = config.Hook{`rm -r .pypath/`}
 	}
+}
+
+// GetEndpoint returns the correct API endpoint for LocalStack, or "" for AWS
+func (c *Config) GetEndpoint(api int) string {
+	if c.Local {
+		switch api {
+		case Cloudformation:
+			return "http://localhost:4581"
+		case Route53:
+			return "http://localhost:4580"
+		case Lambda:
+			return "http://localhost:4574"
+		case Cloudwatch:
+			return "http://localhost:4582"
+		default:
+			return ""
+		}
+	}
+
+	return ""
 }

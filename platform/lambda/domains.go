@@ -5,6 +5,8 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	r "github.com/aws/aws-sdk-go/service/route53domains"
 
+	"github.com/apex/log"
+	"github.com/apex/up"
 	"github.com/apex/up/platform"
 )
 
@@ -14,9 +16,11 @@ type Domains struct {
 }
 
 // NewDomains returns a new domain manager.
-func NewDomains() *Domains {
+func NewDomains(c *up.Config) *Domains {
+	e := c.GetEndpoint(up.Route53)
+	log.Debugf("Creating new AWS Route52 session with endpoint: %s", e)
 	return &Domains{
-		client: r.New(session.New(aws.NewConfig().WithRegion("us-east-1"))),
+		client: r.New(session.New(aws.NewConfig().WithRegion("us-east-1").WithEndpoint(e))),
 	}
 }
 
