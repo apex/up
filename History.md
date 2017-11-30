@@ -1,4 +1,18 @@
 
+v0.3.8 / 2017-11-30
+===================
+
+  * add {pre,post}{build,deploy} hooks
+  * add flushing of logs after [re]start. See #359
+  * add "w" for week to `ParseDuration()`
+  * refactor: fix Map for now
+  * refactor: use effective domain for CFN id
+  * refactor: add test for existing zone and apex domain
+  * refactor: add test for existing zone
+  * refactor: add test coverage for CFN resources
+  * fix hosted zones for sub-domains. Closes #447
+  * fix `.type` precedence when runtime files are detected. Closes #436
+
 v0.3.7 / 2017-11-24
 ===================
 
