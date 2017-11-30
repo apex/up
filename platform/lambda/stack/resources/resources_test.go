@@ -537,6 +537,36 @@ func Test_apiDomainDNSZone_existingZoneWithSubdomain(t *testing.T) {
 	assert.Equal(t, "SOMETHING", id)
 }
 
+func Test_apiDomainDNSZone_existingZoneWithApexdomain(t *testing.T) {
+	c := &Config{
+		Config: up.MustParseConfigString(`{
+      "name": "polls",
+      "stages": {
+        "production": {
+          "domain": "gh-polls.com"
+        }
+      }
+    }`),
+		Zones: []*route53.HostedZone{
+			{
+				Name: aws.String("gh-polls.com."),
+				Id:   aws.String("SOMETHING"),
+			},
+		},
+	}
+
+	r := New(c)["Resources"].(Map)
+
+	_, ok := r["DnsZoneGhPollsCom"].(Map)
+	assert.False(t, ok, "should not create hosted zone")
+
+	record, ok := r["DnsZoneGhPollsComRecordGhPollsCom"].(Map)
+	assert.True(t, ok, "should have A record")
+
+	id := record["Properties"].(Map)["HostedZoneId"]
+	assert.Equal(t, "SOMETHING", id)
+}
+
 func Example_apiDomainDNSManual() {
 	c := &Config{
 		Config: up.MustParseConfigString(`{
