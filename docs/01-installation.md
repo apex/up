@@ -7,7 +7,7 @@ Up is distributed in a binary form and can be installed manually via the [tarbal
 The quickest way to get `up` is to run the following command, which installs to to `/usr/local/bin` by default.
 
 ```
-$ curl -sfL https://raw.githubusercontent.com/apex/up/master/install.sh | sh
+$ curl -sf https://up.apex.sh/install | sh
 ```
 
 NPM's `up` package runs the same script as above.
