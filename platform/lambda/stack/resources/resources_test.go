@@ -5,8 +5,12 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"testing"
 
 	"github.com/apex/up"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/service/route53"
+	"github.com/tj/assert"
 )
 
 // keys returns keys from a map.
@@ -501,6 +505,36 @@ func Example_apiDomainDNSZone() {
 	//   },
 	//   "Type": "AWS::Route53::HostedZone"
 	// }
+}
+
+func Test_apiDomainDNSZone_existingZoneWithSubdomain(t *testing.T) {
+	c := &Config{
+		Config: up.MustParseConfigString(`{
+      "name": "polls",
+      "stages": {
+        "production": {
+          "domain": "api.gh-polls.com"
+        }
+      }
+    }`),
+		Zones: []*route53.HostedZone{
+			{
+				Name: aws.String("gh-polls.com."),
+				Id:   aws.String("SOMETHING"),
+			},
+		},
+	}
+
+	r := New(c)["Resources"].(Map)
+
+	_, ok := r["DnsZoneGhPollsCom"].(Map)
+	assert.False(t, ok, "should not create hosted zone")
+
+	record, ok := r["DnsZoneApiGhPollsComRecordApiGhPollsCom"].(Map)
+	assert.True(t, ok, "should have A record")
+
+	id := record["Properties"].(Map)["HostedZoneId"]
+	assert.Equal(t, "SOMETHING", id)
 }
 
 func Example_apiDomainDNSManual() {
