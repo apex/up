@@ -530,7 +530,7 @@ func Test_apiDomainDNSZone_existingZoneWithSubdomain(t *testing.T) {
 	_, ok := r["DnsZoneGhPollsCom"].(Map)
 	assert.False(t, ok, "should not create hosted zone")
 
-	record, ok := r["DnsZoneApiGhPollsComRecordApiGhPollsCom"].(Map)
+	record, ok := r["DnsZoneGhPollsComRecordApiGhPollsCom"].(Map)
 	assert.True(t, ok, "should have A record")
 
 	id := record["Properties"].(Map)["HostedZoneId"]

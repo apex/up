@@ -279,7 +279,7 @@ func stage(c *Config, s *config.Stage, m Map) {
 
 // stageAliasRecord configuration.
 func stageAliasRecord(c *Config, s *config.Stage, m Map, domainID string) {
-	id := util.Camelcase("dns_zone_%s_record_%s", s.Domain, s.Domain)
+	id := util.Camelcase("dns_zone_%s_record_%s", util.Domain(s.Domain), s.Domain)
 	zone := dnsZone(c, m, util.Domain(s.Domain))
 
 	m[id] = Map{
