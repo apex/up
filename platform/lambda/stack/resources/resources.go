@@ -345,7 +345,6 @@ func resources(c *Config) Map {
 	api(c, m)
 	dns(c, m)
 	alerting(c, m)
-
 	return m
 }
 
