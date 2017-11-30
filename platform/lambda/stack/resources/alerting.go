@@ -1,9 +1,8 @@
-package stack
+package resources
 
 import (
 	"strconv"
 
-	"github.com/apex/up"
 	"github.com/apex/up/config"
 	"github.com/apex/up/internal/util"
 )
@@ -14,7 +13,7 @@ func alertActionID(name string) string {
 }
 
 // alert resources.
-func alert(c *up.Config, a *config.Alert, m Map) {
+func alert(c *Config, a *config.Alert, m Map) {
 	period := a.Period.Seconds()
 	alertAction := ref(alertActionID(a.Action))
 	id := util.Camelcase("alert_%s_%s_%s_period_%d_threshold_%d", a.Namespace, a.Metric, a.Statistic, int(period), a.Threshold)
@@ -49,7 +48,7 @@ func alert(c *up.Config, a *config.Alert, m Map) {
 }
 
 // action resources.
-func action(c *up.Config, a *config.AlertAction, m Map) {
+func action(c *Config, a *config.AlertAction, m Map) {
 	id := alertActionID(a.Name)
 
 	m[id] = Map{
@@ -74,7 +73,7 @@ func action(c *up.Config, a *config.AlertAction, m Map) {
 }
 
 // alerting resources.
-func alerting(c *up.Config, m Map) {
+func alerting(c *Config, m Map) {
 	for _, a := range c.Alerting.Alerts {
 		alert(c, a, m)
 	}

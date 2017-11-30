@@ -387,7 +387,6 @@ func resources(c *Config) Map {
 	iam(c, m)
 	dns(c, m)
 	alerting(c, m)
-
 	return m
 }
 
