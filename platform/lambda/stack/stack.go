@@ -29,7 +29,7 @@ import (
 var defaultChangeset = "changes"
 
 // Map type.
-type Map map[string]interface{}
+type Map = resources.Map
 
 // Stack represents a single CloudFormation stack.
 type Stack struct {
