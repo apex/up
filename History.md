@@ -1,4 +1,12 @@
 
+v0.1.11-pro / 2017-11-30
+========================
+
+  * add support for listing secrets without last modified user name
+  * fix secrets listing when user ARN is not present. Closes #433
+  * refactor alerting into new resources sub-pkg
+  * Rebase
+
 v0.3.8 / 2017-11-30
 ===================
 
