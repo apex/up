@@ -333,6 +333,12 @@ v0.1.11-pro / 2017-11-30
   * refactor alerting into new resources sub-pkg
   * Rebase
 
+v0.2.0-pro / 2017-12-03
+=======================
+
+  * add hosted email alerting for nicer formatting
+  * change alert default `period` to 1m
+
 v0.1.11-pro / 2017-11-30
 ========================
 
