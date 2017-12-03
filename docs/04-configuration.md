@@ -872,8 +872,10 @@ An alert requires a `metric` such as request count or latency, statistic such as
 
 #### Optional settings
 
-- `period` – Period is the alert query time-span (default: `5m`)
+- `period` – Period is the alert query time-span (default: `1m`)
+- `evaluation_periods` – Number of periods to evaluate over (default: `1`)
 - `operator` – Operator is the comparison operator (default `>`)
 - `namespace` – Metric namespace (example: "AWS/ApiGateway")
+- `missing`– How to treat missing data (default: `missing`)
 - `disable` – Disable or mute the alert
 - `description` – Description of the alert

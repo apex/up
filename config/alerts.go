@@ -42,6 +42,14 @@ var statisticMap = map[string]string{
 	"maximum": "Maximum",
 }
 
+// missingData options.
+var missingData = []string{
+	"breaching",
+	"notBreaching",
+	"ignore",
+	"missing",
+}
+
 // AlertAction config.
 type AlertAction struct {
 	Name   string   `json:"name"`
@@ -70,17 +78,18 @@ func (a *AlertAction) Validate() error {
 
 // Alert config.
 type Alert struct {
-	Description string   `json:"description"`
-	Disable     bool     `json:"disable"`
-	Metric      string   `json:"metric"`
-	Namespace   string   `json:"namespace"`
-	Statistic   string   `json:"statistic"`
-	Operator    string   `json:"operator"`
-	Threshold   int      `json:"threshold"`
-	Period      Duration `json:"period"` // TODO: must be multiple of 60?
-	Stage       string   `json:"stage"`
-	Action      string   `json:"action"`
-	Missing     string   `json:"missing"`
+	Description       string   `json:"description"`
+	Disable           bool     `json:"disable"`
+	Metric            string   `json:"metric"`
+	Namespace         string   `json:"namespace"`
+	Statistic         string   `json:"statistic"`
+	Operator          string   `json:"operator"`
+	Threshold         int      `json:"threshold"`
+	Period            Duration `json:"period"` // TODO: must be multiple of 60?
+	EvaluationPeriods int      `json:"evaluation_periods"`
+	Stage             string   `json:"stage"`
+	Action            string   `json:"action"`
+	Missing           string   `json:"missing"`
 }
 
 // Default implementation.
@@ -90,11 +99,15 @@ func (a *Alert) Default() error {
 	}
 
 	if a.Missing == "" {
-		a.Missing = "ignore"
+		a.Missing = "missing"
 	}
 
 	if a.Period == 0 {
-		a.Period = Duration(time.Minute * 5)
+		a.Period = Duration(time.Minute)
+	}
+
+	if a.EvaluationPeriods == 0 {
+		a.EvaluationPeriods = 1
 	}
 
 	if s := a.Metric; s != "" {
@@ -128,6 +141,10 @@ func (a *Alert) Validate() error {
 		if err := validate.List(a.Statistic, util.StringMapKeys(statisticMap)); err != nil {
 			return errors.Wrap(err, ".statistic")
 		}
+	}
+
+	if err := validate.List(a.Missing, missingData); err != nil {
+		return errors.Wrap(err, ".missing")
 	}
 
 	if err := validate.RequiredString(a.Metric); err != nil {

@@ -1,7 +1,9 @@
 package resources
 
 import (
+	"fmt"
 	"strconv"
+	"strings"
 
 	"github.com/apex/up/config"
 	"github.com/apex/up/internal/util"
@@ -26,11 +28,11 @@ func alert(c *Config, a *config.Alert, m Map) {
 			"MetricName":         a.Metric,
 			"Namespace":          a.Namespace,
 			"Statistic":          a.Statistic,
+			"TreatMissingData":   a.Missing,
 			"Period":             period,
-			"EvaluationPeriods":  "1",
+			"EvaluationPeriods":  strconv.Itoa(a.EvaluationPeriods),
 			"Threshold":          strconv.Itoa(a.Threshold),
 			"ComparisonOperator": a.Operator,
-			"TreatMissingData":   a.Missing,
 			"OKActions":          []Map{alertAction},
 			"AlarmActions":       []Map{alertAction},
 			"Dimensions": []Map{
@@ -58,17 +60,17 @@ func action(c *Config, a *config.AlertAction, m Map) {
 		},
 	}
 
-	for _, email := range a.Emails {
-		sub := util.Camelcase("alert_action_%s_subscription_%s", a.Name, email)
+	emails := strings.Join(a.Emails, ",")
+	sub := util.Camelcase("alert_action_%s_subscription", a.Name)
+	url := fmt.Sprintf("https://up.apex.sh/alert?emails=%s", emails)
 
-		m[sub] = Map{
-			"Type": "AWS::SNS::Subscription",
-			"Properties": Map{
-				"Endpoint": email,
-				"Protocol": "email",
-				"TopicArn": ref(id),
-			},
-		}
+	m[sub] = Map{
+		"Type": "AWS::SNS::Subscription",
+		"Properties": Map{
+			"Endpoint": url,
+			"Protocol": "https",
+			"TopicArn": ref(id),
+		},
 	}
 }
 
