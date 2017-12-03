@@ -66,7 +66,7 @@ type Interface interface {
 	// managing domain names.
 	Domains() Domains
 
-	// URL returns the endpoitn for the given
+	// URL returns the endpoint for the given
 	// region and stage combination, or an
 	// empty string.
 	URL(region, stage string) (string, error)
