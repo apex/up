@@ -111,7 +111,7 @@ Lambda timeout is implied from the [Reverse Proxy](#configuration.reverse_proxy)
 
 ## Hook Scripts
 
-Up provides "hooks" which are commands invoked at certain points within the the deployment workflow for automating builds, linting and so on. The following hooks are available:
+Up provides "hooks" which are commands invoked at certain points within the deployment workflow for automating builds, linting and so on. The following hooks are available:
 
 - `prebuild` – Run before building
 - `build` – Run before building. Overrides inferred build command(s)
