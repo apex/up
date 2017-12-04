@@ -333,6 +333,11 @@ v0.1.11-pro / 2017-11-30
   * refactor alerting into new resources sub-pkg
   * Rebase
 
+v0.3.0-pro / 2017-12-03
+=======================
+
+  * add sms alerting support
+
 v0.2.0-pro / 2017-12-03
 =======================
 
