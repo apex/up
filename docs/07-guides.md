@@ -294,19 +294,25 @@ To do this you'll need to sign in to your registrar's site, and configure the na
 ```
 $ up stack
 
-status: Created
+Staging
 
-development (isatty.com):
+  domain: stage.up-example.com
+  endpoint: d2od0udp1p8bru.cloudfront.net
 
-• ns-1315.awsdns-36.org
-• ns-1911.awsdns-46.co.uk
-• ns-700.awsdns-23.net
-• ns-481.awsdns-60.com
+Production
+
+  domain: up-example.com
+  endpoint: d72wsqljqg5cy.cloudfront.net
+  nameservers:
+   • ns-1495.awsdns-58.org
+   • ns-103.awsdns-12.com
+   • ns-1670.awsdns-16.co.uk
+   • ns-659.awsdns-18.net
 ```
 
 Save those four values in your registrar's interface, and you should be good to go! Note that altering DNS records can take some time to propagate.
 
-### Mapping Sub-Domains from External Registrars
+### Mapping with Third-party DNS
 
 If you manage DNS with a third-party such as Cloudflare, and wish to use Up only for deployment you will need to manually edit or add DNS records.
 
@@ -324,7 +330,6 @@ Production
 
   domain: up-example.com
   endpoint: d72wsqljqg5cy.cloudfront.net
-
   nameservers:
    • ns-1495.awsdns-58.org
    • ns-103.awsdns-12.com

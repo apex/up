@@ -170,7 +170,6 @@ func (r *reporter) Start() {
 			case "platform.stack.show.stack.events":
 				util.LogTitle("Events")
 			case "platform.stack.show.nameservers":
-				fmt.Printf("\n")
 				util.Log("nameservers:")
 				for _, ns := range e.Strings("nameservers") {
 					fmt.Printf("      • %s\n", ns)
