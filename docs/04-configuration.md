@@ -837,7 +837,7 @@ An action must be defined in order to notify your team of triggered and resolved
 
 #### Email
 
-The email action notify your team via email.
+The email action notifies your team via email.
 
 ```json
 {
@@ -849,7 +849,7 @@ The email action notify your team via email.
 
 #### SMS
 
-The sms action notify your team via sms text message.
+The sms action notifies your team via sms text message.
 
 ```json
 {
