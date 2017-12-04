@@ -833,7 +833,7 @@ The Pro version of Up supports defining alerts which can notify your team when y
 
 ### Defining Actions
 
-An action must be defined in order to notify your team of triggered and resolved  alerts. The action requires a `name`, which can be any string such "backend", "frontend_team", "email.backend", "email backend", whichever you prefer.
+An action must be defined in order to notify your team of triggered and resolved  alerts. The action requires a `name`, which can be any string such as `backend`, `frontend_team`, `email.backend`, `email backend` – whichever you prefer.
 
 #### Email
 
