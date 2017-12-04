@@ -9,6 +9,9 @@ import (
 	"github.com/pkg/errors"
 )
 
+// types of action.
+var types = []string{"email", "sms"}
+
 // namespace mappings.
 var namespaceMap = map[string]string{
 	"http": "AWS/ApiGateway",
@@ -52,9 +55,10 @@ var missingData = []string{
 
 // AlertAction config.
 type AlertAction struct {
-	Name   string   `json:"name"`
-	Type   string   `json:"type"`
-	Emails []string `json:"emails"`
+	Name    string   `json:"name"`
+	Type    string   `json:"type"`
+	Emails  []string `json:"emails"`
+	Numbers []string `json:"numbers"`
 }
 
 // Validate implementation.
@@ -63,13 +67,18 @@ func (a *AlertAction) Validate() error {
 		return errors.Wrap(err, ".name")
 	}
 
-	if err := validate.List(a.Type, []string{"email"}); err != nil {
+	if err := validate.List(a.Type, types); err != nil {
 		return errors.Wrap(err, ".type")
 	}
 
-	if a.Type == "email" {
+	switch a.Type {
+	case "email":
 		if err := validate.MinStrings(a.Emails, 1); err != nil {
 			return errors.Wrap(err, ".emails")
+		}
+	case "sms":
+		if err := validate.MinStrings(a.Numbers, 1); err != nil {
+			return errors.Wrap(err, ".numbers")
 		}
 	}
 

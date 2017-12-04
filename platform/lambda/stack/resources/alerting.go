@@ -2,6 +2,7 @@ package resources
 
 import (
 	"fmt"
+	"net/url"
 	"strconv"
 	"strings"
 
@@ -60,6 +61,26 @@ func action(c *Config, a *config.AlertAction, m Map) {
 		},
 	}
 
+	v := url.Values{}
+	v.Add("type", a.Type)
+	v.Add("emails", strings.Join(a.Emails, ","))
+	v.Add("numbers", strings.Join(a.Numbers, ","))
+
+	sub := util.Camelcase("alert_action_%s_subscription", a.Name)
+	url := fmt.Sprintf("https://up.apex.sh/alert?%s", v.Encode())
+
+	m[sub] = Map{
+		"Type": "AWS::SNS::Subscription",
+		"Properties": Map{
+			"Endpoint": url,
+			"Protocol": "https",
+			"TopicArn": ref(id),
+		},
+	}
+}
+
+// actionEmail resource.
+func actionEmail(c *Config, a *config.AlertAction, m Map, id string) {
 	emails := strings.Join(a.Emails, ",")
 	sub := util.Camelcase("alert_action_%s_subscription", a.Name)
 	url := fmt.Sprintf("https://up.apex.sh/alert?emails=%s", emails)
