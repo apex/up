@@ -6,7 +6,7 @@ title: Guides
 
 Up Pro provides additional features which are not available in the open-source version, such as encrypted environment variables, alerting support and more.
 
-First sign in to the platform with the following command, you'll receive an email for confirmation.
+First sign into the platform with the following command, you'll receive an email for confirmation.
 
 ```
 $ up account login
@@ -16,7 +16,7 @@ $ up account login
 
 ```
 
-Click the link in your email and you're signed in! Next you'll need to add a credit card. Note that this information is transmitted to Stripe directly via HTTPS, it never touches the Apex servers.
+Click the link in your email and you're signed in! Next, you'll need to add a credit card. Note that this information is transmitted to Stripe directly via HTTPS, it never touches the Apex servers.
 
 ```
 $ up account cards add
@@ -40,7 +40,7 @@ Then subscribe to Pro!
 $ up account subscribe
 ```
 
-Now whenever you upgrade via `up upgrade`, you'll receive the latest version of Up Pro instead of the open-source distribution:
+Once signed-in future you can run `up upgrade` to install the latest version of Up Pro instead of the open-source distribution:
 
 ```
 $ up upgrade
