@@ -13,7 +13,6 @@ import (
 	"github.com/tj/go-spin"
 	"github.com/tj/go/term"
 
-	"github.com/apex/up/config"
 	"github.com/apex/up/internal/colors"
 	"github.com/apex/up/internal/util"
 	"github.com/apex/up/platform/event"
@@ -168,6 +167,14 @@ func (r *reporter) Start() {
 				if reason := s.StackStatusReason; reason != nil {
 					util.LogName("reason", *reason)
 				}
+			case "platform.stack.show.stack.events":
+				util.LogTitle("Events")
+			case "platform.stack.show.nameservers":
+				fmt.Printf("\n")
+				util.Log("nameservers:")
+				for _, ns := range e.Strings("nameservers") {
+					fmt.Printf("      • %s\n", ns)
+				}
 			case "platform.stack.show.stack.event":
 				event := e.Fields["event"].(*cloudformation.StackEvent)
 				status := stack.Status(*event.ResourceStatus)
@@ -177,12 +184,12 @@ func (r *reporter) Start() {
 					r.log(*event.LogicalResourceId, status.String())
 				}
 			case "platform.stack.show.stage":
-				stage := e.Fields["stage"].(*config.Stage)
-				util.LogPad("%s (%s) nameservers:", colors.Purple(stage.Name), stage.Domain)
-			case "platform.stack.show.stage.complete":
-				fmt.Printf("\n")
-			case "platform.stack.show.nameserver":
-				fmt.Printf("      • %s\n", e.String("nameserver"))
+				util.LogTitle(strings.Title(e.String("name")))
+				if s := e.String("domain"); s != "" {
+					util.LogName("domain", e.String("domain"))
+				}
+			case "platform.stack.show.domain":
+				util.LogName("endpoint", e.String("endpoint"))
 			case "stack.plan":
 				fmt.Printf("\n")
 			case "platform.stack.plan.change":

@@ -60,6 +60,15 @@ type Event struct {
 	Fields Fields
 }
 
+// Strings value.
+func (e *Event) Strings(name string) []string {
+	v, ok := e.Fields[name].([]string)
+	if !ok {
+		panic(fmt.Errorf("%#v field %s is not []string", e, name))
+	}
+	return v
+}
+
 // String value.
 func (e *Event) String(name string) string {
 	v, ok := e.Fields[name].(string)

@@ -249,6 +249,11 @@ func Log(msg string, v ...interface{}) {
 	fmt.Printf("     %s\n", colors.Purple(fmt.Sprintf(msg, v...)))
 }
 
+// LogTitle outputs a log title.
+func LogTitle(msg string, v ...interface{}) {
+	fmt.Printf("\n     \x1b[1m%s\x1b[m\n\n", fmt.Sprintf(msg, v...))
+}
+
 // LogName outputs a log message with name.
 func LogName(name, msg string, v ...interface{}) {
 	fmt.Printf("     %s %s\n", colors.Purple(name+":"), fmt.Sprintf(msg, v...))

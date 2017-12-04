@@ -287,7 +287,7 @@ Once available https://up-example.com will always point to production via `up de
 
 ### Mapping Domains from External Registrars
 
-If you purchased a domain via `up domains buy` then you can skip this step, however if you used an external registrar such as Godaddy you will need to delegate to AWS for DNS management.
+If you purchased a domain via `up domains buy` you can skip this step, however if you used an external registrar such as Godaddy you will need to delegate to AWS for DNS management.
 
 To do this you'll need to sign in to your registrar's site, and configure the nameservers. To figure out what values to use for the nameservers, run `up stack`, which outputs the NS records for the apex (top-level) domains of your application.
 
@@ -305,6 +305,32 @@ development (isatty.com):
 ```
 
 Save those four values in your registrar's interface, and you should be good to go! Note that altering DNS records can take some time to propagate.
+
+### Mapping Sub-Domains from External Registrars
+
+If you manage DNS with a third-party such as Cloudflare, and wish to use Up only for deployment you will need to manually edit or add DNS records.
+
+For example if your domain `sloths.com` is managed by Cloudflare and you'd like point `api.sloths.com` to your app, you will need to create a `CNAME` for `api.sloths.com` pointing to the `endpoint` for the stage you'd like to map. Use `up stack` after your app is deployed as shown here to obtain this information.
+
+```
+$ up stack
+
+Staging
+
+  domain: stage.up-example.com
+  endpoint: d2od0udp1p8bru.cloudfront.net
+
+Production
+
+  domain: up-example.com
+  endpoint: d72wsqljqg5cy.cloudfront.net
+
+  nameservers:
+   • ns-1495.awsdns-58.org
+   • ns-103.awsdns-12.com
+   • ns-1670.awsdns-16.co.uk
+   • ns-659.awsdns-18.net
+ ```
 
 ### Stack Changes
 

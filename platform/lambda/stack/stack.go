@@ -8,6 +8,7 @@ import (
 
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/apigateway"
 	"github.com/aws/aws-sdk-go/service/cloudformation"
 	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/aws/aws-sdk-go/service/route53"
@@ -15,6 +16,7 @@ import (
 
 	"github.com/apex/log"
 	"github.com/apex/up"
+	"github.com/apex/up/config"
 	"github.com/apex/up/internal/util"
 	"github.com/apex/up/platform/event"
 	"github.com/apex/up/platform/lambda/stack/resources"
@@ -33,24 +35,26 @@ type Map = resources.Map
 
 // Stack represents a single CloudFormation stack.
 type Stack struct {
-	client  *cloudformation.CloudFormation
-	lambda  *lambda.Lambda
-	route53 *route53.Route53
-	events  event.Events
-	zones   []*route53.HostedZone
-	config  *up.Config
+	client     *cloudformation.CloudFormation
+	lambda     *lambda.Lambda
+	route53    *route53.Route53
+	apigateway *apigateway.APIGateway
+	events     event.Events
+	zones      []*route53.HostedZone
+	config     *up.Config
 }
 
 // New stack.
 func New(c *up.Config, events event.Events, zones []*route53.HostedZone, region string) *Stack {
 	sess := session.New(aws.NewConfig().WithRegion(region))
 	return &Stack{
-		client:  cloudformation.New(sess),
-		lambda:  lambda.New(sess),
-		route53: route53.New(sess),
-		events:  events,
-		zones:   zones,
-		config:  c,
+		client:     cloudformation.New(sess),
+		lambda:     lambda.New(sess),
+		route53:    route53.New(sess),
+		apigateway: apigateway.New(sess),
+		events:     events,
+		zones:      zones,
+		config:     c,
 	}
 }
 
@@ -154,9 +158,22 @@ func (s *Stack) Show() error {
 		"stack": stack,
 	})
 
-	// show nameservers
-	if err := s.showNameservers(); err != nil {
-		return errors.Wrap(err, "showing nameservers")
+	// stages
+	for _, stage := range s.config.Stages.List() {
+		s.events.Emit("platform.stack.show.stage", event.Fields{
+			"name":   stage.Name,
+			"domain": stage.Domain,
+		})
+
+		// show cloudfront endpoint
+		if err := s.showCloudfront(stage); err != nil {
+			return errors.Wrap(err, "showing cloufront")
+		}
+
+		// show nameservers
+		if err := s.showNameservers(stage); err != nil {
+			return errors.Wrap(err, "showing nameservers")
+		}
 	}
 
 	// skip events if everything is ok
@@ -165,6 +182,8 @@ func (s *Stack) Show() error {
 	}
 
 	// show events
+	s.events.Emit("platform.stack.show.stack.events", nil)
+
 	events, err := s.getFailedEvents()
 	if err != nil {
 		return errors.Wrap(err, "fetching latest events")
@@ -397,51 +416,69 @@ func (s *Stack) report(states map[string]Status) error {
 	return nil
 }
 
-// showNameservers emits events for listing name servers.
-func (s *Stack) showNameservers() error {
-	s.events.Emit("platform.stack.show.nameservers", nil)
-
-	for _, stage := range s.config.Stages.List() {
-		if stage.Domain == "" {
-			continue
-		}
-
-		res, err := s.route53.ListHostedZonesByName(&route53.ListHostedZonesByNameInput{
-			DNSName:  &stage.Domain,
-			MaxItems: aws.String("1"),
-		})
-
-		if err != nil {
-			return errors.Wrap(err, "listing hosted zone")
-		}
-
-		if len(res.HostedZones) == 0 {
-			continue
-		}
-
-		z := res.HostedZones[0]
-		if stage.Domain+"." != *z.Name {
-			continue
-		}
-
-		zone, err := s.route53.GetHostedZone(&route53.GetHostedZoneInput{
-			Id: z.Id,
-		})
-
-		if err != nil {
-			return errors.Wrap(err, "fetching hosted zone")
-		}
-
-		defer s.events.Time("platform.stack.show.stage", event.Fields{
-			"stage": stage,
-		})()
-
-		for _, ns := range zone.DelegationSet.NameServers {
-			s.events.Emit("platform.stack.show.nameserver", event.Fields{
-				"nameserver": *ns,
-			})
-		}
+// showCloudfront emits events for listing cloudfront end-points.
+func (s *Stack) showCloudfront(stage *config.Stage) error {
+	if stage.Domain == "" {
+		return nil
 	}
+
+	res, err := s.apigateway.GetDomainName(&apigateway.GetDomainNameInput{
+		DomainName: &stage.Domain,
+	})
+
+	if err != nil {
+		return errors.Wrap(err, "getting domain mapping")
+	}
+
+	s.events.Emit("platform.stack.show.domain", event.Fields{
+		"domain":   stage.Domain,
+		"endpoint": *res.DistributionDomainName,
+	})
+
+	return nil
+}
+
+// showNameservers emits events for listing name servers.
+func (s *Stack) showNameservers(stage *config.Stage) error {
+	if stage.Domain == "" {
+		return nil
+	}
+
+	res, err := s.route53.ListHostedZonesByName(&route53.ListHostedZonesByNameInput{
+		DNSName:  &stage.Domain,
+		MaxItems: aws.String("1"),
+	})
+
+	if err != nil {
+		return errors.Wrap(err, "listing hosted zone")
+	}
+
+	if len(res.HostedZones) == 0 {
+		return nil
+	}
+
+	z := res.HostedZones[0]
+	if stage.Domain+"." != *z.Name {
+		return nil
+	}
+
+	zone, err := s.route53.GetHostedZone(&route53.GetHostedZoneInput{
+		Id: z.Id,
+	})
+
+	if err != nil {
+		return errors.Wrap(err, "fetching hosted zone")
+	}
+
+	var ns []string
+
+	for _, s := range zone.DelegationSet.NameServers {
+		ns = append(ns, *s)
+	}
+
+	s.events.Emit("platform.stack.show.nameservers", event.Fields{
+		"nameservers": ns,
+	})
 
 	return nil
 }
