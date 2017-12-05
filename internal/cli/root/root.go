@@ -38,6 +38,7 @@ func init() {
 	region := Cmd.Flag("region", "Override the region.").Short('r').String()
 	workdir := Cmd.Flag("chdir", "Change working directory.").Default(".").Short('C').String()
 	verbose := Cmd.Flag("verbose", "Enable verbose log output.").Short('v').Bool()
+	format := Cmd.Flag("format", "Output formatter.").Default("text").String()
 
 	Cmd.PreAction(func(ctx *kingpin.ParseContext) error {
 		os.Chdir(*workdir)
@@ -61,9 +62,12 @@ func init() {
 			events := make(event.Events)
 			p := up.New(c, events).WithPlatform(lambda.New(c, events))
 
-			if *verbose {
+			switch {
+			case *verbose:
 				go reporter.Discard(events)
-			} else {
+			case *format == "plain":
+				go reporter.Plain(events)
+			default:
 				go reporter.Text(events)
 			}
 

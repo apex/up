@@ -1,6 +1,5 @@
-// Package reporter provides event-based reporting for the CLI,
-// aka this is what the user sees.
-package reporter
+// Package text provides a reporter for humanized interactive events.
+package text
 
 import (
 	"fmt"
@@ -25,8 +24,8 @@ import (
 // TODO: typed events would be nicer.. refactor event names
 // TODO: refactor, this is a hot mess :D
 
-// Text outputs human friendly textual reporting.
-func Text(events <-chan *event.Event) {
+// Report events.
+func Report(events <-chan *event.Event) {
 	r := reporter{
 		events:  events,
 		spinner: spin.New(),

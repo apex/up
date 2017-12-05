@@ -405,7 +405,7 @@ Now that configuration is prepared, you'll need to install Up using the followin
 
 ```
 $ sudo chown -R $(whoami) /usr/local/bin
-$ curl -sfL https://raw.githubusercontent.com/apex/up/master/install.sh | sh
+$ curl -sf https://up.apex.sh/install | sh
 ```
 
 If you're on Up Pro you'll need to upgrade to install the Pro binary:
@@ -418,6 +418,12 @@ After that all you need to do is deploy to your desired stage!
 
 ```
 $ up deploy production
+```
+
+Note that you can disable colored output which may display better your CI provider logs:
+
+```
+$ up --format=plain deploy production
 ```
 
 ## Mastering Logging
