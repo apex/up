@@ -7,11 +7,10 @@ import (
 
 // Stage config.
 type Stage struct {
-	Domain       string `json:"domain"`
-	Path         string `json:"path"`
-	Cert         string `json:"cert"`
-	Name         string `json:"-"`
-	HostedZoneID string `json:"-"`
+	Domain string `json:"domain"`
+	Path   string `json:"path"`
+	Cert   string `json:"cert"`
+	Name   string `json:"-"`
 }
 
 // Stages config.

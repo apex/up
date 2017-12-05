@@ -175,7 +175,7 @@ Flags:
   -v, --verbose        Enable verbose log output.
       --version        Show application version.
   -f, --follow         Follow or tail the live logs.
-  -s, --since="5m"     Show logs since duration (30s, 5m, 2h, 1h30m, 3d, 1M).
+  -s, --since="1d"     Show logs since duration (30s, 5m, 2h, 1h30m, 3d, 1M).
   -e, --expand         Show expanded logs.
 
 Args:
@@ -238,7 +238,7 @@ Yielding:
 
 ### Examples
 
-Show logs from the past 5 minutes.
+Show logs from the past day.
 
 ```
 $ up logs
@@ -250,10 +250,10 @@ Show logs from the past 45 minutes.
 $ up -s 45m logs
 ```
 
-Show logs from the past 24 hours.
+Show logs from the past 12 hours.
 
 ```
-$ up -s 24h logs
+$ up -s 12h logs
 ```
 
 Show live log output.

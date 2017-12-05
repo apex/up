@@ -79,7 +79,9 @@ func (l *Log) fetch(nextToken *string, start int64, ch chan<- *Event) (*string, 
 
 	for _, event := range res.Events {
 		start = *event.Timestamp + 1
+		sec := *event.Timestamp / 1000
 		ch <- &Event{
+			Timestamp: time.Unix(sec, 0),
 			GroupName: l.GroupName,
 			Message:   *event.Message,
 		}

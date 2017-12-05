@@ -11,31 +11,94 @@ import (
 	"github.com/pkg/errors"
 )
 
-// TODO: support env var for CI
+var (
+	// configDir is the dir name where up config is stored relative to HOME.
+	configDir = ".up"
 
-// configDir is the dir name where up config is stored relative to HOME.
-var configDir = ".up"
+	// envName is the environment variable which can be used to store
+	// Up's configuration, primarily for continuous integration.
+	envName = "UP_CONFIG"
+)
 
-// Config is the configuration for the user. The signed Token is the
-// source of truth, other values are purely informational.
-type Config struct {
-	Token string `json:"token"`
+// Team is the user configuration for a given team.
+type Team struct {
+	// ID is the team identifier.
+	ID string `json:"team"`
+
+	// Email is the user's email.
 	Email string `json:"email"`
+
+	// Token is the access token.
+	Token string `json:"token"`
 }
 
-// Require returns the user config and errors when unauthenticated.
-func Require() (*Config, error) {
+// IsPersonal returns true if it is a personal team.
+func (t *Team) IsPersonal() bool {
+	if t.Email == t.ID {
+		return true
+	}
+
+	return false
+}
+
+// Config is the user configuration.
+type Config struct {
+	// Team is the active team.
+	Team string `json:"team"`
+
+	// Teams is the user's active teams.
+	Teams map[string]*Team `json:"teams"`
+}
+
+// initTeams inits the map.
+func (c *Config) initTeams() {
+	if c.Teams == nil {
+		c.Teams = make(map[string]*Team)
+	}
+}
+
+// AddTeam adds or replaces the given team.
+func (c *Config) AddTeam(t *Team) {
+	c.initTeams()
+	c.Teams[t.ID] = t
+}
+
+// GetTeams returns a list of teams.
+func (c *Config) GetTeams() (teams []*Team) {
+	for _, t := range c.Teams {
+		teams = append(teams, t)
+	}
+	return
+}
+
+// GetTeam returns a team by id or nil
+func (c *Config) GetTeam(id string) *Team {
+	return c.Teams[id]
+}
+
+// GetActiveTeam returns the active team.
+func (c *Config) GetActiveTeam() *Team {
+	return c.GetTeam(c.Team)
+}
+
+// Authenticated returns true if the user has an active team.
+func (c *Config) Authenticated() bool {
+	return c.GetActiveTeam() != nil
+}
+
+// Require requires authentication and returns the active team.
+func Require() (*Team, error) {
 	var c Config
 
 	if err := c.Load(); err != nil {
 		return nil, errors.Wrap(err, "loading config")
 	}
 
-	if c.Token == "" {
+	if !c.Authenticated() {
 		return nil, errors.New("user credentials missing, make sure to `up account login` first")
 	}
 
-	return &c, nil
+	return c.GetActiveTeam(), nil
 }
 
 // Alter config, loading and saving after manipulation.
@@ -62,6 +125,15 @@ func (c *Config) Load() error {
 		return errors.Wrap(err, "getting path")
 	}
 
+	// env
+	if s := os.Getenv(envName); s != "" {
+		if err := json.Unmarshal([]byte(s), &c); err != nil {
+			return errors.Wrap(err, "unmarshaling")
+		}
+		return nil
+	}
+
+	// file
 	b, err := ioutil.ReadFile(path)
 
 	if os.IsNotExist(err) {

@@ -6,7 +6,7 @@ Up focuses on deploying "vanilla" HTTP servers so there's nothing new to learn, 
 
 Up currently supports Node.js, Golang, Python, Java, Crystal, and static sites out of the box. Up is platform-agnostic, supporting AWS Lambda and API Gateway as the first targets. You can think of Up as self-hosted Heroku style user experience for a fraction of the price, with the security, flexibility, and scalability of AWS.
 
-Check out the [documentation](https://apex.github.io/up/) for more instructions, try one of the [examples](https://github.com/apex/up-examples), or chat with us in [Slack](https://apex-slackin.herokuapp.com/).
+Check out the [documentation](https://up.docs.apex.sh/) for more instructions, try one of the [examples](https://github.com/apex/up-examples), or chat with us in [Slack](https://apex-slackin.herokuapp.com/).
 
 ![](assets/screen.png)
 
@@ -18,15 +18,14 @@ Open source community edition.
 
 ## Pro Features
 
-Close sourced pro edition: Coming less soon.
+Up Pro is **$20/mo USD** for unlimited use within your company, with no additional cost per team member. Up Pro is currently in early-access alpha, please use the **up-early-adopter-57AAA8693354** coupon for 50% off indefinitely. Head over to [Subscribing to Up Pro](https://up.docs.apex.sh/#guides.subscribing_to_up_pro) to get started.
+
+Note that the following Pro features are currently available:
+
+ - Encrypted env variables
+ - Alerting
 
 ![Pro edition features](assets/features-pro.png)
-
-## Pricing
-
-Updated as of July 2017 based on public information. Some services offer a restricted free version, or free access for solo developers – this table is based on commercial use.
-
-![Pricing comparison table](assets/pricing.png)
 
 ## Quick Start
 
@@ -64,7 +63,7 @@ $ up url --open
 
 ## Community
 
-- [Documentation](https://apex.github.io/up/)
+- [Documentation](https://up.docs.apex.sh/)
 - [Example applications](https://github.com/apex/up-examples)
 - [Twitter](https://twitter.com/tjholowaychuk)
 - [Slack](https://apex-slackin.herokuapp.com/) to chat with apex(1) and up(1) community members

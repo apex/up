@@ -106,11 +106,11 @@ func (s Status) Color(v string) string {
 // State returns a generalized state.
 func (s Status) State() State {
 	switch s {
-	case CreateFailed, UpdateFailed, DeleteFailed, RollbackFailed, Failed:
+	case CreateFailed, UpdateFailed, DeleteFailed, RollbackFailed, Failed, UpdateRollbackCompleteCleanup, UpdateRollbackComplete:
 		return Failure
 	case CreateInProgress, UpdateInProgress, DeleteInProgress, RollbackInProgress, CreatePending, UpdateRollbackInProgress:
 		return Pending
-	case CreateComplete, UpdateComplete, DeleteComplete, DeleteSkipped, RollbackComplete, UpdateCompleteCleanup, UpdateRollbackCompleteCleanup, UpdateRollbackComplete:
+	case CreateComplete, UpdateComplete, DeleteComplete, DeleteSkipped, RollbackComplete, UpdateCompleteCleanup:
 		return Success
 	default:
 		panic(fmt.Sprintf("unhandled state %q", string(s)))

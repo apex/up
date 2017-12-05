@@ -41,6 +41,16 @@ func TestParseDuration(t *testing.T) {
 		assert.Equal(t, time.Duration(float64(time.Hour*24)*1.5), v)
 	})
 
+	t.Run("week", func(t *testing.T) {
+		v, err := ParseDuration("1w")
+		assert.NoError(t, err, "parsing")
+		assert.Equal(t, time.Hour*24*7, v)
+
+		v, err = ParseDuration("2w")
+		assert.NoError(t, err, "parsing")
+		assert.Equal(t, time.Hour*24*7*2, v)
+	})
+
 	t.Run("month", func(t *testing.T) {
 		v, err := ParseDuration("1mo")
 		assert.NoError(t, err, "parsing")
@@ -62,4 +72,14 @@ func TestParseDuration(t *testing.T) {
 		assert.NoError(t, err, "parsing")
 		assert.Equal(t, 15*time.Minute, v)
 	})
+}
+
+func TestDomain(t *testing.T) {
+	assert.Equal(t, "example.com", Domain("example.com"))
+	assert.Equal(t, "example.com", Domain("api.example.com"))
+	assert.Equal(t, "example.com", Domain("v1.api.example.com"))
+
+	assert.Equal(t, "example.co.uk", Domain("example.co.uk"))
+	assert.Equal(t, "example.co.uk", Domain("api.example.co.uk"))
+	assert.Equal(t, "example.co.uk", Domain("v1.api.example.co.uk"))
 }

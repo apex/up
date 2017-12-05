@@ -2,6 +2,8 @@
 package util
 
 import (
+	"crypto/md5"
+	"encoding/hex"
 	"encoding/json"
 	"fmt"
 	"io/ioutil"
@@ -20,6 +22,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/tj/backoff"
 	"github.com/tj/go-progress"
+	"golang.org/x/net/publicsuffix"
 )
 
 // Fields retained when clearing.
@@ -110,9 +113,14 @@ func Fatal(err error) {
 	os.Exit(1)
 }
 
-// IsJSON returns true if the msg looks like json.
+// IsJSON returns true if the string looks like json.
 func IsJSON(s string) bool {
 	return len(s) > 1 && s[0] == '{' && s[len(s)-1] == '}'
+}
+
+// IsJSONLog returns true if the string looks likes a json log.
+func IsJSONLog(s string) bool {
+	return IsJSON(s) && strings.Contains(s, `"level"`)
 }
 
 // IsNotFound returns true if err is not nil and represents a missing resource.
@@ -241,6 +249,11 @@ func Log(msg string, v ...interface{}) {
 	fmt.Printf("     %s\n", colors.Purple(fmt.Sprintf(msg, v...)))
 }
 
+// LogTitle outputs a log title.
+func LogTitle(msg string, v ...interface{}) {
+	fmt.Printf("\n     \x1b[1m%s\x1b[m\n\n", fmt.Sprintf(msg, v...))
+}
+
 // LogName outputs a log message with name.
 func LogName(name, msg string, v ...interface{}) {
 	fmt.Printf("     %s %s\n", colors.Purple(name+":"), fmt.Sprintf(msg, v...))
@@ -297,6 +310,10 @@ func ParseDuration(s string) (d time.Duration, err error) {
 		var v float64
 		_, err = fmt.Fscanf(r, "%fd", &v)
 		d = time.Duration(v * float64(24*time.Hour))
+	case strings.HasSuffix(s, "w"):
+		var v float64
+		_, err = fmt.Fscanf(r, "%fw", &v)
+		d = time.Duration(v * float64(24*time.Hour*7))
 	case strings.HasSuffix(s, "mo"):
 		var v float64
 		_, err = fmt.Fscanf(r, "%fmo", &v)
@@ -310,4 +327,23 @@ func ParseDuration(s string) (d time.Duration, err error) {
 	}
 
 	return
+}
+
+// Md5 returns an md5 hash for s.
+func Md5(s string) string {
+	h := md5.New()
+	h.Write([]byte(s))
+	return hex.EncodeToString(h.Sum(nil))
+}
+
+// Domain returns the effective domain. For example
+// the string "api.example.com" becomes "example.com",
+// while "api.example.co.uk" becomes "example.co.uk".
+func Domain(s string) string {
+	d, err := publicsuffix.EffectiveTLDPlusOne(s)
+	if err != nil {
+		panic(errors.Wrap(err, "effective domain"))
+	}
+
+	return d
 }

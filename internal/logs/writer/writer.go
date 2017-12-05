@@ -13,10 +13,8 @@ import (
 	"github.com/pkg/errors"
 )
 
-// TODO: rename "app" field
-
 // New writer with the given log level.
-func New(l log.Level) *Writer {
+func New(l log.Level, ctx log.Interface) *Writer {
 	pr, pw := io.Pipe()
 
 	w := &Writer{
@@ -26,7 +24,7 @@ func New(l log.Level) *Writer {
 	}
 
 	lw := &logWriter{
-		log:   log.WithField("app", true),
+		log:   ctx,
 		level: l,
 	}
 
@@ -64,15 +62,14 @@ type logWriter struct {
 
 // Write implementation.
 func (w *logWriter) Write(b []byte) (int, error) {
-	if util.IsJSON(string(b)) {
+	if util.IsJSONLog(string(b)) {
 		return w.writeJSON(b)
 	}
 
 	return w.writeText(b)
 }
 
-// writeJSON writes a json log,
-// interpreting it as a log.Entry.
+// writeJSON writes a json log, interpreting it as a log.Entry.
 func (w *logWriter) writeJSON(b []byte) (int, error) {
 	// TODO: make this less ugly in apex/log,
 	// you should be able to write an arbitrary Entry.

@@ -13,7 +13,6 @@ import (
 	"github.com/tj/go-spin"
 	"github.com/tj/go/term"
 
-	"github.com/apex/up/config"
 	"github.com/apex/up/internal/colors"
 	"github.com/apex/up/internal/util"
 	"github.com/apex/up/platform/event"
@@ -54,6 +53,11 @@ func (r *reporter) spin() {
 	}
 }
 
+// clear the liner.
+func (r *reporter) clear() {
+	term.ClearLine()
+}
+
 // pending log with spinner.
 func (r *reporter) pending(name, value string) {
 	r.pendingName = name
@@ -79,9 +83,14 @@ func (r *reporter) completeWithoutDuration(name, value string) {
 	fmt.Printf("\r     %s %s\n", colors.Purple(name+":"), value)
 }
 
-// log line
+// log line.
 func (r *reporter) log(name, value string) {
 	fmt.Printf("\r     %s %s\n", colors.Purple(name+":"), value)
+}
+
+// error line.
+func (r *reporter) error(name, value string) {
+	fmt.Printf("\r     %s %s\n", colors.Red(name+":"), value)
 }
 
 // Start handling events.
@@ -104,7 +113,7 @@ func (r *reporter) Start() {
 			case "hook":
 				r.pending("hook", e.String("name"))
 			case "hook.complete":
-				r.complete("hook", e.String("name"), e.Duration("duration"))
+				r.clear()
 			case "deploy", "stack.delete", "platform.stack.apply":
 				term.HideCursor()
 			case "deploy.complete", "stack.delete.complete", "platform.stack.apply.complete":
@@ -154,15 +163,32 @@ func (r *reporter) Start() {
 				fmt.Printf("\n")
 			case "platform.stack.show.stack":
 				s := e.Fields["stack"].(*cloudformation.Stack)
-				fmt.Printf("  %s: %s\n", colors.Purple("status"), stack.Status(*s.StackStatus))
+				util.LogName("status", "%s", stack.Status(*s.StackStatus))
 				if reason := s.StackStatusReason; reason != nil {
-					fmt.Printf("  %s: %s\n", colors.Purple("reason"), *reason)
+					util.LogName("reason", *reason)
 				}
-			case "platform.stack.show.nameserver":
-				fmt.Printf("  • %s\n", e.String("nameserver"))
+			case "platform.stack.show.stack.events":
+				util.LogTitle("Events")
+			case "platform.stack.show.nameservers":
+				util.Log("nameservers:")
+				for _, ns := range e.Strings("nameservers") {
+					fmt.Printf("      • %s\n", ns)
+				}
+			case "platform.stack.show.stack.event":
+				event := e.Fields["event"].(*cloudformation.StackEvent)
+				status := stack.Status(*event.ResourceStatus)
+				if status.State() == stack.Failure {
+					r.error(*event.LogicalResourceId, *event.ResourceStatusReason)
+				} else {
+					r.log(*event.LogicalResourceId, status.String())
+				}
 			case "platform.stack.show.stage":
-				stage := e.Fields["stage"].(*config.Stage)
-				fmt.Printf("\n  %s (%s):\n\n", colors.Purple(stage.Name), stage.Domain)
+				util.LogTitle(strings.Title(e.String("name")))
+				if s := e.String("domain"); s != "" {
+					util.LogName("domain", e.String("domain"))
+				}
+			case "platform.stack.show.domain":
+				util.LogName("endpoint", e.String("endpoint"))
 			case "stack.plan":
 				fmt.Printf("\n")
 			case "platform.stack.plan.change":

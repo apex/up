@@ -2,18 +2,22 @@ package account
 
 import (
 	"context"
+	"encoding/json"
 	"fmt"
+	"sort"
 	"strings"
 	"time"
 
 	"github.com/pkg/errors"
 	"github.com/stripe/stripe-go"
 	"github.com/stripe/stripe-go/token"
+	"github.com/tj/go/clipboard"
 	"github.com/tj/go/env"
 	"github.com/tj/go/http/request"
 	"github.com/tj/kingpin"
 	"github.com/tj/survey"
 
+	"github.com/apex/log"
 	"github.com/apex/up/internal/account"
 	"github.com/apex/up/internal/cli/root"
 	"github.com/apex/up/internal/stats"
@@ -23,28 +27,63 @@ import (
 	"github.com/apex/up/reporter"
 )
 
-// TODO: input masking (Go seems to be lacking some term utilities)
-// TODO: add nicer error if they try to subscribe without a card
-// TODO: prompt user for next step after login (would you like to add a card... etc)
-
 var (
-	accountAPI = env.GetDefault("APEX_USERS_API", "https://users.apex.sh")
-	a          = account.New(accountAPI)
+	api = env.GetDefault("APEX_TEAMS_API", "https://teams.apex.sh")
+	a   = account.New(api)
 )
 
 func init() {
 	cmd := root.Command("account", "Manage account, plans, and billing.")
-	cmd.Example(`up account login`, "Sign in or create account.")
+	cmd.Example(`up account login`, "Sign in or create account with interactive prompt.")
+	cmd.Example(`up account login --email tj@example.com`, "Sign in or create account.")
+	cmd.Example(`up account login --email tj@example.com --team apex-software`, "Sign in to a team.")
 	cmd.Example(`up account cards`, "List credit cards.")
 	cmd.Example(`up account cards add`, "Add credit card to Stripe.")
 	cmd.Example(`up account cards rm ID`, "Remove credit card from Stripe.")
 	cmd.Example(`up account subscribe`, "Subscribe to the Pro plan.")
+	cmd.Example(`up account invite --email asya@example.com`, "Invite a team member to your active team.")
+	cmd.Example(`up account invite --email asya@example.com --team apex-inc`, "Invite a team member to a specific team.")
 	status(cmd)
+	switchTeam(cmd)
+	invite(cmd)
 	login(cmd)
 	logout(cmd)
 	cards(cmd)
 	subscribe(cmd)
 	unsubscribe(cmd)
+	copy(cmd)
+}
+
+// copy commands.
+func copy(cmd *kingpin.CmdClause) {
+	c := cmd.Command("ci", "Credentials for CI.")
+	copy := c.Flag("copy", "Credentials to the clipboard.").Short('c').Bool()
+
+	c.Action(func(_ *kingpin.ParseContext) error {
+		var config userconfig.Config
+		if err := config.Load(); err != nil {
+			return errors.Wrap(err, "loading")
+		}
+
+		stats.Track("Copy Credentials", map[string]interface{}{
+			"copy": *copy,
+		})
+
+		b, err := json.Marshal(config)
+		if err != nil {
+			return errors.Wrap(err, "marshaling")
+		}
+
+		if *copy {
+			clipboard.Write(string(b))
+			fmt.Println("Copied to clipboard!")
+			return nil
+		}
+
+		fmt.Printf("%s\n", string(b))
+
+		return nil
+	})
 }
 
 // card commands.
@@ -68,20 +107,25 @@ func status(cmd *kingpin.CmdClause) {
 		defer util.Pad()()
 		stats.Track("Account Status", nil)
 
-		if config.Token == "" {
+		if !config.Authenticated() {
 			util.LogName("status", "Signed out")
 			return nil
 		}
 
-		util.LogName("status", "Signed in")
-		util.LogName("email", config.Email)
+		t := config.GetActiveTeam()
 
-		plans, err := a.GetPlans(config.Token)
+		util.LogName("status", "Signed in")
+		util.LogName("active team", t.ID)
+
+		// TODO: list teams
+
+		plans, err := a.GetPlans(t.Token)
 		if err != nil {
 			return errors.Wrap(err, "listing plans")
 		}
 
 		if len(plans) == 0 {
+			util.LogName("subscription", "none")
 			return nil
 		}
 
@@ -92,6 +136,9 @@ func status(cmd *kingpin.CmdClause) {
 			util.LogName("subscription", p.PlanName)
 			util.LogName("amount", "$%0.2f/mo USD", float64(p.Amount)/100)
 			util.LogName("created", p.CreatedAt.Format("January 2, 2006"))
+			if p.Canceled {
+				util.LogName("canceled", p.CanceledAt.Format("January 2, 2006"))
+			}
 		}
 
 		return nil
@@ -104,14 +151,14 @@ func removeCard(cmd *kingpin.CmdClause) {
 	id := c.Arg("id", "Card ID.").Required().String()
 
 	c.Action(func(_ *kingpin.ParseContext) error {
-		config, err := userconfig.Require()
+		t, err := userconfig.Require()
 		if err != nil {
 			return err
 		}
 
 		stats.Track("Remove Card", nil)
 
-		if err := a.RemoveCard(config.Token, "card_"+*id); err != nil {
+		if err := a.RemoveCard(t.Token, "card_"+*id); err != nil {
 			return errors.Wrap(err, "removing card")
 		}
 
@@ -126,14 +173,14 @@ func listCards(cmd *kingpin.CmdClause) {
 	c := cmd.Command("ls", "List credit cards.").Alias("list").Default()
 
 	c.Action(func(_ *kingpin.ParseContext) error {
-		config, err := userconfig.Require()
+		t, err := userconfig.Require()
 		if err != nil {
 			return err
 		}
 
 		stats.Track("List Cards", nil)
 
-		cards, err := a.GetCards(config.Token)
+		cards, err := a.GetCards(t.Token)
 		if err != nil {
 			return errors.Wrap(err, "listing cards")
 		}
@@ -152,7 +199,7 @@ func listCards(cmd *kingpin.CmdClause) {
 func addCard(cmd *kingpin.CmdClause) {
 	c := cmd.Command("add", "Add credit card.")
 	c.Action(func(_ *kingpin.ParseContext) error {
-		config, err := userconfig.Require()
+		t, err := userconfig.Require()
 		if err != nil {
 			return err
 		}
@@ -174,8 +221,85 @@ func addCard(cmd *kingpin.CmdClause) {
 			return errors.Wrap(err, "requesting card token")
 		}
 
-		if err := a.AddCard(config.Token, tok.ID); err != nil {
+		if err := a.AddCard(t.Token, tok.ID); err != nil {
 			return errors.Wrap(err, "adding card")
+		}
+
+		return nil
+	})
+}
+
+// invite user.
+func invite(cmd *kingpin.CmdClause) {
+	c := cmd.Command("invite", "Invite a team member.")
+	c.Example(`up account invite --email asya@example.com`, "Invite a team member to your active team.")
+	c.Example(`up account invite --email asya@example.com --team apex-inc`, "Invite a team member to a specific team.")
+	email := c.Flag("email", "Email address.").String()
+	team := c.Flag("team", "Team id (or current team).").String()
+
+	c.Action(func(_ *kingpin.ParseContext) error {
+		t, err := userconfig.Require()
+		if err != nil {
+			return err
+		}
+
+		if *team == "" {
+			*team = t.ID
+		}
+
+		stats.Track("Invite", map[string]interface{}{
+			"team":  *team,
+			"email": *email,
+		})
+
+		if err := a.AddInvite(t.Token, *email); err != nil {
+			return errors.Wrap(err, "adding invite")
+		}
+
+		util.LogPad("Invited %s to team %s", *email, *team)
+
+		return nil
+	})
+}
+
+// switchTeam team.
+func switchTeam(cmd *kingpin.CmdClause) {
+	c := cmd.Command("switch", "Switch active team.")
+	c.Example(`up account switch`, "Switch teams interactively.")
+
+	c.Action(func(_ *kingpin.ParseContext) error {
+		defer util.Pad()()
+
+		var config userconfig.Config
+		if err := config.Load(); err != nil {
+			return errors.Wrap(err, "loading user config")
+		}
+
+		var options []string
+		for _, t := range config.GetTeams() {
+			options = append(options, t.ID)
+		}
+		sort.Strings(options)
+
+		var team string
+		prompt := &survey.Select{
+			Message: "",
+			Options: options,
+			Default: config.Team,
+		}
+
+		if err := survey.AskOne(prompt, &team, survey.Required); err != nil {
+			return err
+		}
+
+		stats.Track("Switch Team", nil)
+
+		err := userconfig.Alter(func(c *userconfig.Config) {
+			c.Team = team
+		})
+
+		if err != nil {
+			return errors.Wrap(err, "saving config")
 		}
 
 		return nil
@@ -185,44 +309,86 @@ func addCard(cmd *kingpin.CmdClause) {
 // login user.
 func login(cmd *kingpin.CmdClause) {
 	c := cmd.Command("login", "Sign in to your account.")
+	c.Example(`up account login`, "Sign in or create account with interactive prompt.")
+	c.Example(`up account login --email tj@example.com`, "Sign in or create account.")
+	c.Example(`up account login --email tj@example.com --team apex-software`, "Sign in to a team.")
+	email := c.Flag("email", "Email address.").String()
+	team := c.Flag("team", "Team id.").String()
 
 	c.Action(func(_ *kingpin.ParseContext) error {
-		_, _, err := root.Init()
-		if err != nil {
-			return errors.Wrap(err, "initializing")
+		defer util.Pad()()
+
+		var config userconfig.Config
+		if err := config.Load(); err != nil {
+			return errors.Wrap(err, "loading user config")
 		}
 
-		defer util.Pad()()
-		stats.Track("Login", nil)
+		stats.Track("Login", map[string]interface{}{
+			"team_count": len(config.GetTeams()),
+		})
 
-		// prompt
-		var email string
-		prompt := &survey.Input{Message: "email:"}
-		survey.AskOne(prompt, &email, survey.Required)
+		// email from config
+		if t := config.GetActiveTeam(); *email == "" && t != nil {
+			*email = t.Email
+		}
 
+		// email prompt
+		if *email == "" {
+			var s string
+			prompt := &survey.Input{Message: "email:"}
+			survey.AskOne(prompt, &s, survey.Required)
+			*email = s
+		}
+
+		// events
 		events := make(event.Events)
 		go reporter.Text(events)
 		events.Emit("account.login.verify", nil)
 
-		// send email
-		code, err := a.Login(email)
+		// log context
+		l := log.WithFields(log.Fields{
+			"email": *email,
+			"team":  *team,
+		})
+
+		// authenticate
+		var code string
+		var err error
+		if t := config.GetActiveTeam(); t != nil {
+			l.Debug("login with token")
+			code, err = a.LoginWithToken(t.Token, *email, *team)
+		} else {
+			l.Debug("login without token")
+			code, err = a.Login(*email, *team)
+		}
+
 		if err != nil {
 			return errors.Wrap(err, "login")
+		}
+
+		// personal team
+		if *team == "" {
+			team = email
 		}
 
 		// access key
 		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
 		defer cancel()
 
-		key, err := a.PollAccessKey(ctx, email, code)
+		l.WithField("team", *team).Debug("poll for access token")
+		token, err := a.PollAccessToken(ctx, *email, *team, code)
 		if err != nil {
-			return errors.Wrap(err, "getting access key")
+			return errors.Wrap(err, "getting access token")
 		}
 
 		events.Emit("account.login.verified", nil)
 		err = userconfig.Alter(func(c *userconfig.Config) {
-			c.Email = email
-			c.Token = key
+			c.Team = *team
+			c.AddTeam(&userconfig.Team{
+				Token: token,
+				ID:    *team,
+				Email: *email,
+			})
 		})
 
 		if err != nil {
@@ -276,14 +442,19 @@ func subscribe(cmd *kingpin.CmdClause) {
 			return err
 		}
 
-		coupon, err := a.GetCoupon(couponID)
-		if err != nil && !request.IsNotFound(err) {
-			return errors.Wrap(err, "fetching coupon")
-		}
+		// coupon provided
+		if strings.TrimSpace(couponID) != "" {
+			coupon, err := a.GetCoupon(couponID)
+			if err != nil && !request.IsNotFound(err) {
+				return errors.Wrap(err, "fetching coupon")
+			}
 
-		if coupon != nil {
-			amount = coupon.Discount(amount)
-			util.Log("Coupon savings: %s", coupon.Description())
+			if coupon == nil {
+				util.Log("Coupon is invalid")
+			} else {
+				amount = coupon.Discount(amount)
+				util.Log("Coupon savings: %s", coupon.Description())
+			}
 		}
 
 		// confirm

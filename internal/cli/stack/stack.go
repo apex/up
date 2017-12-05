@@ -55,7 +55,11 @@ func apply(cmd *kingpin.CmdClause) {
 			return errors.Wrap(err, "initializing")
 		}
 
-		stats.Track("Apply Stack", nil)
+		stats.Track("Apply Stack", map[string]interface{}{
+			"dns_zone_count":     len(c.DNS.Zones),
+			"stage_count":        len(c.Stages.List()),
+			"stage_domain_count": len(c.Stages.Domains()),
+		})
 
 		// TODO: multi-region
 		return p.ApplyStack(c.Regions[0])

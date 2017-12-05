@@ -1,7 +1,6 @@
 package upgrade
 
 import (
-	"fmt"
 	"runtime"
 	"time"
 
@@ -10,6 +9,7 @@ import (
 	"github.com/tj/go-update/stores/apex"
 	"github.com/tj/go-update/stores/github"
 	"github.com/tj/go/env"
+	"github.com/tj/go/http/request"
 	"github.com/tj/go/term"
 	"github.com/tj/kingpin"
 
@@ -36,7 +36,7 @@ func init() {
 			return errors.Wrap(err, "loading user config")
 		}
 
-		// update polls(1) from tj/gh-polls on github
+		// open-source edition
 		p := &update.Manager{
 			Command: "up",
 			Store: &github.Store{
@@ -46,26 +46,31 @@ func init() {
 			},
 		}
 
-		// commercial plan
-		if config.Token != "" {
+		// commercial edition
+		if t := config.GetActiveTeam(); t != nil {
 			p.Store = &apex.Store{
 				URL:       releasesAPI,
 				Product:   "up",
 				Version:   version,
 				Plan:      "pro",
-				AccessKey: config.Token,
+				AccessKey: t.Token,
 			}
 		}
 
 		// fetch the new releases
 		releases, err := p.LatestReleases()
+
+		if request.IsClient(err) {
+			return errors.Wrap(err, "You're not subscribed to Up Pro")
+		}
+
 		if err != nil {
 			return errors.Wrap(err, "fetching releases")
 		}
 
 		// no updates
 		if len(releases) == 0 {
-			fmt.Printf("  No updates required, you're good :)\n")
+			util.LogPad("No updates available, you're good :)")
 			return nil
 		}
 

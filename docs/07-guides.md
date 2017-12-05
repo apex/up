@@ -50,6 +50,23 @@ To view the status of your account at any time run the following:
 
 ```
 $ up account
+
+  status: Signed in
+  active team: tj@apex.sh
+
+  subscription: Up Pro
+  amount: $10.00/mo USD
+  created: November 12, 2017
+```
+
+To switch to another team run the following and select the active team.
+
+```
+$ up account switch
+
+
+   ❯ apex
+     tj@apex.sh
 ```
 
 ## Development to Production Workflow
@@ -156,6 +173,8 @@ $ up domains
   up-example.com           renews Sep 19 19:40:50
 ```
 
+By default domains purchased with Up have privacy protection enabled, hiding your contact information from [WHOIS](https://en.wikipedia.org/wiki/WHOIS).
+
 ### Deploying to Stages
 
 Before deploying to the staging and production stages, first tweak the application a little to include the `UP_STAGE` environment variable:
@@ -217,7 +236,17 @@ $ up stack plan
      ⠧ confirm: up-example.com
 ```
 
-AWS requires email verification to prove you own the domain. After clicking "I Approve" in the email, the output will resume and you'll see some new resources Up will be creating.
+AWS requires email verification to prove you own the domain. It will attempt to send an email to all of the following emails:
+
+- administrator@your_domain_name
+- hostmaster@your_domain_name
+- postmaster@your_domain_name
+- webmaster@your_domain_name
+- admin@your_domain_name
+
+See [Validate Domain Ownership](http://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate.html) for more information.
+
+After clicking "I Approve" in the email, the output will resume and you'll see some new resources Up will be creating.
 
 ```
 Add AWS::ApiGateway::DomainName
@@ -258,24 +287,55 @@ Once available https://up-example.com will always point to production via `up de
 
 ### Mapping Domains from External Registrars
 
-If you purchased a domain via `up domains buy` then you can skip this step, however if you used an external registrar such as Godaddy you will need to delegate to AWS for DNS management.
+If you purchased a domain via `up domains buy` you can skip this step, however if you used an external registrar such as Godaddy you will need to delegate to AWS for DNS management.
 
 To do this you'll need to sign in to your registrar's site, and configure the nameservers. To figure out what values to use for the nameservers, run `up stack`, which outputs the NS records for the apex (top-level) domains of your application.
 
 ```
 $ up stack
 
-status: Created
+Staging
 
-development (isatty.com):
+  domain: stage.up-example.com
+  endpoint: d2od0udp1p8bru.cloudfront.net
 
-• ns-1315.awsdns-36.org
-• ns-1911.awsdns-46.co.uk
-• ns-700.awsdns-23.net
-• ns-481.awsdns-60.com
+Production
+
+  domain: up-example.com
+  endpoint: d72wsqljqg5cy.cloudfront.net
+  nameservers:
+   • ns-1495.awsdns-58.org
+   • ns-103.awsdns-12.com
+   • ns-1670.awsdns-16.co.uk
+   • ns-659.awsdns-18.net
 ```
 
 Save those four values in your registrar's interface, and you should be good to go! Note that altering DNS records can take some time to propagate.
+
+### Mapping with Third-party DNS
+
+If you manage DNS with a third-party such as Cloudflare, and wish to use Up only for deployment you will need to manually edit or add DNS records.
+
+For example if your domain `sloths.com` is managed by Cloudflare and you'd like point `api.sloths.com` to your app, you will need to create a `CNAME` for `api.sloths.com` pointing to the `endpoint` for the stage you'd like to map. Use `up stack` after your app is deployed as shown here to obtain this information.
+
+```
+$ up stack
+
+Staging
+
+  domain: stage.up-example.com
+  endpoint: d2od0udp1p8bru.cloudfront.net
+
+Production
+
+  domain: up-example.com
+  endpoint: d72wsqljqg5cy.cloudfront.net
+  nameservers:
+   • ns-1495.awsdns-58.org
+   • ns-103.awsdns-12.com
+   • ns-1670.awsdns-16.co.uk
+   • ns-659.awsdns-18.net
+ ```
 
 ### Stack Changes
 
@@ -322,7 +382,45 @@ After you're done messing around, you may want to remove all the resources and t
 $ up stack delete
 ```
 
-## Logging
+## Deploying Applications from Continuous Integration
+
+Up makes it easy to deploy your applications from CI, thanks to its Go binaries you can install Up in seconds in any CI provider such as Travis, Circle, Semaphore among others.
+
+### Environment Variables
+
+The first step is to set up environment variables so that you have access to your AWS account. You can get these values from `cat ~/.aws/credentials`:
+
+- `AWS_ACCESS_KEY_ID` – AWS access key
+- `AWS_SECRET_ACCESS_KEY` – AWS secret key
+
+If using running Up Pro you'll need your Up credentials:
+
+- `UP_CONFIG` – Up configuration
+
+To obtain this run `up account ci` or `up account ci --copy` to copy it directly to your clipboard, then paste this as the env var's value.
+
+### Commands
+
+Now that configuration is prepared, you'll need to install Up using the following two commands:
+
+```
+$ sudo chown -R $(whoami) /usr/local/bin
+$ curl -sfL https://raw.githubusercontent.com/apex/up/master/install.sh | sh
+```
+
+If you're on Up Pro you'll need to upgrade to install the Pro binary:
+
+```
+$ up upgrade
+```
+
+After that all you need to do is deploy to your desired stage!
+
+```
+$ up deploy production
+```
+
+## Mastering Logging
 
 This section describes how you can log from your application in a way that Up will recognize. In the future Up will support forwarding your logs to services such as Loggly, Papertrail or ELK.
 
@@ -369,7 +467,7 @@ The second option is structured logging with JSON events, which is preferred as 
 JSON logs require a `level` and `message` field:
 
 ```js
-console.log(`{ "level": "info", "message": "User signin" }`)
+console.log(`{ "level": "info", "message": "User login" }`)
 ```
 
 Would be collected as:

@@ -17,6 +17,7 @@ import (
 	_ "github.com/apex/up/internal/cli/build"
 	_ "github.com/apex/up/internal/cli/config"
 	_ "github.com/apex/up/internal/cli/deploy"
+	_ "github.com/apex/up/internal/cli/docs"
 	_ "github.com/apex/up/internal/cli/domains"
 	_ "github.com/apex/up/internal/cli/logs"
 	_ "github.com/apex/up/internal/cli/metrics"
@@ -38,7 +39,7 @@ func main() {
 	trap()
 
 	stripe.Key = env.GetDefault("STRIPE_KEY", "pk_live_23pGrHcZ2QpfX525XYmiyzmx")
-	stripe.LogLevel = 1
+	stripe.LogLevel = 0
 
 	err := run()
 
@@ -49,7 +50,7 @@ func main() {
 	term.ShowCursor()
 
 	if strings.Contains(err.Error(), "NoCredentialProviders") {
-		util.Fatal(errors.New("Cannot find credentials, visit https://apex.github.io/up/#aws_credentials for help."))
+		util.Fatal(errors.New("Cannot find credentials, visit https://up.docs.apex.sh/#aws_credentials for help."))
 	}
 
 	util.Fatal(err)

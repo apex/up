@@ -273,8 +273,8 @@
 [[projects]]
   name = "github.com/tj/go"
   packages = ["clipboard","env","http/request","term"]
-  revision = "e0123f1a604cfd5f49721128fd89169ae277e181"
-  version = "v1.4.0"
+  revision = "3df4b7670a52b88fcd170815ff00755ff4235ac6"
+  version = "v1.6.0"
 
 [[projects]]
   name = "github.com/tj/go-archive"
@@ -309,14 +309,14 @@
 [[projects]]
   name = "github.com/tj/go-update"
   packages = [".","stores/apex","stores/github"]
-  revision = "16ffc4d723e7aa4d6a50f573b2c3a9ac9ff38e69"
-  version = "v2.0.1"
+  revision = "1ddfd940a4e2b7719827873b752e66547a69c693"
+  version = "v2.0.2"
 
 [[projects]]
   name = "github.com/tj/kingpin"
   packages = ["."]
-  revision = "c8a3992d9b6566880d0e7c81952b69290547af0c"
-  version = "v2.4.4"
+  revision = "a1c70277eeca1b4fff1b3ebd959931ba2500c43c"
+  version = "v2.4.6"
 
 [[projects]]
   name = "github.com/tj/survey"
@@ -339,7 +339,7 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/net"
-  packages = ["context"]
+  packages = ["context","idna","publicsuffix"]
   revision = "c73622c77280266305273cb545f54516ced95b93"
 
 [[projects]]
@@ -347,6 +347,12 @@
   name = "golang.org/x/sys"
   packages = ["unix"]
   revision = "95c6576299259db960f6c5b9b69ea52422860fce"
+
+[[projects]]
+  branch = "master"
+  name = "golang.org/x/text"
+  packages = ["collate","collate/build","internal/colltab","internal/gen","internal/tag","internal/triegen","internal/ucd","language","secure/bidirule","transform","unicode/bidi","unicode/cldr","unicode/norm","unicode/rangetable"]
+  revision = "88f656faf3f37f690df1a32515b479415e1a6769"
 
 [solve-meta]
   analyzer-name = "dep"

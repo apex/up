@@ -71,7 +71,7 @@ func (p *Platform) ShowMetrics(region, stage string, start time.Time) error {
 			m := metrics.New().
 				Namespace(s.Namespace).
 				TimeRange(time.Now().Add(-d), time.Now()).
-				Period(int(d.Seconds())).
+				Period(int(d.Seconds() * 2)).
 				Stat(s.Stat).
 				Metric(s.Metric)
 

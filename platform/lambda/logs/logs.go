@@ -10,6 +10,7 @@ import (
 
 // Event is a single log event from a group.
 type Event struct {
+	Timestamp time.Time
 	GroupName string
 	Message   string
 }

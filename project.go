@@ -9,7 +9,6 @@ import (
 	"github.com/apex/log"
 	"github.com/pkg/errors"
 
-	"github.com/apex/up/config"
 	"github.com/apex/up/internal/util"
 	"github.com/apex/up/platform"
 	"github.com/apex/up/platform/event"
@@ -36,21 +35,9 @@ func (p *Project) WithPlatform(platform platform.Interface) *Project {
 	return p
 }
 
-// HookCommand returns a hook command by name or empty hook.
-func (p *Project) HookCommand(name string) config.Hook {
-	switch name {
-	case "build":
-		return p.config.Hooks.Build
-	case "clean":
-		return p.config.Hooks.Clean
-	default:
-		return nil
-	}
-}
-
 // RunHook runs a hook by name.
 func (p *Project) RunHook(name string) error {
-	hook := p.HookCommand(name)
+	hook := p.config.Hooks.Get(name)
 
 	if hook.IsEmpty() {
 		log.Debugf("hook %s is not defined", name)
@@ -59,6 +46,7 @@ func (p *Project) RunHook(name string) error {
 
 	defer p.events.Time("hook", event.Fields{
 		"name": name,
+		"hook": hook,
 	})()
 
 	for _, command := range hook {
@@ -78,15 +66,33 @@ func (p *Project) RunHook(name string) error {
 	return nil
 }
 
+// RunHooks runs hooks by name.
+func (p *Project) RunHooks(names ...string) error {
+	for _, n := range names {
+		if err := p.RunHook(n); err != nil {
+			return errors.Wrapf(err, "%q hook", n)
+		}
+	}
+	return nil
+}
+
 // Build the project.
 func (p *Project) Build() error {
 	defer p.events.Time("platform.build", nil)()
 
-	if err := p.RunHook("build"); err != nil {
-		return errors.Wrap(err, "build hook")
+	if err := p.RunHooks("prebuild", "build"); err != nil {
+		return err
 	}
 
-	return p.platform.Build()
+	if err := p.platform.Build(); err != nil {
+		return errors.Wrap(err, "building")
+	}
+
+	if err := p.RunHooks("postbuild"); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // Deploy the project.
@@ -110,7 +116,19 @@ func (p *Project) Deploy(stage string) error {
 
 // deploy stage.
 func (p *Project) deploy(stage string) error {
-	return p.platform.Deploy(stage)
+	if err := p.RunHooks("predeploy", "deploy"); err != nil {
+		return err
+	}
+
+	if err := p.platform.Deploy(stage); err != nil {
+		return errors.Wrap(err, "deploying")
+	}
+
+	if err := p.RunHooks("postdeploy"); err != nil {
+		return err
+	}
+
+	return nil
 }
 
 // Logs for the project.

@@ -142,25 +142,10 @@ func (c *Config) Default() error {
 	}
 
 	// runtime defaults
-	switch {
-	case util.Exists("main.go"):
-		golang(c)
-	case util.Exists("pom.xml"):
-		javaMaven(c)
-	case util.Exists("build.gradle"):
-		javaGradle(c)
-	case util.Exists("main.cr"):
-		crystal(c)
-	case util.Exists("package.json"):
-		if err := nodejs(c); err != nil {
-			return err
+	if c.Type != "static" {
+		if err := c.inferRuntime(); err != nil {
+			return errors.Wrap(err, "runtime")
 		}
-	case util.Exists("app.js"):
-		c.Proxy.Command = "node app.js"
-	case util.Exists("app.py"):
-		python(c)
-	case util.Exists("index.html"):
-		c.Type = "static"
 	}
 
 	// default .name
@@ -211,6 +196,31 @@ func (c *Config) Default() error {
 		return errors.Wrap(err, ".stages")
 	}
 
+	return nil
+}
+
+// inferRuntime performs inferences based on what Up thinks the runtime is.
+func (c *Config) inferRuntime() error {
+	switch {
+	case util.Exists("main.go"):
+		golang(c)
+	case util.Exists("pom.xml"):
+		javaMaven(c)
+	case util.Exists("build.gradle"):
+		javaGradle(c)
+	case util.Exists("main.cr"):
+		crystal(c)
+	case util.Exists("package.json"):
+		if err := nodejs(c); err != nil {
+			return err
+		}
+	case util.Exists("app.js"):
+		c.Proxy.Command = "node app.js"
+	case util.Exists("app.py"):
+		python(c)
+	case util.Exists("index.html"):
+		c.Type = "static"
+	}
 	return nil
 }
 
@@ -334,12 +344,12 @@ func javaGradle(c *Config) {
 	}
 
 	if c.Hooks.Build.IsEmpty() {
-		// assumes build results in a shaded jar named server.jar		
+		// assumes build results in a shaded jar named server.jar
 		if util.Exists("gradlew") {
 			c.Hooks.Build = config.Hook{`./gradlew clean build && cp build/libs/server.jar .`}
 		} else {
 			c.Hooks.Build = config.Hook{`gradle clean build && cp build/libs/server.jar .`}
-		}		
+		}
 	}
 
 	if c.Hooks.Clean.IsEmpty() {
@@ -352,14 +362,14 @@ func javaMaven(c *Config) {
 	if c.Proxy.Command == "" {
 		c.Proxy.Command = "java -jar server.jar"
 	}
-	
+
 	if c.Hooks.Build.IsEmpty() {
-		// assumes package results in a shaded jar named server.jar		
+		// assumes package results in a shaded jar named server.jar
 		if util.Exists("mvnw") {
 			c.Hooks.Build = config.Hook{`./mvnw clean package && cp target/server.jar .`}
 		} else {
-			c.Hooks.Build = config.Hook{`mvn clean package && cp target/server.jar .`}	
-		}						
+			c.Hooks.Build = config.Hook{`mvn clean package && cp target/server.jar .`}
+		}
 	}
 
 	if c.Hooks.Clean.IsEmpty() {

@@ -14,7 +14,7 @@ import (
 
 func init() {
 	cmd := root.Command("logs", "Show log output.")
-	cmd.Example(`up logs`, "Show logs from the past 5 minutes.")
+	cmd.Example(`up logs`, "Show logs from the past hour.")
 	cmd.Example(`up logs -s 30m`, "Show logs from the past 30 minutes.")
 	cmd.Example(`up logs -s 5h`, "Show logs from the past 5 hours.")
 	cmd.Example(`up logs -f`, "Show live log output.")
@@ -33,10 +33,9 @@ func init() {
 	cmd.Example(`up logs 'method in ("POST", "PUT") ip = "207.*" status = 200 duration >= 50'`, "Show logs with a more complex query.")
 	cmd.Example(`up logs error | jq`, "Pipe JSON error logs to the jq tool.")
 
-	// TODO: query arg should join remaining args
 	query := cmd.Arg("query", "Query pattern for filtering logs.").String()
 	follow := cmd.Flag("follow", "Follow or tail the live logs.").Short('f').Bool()
-	since := cmd.Flag("since", "Show logs since duration (30s, 5m, 2h, 1h30m, 3d, 1M).").Short('s').Default("5m").String()
+	since := cmd.Flag("since", "Show logs since duration (30s, 5m, 2h, 1h30m, 3d, 1M).").Short('s').Default("1d").String()
 	expand := cmd.Flag("expand", "Show expanded logs.").Short('e').Bool()
 
 	cmd.Action(func(_ *kingpin.ParseContext) error {

@@ -1,4 +1,71 @@
 
+v0.3.8 / 2017-11-30
+===================
+
+  * add {pre,post}{build,deploy} hooks
+  * add flushing of logs after [re]start. See #359
+  * add "w" for week to `ParseDuration()`
+  * refactor: fix Map for now
+  * refactor: use effective domain for CFN id
+  * refactor: add test for existing zone and apex domain
+  * refactor: add test for existing zone
+  * refactor: add test coverage for CFN resources
+  * fix hosted zones for sub-domains. Closes #447
+  * fix `.type` precedence when runtime files are detected. Closes #436
+
+v0.3.7 / 2017-11-24
+===================
+
+  * add date formatting for older logs
+  * remove project init from `up account login`
+  * fix timestamps for lambda plain text logs
+
+v0.3.6 / 2017-11-22
+===================
+
+  * fix subscription without coupon
+
+v0.3.5 / 2017-11-21
+===================
+
+  * add `stage` field to all log contexts (fixes log filtering against `production`)
+  * fix DNS record logical id collision. Closes #420
+  * refactor `up stack` output
+
+v0.3.4 / 2017-11-20
+===================
+
+  * add `up accounts ci` and --copy to help with setting up UP_CONFIG for CI
+  * fix domain verification for ssl certificates. Closes #425
+  * update tj/kingpin for arg output formatting fix
+
+v0.3.3 / 2017-11-18
+===================
+
+  * fix zip paths on Windows. Closes #418
+
+v0.3.2 / 2017-11-18
+===================
+
+  * add support for UP_CONFIG from environment
+  * add `up docs` command back for opening documentation in the browser
+  * change logs `--since` default to 1 day
+  * fix intermittent metrics failure. Closes #414
+
+v0.3.1 / 2017-11-15
+===================
+
+  * add `up account` and sub-commands
+  * add extended duration parsing for `--since` flags. Closes #401
+  * add log expansion. Closes #399
+  * add Content-Length request header
+  * add request logs
+  * add pom.xml and build.grade to whitelist which cannot be ignored
+  * change metrics `--since` default to 1 month
+  * refactor: remove .size defaulting of 0
+  * refactor progress bar with diffing, making it more responsive
+  * fix missing logs when json does not take the shape of a log. Closes #411
+
 v0.3.0 / 2017-10-19
 ===================
 

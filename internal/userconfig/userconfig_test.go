@@ -13,7 +13,7 @@ func init() {
 	configDir = ".up-test"
 }
 
-func TestConfig(t *testing.T) {
+func TestConfig_file(t *testing.T) {
 	t.Run("load when missing", func(t *testing.T) {
 		dir, _ := homedir.Dir()
 		os.RemoveAll(filepath.Join(dir, configDir))
@@ -25,15 +25,24 @@ func TestConfig(t *testing.T) {
 	t.Run("save", func(t *testing.T) {
 		c := Config{}
 		assert.NoError(t, c.Load(), "load")
-		assert.Equal(t, "", c.Token)
+		assert.Equal(t, "", c.Team)
 
-		c.Token = "foo-bar-baz"
+		c.Team = "apex"
 		assert.NoError(t, c.Save(), "save")
 	})
 
 	t.Run("load after save", func(t *testing.T) {
 		c := Config{}
 		assert.NoError(t, c.Load(), "save")
-		assert.Equal(t, "foo-bar-baz", c.Token)
+		assert.Equal(t, "apex", c.Team)
+	})
+}
+
+func TestConfig_env(t *testing.T) {
+	t.Run("load", func(t *testing.T) {
+		os.Setenv("UP_CONFIG", `{ "team": "tj@apex.sh" }`)
+		c := Config{}
+		assert.NoError(t, c.Load(), "load")
+		assert.Equal(t, "tj@apex.sh", c.Team)
 	})
 }

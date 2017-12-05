@@ -112,7 +112,7 @@ func (l *Logs) start() {
 		line := strings.TrimSpace(l.Message)
 
 		// json log
-		if util.IsJSON(line) {
+		if util.IsJSONLog(line) {
 			var e log.Entry
 			err := json.Unmarshal([]byte(line), &e)
 			if err != nil {
@@ -123,10 +123,11 @@ func (l *Logs) start() {
 			continue
 		}
 
-		// plain text log
+		// lambda textual logs
 		handler.HandleLog(&log.Entry{
-			Level:   log.InfoLevel,
-			Message: strings.TrimRight(l.Message, " \n"),
+			Timestamp: l.Timestamp,
+			Level:     log.InfoLevel,
+			Message:   strings.TrimRight(l.Message, " \n"),
 		})
 	}
 
