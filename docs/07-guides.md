@@ -420,7 +420,7 @@ After that all you need to do is deploy to your desired stage!
 $ up deploy production
 ```
 
-Note that you can disable colored output which may display better your CI provider logs:
+If your provider sets `CI=true` colors will be disabled automatically, however, you may manually specify this using `--format`:
 
 ```
 $ up --format=plain deploy production

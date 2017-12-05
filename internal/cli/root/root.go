@@ -65,7 +65,7 @@ func init() {
 			switch {
 			case *verbose:
 				go reporter.Discard(events)
-			case *format == "plain":
+			case *format == "plain" || os.Getenv("CI") == "true":
 				go reporter.Plain(events)
 			default:
 				go reporter.Text(events)
