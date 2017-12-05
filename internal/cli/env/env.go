@@ -2,6 +2,7 @@ package env
 
 import (
 	"fmt"
+	"strings"
 
 	"github.com/dustin/go-humanize"
 	"github.com/pkg/errors"
@@ -65,7 +66,7 @@ func list(cmd *kingpin.CmdClause) {
 
 			t.AddRow(table.Row{
 				{
-					Text: colors.Bold(fmt.Sprintf("\n%s\n", name)),
+					Text: colors.Bold(fmt.Sprintf("\n%s\n", strings.Title(name))),
 					Span: 4,
 				},
 			})
