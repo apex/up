@@ -34,6 +34,7 @@ import (
 	"github.com/apex/up/platform"
 	"github.com/apex/up/platform/event"
 	"github.com/apex/up/platform/lambda/stack"
+	"github.com/apex/up/platform/lambda/stack/resources"
 )
 
 const (
@@ -370,6 +371,8 @@ func (p *Platform) createCerts() error {
 
 // deploy to the given region.
 func (p *Platform) deploy(region, stage string) (err error) {
+	start := time.Now()
+
 	fields := event.Fields{
 		"stage":  stage,
 		"region": region,
@@ -379,7 +382,6 @@ func (p *Platform) deploy(region, stage string) (err error) {
 
 	defer func() {
 		fields["duration"] = time.Since(start)
-		fields["version"] = version
 		p.events.Emit("platform.deploy.complete", fields)
 	}()
 
@@ -729,7 +731,7 @@ func (p *Platform) getS3Key(stage string) string {
 
 // getS3BucketName returns the s3 bucket name
 func (p *Platform) getS3BucketName() string {
-	return stack.GetS3BucketName(p.config)
+	return resources.GetS3BucketName(p.config)
 }
 
 // isCreatingRole returns true if the role has not been created.
