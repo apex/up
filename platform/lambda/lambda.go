@@ -418,7 +418,7 @@ func (p *Platform) deploy(region, stage string) (version string, err error) {
 	}
 
 	defer p.events.Time("platform.function.update", fields)
-	return p.updateFunction(c, a, u, stage)
+	return p.updateFunction(c, a, u, region, stage)
 }
 
 // createFunction creates the function.
@@ -474,7 +474,7 @@ retry:
 }
 
 // updateFunction updates the function.
-func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up *s3manager.Uploader, stage string) (version string, err error) {
+func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up *s3manager.Uploader, region, stage string) (version string, err error) {
 	var publish bool
 
 	if stage != "development" {
@@ -499,11 +499,24 @@ func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up
 
 	b := aws.String(p.getS3BucketName())
 	k := aws.String(p.getS3Key(stage))
+
+retry:
 	_, err = up.Upload(&s3manager.UploadInput{
 		Bucket: b,
 		Key:    k,
 		Body:   bytes.NewReader(p.zip.Bytes()),
 	})
+
+	if util.IsNotFound(err) {
+		log.Debug("creating s3 bucket")
+		err = p.createBucket(region)
+
+		if err != nil {
+			return "", errors.Wrap(err, "updating function: creating s3 bucket")
+		}
+
+		goto retry
+	}
 
 	if err != nil {
 		return "", errors.Wrap(err, "updating function: uploading object to s3")
