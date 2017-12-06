@@ -37,6 +37,9 @@ import (
 	"github.com/apex/up/platform/lambda/stack/resources"
 )
 
+// errFirstDeploy is returned from .deploy() when a function is created.
+var errFirstDeploy = errors.New("first deploy")
+
 const (
 	// maxCodeSize is the max code size supported by Lambda (250MiB).
 	maxCodeSize = 250 << 20
@@ -158,8 +161,16 @@ func (p *Platform) Deploy(stage string) error {
 	for _, r := range regions {
 		region := r
 		g.Go(func() error {
-			err := p.deploy(region, stage)
-			if err != nil {
+			version, err := p.deploy(region, stage)
+			if err == nil {
+				return nil
+			}
+
+			if err != errFirstDeploy {
+				return errors.Wrap(err, region)
+			}
+
+			if err := p.CreateStack(region, version); err != nil {
 				return errors.Wrap(err, region)
 			}
 
@@ -370,7 +381,7 @@ func (p *Platform) createCerts() error {
 }
 
 // deploy to the given region.
-func (p *Platform) deploy(region, stage string) (err error) {
+func (p *Platform) deploy(region, stage string) (version string, err error) {
 	start := time.Now()
 
 	fields := event.Fields{
@@ -382,6 +393,7 @@ func (p *Platform) deploy(region, stage string) (err error) {
 
 	defer func() {
 		fields["duration"] = time.Since(start)
+		fields["version"] = version
 		p.events.Emit("platform.deploy.complete", fields)
 	}()
 
@@ -402,7 +414,7 @@ func (p *Platform) deploy(region, stage string) (err error) {
 	}
 
 	if err != nil {
-		return errors.Wrap(err, "fetching function config")
+		return "", errors.Wrap(err, "fetching function config")
 	}
 
 	defer p.events.Time("platform.function.update", fields)
@@ -410,12 +422,12 @@ func (p *Platform) deploy(region, stage string) (err error) {
 }
 
 // createFunction creates the function.
-func (p *Platform) createFunction(c *lambda.Lambda, a *apigateway.APIGateway, up *s3manager.Uploader, region, stage string) (err error) {
+func (p *Platform) createFunction(c *lambda.Lambda, a *apigateway.APIGateway, up *s3manager.Uploader, region, stage string) (version string, err error) {
 	log.Debug("creating s3 bucket")
 	err = p.createBucket(region)
 
 	if err != nil {
-		return errors.Wrap(err, "creating function: creating s3 bucket")
+		return "", errors.Wrap(err, "creating function: creating s3 bucket")
 	}
 
 	log.Debug("creating function")
@@ -429,7 +441,7 @@ retry:
 	})
 
 	if err != nil {
-		return errors.Wrap(err, "creating function: uploading object to s3")
+		return "", errors.Wrap(err, "creating function: uploading object to s3")
 	}
 
 	res, err := c.CreateFunction(&lambda.CreateFunctionInput{
@@ -455,18 +467,14 @@ retry:
 	}
 
 	if err != nil {
-		return errors.Wrap(err, "creating function")
+		return "", errors.Wrap(err, "creating function")
 	}
 
-	if err := p.CreateStack(region, *res.Version); err != nil {
-		return errors.Wrap(err, region)
-	}
-
-	return nil
+	return *res.Version, errFirstDeploy
 }
 
 // updateFunction updates the function.
-func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up *s3manager.Uploader, stage string) (err error) {
+func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up *s3manager.Uploader, stage string) (version string, err error) {
 	var publish bool
 
 	if stage != "development" {
@@ -486,7 +494,7 @@ func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up
 	})
 
 	if err != nil {
-		return errors.Wrap(err, "updating function config")
+		return "", errors.Wrap(err, "updating function config")
 	}
 
 	b := aws.String(p.getS3BucketName())
@@ -498,7 +506,7 @@ func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up
 	})
 
 	if err != nil {
-		return errors.Wrap(err, "updating function: uploading object to s3")
+		return "", errors.Wrap(err, "updating function: uploading object to s3")
 	}
 
 	res, err := c.UpdateFunctionCode(&lambda.UpdateFunctionCodeInput{
@@ -509,7 +517,7 @@ func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up
 	})
 
 	if err != nil {
-		return errors.Wrap(err, "updating function code")
+		return "", errors.Wrap(err, "updating function code")
 	}
 
 	if publish {
@@ -521,13 +529,13 @@ func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up
 		})
 
 		if err != nil {
-			return errors.Wrap(err, "creating function alias")
+			return "", errors.Wrap(err, "creating function alias")
 		}
 
-		return nil
+		return *res.Version, nil
 	}
 
-	return nil
+	return "", nil
 }
 
 // deleteFunction deletes the lambda function.
