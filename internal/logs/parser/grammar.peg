@@ -87,7 +87,7 @@ Expr <- LowNotExpr
 #
 
 String
-  <- (["] < StringChar* > ["] _)+
+  <- ["] < StringChar* > ["] _
 
 StringChar
   <- Escape / ![\"\n\\] .
