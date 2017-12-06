@@ -39,7 +39,7 @@
 
 [[projects]]
   name = "github.com/aws/aws-sdk-go"
-  packages = ["aws","aws/awserr","aws/awsutil","aws/client","aws/client/metadata","aws/corehandlers","aws/credentials","aws/credentials/ec2rolecreds","aws/credentials/endpointcreds","aws/credentials/stscreds","aws/defaults","aws/ec2metadata","aws/endpoints","aws/request","aws/session","aws/signer/v4","internal/shareddefaults","private/protocol","private/protocol/json/jsonutil","private/protocol/jsonrpc","private/protocol/query","private/protocol/query/queryutil","private/protocol/rest","private/protocol/restjson","private/protocol/restxml","private/protocol/xml/xmlutil","service/acm","service/apigateway","service/cloudformation","service/cloudwatch","service/cloudwatchlogs","service/cloudwatchlogs/cloudwatchlogsiface","service/iam","service/lambda","service/route53","service/route53domains","service/sts"]
+  packages = ["aws","aws/awserr","aws/awsutil","aws/client","aws/client/metadata","aws/corehandlers","aws/credentials","aws/credentials/ec2rolecreds","aws/credentials/endpointcreds","aws/credentials/stscreds","aws/defaults","aws/ec2metadata","aws/endpoints","aws/request","aws/session","aws/signer/v4","internal/shareddefaults","private/protocol","private/protocol/json/jsonutil","private/protocol/jsonrpc","private/protocol/query","private/protocol/query/queryutil","private/protocol/rest","private/protocol/restjson","private/protocol/restxml","private/protocol/xml/xmlutil","service/acm","service/apigateway","service/cloudformation","service/cloudwatch","service/cloudwatchlogs","service/cloudwatchlogs/cloudwatchlogsiface","service/iam","service/lambda","service/route53","service/route53domains","service/s3","service/s3/s3iface","service/s3/s3manager","service/sts"]
   revision = "ee1f179877b2daf2aaabf71fa900773bf8842253"
   version = "v1.12.19"
 
@@ -72,6 +72,12 @@
   packages = ["spew"]
   revision = "346938d642f2ec3594ed81d874461961cd0faa76"
   version = "v1.1.0"
+
+[[projects]]
+  branch = "master"
+  name = "github.com/dchest/uniuri"
+  packages = ["."]
+  revision = "8902c56451e9b58ff940bbe5fec35d5f9c04584a"
 
 [[projects]]
   branch = "master"
@@ -351,6 +357,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "204fa3bc4ee08693c4d68045ef0aee551af08a6fe2748f03c7d190ab0f0e1da6"
+  inputs-digest = "d5cbd80e813f8e310ee2f004873e3ffa2ac6baa927ecfa712bd8b5c7c8715604"
   solver-name = "gps-cdcl"
   solver-version = 1

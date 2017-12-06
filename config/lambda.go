@@ -4,13 +4,14 @@ import "errors"
 
 // Lambda configuration.
 type Lambda struct {
-	Role string `json:"role"`
-
 	// Memory of the function.
 	Memory int `json:"memory"`
 
 	// Timeout of the function.
 	Timeout int `json:"timeout"`
+
+	// Role of the function.
+	Role string `json:"role"`
 }
 
 // Default implementation.
