@@ -34,6 +34,11 @@ func New(c *Config) map[string]interface{} {
 	}
 }
 
+// GetS3BucketName returns the s3 bucket name based on config
+func GetS3BucketName(c *up.Config) string {
+	return fmt.Sprintf("up-deploy-%s", c.Name)
+}
+
 // ref of id.
 func ref(id string) Map {
 	return Map{
