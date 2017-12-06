@@ -64,6 +64,13 @@ Below is a policy for [AWS Identity and Access Management](https://aws.amazon.co
     },
     {
       "Action": [
+        "s3:*"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    },
+    {
+      "Action": [
         "cloudfront:*"
       ],
       "Effect": "Allow",

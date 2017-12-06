@@ -116,7 +116,7 @@ func (p *Platform) Build() error {
 
 	r, stats, err := zip.Build(".")
 	if err != nil {
-		return errors.Wrap(err, "building")
+		return errors.Wrap(err, "zip")
 	}
 
 	if _, err := io.Copy(p.zip, r); err != nil {
