@@ -16,6 +16,7 @@ PrimaryExpr
   / Stage                   { p.AddStage(text)  }
   / Id                      { p.AddField(text)  }
   / String                  { p.AddString(text) }
+  / UnquotedString          { p.AddString(text) }
   / LPAR Expr RPAR          { p.AddExpr()       }
 
 TupleExpr
@@ -90,6 +91,15 @@ String
 
 StringChar
   <- Escape / ![\"\n\\] .
+
+UnquotedString
+  <- !Keyword < UnquotedStringStartChar UnquotedStringChar* > _
+
+UnquotedStringStartChar
+  <- [a-z] / [A-Z] / [/_]
+
+UnquotedStringChar
+  <- [a-z] / [A-Z] / [0-9] / [/_]
 
 Escape
   <- SimpleEscape

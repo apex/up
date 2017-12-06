@@ -83,6 +83,7 @@ var cases = []struct {
 	{`method = GET`, `{ $.fields.method = "GET" }`},
 	{`method in (GET, HEAD, OPTIONS)`, `{ ($.fields.method = "GET" || $.fields.method = "HEAD" || $.fields.method = "OPTIONS") }`},
 	{`name = tj`, `{ $.fields.name = "tj" }`},
+	{`method = GET path = /account/billing`, `{ $.fields.method = "GET" && $.fields.path = "/account/billing" }`},
 	{`cart.products[0].name = ps4`, `{ $.fields.cart.products[0].name = "ps4" }`},
 }
 
