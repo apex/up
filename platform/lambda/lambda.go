@@ -662,7 +662,9 @@ func (p *Platform) createBucket(region string) error {
 
 // deleteBucket deletes the bucket.
 func (p *Platform) deleteBucket(region string) error {
-	p.emptyBucket(region)
+	if err := p.emptyBucket(region); err != nil {
+		return errors.Wrap(err, "emptying bucket")
+	}
 
 	s := s3.New(session.New(aws.NewConfig().WithRegion(region)))
 	n := p.getS3BucketName()
@@ -686,10 +688,17 @@ func (p *Platform) emptyBucket(region string) error {
 
 	return s.ListObjectsPages(params, func(page *s3.ListObjectsOutput, lastPage bool) bool {
 		for _, c := range page.Contents {
-			s.DeleteObject(&s3.DeleteObjectInput{
+			ctx := log.WithField("key", *c.Key)
+
+			ctx.Debug("deleting object")
+			_, err := s.DeleteObject(&s3.DeleteObjectInput{
 				Bucket: b,
 				Key:    c.Key,
 			})
+
+			if err != nil {
+				ctx.WithError(err).Warn("deleting object")
+			}
 		}
 
 		return *page.IsTruncated
