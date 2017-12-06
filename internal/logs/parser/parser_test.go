@@ -16,9 +16,6 @@ var cases = []struct {
 	Input  string
 	Output string
 }{
-	// {`method = GET`, `{ $.method = "GET" }`},
-	// {`method = foo.bar.baz`, `{ $.method = "foo.bar.baz" }`},
-	// {`method = foo.bar.*`, `{ $.method = "foo.bar.*" }`},
 	{`production`, `{ $.fields.stage = "production" }`},
 	{`development`, `{ $.fields.stage = "development" }`},
 	{`staging`, `{ $.fields.stage = "staging" }`},
@@ -78,8 +75,10 @@ var cases = []struct {
 	{`duration > 100ms`, `{ $.fields.duration > 100 }`},
 	{`duration > 1s`, `{ $.fields.duration > 1000 }`},
 	{`duration > 4.5s`, `{ $.fields.duration > 4500 }`},
-	// {`ip = 111.222.333.*`, ``},
-	// {`user.email is null`, ``},
+	{`"User Login"`, `{ $.message = "User Login" }`},
+	{`"User*"`, `{ $.message = "User*" }`},
+	{`"Signup" or "Signin"`, `{ $.message = "Signup" || $.message = "Signin" }`},
+	{`"User Login" method = "GET"`, `{ $.message = "User Login" && $.fields.method = "GET" }`},
 }
 
 func TestParse(t *testing.T) {
@@ -93,7 +92,7 @@ func TestParse(t *testing.T) {
 		}
 
 		if n.String() != c.Output {
-			t.Errorf("\n\ntext: %s\nwant: %s\n got: %s\n", c.Input, c.Output, n.String())
+			t.Errorf("\n\ntext: %s\nwant: %s\n got: %s\n\n", c.Input, c.Output, n.String())
 		}
 	}
 }

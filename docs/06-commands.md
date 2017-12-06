@@ -289,7 +289,13 @@ $ up logs 'warn or error'
 Show logs with a specific message.
 
 ```
-$ up logs 'message = "user login"'
+$ up logs 'message = "user login" method = "GET"'
+```
+
+Show logs with a specific message with implicit `=`:
+
+```
+$ up logs '"user login" method = "GET"'
 ```
 
 Show responses with latency above 15ms.

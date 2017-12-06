@@ -86,7 +86,7 @@ type String string
 
 // String implementation.
 func (n String) String() string {
-	return fmt.Sprintf(`%q`, string(n))
+	return fmt.Sprintf(`$.message = %q`, string(n))
 }
 
 // Property node.
@@ -164,9 +164,11 @@ func (n Binary) String() string {
 	case IN:
 		var s []string
 		for _, v := range n.Right.(Tuple) {
-			s = append(s, fmt.Sprintf(`%s %s %s`, n.Left, EQ, v))
+			s = append(s, fmt.Sprintf(`%s %s %s`, n.Left, EQ, value(v)))
 		}
 		return fmt.Sprintf(`(%s)`, strings.Join(s, " || "))
+	case EQ:
+		return fmt.Sprintf(`%s %s %s`, n.Left, n.Op, value(n.Right))
 	default:
 		return fmt.Sprintf(`%s %s %s`, n.Left, n.Op, n.Right)
 	}
@@ -185,5 +187,15 @@ func (n Unary) String() string {
 		return fmt.Sprintf(`!(%s)`, n.Right)
 	default:
 		return fmt.Sprintf(`%s%s`, n.Op, n.Right)
+	}
+}
+
+// value from node.
+func value(n Node) string {
+	switch v := n.(type) {
+	case String:
+		return fmt.Sprintf("%q", string(v))
+	default:
+		return n.String()
 	}
 }
