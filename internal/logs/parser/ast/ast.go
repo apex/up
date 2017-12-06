@@ -195,6 +195,8 @@ func value(n Node) string {
 	switch v := n.(type) {
 	case String:
 		return fmt.Sprintf("%q", string(v))
+	case Field:
+		return fmt.Sprintf("%q", string(v))
 	default:
 		return n.String()
 	}

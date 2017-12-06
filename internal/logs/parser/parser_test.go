@@ -30,6 +30,7 @@ var cases = []struct {
 	{`!info`, `{ !($.level = "info") }`},
 	{`level = "info"`, `{ $.level = "info" }`},
 	{`message = "user signin"`, `{ $.message = "user signin" }`},
+	{`email = "tj@apex.sh"`, `{ $.fields.email = "tj@apex.sh" }`},
 	{`status = 0`, `{ $.fields.status = 0 }`},
 	{`status = 0.123`, `{ $.fields.status = 0.123 }`},
 	{`status = .123`, `{ $.fields.status = 0.123 }`},
@@ -79,6 +80,10 @@ var cases = []struct {
 	{`"User*"`, `{ $.message = "User*" }`},
 	{`"Signup" or "Signin"`, `{ $.message = "Signup" || $.message = "Signin" }`},
 	{`"User Login" method = "GET"`, `{ $.message = "User Login" && $.fields.method = "GET" }`},
+	{`method = GET`, `{ $.fields.method = "GET" }`},
+	{`method in (GET, HEAD, OPTIONS)`, `{ ($.fields.method = "GET" || $.fields.method = "HEAD" || $.fields.method = "OPTIONS") }`},
+	{`name = tj`, `{ $.fields.name = "tj" }`},
+	{`cart.products[0].name = ps4`, `{ $.fields.cart.products[0].name = "ps4" }`},
 }
 
 func TestParse(t *testing.T) {
