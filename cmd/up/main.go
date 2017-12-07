@@ -8,7 +8,6 @@ import (
 	"strings"
 	"syscall"
 
-	isatty "github.com/mattn/go-isatty"
 	"github.com/stripe/stripe-go"
 	"github.com/tj/go/env"
 	"github.com/tj/go/term"
@@ -52,7 +51,7 @@ func main() {
 	term.ShowCursor()
 
 	if strings.Contains(err.Error(), "open up.json: no such file") {
-		if isatty.IsTerminal(os.Stdin.Fd()) {
+		if term.IsTerminal(os.Stdin.Fd()) {
 			defer util.Pad()()
 			if err := setup.Create(); err != nil {
 				util.Fatal(err)

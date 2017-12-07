@@ -100,7 +100,7 @@ func (l *Logs) start() {
 
 	var handler log.Handler
 
-	if term.IsTerminal() {
+	if term.IsTerminal(os.Stdout.Fd()) {
 		handler = text.New(os.Stdout).WithExpandedFields(l.expand)
 	} else {
 		handler = jsonlog.New(os.Stdout)

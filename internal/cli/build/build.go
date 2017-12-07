@@ -53,7 +53,7 @@ func init() {
 			out = os.Stdout
 		case *size:
 			out = &buf
-		case term.IsTerminal():
+		case term.IsTerminal(os.Stdout.Fd()):
 			f, err := os.Create("out.zip")
 			if err != nil {
 				return errors.Wrap(err, "creating zip")
