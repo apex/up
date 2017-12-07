@@ -204,6 +204,8 @@ The following environment variables are provided by Up:
 - `PORT` – port number such as "3000"
 - `UP_STAGE` – stage name such as "staging" or "production"
 
+Up Pro offers encrypted environment variables via the [up env](https://up.docs.apex.sh/#commands.env) sub-command.
+
 ## Header Injection
 
 The `headers` object allows you to map HTTP header fields to paths. The most specific pattern takes precedence.
