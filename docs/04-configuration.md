@@ -6,7 +6,7 @@ Configuration for your app lives in the `up.json` within your project's director
 
 ## Name
 
-The name of the application, which is used to name resources such as the Lambda function or API Gateway. By default this is the directory name.
+The name of the application, which is used to name resources such as the Lambda function or API Gateway. 
 
 ```json
 {
