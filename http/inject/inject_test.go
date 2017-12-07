@@ -7,8 +7,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/tj/assert"
 	"github.com/apex/up"
+	"github.com/tj/assert"
 
 	"github.com/apex/up/http/errorpages"
 	"github.com/apex/up/http/static"
@@ -20,6 +20,7 @@ func TestInject(t *testing.T) {
 	defer os.Chdir("..")
 
 	c := &up.Config{
+		Name: "app",
 		Inject: inject.Rules{
 			"head": []*inject.Rule{
 				{

@@ -7,9 +7,9 @@ import (
 	"os"
 	"testing"
 
-	"github.com/tj/assert"
 	"github.com/apex/up"
 	"github.com/apex/up/config"
+	"github.com/tj/assert"
 )
 
 var server = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -40,7 +40,7 @@ func TestErrors_defaults(t *testing.T) {
 	os.Chdir("testdata")
 	defer os.Chdir("..")
 
-	c := &up.Config{}
+	c := &up.Config{Name: "app"}
 	assert.NoError(t, c.Default(), "default")
 	assert.NoError(t, c.Validate(), "validate")
 
@@ -49,6 +49,7 @@ func TestErrors_defaults(t *testing.T) {
 
 func TestErrors_dir(t *testing.T) {
 	c := &up.Config{
+		Name: "app",
 		ErrorPages: config.ErrorPages{
 			Dir: "testdata",
 		},

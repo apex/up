@@ -4,7 +4,6 @@ import (
 	"encoding/json"
 	"io/ioutil"
 	"os"
-	"path/filepath"
 
 	"github.com/apex/log"
 	"github.com/pkg/errors"
@@ -90,6 +89,10 @@ type Config struct {
 
 // Validate implementation.
 func (c *Config) Validate() error {
+	if err := validate.RequiredString(c.Name); err != nil {
+		return errors.Wrap(err, ".name")
+	}
+
 	if err := validate.Name(c.Name); err != nil {
 		return errors.Wrapf(err, ".name %q", c.Name)
 	}
@@ -146,11 +149,6 @@ func (c *Config) Default() error {
 		if err := c.inferRuntime(); err != nil {
 			return errors.Wrap(err, "runtime")
 		}
-	}
-
-	// default .name
-	if err := c.defaultName(); err != nil {
-		return errors.Wrap(err, ".name")
 	}
 
 	// default .regions
@@ -224,22 +222,6 @@ func (c *Config) inferRuntime() error {
 	return nil
 }
 
-// defaultName infers the name from the CWD if it's not set.
-func (c *Config) defaultName() error {
-	if c.Name != "" {
-		return nil
-	}
-
-	dir, err := os.Getwd()
-	if err != nil {
-		return err
-	}
-
-	c.Name = filepath.Base(dir)
-	log.Debugf("infer name from current working directory %q", c.Name)
-	return nil
-}
-
 // defaultRegions checks AWS_REGION and falls back on us-west-2.
 func (c *Config) defaultRegions() error {
 	if len(c.Regions) != 0 {
@@ -304,23 +286,8 @@ func MustParseConfigString(s string) *Config {
 // ReadConfig reads the configuration from `path`.
 func ReadConfig(path string) (*Config, error) {
 	b, err := ioutil.ReadFile(path)
-
-	if os.IsNotExist(err) {
-		c := &Config{}
-
-		if err := c.Default(); err != nil {
-			return nil, errors.Wrap(err, "defaulting")
-		}
-
-		if err := c.Validate(); err != nil {
-			return nil, errors.Wrap(err, "validating")
-		}
-
-		return c, nil
-	}
-
 	if err != nil {
-		return nil, errors.Wrap(err, "reading file")
+		return nil, err
 	}
 
 	return ParseConfig(b)

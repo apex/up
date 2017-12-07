@@ -20,7 +20,7 @@ var hello = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 })
 
 func TestGzip(t *testing.T) {
-	c, err := up.ParseConfigString(`{}`)
+	c, err := up.ParseConfigString(`{ "name": "app" }`)
 	assert.NoError(t, err, "config")
 
 	h := New(c, hello)

@@ -15,7 +15,9 @@ var hello = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 })
 
 func TestCORS_disabled(t *testing.T) {
-	c, err := up.ParseConfigString(`{}`)
+	c, err := up.ParseConfigString(`{
+		"name": "app"
+	}`)
 
 	assert.NoError(t, err, "config")
 
@@ -40,6 +42,7 @@ func TestCORS_disabled(t *testing.T) {
 
 func TestCORS_defaults(t *testing.T) {
 	c, err := up.ParseConfigString(`{
+		"name": "app",
 		"cors": {}
 	}`)
 
@@ -91,6 +94,7 @@ func TestCORS_defaults(t *testing.T) {
 
 func TestCORS_options(t *testing.T) {
 	c := up.MustParseConfigString(`{
+		"name": "app",
 		"cors": {
 			"allowed_origins": ["https://apex.sh"],
 			"allowed_methods": ["GET"],

@@ -5,16 +5,16 @@ import (
 	"os"
 	"testing"
 
-	"github.com/tj/assert"
 	"github.com/apex/up"
 	"github.com/apex/up/config"
+	"github.com/tj/assert"
 )
 
 func TestStatic_defaults(t *testing.T) {
 	os.Chdir("testdata")
 	defer os.Chdir("..")
 
-	c := &up.Config{}
+	c := &up.Config{Name: "app"}
 	assert.NoError(t, c.Default(), "default")
 	assert.NoError(t, c.Validate(), "validate")
 	test(t, c)
@@ -22,6 +22,7 @@ func TestStatic_defaults(t *testing.T) {
 
 func TestStatic_dir(t *testing.T) {
 	c := &up.Config{
+		Name: "app",
 		Static: config.Static{
 			Dir: "testdata",
 		},

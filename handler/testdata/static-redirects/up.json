@@ -1,4 +1,5 @@
 {
+  "name": "app",
   "type": "static",
   "logs": {
     "enable": false

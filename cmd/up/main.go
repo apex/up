@@ -8,6 +8,7 @@ import (
 	"strings"
 	"syscall"
 
+	isatty "github.com/mattn/go-isatty"
 	"github.com/stripe/stripe-go"
 	"github.com/tj/go/env"
 	"github.com/tj/go/term"
@@ -29,6 +30,7 @@ import (
 	_ "github.com/apex/up/internal/cli/version"
 
 	"github.com/apex/up/internal/cli/app"
+	"github.com/apex/up/internal/setup"
 	"github.com/apex/up/internal/stats"
 	"github.com/apex/up/internal/util"
 )
@@ -48,6 +50,19 @@ func main() {
 	}
 
 	term.ShowCursor()
+
+	if strings.Contains(err.Error(), "open up.json: no such file") {
+		if isatty.IsTerminal(os.Stdin.Fd()) {
+			defer util.Pad()()
+			if err := setup.Create(); err != nil {
+				util.Fatal(err)
+			}
+			return
+		}
+
+		util.Fatal(errors.New("Missing up.json configuration file."))
+		return
+	}
 
 	if strings.Contains(err.Error(), "NoCredentialProviders") {
 		util.Fatal(errors.New("Cannot find credentials, visit https://up.docs.apex.sh/#aws_credentials for help."))
