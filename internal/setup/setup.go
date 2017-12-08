@@ -25,8 +25,7 @@ var questions = []*survey.Question{
 // Create an up.json file for the user.
 func Create() error {
 	var in struct {
-		Name    string `json:"name"`
-		Profile string `json:"profile"`
+		Name string `json:"name"`
 	}
 
 	if err := survey.Ask(questions, &in); err != nil {
