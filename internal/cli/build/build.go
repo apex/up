@@ -5,7 +5,6 @@ import (
 	"bytes"
 	"fmt"
 	"io"
-	"log"
 	"os"
 	"sort"
 
@@ -18,7 +17,6 @@ import (
 	"github.com/apex/up/internal/colors"
 	"github.com/apex/up/internal/stats"
 	"github.com/apex/up/internal/util"
-	"github.com/apex/up/platform/lambda/runtime"
 )
 
 func init() {
@@ -32,15 +30,15 @@ func init() {
 	cmd.Action(func(_ *kingpin.ParseContext) error {
 		defer util.Pad()()
 
-		c, p, err := root.Init()
+		_, p, err := root.Init()
 		if err != nil {
 			return errors.Wrap(err, "initializing")
 		}
 
 		stats.Track("Build", nil)
 
-		if err := runtime.New(c).Init(*stage); err != nil {
-			log.Fatalf("error initializing: %s", err)
+		if err := p.Init(*stage); err != nil {
+			return errors.Wrap(err, "initializing")
 		}
 
 		if err := p.Build(); err != nil {

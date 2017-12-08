@@ -58,9 +58,9 @@ func (r *Runtime) Init(stage string) error {
 func (r *Runtime) loadSecrets(stage string) error {
 	start := time.Now()
 
-	log.Info("initializing secrets")
+	r.log.Info("initializing secrets")
 	defer func() {
-		log.WithField("duration", util.MillisecondsSince(start)).Info("initialized secrets")
+		r.log.WithField("duration", util.MillisecondsSince(start)).Info("initialized secrets")
 	}()
 
 	// TODO: all regions
@@ -69,21 +69,20 @@ func (r *Runtime) loadSecrets(stage string) error {
 		return err
 	}
 
+	os.Setenv("UP_STAGE", stage)
+	os.Setenv("NODE_ENV", stage)
+
 	secrets = secret.FilterByApp(secrets, r.config.Name)
 	stages := secret.GroupByStage(secrets)
 
-	// TODO: util to de-dupe first
 	precedence := []string{
 		"all",
 		stage,
 	}
 
-	os.Setenv("UP_STAGE", stage)
-	os.Setenv("NODE_ENV", stage)
-
 	for _, name := range precedence {
 		if secrets := stages[name]; len(secrets) > 0 {
-			log.WithField("stage", name).WithField("count", len(secrets)).Info("initialized variables")
+			r.log.WithField("stage", name).WithField("count", len(secrets)).Info("initialized variables")
 			for _, s := range secrets {
 				os.Setenv(s.Name, s.Value)
 			}
