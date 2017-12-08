@@ -39,7 +39,7 @@ func list(cmd *kingpin.CmdClause) {
 	c := cmd.Command("ls", "List variables.").Alias("list").Default()
 
 	c.Action(func(_ *kingpin.ParseContext) error {
-		c, p, err := root.Init()
+		_, p, err := root.Init()
 		if err != nil {
 			return errors.Wrap(err, "initializing")
 		}
@@ -55,7 +55,7 @@ func list(cmd *kingpin.CmdClause) {
 			return nil
 		}
 
-		grouped := secret.GroupByStage(secret.FilterByApp(secrets, c.Name))
+		grouped := secret.GroupByStage(secrets)
 		t := table.New()
 
 		for _, name := range []string{"all", "development", "staging", "production"} {
