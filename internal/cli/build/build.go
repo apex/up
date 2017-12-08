@@ -5,6 +5,7 @@ import (
 	"bytes"
 	"fmt"
 	"io"
+	"log"
 	"os"
 	"sort"
 
@@ -17,10 +18,12 @@ import (
 	"github.com/apex/up/internal/colors"
 	"github.com/apex/up/internal/stats"
 	"github.com/apex/up/internal/util"
+	"github.com/apex/up/platform/lambda/runtime"
 )
 
 func init() {
 	cmd := root.Command("build", "Build zip file.")
+	stage := cmd.Arg("stage", "Target stage name.").Default("development").String()
 	size := cmd.Flag("size", "Show zip contents size information.").Bool()
 	cmd.Example(`up build`, "Build archive and save to ./out.zip")
 	cmd.Example(`up build > /tmp/out.zip`, "Build archive and output to file via stdout.")
@@ -29,12 +32,16 @@ func init() {
 	cmd.Action(func(_ *kingpin.ParseContext) error {
 		defer util.Pad()()
 
-		_, p, err := root.Init()
+		c, p, err := root.Init()
 		if err != nil {
 			return errors.Wrap(err, "initializing")
 		}
 
 		stats.Track("Build", nil)
+
+		if err := runtime.New(c).Init(*stage); err != nil {
+			log.Fatalf("error initializing: %s", err)
+		}
 
 		if err := p.Build(); err != nil {
 			return errors.Wrap(err, "building")
