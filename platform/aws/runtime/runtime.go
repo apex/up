@@ -78,6 +78,9 @@ func (r *Runtime) loadSecrets(stage string) error {
 		stage,
 	}
 
+	os.Setenv("UP_STAGE", stage)
+	os.Setenv("NODE_ENV", stage)
+
 	for _, name := range precedence {
 		if secrets := stages[name]; len(secrets) > 0 {
 			log.WithField("stage", name).WithField("count", len(secrets)).Info("initialized variables")

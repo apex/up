@@ -163,16 +163,6 @@ func (p *Project) URL(region, stage string) (string, error) {
 	return p.platform.URL(region, stage)
 }
 
-// Init the runtime.
-func (p *Project) Init(stage string) error {
-	r, ok := p.platform.(platform.Runtime)
-	if !ok {
-		return nil
-	}
-
-	return r.Init(stage)
-}
-
 // Zip returns the zip if supported by the platform.
 func (p *Project) Zip() (io.Reader, error) {
 	z, ok := p.Platform.(Zipper)
