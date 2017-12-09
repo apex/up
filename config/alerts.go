@@ -76,6 +76,9 @@ type AlertAction struct {
 
 	// Channel for slack webhook action (optional).
 	Channel string `json:"channel"`
+
+	// Gifs enabled for alerts.
+	Gifs bool `json:"gifs"`
 }
 
 // Validate implementation.
