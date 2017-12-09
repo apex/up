@@ -65,6 +65,8 @@ func action(c *Config, a *config.AlertAction, m Map) {
 	v.Add("type", a.Type)
 	v.Add("emails", strings.Join(a.Emails, ","))
 	v.Add("numbers", strings.Join(a.Numbers, ","))
+	v.Add("url", a.URL)
+	v.Add("channel", a.Channel)
 
 	sub := util.Camelcase("alert_action_%s_subscription", a.Name)
 	url := fmt.Sprintf("https://up.apex.sh/alert?%s", v.Encode())

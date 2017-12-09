@@ -10,7 +10,11 @@ import (
 )
 
 // types of action.
-var types = []string{"email", "sms"}
+var types = []string{
+	"slack",
+	"email",
+	"sms",
+}
 
 // namespace mappings.
 var namespaceMap = map[string]string{
@@ -55,10 +59,23 @@ var missingData = []string{
 
 // AlertAction config.
 type AlertAction struct {
-	Name    string   `json:"name"`
-	Type    string   `json:"type"`
-	Emails  []string `json:"emails"`
+	// Name of the action.
+	Name string `json:"name"`
+
+	// Type of action.
+	Type string `json:"type"`
+
+	// Emails for email action.
+	Emails []string `json:"emails"`
+
+	// Numbers for sms action.
 	Numbers []string `json:"numbers"`
+
+	// URL for slack webhook action.
+	URL string `json:"url"`
+
+	// Channel for slack webhook action (optional).
+	Channel string `json:"channel"`
 }
 
 // Validate implementation.
@@ -79,6 +96,10 @@ func (a *AlertAction) Validate() error {
 	case "sms":
 		if err := validate.MinStrings(a.Numbers, 1); err != nil {
 			return errors.Wrap(err, ".numbers")
+		}
+	case "slack":
+		if err := validate.RequiredString(a.URL); err != nil {
+			return errors.Wrap(err, ".url")
 		}
 	}
 
