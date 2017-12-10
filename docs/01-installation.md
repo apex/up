@@ -4,7 +4,7 @@ title: Installation
 
 Up is distributed in a binary form and can be installed manually via the [tarball releases](https://github.com/apex/up/releases) or one of the options below.
 
-The quickest way to get `up` is to run the following command, which installs to to `/usr/local/bin` by default.
+The quickest way to get `up` is to run the following command, which installs to `/usr/local/bin` by default.
 
 ```
 $ curl -sf https://up.apex.sh/install | sh
