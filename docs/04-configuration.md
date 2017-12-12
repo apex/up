@@ -92,7 +92,7 @@ Currently Lambda supports the following regions:
 The following Lambda-specific settings are available:
 
 - `role` – IAM role ARN, defaulting to the one Up creates for you
-- `memory` – Function memory in mb (Default `128`, Min `128`, Max `1536`)
+- `memory` – Function memory in mb (Default `512`, Min `128`, Max `1536`)
 
 For example:
 
