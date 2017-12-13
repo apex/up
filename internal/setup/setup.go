@@ -8,6 +8,7 @@ import (
 	"os"
 	"path/filepath"
 
+	"github.com/apex/up/internal/validate"
 	"github.com/tj/survey"
 )
 
@@ -19,7 +20,7 @@ var questions = []*survey.Question{
 			Message: "Name of your project:",
 			Default: defaultName(),
 		},
-		Validate: survey.Required,
+		Validate: validateName,
 	},
 }
 
@@ -52,7 +53,21 @@ func Create() error {
 }
 
 // defaultName returns the default app name.
+// The name is only inferred if it is valid.
 func defaultName() string {
 	dir, _ := os.Getwd()
-	return filepath.Base(dir)
+	name := filepath.Base(dir)
+	if validate.Name(name) != nil {
+		return ""
+	}
+	return name
+}
+
+// validateName validates the name prompt.
+func validateName(v interface{}) error {
+	if err := validate.Name(v.(string)); err != nil {
+		return err
+	}
+
+	return survey.Required(v)
 }
