@@ -18,11 +18,8 @@ import (
 	"github.com/apex/up/internal/validate"
 )
 
-// Errors.
-var (
-	// ErrNoCredentials is the error returned when no AWS credential profiles are available.
-	ErrNoCredentials = errors.New("no credentials")
-)
+// ErrNoCredentials is the error returned when no AWS credential profiles are available.
+var ErrNoCredentials = errors.New("no credentials")
 
 // questions for the user.
 var questions = []*survey.Question{
