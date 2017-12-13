@@ -19,11 +19,11 @@ var All = []string{
 	"ap-south-1",
 	"sa-east-1",
 	"ca-central-1",
+	"cn-north-1",
 }
 
-// Match returns regions matching the pattern(s) provided. Any
-// patern which does not match is returned so it may be validated
-// (aka it will fail validation).
+// Match returns regions matching the pattern(s) provided. Patterns
+// which are not "expanded" are returned as-is.
 func Match(regions []string) (v []string) {
 	for _, pattern := range regions {
 		matched := false

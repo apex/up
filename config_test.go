@@ -122,7 +122,8 @@ func TestConfig_Regions(t *testing.T) {
   • ap-northeast-2
   • ap-south-1
   • sa-east-1
-  • ca-central-1`)
+  • ca-central-1
+  • cn-north-1`)
 	})
 
 	t.Run("invalid", func(t *testing.T) {
@@ -149,7 +150,8 @@ func TestConfig_Regions(t *testing.T) {
   • ap-northeast-2
   • ap-south-1
   • sa-east-1
-  • ca-central-1`)
+  • ca-central-1
+  • cn-north-1`)
 	})
 }
 
