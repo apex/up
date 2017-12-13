@@ -2,6 +2,7 @@ package util
 
 import (
 	"os/exec"
+	"strings"
 	"testing"
 	"time"
 
@@ -82,4 +83,22 @@ func TestDomain(t *testing.T) {
 	assert.Equal(t, "example.co.uk", Domain("example.co.uk"))
 	assert.Equal(t, "example.co.uk", Domain("api.example.co.uk"))
 	assert.Equal(t, "example.co.uk", Domain("v1.api.example.co.uk"))
+}
+
+func TestParseSections(t *testing.T) {
+	r := strings.NewReader(`[personal]
+aws_access_key_id = personal_key
+aws_secret_access_key = personal_secret
+[app]
+aws_access_key_id = app_key
+aws_secret_access_key = app_secret
+[foo_bar]
+aws_access_key_id = foo_bar_key
+aws_secret_access_key = foo_bar_secret
+`)
+
+	v, err := ParseSections(r)
+	assert.NoError(t, err)
+
+	assert.Equal(t, []string{"personal", "app", "foo_bar"}, v)
 }

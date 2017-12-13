@@ -1,13 +1,17 @@
 package deploy
 
 import (
+	"os"
+	"strings"
 	"time"
 
 	"github.com/pkg/errors"
+	"github.com/tj/go/term"
 	"github.com/tj/kingpin"
 
 	"github.com/apex/log"
 	"github.com/apex/up/internal/cli/root"
+	"github.com/apex/up/internal/setup"
 	"github.com/apex/up/internal/stats"
 	"github.com/apex/up/internal/util"
 	"github.com/apex/up/internal/validate"
@@ -21,54 +25,87 @@ func init() {
 	cmd.Example(`up deploy production`, "Deploy the project to the production stage.")
 
 	cmd.Action(func(_ *kingpin.ParseContext) error {
-		c, p, err := root.Init()
-		if err != nil {
-			return errors.Wrap(err, "initializing")
-		}
-
-		start := time.Now()
-
-		stats.Track("Deploy", map[string]interface{}{
-			"duration":             util.MillisecondsSince(start),
-			"type":                 c.Type,
-			"regions":              c.Regions,
-			"stage":                *stage,
-			"proxy_timeout":        c.Proxy.Timeout,
-			"header_rules_count":   len(c.Headers),
-			"redirect_rules_count": len(c.Redirects),
-			"inject_rules_count":   len(c.Inject),
-			"environment_count":    len(c.Environment),
-			"dns_zone_count":       len(c.DNS.Zones),
-			"stage_count":          len(c.Stages.List()),
-			"stage_domain_count":   len(c.Stages.Domains()),
-			"has_cors":             c.CORS != nil,
-			"has_logs":             !c.Logs.Disable,
-			"has_profile":          c.Profile != "",
-			"has_error_pages":      c.ErrorPages.Enable,
-			"app_name_hash":        util.Md5(c.Name),
-		})
-
-		done := make(chan bool)
-
-		go func() {
-			defer close(done)
-			if err := stats.Client.Flush(); err != nil {
-				log.WithError(err).Warn("flushing analytics")
-			}
-		}()
-
-		if err := validate.Stage(*stage); err != nil {
-			return err
-		}
-
-		defer util.Pad()()
-
-		if err := p.Deploy(*stage); err != nil {
-			return err
-		}
-
-		<-done
-
-		return nil
+		return deploy(*stage)
 	})
+}
+
+func deploy(stage string) error {
+retry:
+	c, p, err := root.Init()
+
+	// missing up.json non-interactive
+	if isMissingConfig(err) && !term.IsTerminal(os.Stdin.Fd()) {
+		return errors.New("Cannot find ./up.json configuration file.")
+	}
+
+	// missing up.json interactive
+	if isMissingConfig(err) {
+		err := setup.Create()
+
+		if err == setup.ErrNoCredentials {
+			return errors.New("Cannot find credentials, visit https://up.docs.apex.sh/#aws_credentials for help.")
+		}
+
+		if err != nil {
+			return errors.Wrap(err, "setup")
+		}
+
+		util.Log("Deploying the project and creating resources.")
+		goto retry
+	}
+
+	// unrelated error
+	if err != nil {
+		return errors.Wrap(err, "initializing")
+	}
+
+	done := make(chan bool)
+	start := time.Now()
+
+	go func() {
+		defer close(done)
+		if err := stats.Client.Flush(); err != nil {
+			log.WithError(err).Debug("flushing analytics")
+		}
+	}()
+
+	stats.Track("Deploy", map[string]interface{}{
+		"duration":             util.MillisecondsSince(start),
+		"type":                 c.Type,
+		"regions":              c.Regions,
+		"stage":                stage,
+		"proxy_timeout":        c.Proxy.Timeout,
+		"header_rules_count":   len(c.Headers),
+		"redirect_rules_count": len(c.Redirects),
+		"inject_rules_count":   len(c.Inject),
+		"environment_count":    len(c.Environment),
+		"dns_zone_count":       len(c.DNS.Zones),
+		"stage_count":          len(c.Stages.List()),
+		"stage_domain_count":   len(c.Stages.Domains()),
+		"has_cors":             c.CORS != nil,
+		"has_logs":             !c.Logs.Disable,
+		"has_profile":          c.Profile != "",
+		"has_error_pages":      c.ErrorPages.Enable,
+		"app_name_hash":        util.Md5(c.Name),
+	})
+
+	if err := validate.Stage(stage); err != nil {
+		return err
+	}
+
+	defer util.Pad()()
+
+	if err := p.Deploy(stage); err != nil {
+		return err
+	}
+
+	<-done
+
+	return nil
+}
+
+// isMissingConfig returns true if the error represents a missing up.json.
+func isMissingConfig(err error) bool {
+	// TODO: better check
+	return err != nil && strings.Contains(err.Error(), "open up.json: no such file")
 }

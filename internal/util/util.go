@@ -2,10 +2,12 @@
 package util
 
 import (
+	"bufio"
 	"crypto/md5"
 	"encoding/hex"
 	"encoding/json"
 	"fmt"
+	"io"
 	"io/ioutil"
 	"math"
 	"net"
@@ -346,4 +348,20 @@ func Domain(s string) string {
 	}
 
 	return d
+}
+
+// ParseSections returns INI style sections from r.
+func ParseSections(r io.Reader) (sections []string, err error) {
+	s := bufio.NewScanner(r)
+
+	for s.Scan() {
+		t := s.Text()
+		if strings.HasPrefix(t, "[") {
+			sections = append(sections, strings.Trim(t, "[]"))
+		}
+	}
+
+	err = s.Err()
+
+	return
 }
