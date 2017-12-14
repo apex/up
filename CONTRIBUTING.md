@@ -80,3 +80,4 @@ Notes for myself:
 - Run `git release`
 - Run `make release`
 - Re-build documentation
+- Notes about any backwards compat issues, migration, IAM policy changes
