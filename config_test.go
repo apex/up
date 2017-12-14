@@ -95,7 +95,7 @@ func TestConfig_Regions(t *testing.T) {
 
 		assert.NoError(t, c.Default(), "default")
 		assert.NoError(t, c.Validate(), "validate")
-		assert.Equal(t, []string{"us-east-1", "us-west-2", "us-east-2", "us-west-1", "us-east-1", "ca-central-1"}, c.Regions)
+		assert.Equal(t, []string{"us-east-2", "us-east-1", "us-west-1", "us-west-2", "us-east-1", "ca-central-1"}, c.Regions)
 	})
 
 	t.Run("invalid globbing", func(t *testing.T) {
@@ -109,21 +109,20 @@ func TestConfig_Regions(t *testing.T) {
 
 		assert.EqualError(t, c.Validate(), `.regions: "uss-*" is invalid, must be one of:
 
+  • us-east-2
   • us-east-1
+  • us-west-1
   • us-west-2
-  • eu-west-1
-  • eu-west-2
-  • eu-central-1
-  • ap-northeast-1
+  • ap-south-1
+  • ap-northeast-2
   • ap-southeast-1
   • ap-southeast-2
-  • us-east-2
-  • us-west-1
-  • ap-northeast-2
-  • ap-south-1
-  • sa-east-1
+  • ap-northeast-1
   • ca-central-1
-  • cn-north-1`)
+  • eu-central-1
+  • eu-west-1
+  • eu-west-2
+  • sa-east-1`)
 	})
 
 	t.Run("invalid", func(t *testing.T) {
@@ -137,21 +136,20 @@ func TestConfig_Regions(t *testing.T) {
 
 		assert.EqualError(t, c.Validate(), `.regions: "us-west-9" is invalid, must be one of:
 
+  • us-east-2
   • us-east-1
+  • us-west-1
   • us-west-2
-  • eu-west-1
-  • eu-west-2
-  • eu-central-1
-  • ap-northeast-1
+  • ap-south-1
+  • ap-northeast-2
   • ap-southeast-1
   • ap-southeast-2
-  • us-east-2
-  • us-west-1
-  • ap-northeast-2
-  • ap-south-1
-  • sa-east-1
+  • ap-northeast-1
   • ca-central-1
-  • cn-north-1`)
+  • eu-central-1
+  • eu-west-1
+  • eu-west-2
+  • sa-east-1`)
 	})
 }
 

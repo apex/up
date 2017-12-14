@@ -101,7 +101,7 @@ func (c *Config) Validate() error {
 		return errors.Wrap(err, ".type")
 	}
 
-	if err := validate.Lists(c.Regions, regions.All); err != nil {
+	if err := validate.Lists(c.Regions, regions.IDs); err != nil {
 		return errors.Wrap(err, ".regions")
 	}
 

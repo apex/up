@@ -14,12 +14,12 @@ func TestMatch(t *testing.T) {
 
 	t.Run("glob all", func(t *testing.T) {
 		v := Match([]string{"*"})
-		assert.Equal(t, All, v)
+		assert.Equal(t, IDs, v)
 	})
 
 	t.Run("glob some", func(t *testing.T) {
 		v := Match([]string{"us-west-*", "ca-*"})
-		e := []string{"us-west-2", "us-west-1", "ca-central-1"}
+		e := []string{"us-west-1", "us-west-2", "ca-central-1"}
 		assert.Equal(t, e, v)
 	})
 }

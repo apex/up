@@ -16,17 +16,25 @@ import (
 
 	"github.com/apex/up/internal/util"
 	"github.com/apex/up/internal/validate"
+	"github.com/apex/up/platform/lambda/regions"
 )
 
 // ErrNoCredentials is the error returned when no AWS credential profiles are available.
 var ErrNoCredentials = errors.New("no credentials")
+
+// config saved to up.json
+type config struct {
+	Name    string   `json:"name"`
+	Profile string   `json:"profile"`
+	Regions []string `json:"regions"`
+}
 
 // questions for the user.
 var questions = []*survey.Question{
 	{
 		Name: "name",
 		Prompt: &survey.Input{
-			Message: "Name of the project:",
+			Message: "Project name:",
 			Default: defaultName(),
 		},
 		Validate: validateName,
@@ -34,9 +42,19 @@ var questions = []*survey.Question{
 	{
 		Name: "profile",
 		Prompt: &survey.Select{
-			Message:  "AWS credentials profile:",
+			Message:  "AWS profile:",
 			Options:  awsProfiles(),
 			Default:  os.Getenv("AWS_PROFILE"),
+			PageSize: 10,
+		},
+		Validate: survey.Required,
+	},
+	{
+		Name: "region",
+		Prompt: &survey.Select{
+			Message:  "AWS region:",
+			Options:  regions.Names,
+			Default:  defaultRegion(),
 			PageSize: 10,
 		},
 		Validate: survey.Required,
@@ -48,6 +66,7 @@ func Create() error {
 	var in struct {
 		Name    string `json:"name"`
 		Profile string `json:"profile"`
+		Region  string `json:"region"`
 	}
 
 	if len(awsProfiles()) == 0 {
@@ -77,7 +96,15 @@ func Create() error {
 		return err
 	}
 
-	b, _ := json.MarshalIndent(in, "", "  ")
+	c := config{
+		Name:    in.Name,
+		Profile: in.Profile,
+		Regions: []string{
+			regions.GetIdByName(in.Region),
+		},
+	}
+
+	b, _ := json.MarshalIndent(c, "", "  ")
 	return ioutil.WriteFile("up.json", b, 0755)
 }
 
@@ -90,6 +117,19 @@ func defaultName() string {
 		return ""
 	}
 	return name
+}
+
+// defaultRegion returns the default aws region.
+func defaultRegion() string {
+	if s := os.Getenv("AWS_DEFAULT_REGION"); s != "" {
+		return s
+	}
+
+	if s := os.Getenv("AWS_REGION"); s != "" {
+		return s
+	}
+
+	return ""
 }
 
 // validateName validates the name prompt.
