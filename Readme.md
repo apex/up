@@ -23,7 +23,7 @@ Up Pro is **$20/mo USD** for unlimited use within your company, with no addition
 Note that the following Pro features are currently available:
 
  - Encrypted env variables
- - Alerting (email, sms)
+ - Alerting (email, sms, slack)
 
 ![Pro edition features](assets/features-pro.png)
 
