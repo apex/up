@@ -19,6 +19,7 @@ var IDs = []string{
 	"eu-west-1",
 	"eu-west-2",
 	"sa-east-1",
+	"cn-north-1",
 }
 
 // Names of regions.
@@ -37,6 +38,7 @@ var Names = []string{
 	"EU (Ireland)",
 	"EU (London)",
 	"South America (São Paulo)",
+	"North China (Beijing)",
 }
 
 // Match returns regions matching the pattern(s) provided. Patterns
