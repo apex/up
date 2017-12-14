@@ -69,9 +69,6 @@ func (r *Runtime) loadSecrets(stage string) error {
 		return err
 	}
 
-	os.Setenv("UP_STAGE", stage)
-	os.Setenv("NODE_ENV", stage)
-
 	secrets = secret.FilterByApp(secrets, r.config.Name)
 	stages := secret.GroupByStage(secrets)
 
