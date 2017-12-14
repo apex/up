@@ -33,3 +33,12 @@ func Track(name string, props map[string]interface{}) {
 func SetProperties(props map[string]interface{}) {
 	p = props
 }
+
+// Flush stats.
+func Flush() {
+	log.Debug("flushing analytics")
+	if err := Client.Flush(); err != nil {
+		log.WithError(err).Debug("flushing analytics")
+	}
+	log.Debug("flushing analytics")
+}

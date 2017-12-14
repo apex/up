@@ -9,7 +9,6 @@ import (
 	"github.com/tj/go/term"
 	"github.com/tj/kingpin"
 
-	"github.com/apex/log"
 	"github.com/apex/up/internal/cli/root"
 	"github.com/apex/up/internal/setup"
 	"github.com/apex/up/internal/stats"
@@ -59,15 +58,16 @@ retry:
 		return errors.Wrap(err, "initializing")
 	}
 
-	done := make(chan bool)
+	if err := validate.Stage(stage); err != nil {
+		return err
+	}
+
+	defer util.Pad()()
 	start := time.Now()
 
-	go func() {
-		defer close(done)
-		if err := stats.Client.Flush(); err != nil {
-			log.WithError(err).Debug("flushing analytics")
-		}
-	}()
+	if err := p.Deploy(stage); err != nil {
+		return err
+	}
 
 	stats.Track("Deploy", map[string]interface{}{
 		"duration":             util.MillisecondsSince(start),
@@ -89,18 +89,7 @@ retry:
 		"app_name_hash":        util.Md5(c.Name),
 	})
 
-	if err := validate.Stage(stage); err != nil {
-		return err
-	}
-
-	defer util.Pad()()
-
-	if err := p.Deploy(stage); err != nil {
-		return err
-	}
-
-	<-done
-
+	stats.Flush()
 	return nil
 }
 
