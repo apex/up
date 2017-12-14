@@ -65,6 +65,10 @@ retry:
 	defer util.Pad()()
 	start := time.Now()
 
+	if err := p.Init(stage); err != nil {
+		return errors.Wrap(err, "initializing")
+	}
+
 	if err := p.Deploy(stage); err != nil {
 		return err
 	}
