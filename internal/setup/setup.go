@@ -55,7 +55,7 @@ var questions = []*survey.Question{
 			Message:  "AWS region:",
 			Options:  regions.Names,
 			Default:  defaultRegion(),
-			PageSize: 10,
+			PageSize: 15,
 		},
 		Validate: survey.Required,
 	},
