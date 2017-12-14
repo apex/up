@@ -78,7 +78,8 @@ func Create() error {
 	// confirm
 	var ok bool
 	err := survey.AskOne(&survey.Confirm{
-		Message: fmt.Sprintf("This directory has no up.json, create it?"),
+		Message: fmt.Sprintf("No up.json found, create a new project?"),
+		Default: true,
 	}, &ok, nil)
 
 	if err != nil {
