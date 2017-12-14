@@ -101,6 +101,8 @@ retry:
 		"has_profile":          c.Profile != "",
 		"has_error_pages":      !c.ErrorPages.Disable,
 		"app_name_hash":        util.Md5(c.Name),
+		"alerts_count":         len(c.Alerts),
+		"actions_count":        len(c.Actions),
 	})
 
 	stats.Flush()
