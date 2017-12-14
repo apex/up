@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/apex/log"
+	"github.com/apex/log/handlers/discard"
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/acm"
@@ -33,6 +34,7 @@ import (
 	"github.com/apex/up/internal/zip"
 	"github.com/apex/up/platform"
 	"github.com/apex/up/platform/event"
+	"github.com/apex/up/platform/lambda/runtime"
 	"github.com/apex/up/platform/lambda/stack"
 )
 
@@ -146,6 +148,16 @@ func (p *Platform) Build() error {
 // Zip returns the zip reader.
 func (p *Platform) Zip() io.Reader {
 	return p.zip
+}
+
+// Init initializes the runtime.
+func (p *Platform) Init(stage string) error {
+	return runtime.New(
+		p.config,
+		runtime.WithLogger(&log.Logger{
+			Handler: discard.Default,
+		}),
+	).Init(stage)
 }
 
 // Deploy implementation.

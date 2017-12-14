@@ -81,6 +81,14 @@ type Interface interface {
 	ShowMetrics(region, stage string, start time.Time) error
 }
 
+// Runtime is the interface used by a platform to support
+// runtime operations such as initializing environment
+// variables from remote storage.
+type Runtime interface {
+	// Init the runtime.
+	Init(stage string) error
+}
+
 // Zipper is the interface used by platforms which
 // utilize zips for delivery of deployments.
 type Zipper interface {

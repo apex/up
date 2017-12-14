@@ -156,6 +156,16 @@ func (p *Project) Zip() (io.Reader, error) {
 	return z.Zip(), nil
 }
 
+// Init initializes the runtime such as remote environment variables.
+func (p *Project) Init(stage string) error {
+	r, ok := p.platform.(platform.Runtime)
+	if !ok {
+		return nil
+	}
+
+	return r.Init(stage)
+}
+
 // CreateStack implementation.
 func (p *Project) CreateStack(region, version string) error {
 	defer p.events.Time("stack.create", event.Fields{

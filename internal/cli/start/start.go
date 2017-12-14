@@ -23,9 +23,8 @@ func init() {
 
 	cmd.Action(func(_ *kingpin.ParseContext) error {
 		log.SetHandler(text.New(os.Stdout))
-		os.Setenv("UP_STAGE", "development")
 
-		c, _, err := root.Init()
+		c, p, err := root.Init()
 		if err != nil {
 			return errors.Wrap(err, "initializing")
 		}
@@ -38,12 +37,16 @@ func init() {
 			"address": *addr,
 		})
 
+		if err := p.Init("development"); err != nil {
+			return errors.Wrap(err, "initializing")
+		}
+
 		h, err := handler.New()
 		if err != nil {
 			return errors.Wrap(err, "initializing handler")
 		}
 
-		log.WithField("address", *addr).Infof("listening")
+		log.WithField("address", *addr).Info("listening")
 		if err := http.ListenAndServe(*addr, h); err != nil {
 			return errors.Wrap(err, "binding")
 		}
