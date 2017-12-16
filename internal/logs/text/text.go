@@ -33,7 +33,7 @@ var omit = map[string]bool{
 // Colors mapping.
 var Colors = [...]colorFunc{
 	log.DebugLevel: colors.Gray,
-	log.InfoLevel:  colors.Blue,
+	log.InfoLevel:  colors.Purple,
 	log.WarnLevel:  colors.Yellow,
 	log.ErrorLevel: colors.Red,
 	log.FatalLevel: colors.Red,
