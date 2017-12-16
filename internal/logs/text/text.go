@@ -118,7 +118,7 @@ func (h *Handler) handleInline(e *log.Entry) error {
 	defer h.mu.Unlock()
 
 	ts := formatDate(e.Timestamp.Local())
-	fmt.Fprintf(h.Writer, "  %s %s %s", colors.Gray(ts), color(level), e.Message)
+	fmt.Fprintf(h.Writer, "  %s %s %s", colors.Gray(ts), color(level), colors.Purple(e.Message))
 
 	for _, name := range names {
 		if omit[name] {
