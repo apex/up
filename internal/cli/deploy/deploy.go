@@ -2,7 +2,6 @@ package deploy
 
 import (
 	"os"
-	"strings"
 	"time"
 
 	"github.com/pkg/errors"
@@ -99,6 +98,7 @@ retry:
 
 // isMissingConfig returns true if the error represents a missing up.json.
 func isMissingConfig(err error) bool {
-	// TODO: better check
-	return err != nil && strings.Contains(err.Error(), "open up.json: no such file")
+	err = errors.Cause(err)
+	e, ok := err.(*os.PathError)
+	return ok && e.Path == "up.json"
 }
