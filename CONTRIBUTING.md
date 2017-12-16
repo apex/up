@@ -81,3 +81,4 @@ Notes for myself:
 - Run `make release`
 - Re-build documentation
 - Notes about any backwards compat issues, migration, IAM policy changes
+- Adjust schemastore JSON schema if necessary
