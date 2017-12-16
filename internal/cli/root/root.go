@@ -35,7 +35,6 @@ func init() {
 	Cmd.Example(`up run build`, "Run build command manually.")
 	Cmd.Example(`up help logs`, "Show help and examples for a sub-command.")
 
-	region := Cmd.Flag("region", "Override the region.").Short('r').String()
 	workdir := Cmd.Flag("chdir", "Change working directory.").Default(".").Short('C').String()
 	verbose := Cmd.Flag("verbose", "Enable verbose log output.").Short('v').Bool()
 	format := Cmd.Flag("format", "Output formatter.").Default("text").String()
@@ -53,10 +52,6 @@ func init() {
 			c, err := up.ReadConfig("up.json")
 			if err != nil {
 				return nil, nil, errors.Wrap(err, "reading config")
-			}
-
-			if *region != "" {
-				c.Regions = []string{*region}
 			}
 
 			events := make(event.Events)

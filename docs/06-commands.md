@@ -15,7 +15,6 @@ Usage:
 Flags:
 
   -h, --help           Output usage information.
-  -r, --region=REGION  Override the region.
   -C, --chdir="."      Change working directory.
   -v, --verbose        Enable verbose log output.
       --version        Show application version.
@@ -65,7 +64,6 @@ Usage:
 Flags:
 
   -h, --help           Output usage information.
-  -r, --region=REGION  Override the region.
   -C, --chdir="."      Change working directory.
   -v, --verbose        Enable verbose log output.
       --version        Show application version.
@@ -170,7 +168,6 @@ Usage:
 Flags:
 
   -h, --help           Output usage information.
-  -r, --region=REGION  Override the region.
   -C, --chdir="."      Change working directory.
   -v, --verbose        Enable verbose log output.
       --version        Show application version.
@@ -370,7 +367,6 @@ Usage:
 Flags:
 
   -h, --help           Output usage information.
-  -r, --region=REGION  Override the region.
   -C, --chdir="."      Change working directory.
   -v, --verbose        Enable verbose log output.
       --version        Show application version.
@@ -432,7 +428,6 @@ Usage:
 Flags:
 
   -h, --help           Output usage information.
-  -r, --region=REGION  Override the region.
   -C, --chdir="."      Change working directory.
   -v, --verbose        Enable verbose log output.
       --version        Show application version.
@@ -507,7 +502,6 @@ Usage:
 Flags:
 
   -h, --help           Output usage information.
-  -r, --region=REGION  Override the region.
   -C, --chdir="."      Change working directory.
   -v, --verbose        Enable verbose log output.
       --version        Show application version.
@@ -554,7 +548,6 @@ Usage:
 Flags:
 
   -h, --help           Output usage information.
-  -r, --region=REGION  Override the region.
   -C, --chdir="."      Change working directory.
   -v, --verbose        Enable verbose log output.
       --version        Show application version.
@@ -605,7 +598,6 @@ Usage:
 Flags:
 
   -h, --help           Output usage information.
-  -r, --region=REGION  Override the region.
   -C, --chdir="."      Change working directory.
   -v, --verbose        Enable verbose log output.
       --version        Show application version.
