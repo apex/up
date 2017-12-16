@@ -2,6 +2,7 @@ package upgrade
 
 import (
 	"runtime"
+	"strings"
 	"time"
 
 	"github.com/pkg/errors"
@@ -96,7 +97,11 @@ func init() {
 
 		term.ClearAll()
 
-		util.LogPad("Updated %s to %s :)", version, latest.Version)
+		if strings.Contains(a.URL, "up/pro") {
+			util.LogPad("Updated %s to %s Pro :)", version, latest.Version)
+		} else {
+			util.LogPad("Updated %s to %s OSS :)", version, latest.Version)
+		}
 
 		stats.Track("Upgrade", map[string]interface{}{
 			"from":     version,
