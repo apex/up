@@ -89,7 +89,7 @@ func (h *Handler) handleExpanded(e *log.Entry) error {
 	defer h.mu.Unlock()
 
 	ts := formatDate(e.Timestamp.Local())
-	fmt.Fprintf(h.Writer, "  %s %s %s\n", colors.Gray(ts), color(level), e.Message)
+	fmt.Fprintf(h.Writer, "  %s %s %s\n", colors.Gray(ts), bold(color(level)), colors.Purple(e.Message))
 
 	for _, name := range names {
 		if omit[name] {
@@ -118,7 +118,7 @@ func (h *Handler) handleInline(e *log.Entry) error {
 	defer h.mu.Unlock()
 
 	ts := formatDate(e.Timestamp.Local())
-	fmt.Fprintf(h.Writer, "  %s %s %s", colors.Gray(ts), color(level), colors.Purple(e.Message))
+	fmt.Fprintf(h.Writer, "  %s %s %s", colors.Gray(ts), bold(color(level)), colors.Purple(e.Message))
 
 	for _, name := range names {
 		if omit[name] {
@@ -178,4 +178,9 @@ func dateSuffix(t time.Time) string {
 	default:
 		return "th"
 	}
+}
+
+// bold string.
+func bold(s string) string {
+	return fmt.Sprintf("\033[1m%s\033[0m", s)
 }
