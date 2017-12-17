@@ -54,6 +54,8 @@ func (r *reporter) spin() {
 
 // clear the liner.
 func (r *reporter) clear() {
+	r.pendingName = ""
+	r.pendingValue = ""
 	term.ClearLine()
 }
 
