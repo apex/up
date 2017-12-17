@@ -132,7 +132,7 @@ func (a *Alert) Default() error {
 	}
 
 	if a.Missing == "" {
-		a.Missing = "missing"
+		a.Missing = "notBreaching"
 	}
 
 	if a.Period == 0 {

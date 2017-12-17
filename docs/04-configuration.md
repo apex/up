@@ -891,6 +891,6 @@ An alert requires a `metric` such as request count or latency, statistic such as
 - `evaluation_periods` – Number of periods to evaluate over (default: `1`)
 - `operator` – Operator is the comparison operator (default `>`)
 - `namespace` – Metric namespace (example: "AWS/ApiGateway")
-- `missing`– How to treat missing data (default: `missing`)
+- `missing`– How to treat missing data (default: `notBreaching`)
 - `disable` – Disable or mute the alert
 - `description` – Description of the alert
