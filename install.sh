@@ -194,7 +194,7 @@ http_download() {
   headerflag=''
   destflag=''
   if is_command curl; then
-    cmd='curl --fail -sSL'
+    cmd='curl --fail -sSL -N'
     destflag='-o'
     headerflag='-H'
   elif is_command wget; then
