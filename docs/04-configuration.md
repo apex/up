@@ -105,9 +105,11 @@ For example:
 }
 ```
 
-View the [Lambda Pricing](https://aws.amazon.com/lambda/pricing/) page for more information regarding the `memory` setting.
+Lambda timeout is implied from the [Reverse Proxy](#configuration.reverse_proxy) `timeout` setting.
 
-Lambda timeout is implied from the [Reverse Proxy](#configuration.reverse_proxy) `timeout` setting. Changes to Lambda configuration do not require a `up stack apply`, just deploy and these changes are picked up!
+Lambda `memory` also scales the CPU, so for CPU-intensive APIS – or cases such as larger Node applications with many `require()`s – you may need to increase this value. View the [Lambda Pricing](https://aws.amazon.com/lambda/pricing/) page for more information regarding the `memory` setting.
+
+Changes to Lambda configuration do not require a `up stack apply`, just deploy and these changes are picked up!
 
 ## Hook Scripts
 
