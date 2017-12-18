@@ -1,4 +1,23 @@
 
+v0.4.0 / 2017-12-18
+===================
+
+  * add unquoted string literals for log queries
+  * add log string sans-quote literal. Closes #461
+  * add log message field equality short-hand. Closes #372
+  * add CI=true check for plain text output. Re #422
+  * add --format=plain for CI. Closes #422
+  * add setup workflow for creating up.json and doing the initial deploy. Closes #482, #386
+  * add `NODE_ENV` population by default
+  * add env vars to `up start`
+  * add s3 deployments. Closes #272
+  * add cloudfront endpoint to `up stack` output. Closes #459
+  * change logs to purple (match everything else)
+  * change how expanded log mode looks
+  * remove `--region` flag
+  * fix upgrade messages for OSS -> Pro
+  * fix clearing state in text reporter  
+
 v0.3.8 / 2017-11-30
 ===================
 
