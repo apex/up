@@ -101,9 +101,9 @@ func init() {
 		term.ClearAll()
 
 		if strings.Contains(a.URL, "up/pro") {
-			util.LogPad("Updated %s to %s Pro :)", version, latest.Version)
+			util.LogPad("Updated %s to %s Pro", versionName(version), latest.Version)
 		} else {
-			util.LogPad("Updated %s to %s OSS :)", version, latest.Version)
+			util.LogPad("Updated %s to %s OSS", versionName(version), latest.Version)
 		}
 
 		stats.Track("Upgrade", map[string]interface{}{
@@ -114,4 +114,13 @@ func init() {
 
 		return nil
 	})
+}
+
+// versionName returns the humanized version name.
+func versionName(s string) string {
+	if strings.Contains(s, "-pro") {
+		return s + " Pro"
+	}
+
+	return s + " OSS"
 }
