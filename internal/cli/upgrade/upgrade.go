@@ -49,10 +49,13 @@ func init() {
 
 		// commercial edition
 		if t := config.GetActiveTeam(); t != nil {
+			// we pass 0.0.0 here beause the OSS
+			// binary should always upgrade to Pro
+			// regardless of versions matching.
 			p.Store = &apex.Store{
 				URL:       releasesAPI,
 				Product:   "up",
-				Version:   version,
+				Version:   "0.0.0",
 				Plan:      "pro",
 				AccessKey: t.Token,
 			}
