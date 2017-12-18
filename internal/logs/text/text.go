@@ -102,7 +102,11 @@ func (h *Handler) handleExpanded(e *log.Entry) error {
 			continue
 		}
 
-		fmt.Fprintf(h.Writer, "  %30s%s%v\n", color(name), colors.Gray(": "), value(name, v))
+		fmt.Fprintf(h.Writer, "    %s%s%v\n", color(name), colors.Gray(": "), value(name, v))
+	}
+
+	if len(names) > 0 {
+		fmt.Fprintf(h.Writer, "\n")
 	}
 
 	return nil
