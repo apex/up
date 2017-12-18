@@ -32,7 +32,7 @@ Note that the following Pro features are currently available:
 Install Up:
 
 ```
-$ curl -sfL https://raw.githubusercontent.com/apex/up/master/install.sh | sh
+$ curl -sf https://up.apex.sh/install | sh
 ```
 
 Tell up which AWS profile to use:
