@@ -6,7 +6,7 @@ Configuration for your app lives in the `up.json` within your project's director
 
 ## Name
 
-The name of the application, which is used to name resources such as the Lambda function or API Gateway. 
+The name of the application, which is used to name resources such as the Lambda function or API Gateway.
 
 ```json
 {
@@ -107,7 +107,7 @@ For example:
 
 View the [Lambda Pricing](https://aws.amazon.com/lambda/pricing/) page for more information regarding the `memory` setting.
 
-Lambda timeout is implied from the [Reverse Proxy](#configuration.reverse_proxy) `timeout` setting.
+Lambda timeout is implied from the [Reverse Proxy](#configuration.reverse_proxy) `timeout` setting. Changes to Lambda configuration do not require a `up stack apply`, just deploy and these changes are picked up!
 
 ## Hook Scripts
 
