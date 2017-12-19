@@ -37,11 +37,8 @@ func (d *DNS) UnmarshalJSON(b []byte) error {
 	}
 
 	for name, records := range zones {
-		zone := &Zone{Name: name}
+		zone := &Zone{Name: name, Records: records}
 		d.Zones = append(d.Zones, zone)
-		for _, record := range records {
-			zone.Records = append(zone.Records, record)
-		}
 	}
 
 	return nil
