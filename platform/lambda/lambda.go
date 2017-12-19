@@ -773,8 +773,7 @@ func (p *Platform) getS3Key(stage string) string {
 
 // getS3BucketName returns the s3 bucket name.
 func (p *Platform) getS3BucketName() string {
-	h := util.Md5(p.getAccountID())
-	return fmt.Sprintf("up-deploys-%s-%s", h, p.config.Name)
+	return fmt.Sprintf("up-%s-%s", p.getAccountID(), p.config.Name)
 }
 
 // getAccountID returns the AWS account id derived from Lambda role,
