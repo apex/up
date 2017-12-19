@@ -1,4 +1,11 @@
 
+v0.4.2 / 2017-12-19
+===================
+
+  * change to disallow uppercase characters in .name. Closes #498
+  * refactor: add humanized string for the current version
+  * refactor: add config/backoff.go
+
 v0.4.1 / 2017-12-18
 ===================
 
