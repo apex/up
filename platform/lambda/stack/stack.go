@@ -167,7 +167,7 @@ func (s *Stack) Show() error {
 
 		// show cloudfront endpoint
 		if err := s.showCloudfront(stage); err != nil {
-			return errors.Wrap(err, "showing cloufront")
+			return errors.Wrap(err, "showing cloudfront")
 		}
 
 		// show nameservers
