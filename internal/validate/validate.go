@@ -42,12 +42,12 @@ func MinStrings(s []string, n int) error {
 }
 
 // name regexp.
-var name = regexp.MustCompile(`^[a-zA-Z][-a-zA-Z0-9]*$`)
+var name = regexp.MustCompile(`^[a-z][-a-z0-9]*$`)
 
 // Name validation.
 func Name(s string) error {
 	if !name.MatchString(s) {
-		return errors.Errorf("must contain only alphanumeric characters and '-'")
+		return errors.Errorf("must contain only lowercase alphanumeric characters and '-'")
 	}
 
 	return nil

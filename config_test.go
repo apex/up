@@ -24,7 +24,16 @@ func TestConfig_Name(t *testing.T) {
 		}
 
 		assert.NoError(t, c.Default(), "default")
-		assert.EqualError(t, c.Validate(), `.name "my app": must contain only alphanumeric characters and '-'`)
+		assert.EqualError(t, c.Validate(), `.name "my app": must contain only lowercase alphanumeric characters and '-'`)
+	})
+
+	t.Run("invalid", func(t *testing.T) {
+		c := Config{
+			Name: "MYAPP",
+		}
+
+		assert.NoError(t, c.Default(), "default")
+		assert.EqualError(t, c.Validate(), `.name "MYAPP": must contain only lowercase alphanumeric characters and '-'`)
 	})
 }
 
