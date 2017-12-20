@@ -34,11 +34,7 @@ type Team struct {
 
 // IsPersonal returns true if it is a personal team.
 func (t *Team) IsPersonal() bool {
-	if t.Email == t.ID {
-		return true
-	}
-
-	return false
+	return t.Email == t.ID
 }
 
 // Config is the user configuration.
