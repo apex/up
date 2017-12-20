@@ -323,6 +323,11 @@ func login(cmd *kingpin.CmdClause) {
 			return errors.Wrap(err, "loading user config")
 		}
 
+		if config.Authenticated() {
+			util.LogName("status", "Signed in")
+			return nil
+		}
+
 		stats.Track("Login", map[string]interface{}{
 			"team_count": len(config.GetTeams()),
 		})
