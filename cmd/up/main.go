@@ -64,6 +64,7 @@ func run() error {
 		"os":      runtime.GOOS,
 		"arch":    runtime.GOARCH,
 		"version": version,
+		"ci":      os.Getenv("CI") == "true" || os.Getenv("CI") == "1",
 	})
 
 	return app.Run(version)
