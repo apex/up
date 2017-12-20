@@ -1,5 +1,5 @@
 ---
-title: Troubleshooting
+title: Help
 ---
 
 <details>
