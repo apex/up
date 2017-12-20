@@ -1,4 +1,10 @@
 
+v0.4.4 / 2017-12-19
+===================
+
+  * fix `up stack status` scenario before a domain is mapped
+  * refactor: config, simplify unmarshal json of dns. Closes #497
+
 v0.4.3 / 2017-12-19
 ===================
 
