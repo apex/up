@@ -66,7 +66,7 @@ type Proxy struct {
 	cmdCleanup chan *exec.Cmd
 
 	// maxRetries is the number of times to retry a single
-	// request before failing alltogether.
+	// request before failing altogether.
 	maxRetries int
 
 	// shutdownTimeout is the amount of time to wait between sending
