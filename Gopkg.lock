@@ -241,6 +241,12 @@
   revision = "204274ad699c0983a70203a566887f17a717fef4"
 
 [[projects]]
+  name = "github.com/segmentio/go-snakecase"
+  packages = ["."]
+  revision = "3ecf343f213326f182b8477c337a2be66c9205b0"
+  version = "v1.0.0"
+
+[[projects]]
   name = "github.com/stretchr/testify"
   packages = ["assert"]
   revision = "69483b4bd14f5845b5a1e55bca19e954e827f1d0"
@@ -315,8 +321,8 @@
 [[projects]]
   name = "github.com/tj/kingpin"
   packages = ["."]
-  revision = "a1c70277eeca1b4fff1b3ebd959931ba2500c43c"
-  version = "v2.4.6"
+  revision = "7efc93be00e1a3a7d419da9035344e4edd3131c5"
+  version = "v2.5.0"
 
 [[projects]]
   name = "github.com/tj/survey"
@@ -357,6 +363,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "192df6634045b55f37c0f35cbd84678822e955068230d8f6a9aaf43cdfac88a9"
+  inputs-digest = "a501e8f3af3a07c4f896617b5d7602660c18ad9800a1d577ed773015b19b0d15"
   solver-name = "gps-cdcl"
   solver-version = 1
