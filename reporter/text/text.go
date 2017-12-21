@@ -226,7 +226,7 @@ func (r *reporter) Start() {
 					c := cost.Invocations(e.Int("value"))
 					r.log(n, fmt.Sprintf("%s %s", d, currency(c)))
 				default:
-					r.log(n, fmt.Sprintf("%s", humanize.Comma(int64(e.Int("value")))))
+					r.log(n, humanize.Comma(int64(e.Int("value"))))
 				}
 			}
 
