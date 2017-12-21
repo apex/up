@@ -27,7 +27,7 @@ func init() {
 }
 
 // plan changes.
-func plan(cmd *kingpin.CmdClause) {
+func plan(cmd *kingpin.Cmd) {
 	c := cmd.Command("plan", "Plan configuration changes.")
 	c.Example(`up stack plan`, "Show changes planned.")
 
@@ -45,7 +45,7 @@ func plan(cmd *kingpin.CmdClause) {
 }
 
 // apply changes.
-func apply(cmd *kingpin.CmdClause) {
+func apply(cmd *kingpin.Cmd) {
 	c := cmd.Command("apply", "Apply configuration changes.")
 	c.Example(`up stack apply`, "Apply the changes of the previous plan.")
 
@@ -67,7 +67,7 @@ func apply(cmd *kingpin.CmdClause) {
 }
 
 // delete resources.
-func delete(cmd *kingpin.CmdClause) {
+func delete(cmd *kingpin.Cmd) {
 	c := cmd.Command("delete", "Delete configured resources.")
 	c.Example(`up stack delete`, "Delete stack with confirmation prompt.")
 	c.Example(`up stack delete --force`, "Delete stack without confirmation prompt.")
@@ -115,7 +115,7 @@ func delete(cmd *kingpin.CmdClause) {
 }
 
 // status of the stack.
-func status(cmd *kingpin.CmdClause) {
+func status(cmd *kingpin.Cmd) {
 	c := cmd.Command("status", "Show status of resources.").Default()
 
 	c.Action(func(_ *kingpin.ParseContext) error {

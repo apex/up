@@ -84,7 +84,7 @@ var questions = []*survey.Question{
 }
 
 // buy a domain.
-func buy(cmd *kingpin.CmdClause) {
+func buy(cmd *kingpin.Cmd) {
 	c := cmd.Command("buy", "Purchase a domain.")
 
 	c.Action(func(_ *kingpin.ParseContext) error {
@@ -116,7 +116,7 @@ func buy(cmd *kingpin.CmdClause) {
 }
 
 // check domain availability.
-func check(cmd *kingpin.CmdClause) {
+func check(cmd *kingpin.Cmd) {
 	c := cmd.Command("check", "Check availability of a domain.")
 	domain := c.Arg("domain", "Domain name.").Required().String()
 
@@ -163,7 +163,7 @@ func check(cmd *kingpin.CmdClause) {
 }
 
 // list domains purchased.
-func list(cmd *kingpin.CmdClause) {
+func list(cmd *kingpin.Cmd) {
 	c := cmd.Command("ls", "List purchased domains.").Alias("list").Default()
 
 	c.Action(func(_ *kingpin.ParseContext) error {

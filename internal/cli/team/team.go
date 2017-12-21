@@ -57,7 +57,7 @@ func init() {
 }
 
 // add command.
-func add(cmd *kingpin.CmdClause) {
+func add(cmd *kingpin.Cmd) {
 	c := cmd.Command("add", "Add a new team.")
 	name := c.Arg("name", "Name of the team.").Required().String()
 
@@ -122,7 +122,7 @@ func add(cmd *kingpin.CmdClause) {
 }
 
 // copy commands.
-func copy(cmd *kingpin.CmdClause) {
+func copy(cmd *kingpin.Cmd) {
 	c := cmd.Command("ci", "Credentials for CI.")
 	copy := c.Flag("copy", "Credentials to the clipboard.").Short('c').Bool()
 
@@ -154,7 +154,7 @@ func copy(cmd *kingpin.CmdClause) {
 }
 
 // card commands.
-func cards(cmd *kingpin.CmdClause) {
+func cards(cmd *kingpin.Cmd) {
 	c := cmd.Command("cards", "Card management.")
 	addCard(c)
 	removeCard(c)
@@ -162,7 +162,7 @@ func cards(cmd *kingpin.CmdClause) {
 }
 
 // status of account.
-func status(cmd *kingpin.CmdClause) {
+func status(cmd *kingpin.Cmd) {
 	c := cmd.Command("status", "Status of your account.").Default()
 
 	c.Action(func(_ *kingpin.ParseContext) error {
@@ -210,7 +210,7 @@ func status(cmd *kingpin.CmdClause) {
 }
 
 // remove card.
-func removeCard(cmd *kingpin.CmdClause) {
+func removeCard(cmd *kingpin.Cmd) {
 	c := cmd.Command("rm", "Remove credit card.").Alias("remove")
 	id := c.Arg("id", "Card ID.").Required().String()
 
@@ -233,7 +233,7 @@ func removeCard(cmd *kingpin.CmdClause) {
 }
 
 // list cards.
-func listCards(cmd *kingpin.CmdClause) {
+func listCards(cmd *kingpin.Cmd) {
 	c := cmd.Command("ls", "List credit cards.").Alias("list").Default()
 
 	c.Action(func(_ *kingpin.ParseContext) error {
@@ -260,7 +260,7 @@ func listCards(cmd *kingpin.CmdClause) {
 }
 
 // add card.
-func addCard(cmd *kingpin.CmdClause) {
+func addCard(cmd *kingpin.Cmd) {
 	c := cmd.Command("add", "Add credit card.")
 	c.Action(func(_ *kingpin.ParseContext) error {
 		t, err := userconfig.Require()
@@ -294,7 +294,7 @@ func addCard(cmd *kingpin.CmdClause) {
 }
 
 // switchTeam team.
-func switchTeam(cmd *kingpin.CmdClause) {
+func switchTeam(cmd *kingpin.Cmd) {
 	c := cmd.Command("switch", "Switch active team.")
 	c.Example(`up team switch`, "Switch teams interactively.")
 
@@ -338,7 +338,7 @@ func switchTeam(cmd *kingpin.CmdClause) {
 }
 
 // login user.
-func login(cmd *kingpin.CmdClause) {
+func login(cmd *kingpin.Cmd) {
 	c := cmd.Command("login", "Sign in to your account.")
 	c.Example(`up team login`, "Sign in or create account with interactive prompt.")
 	c.Example(`up team login --email tj@example.com --team apex-software`, "Sign in to a team.")
@@ -430,7 +430,7 @@ func login(cmd *kingpin.CmdClause) {
 }
 
 // logout user.
-func logout(cmd *kingpin.CmdClause) {
+func logout(cmd *kingpin.Cmd) {
 	c := cmd.Command("logout", "Sign out of your account.")
 
 	c.Action(func(_ *kingpin.ParseContext) error {
@@ -448,7 +448,7 @@ func logout(cmd *kingpin.CmdClause) {
 }
 
 // subscribe to plan.
-func subscribe(cmd *kingpin.CmdClause) {
+func subscribe(cmd *kingpin.Cmd) {
 	c := cmd.Command("subscribe", "Subscribe to the Pro plan.")
 
 	c.Action(func(_ *kingpin.ParseContext) error {
@@ -519,7 +519,7 @@ func subscribe(cmd *kingpin.CmdClause) {
 }
 
 // unsubscribe from plan.
-func unsubscribe(cmd *kingpin.CmdClause) {
+func unsubscribe(cmd *kingpin.Cmd) {
 	c := cmd.Command("unsubscribe", "Unsubscribe from the Pro plan.")
 
 	c.Action(func(_ *kingpin.ParseContext) error {
@@ -558,7 +558,7 @@ func unsubscribe(cmd *kingpin.CmdClause) {
 }
 
 // members commands.
-func members(cmd *kingpin.CmdClause) {
+func members(cmd *kingpin.Cmd) {
 	c := cmd.Command("members", "Member management.")
 	addMember(c)
 	removeMember(c)
@@ -566,7 +566,7 @@ func members(cmd *kingpin.CmdClause) {
 }
 
 // addMember command.
-func addMember(cmd *kingpin.CmdClause) {
+func addMember(cmd *kingpin.Cmd) {
 	c := cmd.Command("add", "Add invites a team member.")
 	c.Example(`up team members add asya@apex.sh`, "Invite a team member to the active team.")
 	email := c.Arg("email", "Email address.").Required().String()
@@ -593,7 +593,7 @@ func addMember(cmd *kingpin.CmdClause) {
 }
 
 // removeMember command.
-func removeMember(cmd *kingpin.CmdClause) {
+func removeMember(cmd *kingpin.Cmd) {
 	c := cmd.Command("rm", "Remove a member or invite.").Alias("remove")
 	c.Example(`up team members rm tobi@apex.sh`, "Remove a team member or invite from the active team.")
 	email := c.Arg("email", "Email address.").Required().String()
@@ -620,7 +620,7 @@ func removeMember(cmd *kingpin.CmdClause) {
 }
 
 // list members
-func listMembers(cmd *kingpin.CmdClause) {
+func listMembers(cmd *kingpin.Cmd) {
 	c := cmd.Command("ls", "List team members and invites.").Alias("list").Default()
 
 	c.Action(func(_ *kingpin.ParseContext) error {
