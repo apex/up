@@ -12,8 +12,18 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-	"github.com/tj/go/http/request"
 )
+
+// Error is a client error.
+type Error struct {
+	Message string
+	Status  int
+}
+
+// Error implementation.
+func (e *Error) Error() string {
+	return e.Message
+}
 
 // Card model.
 type Card struct {
@@ -248,6 +258,17 @@ func (c *Client) AddInvite(token, email string) error {
 	return nil
 }
 
+// RemoveMember removes a team member or invitation if present.
+func (c *Client) RemoveMember(token, email string) error {
+	res, err := c.request(token, "DELETE", "/members/"+email, nil)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	return nil
+}
+
 // RemovePlan unsubscribes from a plan.
 func (c *Client) RemovePlan(token, product, plan string) error {
 	path := fmt.Sprintf("/billing/plans/%s/%s", product, plan)
@@ -351,10 +372,11 @@ func (c *Client) PollAccessToken(ctx context.Context, email, team, code string) 
 	errC := make(chan error, 1)
 
 	go func() {
-		for range time.Tick(5 * time.Second) {
+		for {
 			key, err = c.GetAccessToken(email, team, code)
 
-			if err, ok := err.(request.Error); ok && err == http.StatusUnauthorized {
+			if err, ok := err.(*Error); ok && err.Status == http.StatusUnauthorized {
+				time.Sleep(5 * time.Second)
 				continue
 			}
 
@@ -408,8 +430,12 @@ func (c *Client) request(token, method, path string, body io.Reader) (*http.Resp
 	}
 
 	if res.StatusCode >= 400 {
+		b, _ := ioutil.ReadAll(res.Body)
 		res.Body.Close()
-		return nil, request.Error(res.StatusCode)
+		return nil, &Error{
+			Message: strings.TrimSpace(string(b)),
+			Status:  res.StatusCode,
+		}
 	}
 
 	return res, nil

@@ -17,28 +17,19 @@ Flags:
   -h, --help           Output usage information.
   -C, --chdir="."      Change working directory.
   -v, --verbose        Enable verbose log output.
+      --format="text"  Output formatter.
       --version        Show application version.
 
 Commands:
 
   help                 Show help for a command.
-  account status       Status of your account.
-  account login        Sign in to your account.
-  account logout       Sign out of your account.
-  account cards add    Add credit card.
-  account cards rm     Remove credit card.
-  account cards ls     List credit cards.
-  account subscribe    Subscribe to the Pro plan.
-  account unsubscribe  Unsubscribe from the Pro plan.
   build                Build zip file.
   config               Show configuration after defaults and validation.
   deploy               Deploy the project.
+  docs                 Open documentation website in the browser.
   domains ls           List purchased domains.
   domains check        Check availability of a domain.
   domains buy          Purchase a domain.
-  env ls               List variables.
-  env add              Add a variable.
-  env rm               Remove a variable.
   logs                 Show log output.
   metrics              Show project metrics.
   run                  Run a hook.
@@ -47,9 +38,49 @@ Commands:
   stack delete         Delete configured resources.
   stack status         Show status of resources.
   start                Start development server.
+  team status          Status of your account.
+  team switch          Switch active team.
+  team login           Sign in to your account.
+  team logout          Sign out of your account.
+  team members add     Add invites a team member.
+  team members rm      Remove a member or invite.
+  team members ls      List team members and invites.
+  team cards add       Add credit card.
+  team cards rm        Remove credit card.
+  team cards ls        List credit cards.
+  team subscribe       Subscribe to the Pro plan.
+  team unsubscribe     Unsubscribe from the Pro plan.
+  team ci              Credentials for CI.
+  team add             Add a new team.
   upgrade              Install the latest release of Up.
   url                  Show, open, or copy a stage endpoint.
   version              Show version.
+
+Examples:
+
+  Deploy the project to the development stage.
+  $ up
+
+  Deploy the project to the production stage.
+  $ up deploy production
+
+  Show the development endpoint url.
+  $ up url
+
+  Tail project logs.
+  $ up logs -f
+
+  Show error or fatal level logs.
+  $ up logs 'error or fatal'
+
+  Run build command manually.
+  $ up run build
+
+  Show help and examples for a command.
+  $ up help team
+
+  Show help and examples for a sub-command.
+  $ up help team members
 ```
 
 ## Deploy
@@ -628,4 +659,95 @@ Build archive and list size without creating out.zip.
 
 ```
 $ up build --size > /dev/null
+```
+
+## Team
+
+Manage team members, plans, and billing.
+
+```
+Usage:
+
+  up team <command> [<args> ...]
+
+Flags:
+
+  -h, --help           Output usage information.
+  -C, --chdir="."      Change working directory.
+  -v, --verbose        Enable verbose log output.
+      --format="text"  Output formatter.
+      --version        Show application version.
+
+Subcommands:
+
+  team status          Status of your account.
+  team switch          Switch active team.
+  team login           Sign in to your account.
+  team logout          Sign out of your account.
+  team members add     Add invites a team member.
+  team members rm      Remove a member or invite.
+  team members ls      List team members and invites.
+  team cards add       Add credit card.
+  team cards rm        Remove credit card.
+  team cards ls        List credit cards.
+  team subscribe       Subscribe to the Pro plan.
+  team unsubscribe     Unsubscribe from the Pro plan.
+  team ci              Credentials for CI.
+  team add             Add a new team.
+```
+
+### Examples
+
+Show active team and subscription status.
+
+```
+$ up team
+```
+
+Sign in or create account with interactive prompt.
+
+```
+$ up team login
+```
+
+Sign in to a team.
+
+```
+$ up team login --email tj@example.com --team apex-software
+```
+
+Add a new team.
+
+```
+$ up team add "Apex Software"
+```
+
+List credit cards.
+
+```
+$ up team cards
+```
+
+Add credit card to Stripe.
+
+```
+$ up team cards add
+```
+
+Remove credit card from Stripe.
+
+```
+$ up team cards rm ID
+```
+
+Subscribe to the Pro plan.
+
+```
+$ up team subscribe
+```
+
+Invite a team member to your active team.
+
+```
+$ up team invite asya@example.com
 ```

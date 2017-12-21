@@ -91,7 +91,7 @@ func Require() (*Team, error) {
 	}
 
 	if !c.Authenticated() {
-		return nil, errors.New("user credentials missing, make sure to `up account login` first")
+		return nil, errors.New("user credentials missing, make sure to `up team login` first")
 	}
 
 	return c.GetActiveTeam(), nil

@@ -33,7 +33,8 @@ func init() {
 	Cmd.Example(`up logs -f`, "Tail project logs.")
 	Cmd.Example(`up logs 'error or fatal'`, "Show error or fatal level logs.")
 	Cmd.Example(`up run build`, "Run build command manually.")
-	Cmd.Example(`up help logs`, "Show help and examples for a sub-command.")
+	Cmd.Example(`up help team`, "Show help and examples for a command.")
+	Cmd.Example(`up help team members`, "Show help and examples for a sub-command.")
 
 	workdir := Cmd.Flag("chdir", "Change working directory.").Default(".").Short('C').String()
 	verbose := Cmd.Flag("verbose", "Enable verbose log output.").Short('v').Bool()

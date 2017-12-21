@@ -173,7 +173,7 @@ func (r *reporter) Start() {
 			case "platform.stack.show.nameservers":
 				util.Log("nameservers:")
 				for _, ns := range e.Strings("nameservers") {
-					fmt.Printf("      • %s\n", ns)
+					util.LogListItem(ns)
 				}
 			case "platform.stack.show.stack.event":
 				event := e.Fields["event"].(*cloudformation.StackEvent)

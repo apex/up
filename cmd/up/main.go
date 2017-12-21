@@ -13,7 +13,6 @@ import (
 	"github.com/tj/go/term"
 
 	// commands
-	_ "github.com/apex/up/internal/cli/account"
 	_ "github.com/apex/up/internal/cli/build"
 	_ "github.com/apex/up/internal/cli/config"
 	_ "github.com/apex/up/internal/cli/deploy"
@@ -24,6 +23,7 @@ import (
 	_ "github.com/apex/up/internal/cli/run"
 	_ "github.com/apex/up/internal/cli/stack"
 	_ "github.com/apex/up/internal/cli/start"
+	_ "github.com/apex/up/internal/cli/team"
 	_ "github.com/apex/up/internal/cli/upgrade"
 	_ "github.com/apex/up/internal/cli/url"
 	_ "github.com/apex/up/internal/cli/version"

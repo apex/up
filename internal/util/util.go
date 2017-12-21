@@ -261,6 +261,11 @@ func LogName(name, msg string, v ...interface{}) {
 	fmt.Printf("     %s %s\n", colors.Purple(name+":"), fmt.Sprintf(msg, v...))
 }
 
+// LogListItem outputs a list item.
+func LogListItem(msg string, v ...interface{}) {
+	fmt.Printf("      • %s\n", fmt.Sprintf(msg, v...))
+}
+
 // ToFloat returns a float or NaN.
 func ToFloat(v interface{}) float64 {
 	switch n := v.(type) {

@@ -1,4 +1,4 @@
-package account
+package team
 
 import (
 	"context"
@@ -9,6 +9,7 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
+	snakecase "github.com/segmentio/go-snakecase"
 	"github.com/stripe/stripe-go"
 	"github.com/stripe/stripe-go/token"
 	"github.com/tj/go/clipboard"
@@ -33,25 +34,91 @@ var (
 )
 
 func init() {
-	cmd := root.Command("account", "Manage account, plans, and billing.")
-	cmd.Example(`up account login`, "Sign in or create account with interactive prompt.")
-	cmd.Example(`up account login --email tj@example.com`, "Sign in or create account.")
-	cmd.Example(`up account login --email tj@example.com --team apex-software`, "Sign in to a team.")
-	cmd.Example(`up account cards`, "List credit cards.")
-	cmd.Example(`up account cards add`, "Add credit card to Stripe.")
-	cmd.Example(`up account cards rm ID`, "Remove credit card from Stripe.")
-	cmd.Example(`up account subscribe`, "Subscribe to the Pro plan.")
-	cmd.Example(`up account invite --email asya@example.com`, "Invite a team member to your active team.")
-	cmd.Example(`up account invite --email asya@example.com --team apex-inc`, "Invite a team member to a specific team.")
+	cmd := root.Command("team", "Manage team members, plans, and billing.")
+	cmd.Example(`up team`, "Show active team and subscription status.")
+	cmd.Example(`up team login`, "Sign in or create account with interactive prompt.")
+	cmd.Example(`up team login --email tj@example.com --team apex-software`, "Sign in to a team.")
+	cmd.Example(`up team add "Apex Software"`, "Add a new team.")
+	cmd.Example(`up team cards`, "List credit cards.")
+	cmd.Example(`up team cards add`, "Add credit card to Stripe.")
+	cmd.Example(`up team cards rm ID`, "Remove credit card from Stripe.")
+	cmd.Example(`up team subscribe`, "Subscribe to the Pro plan.")
+	cmd.Example(`up team invite asya@example.com`, "Invite a team member to your active team.")
 	status(cmd)
 	switchTeam(cmd)
-	invite(cmd)
 	login(cmd)
 	logout(cmd)
+	members(cmd)
 	cards(cmd)
 	subscribe(cmd)
 	unsubscribe(cmd)
 	copy(cmd)
+	add(cmd)
+}
+
+// add command.
+func add(cmd *kingpin.CmdClause) {
+	c := cmd.Command("add", "Add a new team.")
+	name := c.Arg("name", "Name of the team.").Required().String()
+
+	c.Action(func(_ *kingpin.ParseContext) error {
+		var config userconfig.Config
+		if err := config.Load(); err != nil {
+			return errors.Wrap(err, "loading config")
+		}
+
+		if !config.Authenticated() {
+			return errors.New("Must sign in to create a new team.")
+		}
+
+		team := strings.Replace(snakecase.Snakecase(*name), "_", "-", -1)
+
+		stats.Track("Add Team", map[string]interface{}{
+			"team": team,
+			"name": name,
+		})
+
+		t := config.GetActiveTeam()
+
+		if err := a.AddTeam(t.Token, team, *name); err != nil {
+			return errors.Wrap(err, "creating team")
+		}
+
+		defer util.Pad()()
+		util.Log("Created team %s with id %s", *name, team)
+
+		code, err := a.LoginWithToken(t.Token, t.Email, team)
+		if err != nil {
+			return errors.Wrap(err, "login")
+		}
+
+		// access key
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+		defer cancel()
+
+		token, err := a.PollAccessToken(ctx, t.Email, team, code)
+		if err != nil {
+			return errors.Wrap(err, "getting access token")
+		}
+
+		err = userconfig.Alter(func(c *userconfig.Config) {
+			c.Team = team
+			c.AddTeam(&userconfig.Team{
+				Token: token,
+				ID:    team,
+				Email: t.Email,
+			})
+		})
+
+		if err != nil {
+			return errors.Wrap(err, "config")
+		}
+
+		util.Log("%s is now the active team", *name)
+		util.Log("Use `up team switch` to select teams")
+
+		return nil
+	})
 }
 
 // copy commands.
@@ -114,10 +181,7 @@ func status(cmd *kingpin.CmdClause) {
 
 		t := config.GetActiveTeam()
 
-		util.LogName("status", "Signed in")
 		util.LogName("active team", t.ID)
-
-		// TODO: list teams
 
 		plans, err := a.GetPlans(t.Token)
 		if err != nil {
@@ -229,43 +293,10 @@ func addCard(cmd *kingpin.CmdClause) {
 	})
 }
 
-// invite user.
-func invite(cmd *kingpin.CmdClause) {
-	c := cmd.Command("invite", "Invite a team member.")
-	c.Example(`up account invite --email asya@example.com`, "Invite a team member to your active team.")
-	c.Example(`up account invite --email asya@example.com --team apex-inc`, "Invite a team member to a specific team.")
-	email := c.Flag("email", "Email address.").String()
-	team := c.Flag("team", "Team id (or current team).").String()
-
-	c.Action(func(_ *kingpin.ParseContext) error {
-		t, err := userconfig.Require()
-		if err != nil {
-			return err
-		}
-
-		if *team == "" {
-			*team = t.ID
-		}
-
-		stats.Track("Invite", map[string]interface{}{
-			"team":  *team,
-			"email": *email,
-		})
-
-		if err := a.AddInvite(t.Token, *email); err != nil {
-			return errors.Wrap(err, "adding invite")
-		}
-
-		util.LogPad("Invited %s to team %s", *email, *team)
-
-		return nil
-	})
-}
-
 // switchTeam team.
 func switchTeam(cmd *kingpin.CmdClause) {
 	c := cmd.Command("switch", "Switch active team.")
-	c.Example(`up account switch`, "Switch teams interactively.")
+	c.Example(`up team switch`, "Switch teams interactively.")
 
 	c.Action(func(_ *kingpin.ParseContext) error {
 		defer util.Pad()()
@@ -309,9 +340,8 @@ func switchTeam(cmd *kingpin.CmdClause) {
 // login user.
 func login(cmd *kingpin.CmdClause) {
 	c := cmd.Command("login", "Sign in to your account.")
-	c.Example(`up account login`, "Sign in or create account with interactive prompt.")
-	c.Example(`up account login --email tj@example.com`, "Sign in or create account.")
-	c.Example(`up account login --email tj@example.com --team apex-software`, "Sign in to a team.")
+	c.Example(`up team login`, "Sign in or create account with interactive prompt.")
+	c.Example(`up team login --email tj@example.com --team apex-software`, "Sign in to a team.")
 	email := c.Flag("email", "Email address.").String()
 	team := c.Flag("team", "Team id.").String()
 
@@ -522,6 +552,109 @@ func unsubscribe(cmd *kingpin.CmdClause) {
 		}
 
 		util.Log("Unsubscribed")
+
+		return nil
+	})
+}
+
+// members commands.
+func members(cmd *kingpin.CmdClause) {
+	c := cmd.Command("members", "Member management.")
+	addMember(c)
+	removeMember(c)
+	listMembers(c)
+}
+
+// addMember command.
+func addMember(cmd *kingpin.CmdClause) {
+	c := cmd.Command("add", "Add invites a team member.")
+	c.Example(`up team members add asya@apex.sh`, "Invite a team member to the active team.")
+	email := c.Arg("email", "Email address.").Required().String()
+
+	c.Action(func(_ *kingpin.ParseContext) error {
+		t, err := userconfig.Require()
+		if err != nil {
+			return err
+		}
+
+		stats.Track("Add Member", map[string]interface{}{
+			"team":  t.ID,
+			"email": *email,
+		})
+
+		if err := a.AddInvite(t.Token, *email); err != nil {
+			return errors.Wrap(err, "adding invite")
+		}
+
+		util.LogPad("Invited %s to team %s", *email, t.ID)
+
+		return nil
+	})
+}
+
+// removeMember command.
+func removeMember(cmd *kingpin.CmdClause) {
+	c := cmd.Command("rm", "Remove a member or invite.").Alias("remove")
+	c.Example(`up team members rm tobi@apex.sh`, "Remove a team member or invite from the active team.")
+	email := c.Arg("email", "Email address.").Required().String()
+
+	c.Action(func(_ *kingpin.ParseContext) error {
+		t, err := userconfig.Require()
+		if err != nil {
+			return err
+		}
+
+		stats.Track("Remove Member", map[string]interface{}{
+			"team":  t.ID,
+			"email": *email,
+		})
+
+		if err := a.RemoveMember(t.Token, *email); err != nil {
+			return errors.Wrap(err, "removing member")
+		}
+
+		util.LogPad("Removed %s from team %s", *email, t.ID)
+
+		return nil
+	})
+}
+
+// list members
+func listMembers(cmd *kingpin.CmdClause) {
+	c := cmd.Command("ls", "List team members and invites.").Alias("list").Default()
+
+	c.Action(func(_ *kingpin.ParseContext) error {
+		t, err := userconfig.Require()
+		if err != nil {
+			return err
+		}
+
+		stats.Track("List Members", map[string]interface{}{
+			"team": t.ID,
+		})
+
+		team, err := a.GetTeam(t.Token)
+		if err != nil {
+			return errors.Wrap(err, "fetching team")
+		}
+
+		defer util.Pad()()
+
+		util.LogName("team", t.ID)
+
+		if len(team.Members) > 0 {
+			util.LogTitle("Members")
+			for _, u := range team.Members {
+				util.LogListItem(u.Email)
+			}
+		}
+
+		if len(team.Invites) > 0 {
+			util.LogTitle("Invites")
+			for _, email := range team.Invites {
+				util.LogListItem(email)
+			}
+		}
 
 		return nil
 	})

@@ -9,7 +9,7 @@ Up Pro provides additional features which are not available in the open-source v
 First sign into the platform with the following command, you'll receive an email for confirmation.
 
 ```
-$ up account login
+$ up team login
 
      email: tj@apex.sh
   ⠋ verify: Check your email for a confirmation link
@@ -19,7 +19,7 @@ $ up account login
 Click the link in your email and you're signed in! Next, you'll need to add a credit card. Note that this information is transmitted to Stripe directly via HTTPS, it never touches the Apex servers.
 
 ```
-$ up account cards add
+$ up team cards add
 
    Name: TJ Holowaychuk
    Number: 5555555555554444
@@ -37,7 +37,7 @@ $ up account cards add
 Then subscribe to Pro!
 
 ```
-$ up account subscribe
+$ up team subscribe
 ```
 
 Once signed-in future you can run `up upgrade` to install the latest version of Up Pro instead of the open-source distribution:
@@ -49,7 +49,7 @@ $ up upgrade
 To view the status of your account at any time run the following:
 
 ```
-$ up account
+$ up team
 
   status: Signed in
   active team: tj@apex.sh
@@ -62,7 +62,7 @@ $ up account
 To switch to another team run the following and select the active team.
 
 ```
-$ up account switch
+$ up team switch
 
 
    ❯ apex
@@ -397,7 +397,7 @@ If using running Up Pro you'll need your Up credentials:
 
 - `UP_CONFIG` – Up configuration
 
-To obtain this run `up account ci` or `up account ci --copy` to copy it directly to your clipboard, then paste this as the env var's value.
+To obtain this run `up team ci` or `up team ci --copy` to copy it directly to your clipboard, then paste this as the env var's value.
 
 ### Commands
 
