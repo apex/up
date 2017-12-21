@@ -42,28 +42,25 @@ func (r *reporter) error(name, value string) {
 
 // Start handling events.
 func (r *reporter) Start() {
-	for {
-		select {
-		case e := <-r.events:
-			switch e.Name {
-			case "account.login.verify":
-				r.log("verify", "Check your email for a confirmation link")
-			case "account.login.verified":
-				r.log("verify", "complete")
-			case "hook":
-				r.log("hook", e.String("name"))
-			case "hook.complete":
-				r.complete("hook", e.String("name"), e.Duration("duration"))
-			case "platform.build.zip":
-				s := fmt.Sprintf("%s files, %s", humanize.Comma(e.Int64("files")), humanize.Bytes(uint64(e.Int("size_compressed"))))
-				r.complete("build", s, e.Duration("duration"))
-			case "platform.deploy.complete":
-				s := "complete"
-				if v := e.String("version"); v != "" {
-					s = "version " + v
-				}
-				r.complete("deploy", s, e.Duration("duration"))
+	for e := range r.events {
+		switch e.Name {
+		case "account.login.verify":
+			r.log("verify", "Check your email for a confirmation link")
+		case "account.login.verified":
+			r.log("verify", "complete")
+		case "hook":
+			r.log("hook", e.String("name"))
+		case "hook.complete":
+			r.complete("hook", e.String("name"), e.Duration("duration"))
+		case "platform.build.zip":
+			s := fmt.Sprintf("%s files, %s", humanize.Comma(e.Int64("files")), humanize.Bytes(uint64(e.Int("size_compressed"))))
+			r.complete("build", s, e.Duration("duration"))
+		case "platform.deploy.complete":
+			s := "complete"
+			if v := e.String("version"); v != "" {
+				s = "version " + v
 			}
+			r.complete("deploy", s, e.Duration("duration"))
 		}
 	}
 }
