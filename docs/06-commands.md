@@ -581,6 +581,7 @@ Flags:
       --version        Show application version.
 
 Subcommands:
+
   stack plan      Plan configuration changes.
   stack apply     Apply configuration changes.
   stack delete    Delete configured resources.
