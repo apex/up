@@ -6,7 +6,7 @@ title: Guides
 
 Up Pro provides additional features which are not available in the open-source version, such as encrypted environment variables, alerting support and more.
 
-First sign into the platform with the following command, you'll receive an email for confirmation.
+First sign into the platform with the following command – you'll receive an email for confirmation.
 
 ```
 $ up team login
@@ -16,31 +16,19 @@ $ up team login
 
 ```
 
-Click the link in your email and you're signed in! Next, you'll need to add a credit card. Note that this information is transmitted to Stripe directly via HTTPS, it never touches the Apex servers.
+Click the link in your email and you're signed in! If you're using Up Pro with one or more organizations, you should create a team to manage team members and subscriptions independently. If you plan on using Up Pro for personal use you may skip this step.
 
 ```
-$ up team cards add
+$ up team add "My Company"
+```
 
-   Name: TJ Holowaychuk
-   Number: 5555555555554444
-   CVC: 123
-   Expiration month: 05
-   Expiration year: 2019
-   Country: Canada
-   City: Victoria
-   State: BC
-   Address: Your address here
-   Zip: V5B 7R2
-
- ```
-
-Then subscribe to Pro!
+Next you'll need to subscribe! You'll be asked for an optional coupon, credit card information – which never touches our servers, only Stripe via HTTPS – and finally a subscription confirmation.
 
 ```
 $ up team subscribe
-```
+ ```
 
-Once signed-in future you can run `up upgrade` to install the latest version of Up Pro instead of the open-source distribution:
+Now you and your team members may upgrade to the latest version of Up Pro, instead of the open-source distribution:
 
 ```
 $ up upgrade
@@ -51,12 +39,10 @@ To view the status of your account at any time run the following:
 ```
 $ up team
 
-  status: Signed in
-  active team: tj@apex.sh
-
+  team: apex
   subscription: Up Pro
   amount: $10.00/mo USD
-  created: November 12, 2017
+  created: December 22, 2017
 ```
 
 To switch to another team run the following and select the active team.

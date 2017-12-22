@@ -377,8 +377,10 @@ func subscribe(cmd *kingpin.Cmd) {
 			return err
 		}
 
-		// coupon provided
-		if strings.TrimSpace(couponID) != "" {
+		// coupon
+		if strings.TrimSpace(couponID) == "" {
+			util.LogClear("No coupon provided")
+		} else {
 			coupon, err := a.GetCoupon(couponID)
 			if err != nil && !request.IsNotFound(err) {
 				return errors.Wrap(err, "fetching coupon")
