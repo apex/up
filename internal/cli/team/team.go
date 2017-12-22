@@ -174,7 +174,7 @@ func status(cmd *kingpin.Cmd) {
 
 		plans, err := a.GetPlans(t.Token)
 		if err != nil {
-			return errors.Wrap(err, "listing plans")
+			return errors.Wrap(err, "fetching plans")
 		}
 
 		if len(plans) == 0 {
@@ -182,8 +182,16 @@ func status(cmd *kingpin.Cmd) {
 			return nil
 		}
 
+		cards, err := a.GetCards(t.Token)
+		if err != nil {
+			return errors.Wrap(err, "fetching cards")
+		}
+
 		p := plans[0]
+		c := cards[0]
+
 		util.LogName("subscription", p.PlanName)
+		util.LogName("card", "%s ending with %s", c.Brand, c.LastFour)
 		util.LogName("amount", "$%0.2f/mo USD", float64(p.Amount)/100)
 		util.LogName("created", p.CreatedAt.Format("January 2, 2006"))
 		if p.Canceled {
