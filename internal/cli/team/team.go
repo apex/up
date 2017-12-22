@@ -252,7 +252,8 @@ func switchTeam(cmd *kingpin.Cmd) {
 func login(cmd *kingpin.Cmd) {
 	c := cmd.Command("login", "Sign in to your account.")
 	c.Example(`up team login`, "Sign in or create account with interactive prompt.")
-	c.Example(`up team login --email tj@example.com --team apex-software`, "Sign in to a team.")
+	c.Example(`up team login --team apex-software`, "Sign in to a team using your existing email.")
+	c.Example(`up team login --email tj@example.com --team apex-software`, "Sign in to a team with email.")
 	email := c.Flag("email", "Email address.").String()
 	team := c.Flag("team", "Team id.").String()
 

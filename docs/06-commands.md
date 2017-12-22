@@ -717,7 +717,7 @@ Sign in to a team.
 $ up team login --email tj@example.com --team apex-software
 ```
 
-Add a new team.
+Add a new team and automatically switch to the team.
 
 ```
 $ up team add "Apex Software"
