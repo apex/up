@@ -45,9 +45,6 @@ Commands:
   team members add     Add invites a team member.
   team members rm      Remove a member or invite.
   team members ls      List team members and invites.
-  team cards add       Add credit card.
-  team cards rm        Remove credit card.
-  team cards ls        List credit cards.
   team subscribe       Subscribe to the Pro plan.
   team unsubscribe     Unsubscribe from the Pro plan.
   team ci              Credentials for CI.
@@ -687,9 +684,6 @@ Subcommands:
   team members add     Add invites a team member.
   team members rm      Remove a member or invite.
   team members ls      List team members and invites.
-  team cards add       Add credit card.
-  team cards rm        Remove credit card.
-  team cards ls        List credit cards.
   team subscribe       Subscribe to the Pro plan.
   team unsubscribe     Unsubscribe from the Pro plan.
   team ci              Credentials for CI.
@@ -702,6 +696,12 @@ Show active team and subscription status.
 
 ```
 $ up team
+```
+
+Switch teams interactively.
+
+```
+$ up team switch
 ```
 
 Sign in or create account with interactive prompt.
@@ -722,24 +722,6 @@ Add a new team.
 $ up team add "Apex Software"
 ```
 
-List credit cards.
-
-```
-$ up team cards
-```
-
-Add credit card to Stripe.
-
-```
-$ up team cards add
-```
-
-Remove credit card from Stripe.
-
-```
-$ up team cards rm ID
-```
-
 Subscribe to the Pro plan.
 
 ```
@@ -749,5 +731,5 @@ $ up team subscribe
 Invite a team member to your active team.
 
 ```
-$ up team invite asya@example.com
+$ up team members add asya@example.com
 ```
