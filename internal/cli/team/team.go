@@ -257,28 +257,38 @@ func login(cmd *kingpin.Cmd) {
 	team := c.Flag("team", "Team id.").String()
 
 	c.Action(func(_ *kingpin.ParseContext) error {
-		defer util.Pad()()
-
 		var config userconfig.Config
 		if err := config.Load(); err != nil {
 			return errors.Wrap(err, "loading user config")
 		}
 
+		defer util.Pad()()
+
 		stats.Track("Login", map[string]interface{}{
 			"team_count": len(config.GetTeams()),
+			"has_email":  *email != "",
+			"has_team":   *team != "",
 		})
 
-		// email from config
-		if t := config.GetActiveTeam(); *email == "" && t != nil {
-			*email = t.Email
+		t := config.GetActiveTeam()
+
+		// ensure we have an email
+		if *email == "" {
+			if t == nil {
+				if err := prompt("email:", email); err != nil {
+					return err
+				}
+			} else {
+				*email = t.Email
+			}
 		}
 
-		// email prompt
-		if *email == "" {
-			var s string
-			prompt := &survey.Input{Message: "email:"}
-			survey.AskOne(prompt, &s, survey.Required)
-			*email = s
+		// ensure we have a team if already signed-in
+		if t != nil && *team == "" {
+			util.Log("Already signed in as %s on team %s.", t.Email, t.ID)
+			util.Log("Use `up team login --team <id>` to join a team")
+			util.Log("if you have received an invite.")
+			return nil
 		}
 
 		// events
@@ -286,7 +296,6 @@ func login(cmd *kingpin.Cmd) {
 		go reporter.Text(events)
 		events.Emit("account.login.verify", nil)
 
-		// log context
 		l := log.WithFields(log.Fields{
 			"email": *email,
 			"team":  *team,
@@ -295,12 +304,12 @@ func login(cmd *kingpin.Cmd) {
 		// authenticate
 		var code string
 		var err error
-		if t := config.GetActiveTeam(); t != nil {
-			l.Debug("login with token")
-			code, err = a.LoginWithToken(t.Token, *email, *team)
-		} else {
+		if t == nil {
 			l.Debug("login without token")
 			code, err = a.Login(*email, *team)
+		} else {
+			l.Debug("login with token")
+			code, err = a.LoginWithToken(t.Token, *email, *team)
 		}
 
 		if err != nil {
@@ -600,4 +609,10 @@ func listMembers(cmd *kingpin.Cmd) {
 
 		return nil
 	})
+}
+
+// prompt helper.
+func prompt(name string, s *string) error {
+	prompt := &survey.Input{Message: name}
+	return survey.AskOne(prompt, s, survey.Required)
 }
