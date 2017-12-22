@@ -815,7 +815,6 @@ $ up upgrade -t 0.4.4
 
 Manage encrypted environment variables. Environment variables are scoped to all stages by default, with stage-level overrides. The `up env` command is available in the Pro plan.
 
-
 ```
 Usage:
 
@@ -835,6 +834,8 @@ Subcommands:
   env add              Add a variable.
   env rm               Remove a variable.
 ```
+
+Here are some examples:
 
 ```
 $ up env add DB_NAME users
