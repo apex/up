@@ -55,12 +55,38 @@ $ up team switch
      tj@apex.sh
 ```
 
-Invite some team members:
+## Inviting Team Members
+
+To invite members use the following command:
 
 ```
 $ up team members add tobi@apex.sh
 $ up team members add loki@apex.sh
 $ up team members add jane@apex.sh
+```
+
+At any time you can view invites and members:
+
+```
+$ up team members
+
+team: apex
+
+Members
+
+ • tj@apex.sh
+ • tobi@apex.sh
+ • loki@apex.sh
+
+Invites
+
+ • jane@apex.sh
+```
+
+Your team members will receive an email with installation instructions, where they run the following to sign in – with your team id of course.
+
+```
+$ up team login --email tobi@apex.sh --team apex
 ```
 
 ## Development to Production Workflow
