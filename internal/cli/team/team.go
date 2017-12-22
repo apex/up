@@ -9,7 +9,7 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
-	snakecase "github.com/segmentio/go-snakecase"
+	"github.com/segmentio/go-snakecase"
 	"github.com/stripe/stripe-go"
 	"github.com/stripe/stripe-go/token"
 	"github.com/tj/go/clipboard"
@@ -39,9 +39,6 @@ func init() {
 	cmd.Example(`up team login`, "Sign in or create account with interactive prompt.")
 	cmd.Example(`up team login --email tj@example.com --team apex-software`, "Sign in to a team.")
 	cmd.Example(`up team add "Apex Software"`, "Add a new team.")
-	cmd.Example(`up team cards`, "List credit cards.")
-	cmd.Example(`up team cards add`, "Add credit card to Stripe.")
-	cmd.Example(`up team cards rm ID`, "Remove credit card from Stripe.")
 	cmd.Example(`up team subscribe`, "Subscribe to the Pro plan.")
 	cmd.Example(`up team invite asya@example.com`, "Invite a team member to your active team.")
 	status(cmd)
@@ -49,7 +46,6 @@ func init() {
 	login(cmd)
 	logout(cmd)
 	members(cmd)
-	cards(cmd)
 	subscribe(cmd)
 	unsubscribe(cmd)
 	copy(cmd)
@@ -153,14 +149,6 @@ func copy(cmd *kingpin.Cmd) {
 	})
 }
 
-// card commands.
-func cards(cmd *kingpin.Cmd) {
-	c := cmd.Command("cards", "Card management.")
-	addCard(c)
-	removeCard(c)
-	listCards(c)
-}
-
 // status of account.
 func status(cmd *kingpin.Cmd) {
 	c := cmd.Command("status", "Status of your account.").Default()
@@ -181,7 +169,8 @@ func status(cmd *kingpin.Cmd) {
 
 		t := config.GetActiveTeam()
 
-		util.LogName("active team", t.ID)
+		defer util.Pad()()
+		util.LogName("team", t.ID)
 
 		plans, err := a.GetPlans(t.Token)
 		if err != nil {
@@ -193,100 +182,12 @@ func status(cmd *kingpin.Cmd) {
 			return nil
 		}
 
-		defer util.Pad()()
-
-		// TODO: amount should reflect any coupon discount present
-		for _, p := range plans {
-			util.LogName("subscription", p.PlanName)
-			util.LogName("amount", "$%0.2f/mo USD", float64(p.Amount)/100)
-			util.LogName("created", p.CreatedAt.Format("January 2, 2006"))
-			if p.Canceled {
-				util.LogName("canceled", p.CanceledAt.Format("January 2, 2006"))
-			}
-		}
-
-		return nil
-	})
-}
-
-// remove card.
-func removeCard(cmd *kingpin.Cmd) {
-	c := cmd.Command("rm", "Remove credit card.").Alias("remove")
-	id := c.Arg("id", "Card ID.").Required().String()
-
-	c.Action(func(_ *kingpin.ParseContext) error {
-		t, err := userconfig.Require()
-		if err != nil {
-			return err
-		}
-
-		stats.Track("Remove Card", nil)
-
-		if err := a.RemoveCard(t.Token, "card_"+*id); err != nil {
-			return errors.Wrap(err, "removing card")
-		}
-
-		util.LogPad("Card removed")
-
-		return nil
-	})
-}
-
-// list cards.
-func listCards(cmd *kingpin.Cmd) {
-	c := cmd.Command("ls", "List credit cards.").Alias("list").Default()
-
-	c.Action(func(_ *kingpin.ParseContext) error {
-		t, err := userconfig.Require()
-		if err != nil {
-			return err
-		}
-
-		stats.Track("List Cards", nil)
-
-		cards, err := a.GetCards(t.Token)
-		if err != nil {
-			return errors.Wrap(err, "listing cards")
-		}
-
-		defer util.Pad()()
-		for _, c := range cards {
-			id := strings.Replace(c.ID, "card_", "", 1)
-			util.LogName(id, "%s ending in %s", c.Brand, c.LastFour)
-		}
-
-		return nil
-	})
-}
-
-// add card.
-func addCard(cmd *kingpin.Cmd) {
-	c := cmd.Command("add", "Add credit card.")
-	c.Action(func(_ *kingpin.ParseContext) error {
-		t, err := userconfig.Require()
-		if err != nil {
-			return err
-		}
-
-		stats.Track("Add Card", nil)
-
-		defer util.Pad()()
-
-		card, err := account.PromptForCard()
-		if err != nil {
-			return errors.Wrap(err, "prompting for card")
-		}
-
-		tok, err := token.New(&stripe.TokenParams{
-			Card: &card,
-		})
-
-		if err != nil {
-			return errors.Wrap(err, "requesting card token")
-		}
-
-		if err := a.AddCard(t.Token, tok.ID); err != nil {
-			return errors.Wrap(err, "adding card")
+		p := plans[0]
+		util.LogName("subscription", p.PlanName)
+		util.LogName("amount", "$%0.2f/mo USD", float64(p.Amount)/100)
+		util.LogName("created", p.CreatedAt.Format("January 2, 2006"))
+		if p.Canceled {
+			util.LogName("canceled", p.CanceledAt.Format("January 2, 2006"))
 		}
 
 		return nil
@@ -452,7 +353,7 @@ func subscribe(cmd *kingpin.Cmd) {
 	c := cmd.Command("subscribe", "Subscribe to the Pro plan.")
 
 	c.Action(func(_ *kingpin.ParseContext) error {
-		config, err := userconfig.Require()
+		t, err := userconfig.Require()
 		if err != nil {
 			return err
 		}
@@ -461,11 +362,15 @@ func subscribe(cmd *kingpin.Cmd) {
 
 		// TODO: fetch from plan
 		amount := 2000
+		util.LogTitle("Coupon")
+		util.Log("Enter a coupon, or press enter to skip this step")
+		util.Log("and move on to adding a credit card.")
+		println()
 
 		// coupon
 		var couponID string
 		err = survey.AskOne(&survey.Input{
-			Message: "Coupon (optional):",
+			Message: "Coupon:",
 		}, &couponID, nil)
 
 		if err != nil {
@@ -480,12 +385,37 @@ func subscribe(cmd *kingpin.Cmd) {
 			}
 
 			if coupon == nil {
-				util.Log("Coupon is invalid")
+				util.LogClear("Coupon is invalid")
 			} else {
 				amount = coupon.Discount(amount)
-				util.Log("Coupon savings: %s", coupon.Description())
+				util.LogClear("Savings: %s", coupon.Description())
 			}
 		}
+
+		// add card
+		util.LogTitle("Credit Card")
+		util.Log("First add your credit card details which is transferred")
+		util.Log("directly to Stripe over HTTPS and never touch our servers.")
+		println()
+
+		card, err := account.PromptForCard()
+		if err != nil {
+			return errors.Wrap(err, "prompting for card")
+		}
+
+		tok, err := token.New(&stripe.TokenParams{
+			Card: &card,
+		})
+
+		if err != nil {
+			return errors.Wrap(err, "requesting card token")
+		}
+
+		if err := a.AddCard(t.Token, tok.ID); err != nil {
+			return errors.Wrap(err, "adding card")
+		}
+
+		util.LogTitle("Confirm")
 
 		// confirm
 		var ok bool
@@ -508,11 +438,11 @@ func subscribe(cmd *kingpin.Cmd) {
 			"coupon": couponID,
 		})
 
-		if err := a.AddPlan(config.Token, "up", "pro", couponID); err != nil {
+		if err := a.AddPlan(t.Token, "up", "pro", couponID); err != nil {
 			return errors.Wrap(err, "subscribing")
 		}
 
-		util.Log("Subscribed")
+		util.LogClear("Subscribed")
 
 		return nil
 	})
@@ -551,7 +481,7 @@ func unsubscribe(cmd *kingpin.Cmd) {
 			return errors.Wrap(err, "unsubscribing")
 		}
 
-		util.Log("Unsubscribed")
+		util.LogClear("Unsubscribed!")
 
 		return nil
 	})

@@ -24,6 +24,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/tj/backoff"
 	"github.com/tj/go-progress"
+	"github.com/tj/go/term"
 	"golang.org/x/net/publicsuffix"
 )
 
@@ -249,6 +250,13 @@ func LogPad(msg string, v ...interface{}) {
 // Log outputs a log message.
 func Log(msg string, v ...interface{}) {
 	fmt.Printf("     %s\n", colors.Purple(fmt.Sprintf(msg, v...)))
+}
+
+// LogClear clears the line and outputs a log message.
+func LogClear(msg string, v ...interface{}) {
+	term.MoveUp(1)
+	term.ClearLine()
+	fmt.Printf("\r     %s\n", colors.Purple(fmt.Sprintf(msg, v...)))
 }
 
 // LogTitle outputs a log title.
