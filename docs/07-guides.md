@@ -55,6 +55,14 @@ $ up team switch
      tj@apex.sh
 ```
 
+Invite some team members:
+
+```
+$ up team members add tobi@apex.sh
+$ up team members add loki@apex.sh
+$ up team members add jane@apex.sh
+```
+
 ## Development to Production Workflow
 
 This section guides you through taking a small application from development, to production, complete with purchasing and mapping a custom domain.
