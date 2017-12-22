@@ -35,7 +35,7 @@ func init() {
 }
 
 // list variables.
-func list(cmd *kingpin.CmdClause) {
+func list(cmd *kingpin.Cmd) {
 	c := cmd.Command("ls", "List variables.").Alias("list").Default()
 
 	c.Action(func(_ *kingpin.ParseContext) error {
@@ -109,7 +109,7 @@ func rows(t *table.Table, secrets []*platform.Secret) {
 }
 
 // add variables.
-func add(cmd *kingpin.CmdClause) {
+func add(cmd *kingpin.Cmd) {
 	c := cmd.Command("add", "Add a variable.").Alias("set")
 	key := c.Arg("name", "Variable name.").Required().String()
 	val := c.Arg("value", "Variable value.").Required().String()
@@ -144,7 +144,7 @@ func add(cmd *kingpin.CmdClause) {
 }
 
 // remove variables.
-func remove(cmd *kingpin.CmdClause) {
+func remove(cmd *kingpin.Cmd) {
 	c := cmd.Command("rm", "Remove a variable.").Alias("remove")
 	stage := c.Flag("stage", "Stage name.").Short('s').String()
 	key := c.Arg("name", "Variable name.").Required().String()
