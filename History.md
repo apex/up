@@ -1,4 +1,17 @@
 
+v0.4.5 / 2017-12-22
+===================
+
+  * add new subscribe workflow
+  * add team CRUD and rename `up account` to `up team`. Re #410
+  * refactor: replace `kingpin.CmdClause` with `kingpin.Cmd`
+  * refactor: use `time.Since` for time difference (#509)
+  * refactor: add "ci" to stats so we can see how often CI is used
+  * refactor: simplify start of plain reporter (#508)
+  * refactor: a typo fix in http/relay (#507)
+  * refactor: drop unnecessary `fmt.Sprintf` in reporter/text (#506)
+  * refactor: simplify personal team check (#500)
+
 v0.4.4 / 2017-12-19
 ===================
 
