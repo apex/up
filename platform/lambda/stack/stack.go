@@ -370,7 +370,10 @@ func (s *Stack) report(states map[string]Status) error {
 		"complete": 0,
 	})()
 
-	for range time.Tick(time.Second) {
+	ticker := time.NewTicker(time.Second)
+	defer ticker.Stop()
+
+	for range ticker.C {
 		stack, err := s.getStack()
 
 		if util.IsNotFound(err) {
