@@ -112,11 +112,11 @@ func (r *reporter) Start() {
 			case "account.login.verified":
 				r.completeWithoutDuration("verify", "complete")
 			case "hook":
-				r.pending("hook", e.String("name"))
+				r.pending(e.String("name"), "")
 			case "hook.complete":
 				name := e.String("name")
 				if name != "build" {
-					r.complete("hook", e.String("name"), e.Duration("duration"))
+					r.clear()
 				}
 			case "deploy", "stack.delete", "platform.stack.apply":
 				term.HideCursor()
