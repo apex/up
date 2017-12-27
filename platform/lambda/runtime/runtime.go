@@ -38,7 +38,7 @@ func WithLogger(l log.Interface) Option {
 func (r *Runtime) Init(stage string) error {
 	os.Setenv("UP_STAGE", stage)
 
-	if s := os.Getenv("NODE_ENV"); s == "" {
+	if os.Getenv("NODE_ENV") == "" {
 		os.Setenv("NODE_ENV", stage)
 	}
 
