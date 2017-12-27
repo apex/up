@@ -114,13 +114,14 @@ func (r *reporter) Start() {
 			case "hook":
 				r.pending("hook", e.String("name"))
 			case "hook.complete":
-				r.clear()
+				name := e.String("name")
+				if name != "build" {
+					r.complete("hook", e.String("name"), e.Duration("duration"))
+				}
 			case "deploy", "stack.delete", "platform.stack.apply":
 				term.HideCursor()
 			case "deploy.complete", "stack.delete.complete", "platform.stack.apply.complete":
 				term.ShowCursor()
-			case "platform.build":
-				r.pending("build", "")
 			case "platform.build.zip":
 				s := fmt.Sprintf("%s files, %s", humanize.Comma(e.Int64("files")), humanize.Bytes(uint64(e.Int("size_compressed"))))
 				r.complete("build", s, e.Duration("duration"))
