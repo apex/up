@@ -80,6 +80,11 @@ func (c *Coupon) Description() (s string) {
 	return s
 }
 
+// Discount model.
+type Discount struct {
+	Coupon Coupon `json:"coupon"`
+}
+
 // Plan model.
 type Plan struct {
 	ID         string    `json:"id"`
@@ -90,6 +95,7 @@ type Plan struct {
 	Interval   string    `json:"interval"`
 	Status     string    `json:"status"`
 	Canceled   bool      `json:"canceled"`
+	Discount   *Discount `json:"discount"`
 	CreatedAt  time.Time `json:"created_at"`
 	CanceledAt time.Time `json:"canceled_at"`
 }
