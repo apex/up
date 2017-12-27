@@ -189,11 +189,17 @@ func status(cmd *kingpin.Cmd) {
 			return errors.Wrap(err, "fetching cards")
 		}
 
+		// TODO: filter on plan type (later may be other products)
 		p := plans[0]
 		c := cards[0]
 
-		util.LogName("subscription", p.PlanName)
 		util.LogName("card", "%s ending with %s", c.Brand, c.LastFour)
+
+		if d := p.Discount; d != nil {
+			p.Amount = d.Coupon.Discount(p.Amount)
+			util.LogName("coupon", d.Coupon.ID)
+		}
+
 		util.LogName("amount", "$%0.2f/mo USD", float64(p.Amount)/100)
 		util.LogName("created", p.CreatedAt.Format("January 2, 2006"))
 		if p.Canceled {
