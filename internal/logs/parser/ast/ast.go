@@ -55,7 +55,7 @@ type Literal string
 
 // String implementation.
 func (n Literal) String() string {
-	return string(n)
+	return fmt.Sprintf(`%s`, string(n))
 }
 
 // Tuple node.
@@ -77,7 +77,7 @@ func (n Contains) String() string {
 	case String:
 		return fmt.Sprintf(`"*%s*"`, string(v))
 	default:
-		return n.Node.String()
+		return fmt.Sprintf(`%s`, n.Node)
 	}
 }
 

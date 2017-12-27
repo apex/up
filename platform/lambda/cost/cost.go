@@ -39,7 +39,7 @@ var memoryConfigurations = map[int]float64{
 
 // Requests returns the cost for the given number of http requests.
 func Requests(n int) float64 {
-	return (float64(n) / requestUnit) * pricePerRequestUnit
+	return (float64(n) / float64(requestUnit)) * float64(pricePerRequestUnit)
 }
 
 // Rate returns the cost per 100ms for the given `memory` configuration in megabytes.
