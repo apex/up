@@ -131,6 +131,7 @@ func TestConfig_Regions(t *testing.T) {
   • eu-central-1
   • eu-west-1
   • eu-west-2
+  • eu-west-3
   • sa-east-1`)
 	})
 
@@ -158,6 +159,7 @@ func TestConfig_Regions(t *testing.T) {
   • eu-central-1
   • eu-west-1
   • eu-west-2
+  • eu-west-3
   • sa-east-1`)
 	})
 }
