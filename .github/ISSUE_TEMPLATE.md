@@ -19,4 +19,4 @@ Please consider signing up for Up Pro (https://up.docs.apex.sh/#guides.subscribi
 
 ## Slack
 
-Join us on Slack https://apex-slackin.herokuapp.com/
+Join us on Slack https://chat.apex.sh/

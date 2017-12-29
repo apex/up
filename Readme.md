@@ -4,9 +4,9 @@ Up deploys infinitely scalable serverless apps, APIs, and static websites in sec
 
 Up focuses on deploying "vanilla" HTTP servers so there's nothing new to learn, just develop with your favorite existing frameworks such as Express, Koa, Django, Golang net/http or others.
 
-Up currently supports Node.js, Golang, Python, Java, Crystal, and static sites out of the box. Up is platform-agnostic, supporting AWS Lambda and API Gateway as the first targets. You can think of Up as self-hosted Heroku style user experience for a fraction of the price, with the security, flexibility, and scalability of AWS.
+Up currently supports Node.js, Golang, Python, Java, Crystal, and static sites out of the box. Up is platform-agnostic, supporting AWS Lambda and API Gateway as the first targets. You can think of Up as self-hosted Heroku style user experience for a fraction of the price, with the security, isolation, flexibility, and scalability of AWS.
 
-Check out the [documentation](https://up.docs.apex.sh/) for more instructions, try one of the [examples](https://github.com/apex/up-examples), or chat with us in [Slack](https://apex-slackin.herokuapp.com/).
+Check out the [documentation](https://up.docs.apex.sh/) for more instructions and links, or try one of the [examples](https://github.com/apex/up-examples), or chat with us in [Slack](https://chat.apex.sh/).
 
 ![](assets/screen.png)
 
@@ -60,15 +60,6 @@ Open it in the browser:
 ```
 $ up url --open
 ```
-
-## Community
-
-- [Documentation](https://up.docs.apex.sh/)
-- [Example applications](https://github.com/apex/up-examples)
-- [Twitter](https://twitter.com/tjholowaychuk)
-- [Slack](https://apex-slackin.herokuapp.com/) to chat with apex(1) and up(1) community members
-- [Blog](https://blog.apex.sh/) to follow release posts, tips and tricks
-- [Wiki](https://github.com/apex/up/wiki) for article listings, database suggestions, etc
 
 ## Donations
 
