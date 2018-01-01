@@ -16,3 +16,8 @@ title: Help
   <summary>My deployment seems stuck</summary>
   <p>The first deploy also creates resources associated with your project, and can take roughly 1-2 minutes. AWS provides limited granularity into the creation progress of these resources, so the progress bar may appear "stuck".</p>
 </details>
+
+<details>
+  <summary>How do I get my team back?</summary>
+  <p>Run `up team login` if you aren't signed in, then run `up team login --team my-team-id` to sign into any teams you're an owner or member of.</p>
+</details>
