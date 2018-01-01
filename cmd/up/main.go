@@ -3,10 +3,8 @@ package main
 import (
 	"errors"
 	"os"
-	"os/signal"
 	"runtime"
 	"strings"
-	"syscall"
 
 	"github.com/stripe/stripe-go"
 	"github.com/tj/go/env"
@@ -29,17 +27,15 @@ import (
 	_ "github.com/apex/up/internal/cli/version"
 
 	"github.com/apex/up/internal/cli/app"
+	"github.com/apex/up/internal/signal"
 	"github.com/apex/up/internal/stats"
 	"github.com/apex/up/internal/util"
 )
 
 var version = "master"
 
-// TODO: yuck refactor this
-
 func main() {
-	trap()
-
+	signal.Add(reset)
 	stripe.Key = env.GetDefault("STRIPE_KEY", "pk_live_23pGrHcZ2QpfX525XYmiyzmx")
 	stripe.LogLevel = 0
 
@@ -70,16 +66,9 @@ func run() error {
 	return app.Run(version)
 }
 
-// trap signals.
-func trap() {
-	sigs := make(chan os.Signal, 1)
-	signal.Notify(sigs, syscall.SIGINT)
-
-	// TODO: abort with context
-	go func() {
-		<-sigs
-		term.ShowCursor()
-		println("\n")
-		os.Exit(1)
-	}()
+// reset cursor.
+func reset() error {
+	term.ShowCursor()
+	println()
+	return nil
 }
