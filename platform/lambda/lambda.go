@@ -443,7 +443,7 @@ func (p *Platform) createFunction(c *lambda.Lambda, a *apigateway.APIGateway, up
 
 	log.Debug("uploading function")
 retry:
-	b := aws.String(p.getS3BucketName())
+	b := aws.String(p.getS3BucketName(region))
 	k := aws.String(p.getS3Key(stage))
 
 	_, err = up.Upload(&s3manager.UploadInput{
@@ -495,7 +495,7 @@ func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up
 		log.Debug("publishing new version")
 	}
 
-	b := aws.String(p.getS3BucketName())
+	b := aws.String(p.getS3BucketName(region))
 	k := aws.String(p.getS3Key(stage))
 
 retry:
@@ -662,7 +662,7 @@ func (p *Platform) deleteRole(region string) error {
 // createBucket creates the bucket.
 func (p *Platform) createBucket(region string) error {
 	s := s3.New(session.New(aws.NewConfig().WithRegion(region)))
-	n := p.getS3BucketName()
+	n := p.getS3BucketName(region)
 
 	log.WithField("name", n).Debug("creating s3 bucket")
 	_, err := s.CreateBucket(&s3.CreateBucketInput{
@@ -679,7 +679,7 @@ func (p *Platform) deleteBucket(region string) error {
 	}
 
 	s := s3.New(session.New(aws.NewConfig().WithRegion(region)))
-	n := p.getS3BucketName()
+	n := p.getS3BucketName(region)
 
 	log.WithField("name", n).Debug("deleting s3 bucket")
 	_, err := s.DeleteBucket(&s3.DeleteBucketInput{
@@ -692,7 +692,7 @@ func (p *Platform) deleteBucket(region string) error {
 // emptyBucket empty the bucket.
 func (p *Platform) emptyBucket(region string) error {
 	s := s3.New(session.New(aws.NewConfig().WithRegion(region)))
-	b := aws.String(p.getS3BucketName())
+	b := aws.String(p.getS3BucketName(region))
 
 	params := &s3.ListObjectsInput{
 		Bucket: b,
@@ -772,8 +772,8 @@ func (p *Platform) getS3Key(stage string) string {
 }
 
 // getS3BucketName returns the s3 bucket name.
-func (p *Platform) getS3BucketName() string {
-	return fmt.Sprintf("up-%s-%s", p.getAccountID(), p.config.Name)
+func (p *Platform) getS3BucketName(region string) string {
+	return fmt.Sprintf("up-%s-%s-%s", p.getAccountID(), p.config.Name, region)
 }
 
 // getAccountID returns the AWS account id derived from Lambda role,
