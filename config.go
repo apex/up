@@ -202,12 +202,12 @@ func (c *Config) inferRuntime() error {
 	switch {
 	case util.Exists("main.go"):
 		golang(c)
+	case util.Exists("project.clj"):
+		clojureLein(c)
 	case util.Exists("pom.xml"):
 		javaMaven(c)
 	case util.Exists("build.gradle"):
 		javaGradle(c)
-	case util.Exists("project.clj"):
-		clojureLein(c)
 	case util.Exists("main.cr"):
 		crystal(c)
 	case util.Exists("package.json"):
