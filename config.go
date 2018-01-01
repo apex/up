@@ -206,6 +206,8 @@ func (c *Config) inferRuntime() error {
 		javaMaven(c)
 	case util.Exists("build.gradle"):
 		javaGradle(c)
+	case util.Exists("project.clj"):
+		clojureLein(c)
 	case util.Exists("main.cr"):
 		crystal(c)
 	case util.Exists("package.json"):
@@ -341,6 +343,22 @@ func javaMaven(c *Config) {
 
 	if c.Hooks.Clean.IsEmpty() {
 		c.Hooks.Clean = config.Hook{`rm server.jar && mvn clean`}
+	}
+}
+
+// clojure lein config.
+func clojureLein(c *Config) {
+	if c.Proxy.Command == "" {
+		c.Proxy.Command = "java -jar server.jar"
+	}
+
+	if c.Hooks.Build.IsEmpty() {
+		// assumes package results in a shaded jar named server.jar
+		c.Hooks.Build = config.Hook{`lein uberjar && cp target/*-standalone.jar server.jar`}
+	}
+
+	if c.Hooks.Clean.IsEmpty() {
+		c.Hooks.Clean = config.Hook{`lein clean && rm server.jar`}
 	}
 }
 
