@@ -129,6 +129,10 @@ func (c *Config) Validate() error {
 		return errors.Wrap(err, ".stages")
 	}
 
+	if len(c.Regions) > 1 {
+		return errors.New("multiple regions is not yet supported, see https://github.com/apex/up/issues/134")
+	}
+
 	return nil
 }
 
