@@ -42,7 +42,7 @@ func main() {
 	log.WithField("duration", util.MillisecondsSince(start)).Info("initialized")
 
 	// init handler
-	h, err := handler.New()
+	h, err := handler.New(c)
 	if err != nil {
 		log.Fatalf("error: %s", err)
 	}

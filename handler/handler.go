@@ -26,13 +26,9 @@ import (
 
 // New reads up.json to configure and initialize
 // the http handler chain for serving an Up application.
-func New() (http.Handler, error) {
+func New(c *up.Config) (http.Handler, error) {
 	start := time.Now()
-
-	c, err := up.ReadConfig("up.json")
-	if err != nil {
-		return nil, errors.Wrap(err, "reading config")
-	}
+	var err error
 
 	log.WithFields(log.Fields{
 		"name": c.Name,

@@ -6,6 +6,7 @@ import (
 	"os"
 	"testing"
 
+	"github.com/apex/up"
 	"github.com/tj/assert"
 )
 
@@ -13,7 +14,10 @@ func TestNode(t *testing.T) {
 	os.Chdir("testdata/node")
 	defer os.Chdir("../..")
 
-	h, err := New()
+	c, err := up.ReadConfig("up.json")
+	assert.NoError(t, err, "read config")
+
+	h, err := New(c)
 	assert.NoError(t, err)
 
 	res := httptest.NewRecorder()
@@ -38,7 +42,10 @@ func TestStatic(t *testing.T) {
 	os.Chdir("testdata/static")
 	defer os.Chdir("../..")
 
-	h, err := New()
+	c, err := up.ReadConfig("up.json")
+	assert.NoError(t, err, "read config")
+
+	h, err := New(c)
 	assert.NoError(t, err)
 
 	res := httptest.NewRecorder()
@@ -64,7 +71,10 @@ func TestNodeWithPackage(t *testing.T) {
 	os.Chdir("testdata/node-pkg")
 	defer os.Chdir("../..")
 
-	h, err := New()
+	c, err := up.ReadConfig("up.json")
+	assert.NoError(t, err, "read config")
+
+	h, err := New(c)
 	assert.NoError(t, err)
 
 	res := httptest.NewRecorder()
@@ -79,7 +89,10 @@ func TestNodeWithPackageStart(t *testing.T) {
 	os.Chdir("testdata/node-pkg-start")
 	defer os.Chdir("../..")
 
-	h, err := New()
+	c, err := up.ReadConfig("up.json")
+	assert.NoError(t, err, "read config")
+
+	h, err := New(c)
 	assert.NoError(t, err)
 
 	res := httptest.NewRecorder()
@@ -94,7 +107,10 @@ func TestHandler_conditionalGet(t *testing.T) {
 	os.Chdir("testdata/static")
 	defer os.Chdir("../..")
 
-	h, err := New()
+	c, err := up.ReadConfig("up.json")
+	assert.NoError(t, err, "read config")
+
+	h, err := New(c)
 	assert.NoError(t, err)
 
 	res := httptest.NewRecorder()
@@ -110,7 +126,10 @@ func TestHandler_rewrite(t *testing.T) {
 	os.Chdir("testdata/static-rewrites")
 	defer os.Chdir("../..")
 
-	h, err := New()
+	c, err := up.ReadConfig("up.json")
+	assert.NoError(t, err, "read config")
+
+	h, err := New(c)
 	assert.NoError(t, err)
 
 	res := httptest.NewRecorder()
@@ -125,7 +144,10 @@ func TestHandler_redirect(t *testing.T) {
 	os.Chdir("testdata/static-redirects")
 	defer os.Chdir("../..")
 
-	h, err := New()
+	c, err := up.ReadConfig("up.json")
+	assert.NoError(t, err, "read config")
+
+	h, err := New(c)
 	assert.NoError(t, err)
 
 	res := httptest.NewRecorder()
@@ -140,7 +162,10 @@ func TestHandler_spa(t *testing.T) {
 	os.Chdir("testdata/spa")
 	defer os.Chdir("../..")
 
-	h, err := New()
+	c, err := up.ReadConfig("up.json")
+	assert.NoError(t, err, "read config")
+
+	h, err := New(c)
 	assert.NoError(t, err)
 
 	t.Run("index", func(t *testing.T) {
@@ -189,7 +214,10 @@ func BenchmarkHandler(b *testing.B) {
 	b.Run("static server", func(b *testing.B) {
 		os.Chdir("testdata/basic")
 
-		h, err := New()
+		c, err := up.ReadConfig("up.json")
+		assert.NoError(b, err, "read config")
+
+		h, err := New(c)
 		assert.NoError(b, err)
 
 		b.ResetTimer()
@@ -207,7 +235,10 @@ func BenchmarkHandler(b *testing.B) {
 	b.Run("node server relay", func(b *testing.B) {
 		os.Chdir("testdata/basic")
 
-		h, err := New()
+		c, err := up.ReadConfig("up.json")
+		assert.NoError(b, err, "read config")
+
+		h, err := New(c)
 		assert.NoError(b, err)
 
 		b.ResetTimer()

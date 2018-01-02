@@ -41,7 +41,7 @@ func init() {
 			return errors.Wrap(err, "initializing")
 		}
 
-		h, err := handler.New()
+		h, err := handler.New(c)
 		if err != nil {
 			return errors.Wrap(err, "initializing handler")
 		}
