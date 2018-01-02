@@ -35,12 +35,6 @@ Install Up:
 $ curl -sf https://up.apex.sh/install | sh
 ```
 
-Tell up which AWS profile to use:
-
-```
-export AWS_PROFILE=example
-```
-
 Create an `app.js` file:
 
 ```js
@@ -55,10 +49,11 @@ Deploy the app:
 $ up
 ```
 
-Open it in the browser:
+Open it in the browser, or copy the url to your clipboard:
 
 ```
-$ up url --open
+$ up url -o
+$ up url -c
 ```
 
 ## Donations
