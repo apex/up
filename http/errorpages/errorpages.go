@@ -89,9 +89,8 @@ func New(c *up.Config, next http.Handler) (http.Handler, error) {
 		return nil, errors.Wrap(err, "loading error pages")
 	}
 
-	// skip unless errorpage files are present
-	// or explicitly enabled in up.json
-	if len(pages) == 1 && !c.ErrorPages.Enable {
+	// we always have one "default" page, but it can be disabled
+	if len(pages) == 1 && c.ErrorPages.Disable {
 		return next, nil
 	}
 

@@ -88,7 +88,7 @@ retry:
 		"has_cors":             c.CORS != nil,
 		"has_logs":             !c.Logs.Disable,
 		"has_profile":          c.Profile != "",
-		"has_error_pages":      c.ErrorPages.Enable,
+		"has_error_pages":      !c.ErrorPages.Disable,
 		"app_name_hash":        util.Md5(c.Name),
 	})
 

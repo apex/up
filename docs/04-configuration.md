@@ -248,16 +248,15 @@ Date: Mon, 31 Jul 2017 20:49:35 GMT
 
 ## Error Pages
 
-By default Up will serve a minimalistic error page for you if the client accepts `text/html`, and it is explicitly enabled.
+By default Up will serve a minimalistic error page for requests accepting `text/html`.
 
-You may customize the default template's `color` and optionally provide a `support_email` to allow customers to contact your support team.
+The default template's `color` and optionally provide a `support_email` to allow customers to contact your support team.
 
 ```json
 {
   "name": "site",
   "type": "static",
   "error_pages": {
-    "enable": true,
     "variables": {
       "support_email": "support@apex.sh",
       "color": "#228ae6"
@@ -292,6 +291,16 @@ Variables specified via `variables`, as well as `.StatusText` and `.StatusCode` 
     {{end}}
   </body>
 </html>
+```
+
+To disable the default template use:
+
+```json
+{
+  "error_pages": {
+    "disable": true
+  }
+}
 ```
 
 ## Script Injection
