@@ -12,6 +12,9 @@ type Lambda struct {
 
 	// Role of the function.
 	Role string `json:"role"`
+
+	// Accelerate enables S3 acceleration.
+	Accelerate bool `json:"accelerate"`
 }
 
 // Default implementation.

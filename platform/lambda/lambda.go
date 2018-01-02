@@ -494,7 +494,7 @@ func (p *Platform) deploy(region, stage string) (version string, err error) {
 	}()
 
 	ctx := log.WithField("region", region)
-	s := session.New(aws.NewConfig().WithRegion(region))
+	s := session.New(aws.NewConfig().WithRegion(region).WithS3UseAccelerate(p.config.Lambda.Accelerate))
 	u := s3manager.NewUploaderWithClient(s3.New(s))
 	a := apigateway.New(s)
 	c := lambda.New(s)
@@ -753,7 +753,22 @@ func (p *Platform) createBucket(region string) error {
 		Bucket: &n,
 	})
 
-	return err
+	if err != nil {
+		return errors.Wrap(err, "creating bucket")
+	}
+
+	_, err = s.PutBucketAccelerateConfiguration(&s3.PutBucketAccelerateConfigurationInput{
+		Bucket: &n,
+		AccelerateConfiguration: &s3.AccelerateConfiguration{
+			Status: aws.String(s3.BucketAccelerateStatusEnabled),
+		},
+	})
+
+	if err != nil {
+		return errors.Wrap(err, "updating acceleration status")
+	}
+
+	return nil
 }
 
 // deleteBucketObjects deletes the objects for the app.

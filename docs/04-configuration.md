@@ -68,23 +68,6 @@ All regions like a boss:
 }
 ```
 
-Currently Lambda supports the following regions:
-
-- **us-east-2** – US East (Ohio)
-- **us-east-1** – US East (N. Virginia)
-- **us-west-1** – US West (N. California)
-- **us-west-2** – US West (Oregon)
-- **ap-northeast-2** – Asia Pacific (Seoul)
-- **ap-south-1** – Asia Pacific (Mumbai)
-- **ap-southeast-1** – Asia Pacific (Singapore)
-- **ap-southeast-2** – Asia Pacific (Sydney)
-- **ap-northeast-1** – Asia Pacific (Tokyo)
-- **ca-central-1** – Canada (Central)
-- **eu-central-1** – EU (Frankfurt)
-- **eu-west-1** – EU (Ireland)
-- **eu-west-2** – EU (London)
-- **sa-east-1** – South America (São Paulo)
-
 **WARNING**: multi-region support won't be complete until https://github.com/apex/up/issues/134 is closed.
 
 ## Lambda Settings
@@ -93,6 +76,7 @@ The following Lambda-specific settings are available:
 
 - `role` – IAM role ARN, defaulting to the one Up creates for you
 - `memory` – Function memory in mb (Default `512`, Min `128`, Max `1536`)
+- `accelerate` – Enable [S3 Transfer Acceleration](https://docs.aws.amazon.com/AmazonS3/latest/dev/transfer-acceleration.html) (Default `false`)
 
 For example:
 
