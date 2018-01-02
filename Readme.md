@@ -67,20 +67,11 @@ We also welcome financial contributions for the open-source version on [Open Col
 
 ### Sponsors
 
-<a href="https://opencollective.com/apex-up/sponsor/0/website" target="_blank"><img src="https://opencollective.com/apex-up/sponsor/0/avatar.svg"></a>
-<a href="https://opencollective.com/apex-up/sponsor/1/website" target="_blank"><img src="https://opencollective.com/apex-up/sponsor/1/avatar.svg"></a>
-<a href="https://opencollective.com/apex-up/sponsor/2/website" target="_blank"><img src="https://opencollective.com/apex-up/sponsor/2/avatar.svg"></a>
-<a href="https://opencollective.com/apex-up/sponsor/3/website" target="_blank"><img src="https://opencollective.com/apex-up/sponsor/3/avatar.svg"></a>
-<a href="https://opencollective.com/apex-up/sponsor/4/website" target="_blank"><img src="https://opencollective.com/apex-up/sponsor/4/avatar.svg"></a>
-<a href="https://opencollective.com/apex-up/sponsor/5/website" target="_blank"><img src="https://opencollective.com/apex-up/sponsor/5/avatar.svg"></a>
-<a href="https://opencollective.com/apex-up/sponsor/6/website" target="_blank"><img src="https://opencollective.com/apex-up/sponsor/6/avatar.svg"></a>
-<a href="https://opencollective.com/apex-up/sponsor/7/website" target="_blank"><img src="https://opencollective.com/apex-up/sponsor/7/avatar.svg"></a>
-<a href="https://opencollective.com/apex-up/sponsor/8/website" target="_blank"><img src="https://opencollective.com/apex-up/sponsor/8/avatar.svg"></a>
-<a href="https://opencollective.com/apex-up/sponsor/9/website" target="_blank"><img src="https://opencollective.com/apex-up/sponsor/9/avatar.svg"></a>
+<a href="https://opencollective.com/apex-up#backers" target="_blank"><object type="image/svg+xml" data="https://opencollective.com/apex-up/tiers/sponsors.svg?avatarHeight=36&width=600" /></a>
 
 ### Backers
 
-<a href="https://opencollective.com/apex-up#backers" target="_blank"><img src="https://opencollective.com/apex-up/backers.svg?width=890"></a>
+<a href="https://opencollective.com/apex-up#backers" target="_blank"><object type="image/svg+xml" data="https://opencollective.com/apex-up/tiers/backers.svg?avatarHeight=36&width=600" /></a>
 
 
 <a href="https://apex.sh"><img src="http://tjholowaychuk.com:6000/svg/sponsor"></a>
