@@ -1,4 +1,22 @@
 
+v0.4.6 / 2018-01-03
+===================
+
+  * add support for Clojure with Leiningen (#522)
+  * add coupon price adjustment to `up team` output. Closes #516
+  * add support for overriding NODE_ENV. Closes #505
+  * add error for multiple regions, until the feature is complete
+  * add Paris region
+  * change `error_pages` to be enabled by default for text/html requests
+  * refactor `handler.New()` to accept config
+  * refactor signal handling
+  * refactor: update api client
+  * refactor: remove unnecessary code (#517)
+  * refactor login and provide a non-error when you are already signed in
+  * fix s3 buckets, should be scoped to region
+  * fix output flickering before build output
+  * fix: add a ! in front of build.gradle for forced inclusion (#518)
+
 v0.4.5 / 2017-12-22
 ===================
 
