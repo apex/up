@@ -24,6 +24,8 @@ Note that the following Pro features are currently available:
 
  - Encrypted env variables
  - Alerting (email, sms, slack)
+ - S3 upload acceleration (optional)
+ - Instant rollback support
 
 ![Pro edition features](assets/features-pro.png)
 
