@@ -94,7 +94,7 @@ Lambda timeout is implied from the [Reverse Proxy](#configuration.reverse_proxy)
 
 Lambda `memory` also scales the CPU, if your app is slow, or for cases such as larger Node applications with many `require()`s you may need to increase this value. View the [Lambda Pricing](https://aws.amazon.com/lambda/pricing/) page for more information regarding the `memory` setting.
 
-Lambda uploads may be optionally accelerated for Up Pro users, using [S3 Transfer Acceleration](https://docs.aws.amazon.com/AmazonS3/latest/dev/transfer-acceleration.html) which utilizes the CloudFront CDN network – this is especially helpful for over-seas deploys. Try the [speedtest tool](http://s3-accelerate-speedtest.s3-accelerate.amazonaws.com/en/accelerate-speed-comparsion.html) to get an idea of the improvements, and view [S3 Pricing](https://aws.amazon.com/s3/pricing/).
+Lambda uploads may be optionally accelerated for Up Pro users, using [S3 Transfer Acceleration](https://docs.aws.amazon.com/AmazonS3/latest/dev/transfer-acceleration.html), this is especially helpful for improving overseas deploy times. Try the [speedtest tool](http://s3-accelerate-speedtest.s3-accelerate.amazonaws.com/en/accelerate-speed-comparsion.html) to get an idea of the improvements, and view [S3 Pricing](https://aws.amazon.com/s3/pricing/).
 
 Changes to Lambda configuration do not require a `up stack apply`, just deploy and these changes are picked up!
 
