@@ -7,6 +7,7 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -193,6 +194,34 @@ func (p *Platform) Deploy(stage string) error {
 	}
 
 	return g.Wait()
+}
+
+// Rollback implementation.
+func (p *Platform) Rollback(region, stage, version string) error {
+	c := lambda.New(session.New(aws.NewConfig().WithRegion(region)))
+	log.Debugf("rolling back %s %s to %q", region, stage, version)
+
+	if version == "" {
+		log.Debug("fetching current version")
+		v, err := getAliasVersion(c, p.config.Name, stage)
+		if err != nil {
+			return errors.Wrap(err, "fetching alias")
+		}
+		version = strconv.Itoa(v - 1)
+	}
+
+	log.Debugf("updating %s %s alias to %q", region, stage, version)
+	_, err := c.UpdateAlias(&lambda.UpdateAliasInput{
+		FunctionName:    &p.config.Name,
+		FunctionVersion: &version,
+		Name:            &stage,
+	})
+
+	if err != nil {
+		return errors.Wrap(err, "updating alias")
+	}
+
+	return nil
 }
 
 // Logs implementation.
@@ -948,4 +977,33 @@ func getCert(certs []*acm.CertificateDetail, domain string) string {
 	}
 
 	return ""
+}
+
+// getAlias returns the alias for stage.
+func getAlias(c *lambda.Lambda, name, stage string) (*lambda.AliasConfiguration, error) {
+	res, err := c.ListAliases(&lambda.ListAliasesInput{
+		FunctionName: &name,
+	})
+
+	if err != nil {
+		return nil, errors.Wrap(err, "listing aliases")
+	}
+
+	for _, a := range res.Aliases {
+		if *a.Name == stage {
+			return a, nil
+		}
+	}
+
+	return nil, errors.New("stage has no alias")
+}
+
+// getAliasVersion returns the alias version for stage.
+func getAliasVersion(c *lambda.Lambda, name, stage string) (int, error) {
+	a, err := getAlias(c, name, stage)
+	if err != nil {
+		return 0, errors.Wrap(err, "fetching alias")
+	}
+
+	return strconv.Atoi(*a.FunctionVersion)
 }

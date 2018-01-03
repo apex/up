@@ -140,6 +140,42 @@ $ up staging
 $ up production
 ```
 
+## Rollback
+
+Rollback to a previous deployment.
+
+```
+Usage:
+
+  up rollback [<target>]
+
+Flags:
+
+  -h, --help           Output usage information.
+  -C, --chdir="."      Change working directory.
+  -v, --verbose        Enable verbose log output.
+      --format="text"  Output formatter.
+      --version        Show application version.
+
+Args:
+
+  [<version>]  Target version for rollback.
+```
+
+### Examples
+
+Rollback to the previous production version.
+
+```
+$ up rollback
+```
+
+Rollback to an explicit production version.
+
+```
+$ up rollback 50
+```
+
 ## Config
 
 Validate and output configuration with defaults applied.

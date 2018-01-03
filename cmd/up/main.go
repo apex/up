@@ -18,6 +18,7 @@ import (
 	_ "github.com/apex/up/internal/cli/env"
 	_ "github.com/apex/up/internal/cli/logs"
 	_ "github.com/apex/up/internal/cli/metrics"
+	_ "github.com/apex/up/internal/cli/rollback"
 	_ "github.com/apex/up/internal/cli/run"
 	_ "github.com/apex/up/internal/cli/stack"
 	_ "github.com/apex/up/internal/cli/start"
