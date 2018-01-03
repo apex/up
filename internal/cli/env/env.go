@@ -113,7 +113,7 @@ func add(cmd *kingpin.Cmd) {
 	c := cmd.Command("add", "Add a variable.").Alias("set")
 	key := c.Arg("name", "Variable name.").Required().String()
 	val := c.Arg("value", "Variable value.").Required().String()
-	stage := c.Flag("stage", "Stage name.").Short('s').String()
+	stage := c.Flag("stage", "Target stage name.").Short('s').String()
 	desc := c.Flag("desc", "Variable description message.").Short('d').String()
 	clear := c.Flag("clear", "Store as cleartext (unencrypted).").Short('c').Bool()
 
