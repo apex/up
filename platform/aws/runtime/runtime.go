@@ -46,7 +46,7 @@ func (r *Runtime) Init(stage string) error {
 		os.Setenv("NODE_ENV", stage)
 	}
 
-	log.Info("loading secrets")
+	r.log.Info("loading secrets")
 	if err := r.loadSecrets(stage); err != nil {
 		return errors.Wrap(err, "loading secrets")
 	}
