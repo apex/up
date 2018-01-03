@@ -147,15 +147,16 @@ Rollback to a previous deployment.
 ```
 Usage:
 
-  up rollback [<target>]
+  up rollback [<flags>] [<version>]
 
 Flags:
 
-  -h, --help           Output usage information.
-  -C, --chdir="."      Change working directory.
-  -v, --verbose        Enable verbose log output.
-      --format="text"  Output formatter.
-      --version        Show application version.
+  -h, --help                Output usage information.
+  -C, --chdir="."           Change working directory.
+  -v, --verbose             Enable verbose log output.
+      --format="text"       Output formatter.
+      --version             Show application version.
+  -s, --stage="production"  Target stage name.
 
 Args:
 
