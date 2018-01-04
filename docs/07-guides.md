@@ -228,7 +228,7 @@ You should see "Hello World from production" and "Hello World from development".
 
 Now that you have an application deployed, you probably want a fancy custom domain for it right? You can map these using the `stages` and `domain` properties.
 
-Here we let Up know that we want `up-example.com` for production and `dev.up-example` for development. You could also map staging to `stage.up-example.com` or similar if you'd like.
+Here we let Up know that we want `up-example.com` for production and `dev.up-example` for development.
 
 ```json
 {
@@ -245,7 +245,7 @@ Here we let Up know that we want `up-example.com` for production and `dev.up-exa
 }
 ```
 
-Note that you could map staging to a domain like `staging-myapp.com` as well, it does not have to be a sub-domain of your production domain.
+Note that you could map staging to a domain like `staging-myapp.com`, it does not have to be a sub-domain of your production domain.
 
 Now when you run `up stack plan` to preview changes to your resources, it will prompt you to verify the Let's Encrypt certificate emails that AWS sends.
 
@@ -336,7 +336,7 @@ Save those four values in your registrar's interface, and you should be good to 
 
 If you manage DNS with a third-party such as Cloudflare, and wish to use Up only for deployment you will need to manually edit or add DNS records.
 
-For example if your domain `sloths.com` is managed by Cloudflare and you'd like point `api.sloths.com` to your app, you will need to create a `CNAME` for `api.sloths.com` pointing to the `endpoint` for the stage you'd like to map. Use `up stack` after your app is deployed as shown here to obtain this information.
+For example if your domain `sloths.com` is managed by Cloudflare and you'd like point `api.sloths.com` to your app, you should create a `CNAME` for `api.sloths.com` pointing to the `endpoint` of the stage you'd like to map. Use `up stack` after your app is deployed as shown here to obtain this information.
 
 ```
 $ up stack
