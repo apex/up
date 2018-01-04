@@ -108,7 +108,7 @@ func buy(cmd *kingpin.Cmd) {
 
 		domains := p.Domains()
 		if err := domains.Purchase(domain, contact); err != nil {
-			return errors.Wrap(err, "purshasing")
+			return errors.Wrap(err, "purchasing")
 		}
 
 		return nil
