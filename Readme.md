@@ -8,7 +8,7 @@ Up currently supports Node.js, Golang, Python, Java, Crystal, Clojure and static
 
 Check out the [documentation](https://up.docs.apex.sh/) for more instructions and links, or try one of the [examples](https://github.com/apex/up-examples), or chat with us in [Slack](https://chat.apex.sh/).
 
-![](assets/screen.png)
+![](assets/screen2.png)
 
 ## Features
 
