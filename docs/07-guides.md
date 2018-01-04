@@ -336,26 +336,31 @@ Save those four values in your registrar's interface, and you should be good to 
 
 If you manage DNS with a third-party such as Cloudflare, and wish to use Up only for deployment you will need to manually edit or add DNS records.
 
-For example if your domain `sloths.com` is managed by Cloudflare and you'd like point `api.sloths.com` to your app, you should create a `CNAME` for `api.sloths.com` pointing to the `endpoint` of the stage you'd like to map. Use `up stack` after your app is deployed as shown here to obtain this information.
+For example if your top-level domain `sloths.com` is managed by Cloudflare and you'd like point `api.sloths.com` to your app, you should first add it to your `up.json`:
+
+```json
+{
+  "name": "sloths"
+  "stages": {
+    "production": {
+      "domain": "api.sloths.com"
+    }
+  }
+}
+```
+
+Next you will need to `up stack plan` and `up stack apply`, this will set up a CloudFront end-point for the application. To view the endpoint information, run `up stack`:
 
 ```
 $ up stack
 
-Staging
-
-  domain: stage.up-example.com
-  endpoint: d2od0udp1p8bru.cloudfront.net
-
 Production
 
-  domain: up-example.com
+  domain: api.sloths.com
   endpoint: d72wsqljqg5cy.cloudfront.net
-  nameservers:
-   • ns-1495.awsdns-58.org
-   • ns-103.awsdns-12.com
-   • ns-1670.awsdns-16.co.uk
-   • ns-659.awsdns-18.net
- ```
+```
+
+In your DNS provider – Cloudflare in this example – you should create a `CNAME` record pointing to the production `endpoint`. Make sure that the `domain` you use matches the domain in Cloudflare.
 
 ### Stack Changes
 
