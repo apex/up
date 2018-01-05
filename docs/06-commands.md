@@ -938,3 +938,5 @@ DB_USER  sloth  MongoDB username         Modified 2 minutes ago by tobi
 ```
 
 Note that while changes made to the variables are effective immediately, AWS Lambda may retain idle containers with the previous values. Currently you must perform a deploy in order to receive the new values. This can be used to your advantage, as it allows you to change for example both `DB_USER` and `DB_PASS` at the same time.
+
+Variables defined via `up env` are also available to the build hooks, as well as `up start`. The `UP_STAGE` and `NODE_ENV` are defined to the target stage name automatically, unless specified manually. See the [Env Static](https://github.com/apex/up-examples/tree/master/pro/env-static) example to see how it works with build hooks.
