@@ -315,8 +315,8 @@
 [[projects]]
   name = "github.com/tj/go-update"
   packages = [".","stores/apex","stores/github"]
-  revision = "1ddfd940a4e2b7719827873b752e66547a69c693"
-  version = "v2.0.2"
+  revision = "a963589e45a4db03407f81ef8ae6ec1995a08f62"
+  version = "v2.1.0"
 
 [[projects]]
   name = "github.com/tj/kingpin"
@@ -363,6 +363,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "d9d0b6eb4a1ef526e79fd604b42268b6e059fbb3d14ead514c8a3575b945336c"
+  inputs-digest = "1746500ff4450f0cc15b8946f11fcd10e744641a55c830f5ce26359096243a26"
   solver-name = "gps-cdcl"
   solver-version = 1
