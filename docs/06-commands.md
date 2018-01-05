@@ -734,3 +734,36 @@ Invite a team member to your active team.
 ```
 $ up team members add asya@example.com
 ```
+
+## Upgrade
+
+Install the latest or specified version of Up
+
+```
+Usage:
+
+  up upgrade [<flags>]
+
+Flags:
+
+  -h, --help           Output usage information.
+  -C, --chdir="."      Change working directory.
+  -v, --verbose        Enable verbose log output.
+      --format="text"  Output formatter.
+      --version        Show application version.
+  -t, --target=TARGET  Target version for upgrade.
+```
+
+### Examples
+
+Upgrade to the latest version available.
+
+```
+$ up upgrade
+```
+
+Upgrade to the specified version.
+
+```
+$ up upgrade -t 0.4.4
+```

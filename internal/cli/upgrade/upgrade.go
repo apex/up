@@ -24,7 +24,11 @@ import (
 var releasesAPI = env.GetDefault("APEX_RELEASES_API", "https://releases.apex.sh")
 
 func init() {
-	cmd := root.Command("upgrade", "Install the latest release of Up.")
+	cmd := root.Command("upgrade", "Install the latest or specified version of Up.")
+	cmd.Example(`up upgrade`, "Upgrade to the latest version available.")
+	cmd.Example(`up upgrade -t 0.4.4`, "Upgrade to the specified version.")
+	target := cmd.Flag("target", "Target version for upgrade.").Short('t').String()
+
 	cmd.Action(func(_ *kingpin.ParseContext) error {
 		version := root.Cmd.GetVersion()
 		start := time.Now()
@@ -61,28 +65,20 @@ func init() {
 			}
 		}
 
-		// fetch the new releases
-		releases, err := p.LatestReleases()
-
-		if request.IsClient(err) {
-			return errors.Wrap(err, "You're not subscribed to Up Pro")
-		}
-
+		// fetch latest or specified release
+		r, err := getLatestOrSpecified(p, *target)
 		if err != nil {
-			return errors.Wrap(err, "fetching releases")
+			return errors.Wrap(err, "fetching latest release")
 		}
 
 		// no updates
-		if len(releases) == 0 {
+		if r == nil {
 			util.LogPad("No updates available, you're good :)")
 			return nil
 		}
 
-		// latest release
-		latest := releases[0]
-
 		// find the tarball for this system
-		a := latest.FindTarball(runtime.GOOS, runtime.GOARCH)
+		a := r.FindTarball(runtime.GOOS, runtime.GOARCH)
 		if a == nil {
 			return errors.Errorf("failed to find a binary for %s %s", runtime.GOOS, runtime.GOARCH)
 		}
@@ -101,19 +97,47 @@ func init() {
 		term.ClearAll()
 
 		if strings.Contains(a.URL, "up/pro") {
-			util.LogPad("Updated %s to %s Pro", versionName(version), latest.Version)
+			util.LogPad("Updated %s to %s Pro", versionName(version), r.Version)
 		} else {
-			util.LogPad("Updated %s to %s OSS", versionName(version), latest.Version)
+			util.LogPad("Updated %s to %s OSS", versionName(version), r.Version)
 		}
 
 		stats.Track("Upgrade", map[string]interface{}{
 			"from":     version,
-			"to":       latest.Version,
+			"to":       r.Version,
 			"duration": time.Since(start).Round(time.Millisecond),
 		})
 
 		return nil
 	})
+}
+
+// getLatestOrSpecified returns the latest or specified release.
+func getLatestOrSpecified(s update.Store, version string) (*update.Release, error) {
+	if version == "" {
+		return getLatest(s)
+	}
+
+	return s.GetRelease(version)
+}
+
+// getLatest returns the latest release, error, or nil when there is none.
+func getLatest(s update.Store) (*update.Release, error) {
+	releases, err := s.LatestReleases()
+
+	if request.IsClient(err) {
+		return nil, errors.Wrap(err, "You're not subscribed to Up Pro")
+	}
+
+	if err != nil {
+		return nil, errors.Wrap(err, "fetching releases")
+	}
+
+	if len(releases) == 0 {
+		return nil, nil
+	}
+
+	return releases[0], nil
 }
 
 // versionName returns the humanized version name.
