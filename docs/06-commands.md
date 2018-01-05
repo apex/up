@@ -737,7 +737,7 @@ $ up team members add asya@example.com
 
 ## Upgrade
 
-Install the latest or specified version of Up
+Install the latest or specified version of Up. The OSS and Pro versions have independent semver, as bugfixes and features for one may not be relevant to the other.
 
 ```
 Usage:
