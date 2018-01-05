@@ -739,6 +739,8 @@ $ up team members add asya@example.com
 
 Install the latest or specified version of Up. The OSS and Pro versions have independent semver, as bugfixes and features for one may not be relevant to the other.
 
+If you're an Up Pro subscriber, `up upgrade` will _always_ install Up Pro, even when `--target` is specified, there is no need to specify that you want the Pro version.
+
 ```
 Usage:
 
