@@ -604,6 +604,35 @@ If you're familiar with AWS Lambda, "development" is the $LATEST version, while 
 
 You may [purchase domains](#guides.development_to_production_workflow.purchasing_a_domain) from the command-line, or map custom domains from other registrars. Up uses Route53 to purchase domains using your AWS account credit card. See `up help domains`.
 
+## Stage Overrides
+
+Up allows some configuration properties to be overridden at the stage level. The following example illustrates how you can tune lambda memory and hooks per-stage.
+
+```json
+{
+  "name": "app",
+  "hooks": {
+    "build": "parcel index.html --no-minify -o build",
+    "clean": "rm -fr build"
+  },
+  "stages": {
+    "production": {
+      "hooks": {
+        "build": "parcel index.html -o build"
+      },
+      "lambda": {
+        "memory": 1024
+      }
+    }
+  }
+}
+```
+
+Currently the following properties may be specified at the stage level:
+
+- `hooks`
+- `lambda`
+
 ## Ignoring Files
 
 Up supports gitignore style pattern matching for omitting files from deployment. The following files are loaded in sequence:

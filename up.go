@@ -9,10 +9,23 @@ import (
 	"github.com/apex/log"
 	"github.com/pkg/errors"
 
+	"github.com/apex/up/config"
 	"github.com/apex/up/internal/util"
 	"github.com/apex/up/platform"
 	"github.com/apex/up/platform/event"
 )
+
+// Config for a project.
+type Config = config.Config
+
+// ReadConfig reads the configuration from `path`.
+var ReadConfig = config.ReadConfig
+
+// ParseConfigString returns config from JSON string.
+var ParseConfigString = config.ParseConfigString
+
+// MustParseConfigString returns config from JSON string.
+var MustParseConfigString = config.MustParseConfigString
 
 // Project manager.
 type Project struct {

@@ -1,16 +1,24 @@
 package config
 
-import (
-	"github.com/apex/up/internal/validate"
-	"github.com/pkg/errors"
-)
-
 // Stage config.
 type Stage struct {
 	Domain string `json:"domain"`
 	Path   string `json:"path"`
 	Cert   string `json:"cert"`
 	Name   string `json:"-"`
+	StageOverrides
+}
+
+// StageOverrides config.
+type StageOverrides struct {
+	Hooks  Hooks  `json:"hooks"`
+	Lambda Lambda `json:"lambda"`
+}
+
+// Override config.
+func (s *StageOverrides) Override(c *Config) {
+	s.Hooks.Override(c)
+	s.Lambda.Override(c)
 }
 
 // Stages config.
@@ -39,24 +47,6 @@ func (s *Stages) Default() error {
 
 // Validate implementation.
 func (s *Stages) Validate() error {
-	if s := s.Development; s != nil {
-		if err := validate.RequiredString(s.Domain); err != nil {
-			return errors.Wrap(err, ".development: .domain")
-		}
-	}
-
-	if s := s.Staging; s != nil {
-		if err := validate.RequiredString(s.Domain); err != nil {
-			return errors.Wrap(err, ".staging: .domain")
-		}
-	}
-
-	if s := s.Production; s != nil {
-		if err := validate.RequiredString(s.Domain); err != nil {
-			return errors.Wrap(err, ".production: .domain")
-		}
-	}
-
 	return nil
 }
 
@@ -92,6 +82,16 @@ func (s *Stages) Domains() (v []string) {
 func (s *Stages) GetByDomain(domain string) *Stage {
 	for _, s := range s.List() {
 		if s.Domain == domain {
+			return s
+		}
+	}
+	return nil
+}
+
+// GetByName returns the stage by name or nil.
+func (s *Stages) GetByName(name string) *Stage {
+	for _, s := range s.List() {
+		if s.Name == name {
 			return s
 		}
 	}

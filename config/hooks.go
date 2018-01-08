@@ -18,6 +18,33 @@ type Hooks struct {
 	PostDeploy Hook `json:"postdeploy"`
 }
 
+// Override config.
+func (h *Hooks) Override(c *Config) {
+	if v := h.Build; v != nil {
+		c.Hooks.Build = v
+	}
+
+	if v := h.Clean; v != nil {
+		c.Hooks.Clean = v
+	}
+
+	if v := h.PreBuild; v != nil {
+		c.Hooks.PreBuild = v
+	}
+
+	if v := h.PostBuild; v != nil {
+		c.Hooks.PostBuild = v
+	}
+
+	if v := h.PreDeploy; v != nil {
+		c.Hooks.PreDeploy = v
+	}
+
+	if v := h.PostDeploy; v != nil {
+		c.Hooks.PostDeploy = v
+	}
+}
+
 // Get returns the hook by name or nil.
 func (h *Hooks) Get(s string) Hook {
 	switch s {

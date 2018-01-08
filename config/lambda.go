@@ -31,3 +31,18 @@ func (l *Lambda) Validate() error {
 
 	return nil
 }
+
+// Override config.
+func (l *Lambda) Override(c *Config) {
+	if l.Memory != 0 {
+		c.Lambda.Memory = l.Memory
+	}
+
+	if l.Timeout != 0 {
+		c.Lambda.Timeout = l.Timeout
+	}
+
+	if l.Role != "" {
+		c.Lambda.Role = l.Role
+	}
+}

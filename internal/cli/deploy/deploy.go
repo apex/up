@@ -57,8 +57,14 @@ retry:
 		return errors.Wrap(err, "initializing")
 	}
 
+	// validate stage name
 	if err := validate.Stage(stage); err != nil {
 		return err
+	}
+
+	// stage overrides
+	if err := c.Override(stage); err != nil {
+		return errors.Wrap(err, "overriding")
 	}
 
 	defer util.Pad()()

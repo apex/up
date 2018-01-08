@@ -1,4 +1,4 @@
-package up
+package config
 
 import (
 	"encoding/json"
@@ -8,7 +8,6 @@ import (
 	"github.com/apex/log"
 	"github.com/pkg/errors"
 
-	"github.com/apex/up/config"
 	"github.com/apex/up/internal/header"
 	"github.com/apex/up/internal/inject"
 	"github.com/apex/up/internal/redirect"
@@ -32,59 +31,24 @@ type validator interface {
 
 // Config for the project.
 type Config struct {
-	// Name of the project.
-	Name string `json:"name"`
-
-	// Description of the project.
-	Description string `json:"description"`
-
-	// Type of project.
-	Type string `json:"type"`
-
-	// Headers injection rules.
-	Headers header.Rules `json:"headers"`
-
-	// Redirects redirection rules.
-	Redirects redirect.Rules `json:"redirects"`
-
-	// Hooks defined for the project.
-	Hooks config.Hooks `json:"hooks"`
-
-	// Environment variables.
-	Environment config.Environment `json:"environment"`
-
-	// Regions is a list of regions to deploy to.
-	Regions []string `json:"regions"`
-
-	// Profile is the AWS profile name to reference for credentials.
-	Profile string `json:"profile"`
-
-	// Inject rules.
-	Inject inject.Rules `json:"inject"`
-
-	// Lambda provider configuration.
-	Lambda config.Lambda `json:"lambda"`
-
-	// CORS config.
-	CORS *config.CORS `json:"cors"`
-
-	// ErrorPages config.
-	ErrorPages config.ErrorPages `json:"error_pages"`
-
-	// Proxy config.
-	Proxy config.Relay `json:"proxy"`
-
-	// Static config.
-	Static config.Static `json:"static"`
-
-	// Logs config.
-	Logs config.Logs `json:"logs"`
-
-	// Stages config.
-	Stages config.Stages `json:"stages"`
-
-	// DNS config.
-	DNS config.DNS `json:"dns"`
+	Name        string         `json:"name"`
+	Description string         `json:"description"`
+	Type        string         `json:"type"`
+	Headers     header.Rules   `json:"headers"`
+	Redirects   redirect.Rules `json:"redirects"`
+	Hooks       Hooks          `json:"hooks"`
+	Environment Environment    `json:"environment"`
+	Regions     []string       `json:"regions"`
+	Profile     string         `json:"profile"`
+	Inject      inject.Rules   `json:"inject"`
+	Lambda      Lambda         `json:"lambda"`
+	CORS        *CORS          `json:"cors"`
+	ErrorPages  ErrorPages     `json:"error_pages"`
+	Proxy       Relay          `json:"proxy"`
+	Static      Static         `json:"static"`
+	Logs        Logs           `json:"logs"`
+	Stages      Stages         `json:"stages"`
+	DNS         DNS            `json:"dns"`
 }
 
 // Validate implementation.
@@ -201,6 +165,18 @@ func (c *Config) Default() error {
 	return nil
 }
 
+// Override with stage config if present, and re-validate.
+func (c *Config) Override(stage string) error {
+	s := c.Stages.GetByName(stage)
+	if s == nil {
+		return nil
+	}
+
+	s.Override(c)
+
+	return c.Validate()
+}
+
 // inferRuntime performs inferences based on what Up thinks the runtime is.
 func (c *Config) inferRuntime() error {
 	switch {
@@ -302,11 +278,11 @@ func ReadConfig(path string) (*Config, error) {
 // golang config.
 func golang(c *Config) {
 	if c.Hooks.Build.IsEmpty() {
-		c.Hooks.Build = config.Hook{`GOOS=linux GOARCH=amd64 go build -o server *.go`}
+		c.Hooks.Build = Hook{`GOOS=linux GOARCH=amd64 go build -o server *.go`}
 	}
 
 	if c.Hooks.Clean.IsEmpty() {
-		c.Hooks.Clean = config.Hook{`rm server`}
+		c.Hooks.Clean = Hook{`rm server`}
 	}
 }
 
@@ -319,14 +295,14 @@ func javaGradle(c *Config) {
 	if c.Hooks.Build.IsEmpty() {
 		// assumes build results in a shaded jar named server.jar
 		if util.Exists("gradlew") {
-			c.Hooks.Build = config.Hook{`./gradlew clean build && cp build/libs/server.jar .`}
+			c.Hooks.Build = Hook{`./gradlew clean build && cp build/libs/server.jar .`}
 		} else {
-			c.Hooks.Build = config.Hook{`gradle clean build && cp build/libs/server.jar .`}
+			c.Hooks.Build = Hook{`gradle clean build && cp build/libs/server.jar .`}
 		}
 	}
 
 	if c.Hooks.Clean.IsEmpty() {
-		c.Hooks.Clean = config.Hook{`rm server.jar && gradle clean`}
+		c.Hooks.Clean = Hook{`rm server.jar && gradle clean`}
 	}
 }
 
@@ -339,14 +315,14 @@ func javaMaven(c *Config) {
 	if c.Hooks.Build.IsEmpty() {
 		// assumes package results in a shaded jar named server.jar
 		if util.Exists("mvnw") {
-			c.Hooks.Build = config.Hook{`./mvnw clean package && cp target/server.jar .`}
+			c.Hooks.Build = Hook{`./mvnw clean package && cp target/server.jar .`}
 		} else {
-			c.Hooks.Build = config.Hook{`mvn clean package && cp target/server.jar .`}
+			c.Hooks.Build = Hook{`mvn clean package && cp target/server.jar .`}
 		}
 	}
 
 	if c.Hooks.Clean.IsEmpty() {
-		c.Hooks.Clean = config.Hook{`rm server.jar && mvn clean`}
+		c.Hooks.Clean = Hook{`rm server.jar && mvn clean`}
 	}
 }
 
@@ -358,22 +334,22 @@ func clojureLein(c *Config) {
 
 	if c.Hooks.Build.IsEmpty() {
 		// assumes package results in a shaded jar named server.jar
-		c.Hooks.Build = config.Hook{`lein uberjar && cp target/*-standalone.jar server.jar`}
+		c.Hooks.Build = Hook{`lein uberjar && cp target/*-standalone.jar server.jar`}
 	}
 
 	if c.Hooks.Clean.IsEmpty() {
-		c.Hooks.Clean = config.Hook{`lein clean && rm server.jar`}
+		c.Hooks.Clean = Hook{`lein clean && rm server.jar`}
 	}
 }
 
 // crystal config.
 func crystal(c *Config) {
 	if c.Hooks.Build.IsEmpty() {
-		c.Hooks.Build = config.Hook{`docker run --rm -v $(PWD):/src -w /src tjholowaychuk/up-crystal crystal build --link-flags -static -o server main.cr`}
+		c.Hooks.Build = Hook{`docker run --rm -v $(PWD):/src -w /src tjholowaychuk/up-crystal crystal build --link-flags -static -o server main.cr`}
 	}
 
 	if c.Hooks.Clean.IsEmpty() {
-		c.Hooks.Clean = config.Hook{`rm server`}
+		c.Hooks.Clean = Hook{`rm server`}
 	}
 }
 
@@ -402,7 +378,7 @@ func nodejs(c *Config) error {
 
 	// use "build" script unless explicitly defined in up.json
 	if c.Hooks.Build.IsEmpty() {
-		c.Hooks.Build = config.Hook{pkg.Scripts.Build}
+		c.Hooks.Build = Hook{pkg.Scripts.Build}
 	}
 
 	return nil
@@ -421,17 +397,17 @@ func python(c *Config) {
 
 	// Set PYTHONPATH env
 	if c.Environment == nil {
-		c.Environment = config.Environment{}
+		c.Environment = Environment{}
 	}
 	c.Environment["PYTHONPATH"] = ".pypath/"
 
 	// Copy libraries into .pypath/
 	if c.Hooks.Build.IsEmpty() {
-		c.Hooks.Build = config.Hook{`mkdir -p .pypath/ && pip install -r requirements.txt -t .pypath/`}
+		c.Hooks.Build = Hook{`mkdir -p .pypath/ && pip install -r requirements.txt -t .pypath/`}
 	}
 
 	// Clean .pypath/
 	if c.Hooks.Clean.IsEmpty() {
-		c.Hooks.Clean = config.Hook{`rm -r .pypath/`}
+		c.Hooks.Clean = Hook{`rm -r .pypath/`}
 	}
 }

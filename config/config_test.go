@@ -1,4 +1,4 @@
-package up
+package config
 
 import (
 	"io/ioutil"
