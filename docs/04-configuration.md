@@ -419,7 +419,7 @@ Note that more specific target paths take precedence over those which are less s
 
 ## Cross-Origin Resource Sharing
 
-CORS is a mechanism which allows requests originating from a different host to make requests to your API. Several options are available to restrict this access, however to enable CORS for everyone all you need is to add:
+CORS is a mechanism which allows requests originating from a different host to make requests to your API. Several options are available to restrict this access, if the defaults are appropriate simply enable it as shown below.
 
 ```json
 {
@@ -429,7 +429,7 @@ CORS is a mechanism which allows requests originating from a different host to m
 }
 ```
 
-Suppose you have `https://api.myapp.com`, you may want to customize `cors` to allow access only from `https://myapp.com`:
+Suppose you have `https://api.myapp.com`, you may want to customize `cors` to permit access only from `https://myapp.com` so that other sites cannot call your API directly.
 
 ```json
 {
@@ -441,12 +441,12 @@ Suppose you have `https://api.myapp.com`, you may want to customize `cors` to al
 }
 ```
 
-- `allowed_origins` – A list of origins a cross-domain request can be executed from. Use `*` to allow any origin, or a wildcard such as `http://*.domain.com`. Default is `["*"]`.
-- `allowed_methods` – A list of methods the client is allowed to use with cross-domain requests. Default value is simple methods (HEAD, GET, POST).
-- `allowed_headers` – A list of headers the client is allowed to use with cross-domain requests. If the special `*` value is present in the list, all headers will be allowed. Default is `[]`.
+- `allowed_origins` – A list of origins a cross-domain request can be executed from. Use `*` to allow any origin, or a wildcard such as `http://*.domain.com` (Default: `["*"]`)
+- `allowed_methods` – A list of methods the client is allowed to use with cross-domain requests. (Default: `["HEAD", "GET", "POST"]`)
+- `allowed_headers` – A list of headers the client is allowed to use with cross-domain requests. If the special `*` value is present in the list, all headers will be allowed. (Default: `[]`)
 - `exposed_headers` – A list of headers which are safe to expose to the API of a CORS response.
 - `max_age` – A number indicating how long (in seconds) the results of a preflight request can be cached.
-- `allow_credentials` – A boolean indicating whether the request can include user credentials such as cookies, HTTP authentication or client side SSL certificates. Defaults to true.
+- `allow_credentials` – A boolean indicating whether the request can include user credentials such as cookies, HTTP authentication or client side SSL certificates. (Default: `true`)
 
 ## Reverse Proxy
 
