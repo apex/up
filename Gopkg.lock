@@ -289,10 +289,10 @@
   version = "v1.0.2"
 
 [[projects]]
-  branch = "master"
   name = "github.com/tj/go-cli-analytics"
   packages = ["."]
-  revision = "d5b3ab7d8e88e2b8997b369f725a2cd425994c6d"
+  revision = "0d7b73cf79008de6b208d749cf9229e103d28cc6"
+  version = "v1.0.0"
 
 [[projects]]
   branch = "master"
@@ -363,6 +363,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "1746500ff4450f0cc15b8946f11fcd10e744641a55c830f5ce26359096243a26"
+  inputs-digest = "ee4de7c8d344bff47c99fcecbe13f16129f0c89026b934b16c4d2a803a0ac5f1"
   solver-name = "gps-cdcl"
   solver-version = 1
