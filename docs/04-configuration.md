@@ -436,7 +436,8 @@ Suppose you have `https://api.myapp.com`, you may want to customize `cors` to pe
   "cors": {
     "allowed_origins": ["https://myapp.com"],
     "allowed_methods": ["HEAD", "GET", "POST", "PUT", "PATCH", "DELETE"],
-    "allowed_headers": ["Content-Type", "Authorization"]
+    "allowed_headers": ["Content-Type", "Authorization"],
+    "allow_credentials": true
   }
 }
 ```
