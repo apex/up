@@ -9,12 +9,12 @@ import (
 	"github.com/tj/kingpin"
 	"github.com/tj/survey"
 
+	"github.com/apex/up"
 	"github.com/apex/up/internal/cli/root"
 	"github.com/apex/up/internal/colors"
 	"github.com/apex/up/internal/stats"
 	"github.com/apex/up/internal/util"
-	"github.com/apex/up/platform"
-	"github.com/apex/up/platform/lambda/cost"
+	"github.com/apex/up/platform/aws/cost"
 )
 
 // TODO: add ability to move up/down lines more like a form
@@ -100,7 +100,7 @@ func buy(cmd *kingpin.Cmd) {
 			Message: "Domain:",
 		}, &domain, survey.Required)
 
-		var contact platform.DomainContact
+		var contact up.DomainContact
 
 		if err := survey.Ask(questions, &contact); err != nil {
 			return errors.Wrap(err, "prompting")

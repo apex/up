@@ -11,7 +11,6 @@ import (
 
 	"github.com/apex/up/config"
 	"github.com/apex/up/internal/util"
-	"github.com/apex/up/platform"
 	"github.com/apex/up/platform/event"
 )
 
@@ -29,9 +28,9 @@ var MustParseConfigString = config.MustParseConfigString
 
 // Project manager.
 type Project struct {
-	config   *Config
-	platform platform.Interface
-	events   event.Events
+	Platform
+	config *Config
+	events event.Events
 }
 
 // New project.
@@ -43,8 +42,8 @@ func New(c *Config, events event.Events) *Project {
 }
 
 // WithPlatform to `platform`.
-func (p *Project) WithPlatform(platform platform.Interface) *Project {
-	p.platform = platform
+func (p *Project) WithPlatform(platform Platform) *Project {
+	p.Platform = platform
 	return p
 }
 
@@ -97,7 +96,7 @@ func (p *Project) Build() error {
 		return err
 	}
 
-	if err := p.platform.Build(); err != nil {
+	if err := p.Platform.Build(); err != nil {
 		return errors.Wrap(err, "building")
 	}
 
@@ -133,7 +132,7 @@ func (p *Project) deploy(stage string) error {
 		return err
 	}
 
-	if err := p.platform.Deploy(stage); err != nil {
+	if err := p.Platform.Deploy(stage); err != nil {
 		return errors.Wrap(err, "deploying")
 	}
 
@@ -144,24 +143,9 @@ func (p *Project) deploy(stage string) error {
 	return nil
 }
 
-// Logs for the project.
-func (p *Project) Logs(region, query string) platform.Logs {
-	return p.platform.Logs(region, query)
-}
-
-// Domains for the project.
-func (p *Project) Domains() platform.Domains {
-	return p.platform.Domains()
-}
-
-// URL returns the endpoint.
-func (p *Project) URL(region, stage string) (string, error) {
-	return p.platform.URL(region, stage)
-}
-
 // Zip returns the zip if supported by the platform.
 func (p *Project) Zip() (io.Reader, error) {
-	z, ok := p.platform.(platform.Zipper)
+	z, ok := p.Platform.(Zipper)
 	if !ok {
 		return nil, errors.Errorf("platform does not support zips")
 	}
@@ -171,7 +155,7 @@ func (p *Project) Zip() (io.Reader, error) {
 
 // Init initializes the runtime such as remote environment variables.
 func (p *Project) Init(stage string) error {
-	r, ok := p.platform.(platform.Runtime)
+	r, ok := p.Platform.(Runtime)
 	if !ok {
 		return nil
 	}
@@ -186,7 +170,7 @@ func (p *Project) CreateStack(region, version string) error {
 		"version": version,
 	})()
 
-	return p.platform.CreateStack(region, version)
+	return p.Platform.CreateStack(region, version)
 }
 
 // DeleteStack implementation.
@@ -195,7 +179,7 @@ func (p *Project) DeleteStack(region string, wait bool) error {
 		"region": region,
 	})()
 
-	return p.platform.DeleteStack(region, wait)
+	return p.Platform.DeleteStack(region, wait)
 }
 
 // ShowStack implementation.
@@ -204,7 +188,7 @@ func (p *Project) ShowStack(region string) error {
 		"region": region,
 	})()
 
-	return p.platform.ShowStack(region)
+	return p.Platform.ShowStack(region)
 }
 
 // ShowMetrics implementation.
@@ -215,7 +199,7 @@ func (p *Project) ShowMetrics(region, stage string, start time.Time) error {
 		"start":  start,
 	})()
 
-	return p.platform.ShowMetrics(region, stage, start)
+	return p.Platform.ShowMetrics(region, stage, start)
 }
 
 // PlanStack implementation.
@@ -224,7 +208,7 @@ func (p *Project) PlanStack(region string) error {
 		"region": region,
 	})()
 
-	return p.platform.PlanStack(region)
+	return p.Platform.PlanStack(region)
 }
 
 // ApplyStack implementation.
@@ -233,5 +217,5 @@ func (p *Project) ApplyStack(region string) error {
 		"region": region,
 	})()
 
-	return p.platform.ApplyStack(region)
+	return p.Platform.ApplyStack(region)
 }

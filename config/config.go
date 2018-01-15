@@ -13,7 +13,7 @@ import (
 	"github.com/apex/up/internal/redirect"
 	"github.com/apex/up/internal/util"
 	"github.com/apex/up/internal/validate"
-	"github.com/apex/up/platform/lambda/regions"
+	"github.com/apex/up/platform/aws/regions"
 	"github.com/aws/aws-sdk-go/aws/session"
 )
 

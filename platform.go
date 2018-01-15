@@ -1,14 +1,13 @@
-// Package platform provides the interfaces for platform integration.
-package platform
+package up
 
 import (
 	"io"
 	"time"
 )
 
-// TODO: these interfaces suck, don't mind them for now :D
+// TODO: finalize and finish documentation
 
-// Logs is the interface for viewing logs.
+// Logs is the interface for viewing platform logs.
 type Logs interface {
 	Follow()
 	Expand()
@@ -16,32 +15,8 @@ type Logs interface {
 	io.Reader
 }
 
-// Domain is a domain name and its availability.
-type Domain struct {
-	Name      string
-	Available bool
-	Expiry    time.Time
-	AutoRenew bool
-}
-
-// DomainContact is the domain name contact information
-// required for registration.
-type DomainContact struct {
-	Email            string
-	FirstName        string
-	LastName         string
-	CountryCode      string
-	City             string
-	Address          string
-	OrganizationName string
-	PhoneNumber      string
-	State            string
-	ZipCode          string
-}
-
 // Domains is the interface for purchasing and
-// managing domains names, for platforms which
-// support this feature.
+// managing domains names.
 type Domains interface {
 	Availability(domain string) (*Domain, error)
 	Suggestions(domain string) ([]*Domain, error)
@@ -49,8 +24,10 @@ type Domains interface {
 	List() ([]*Domain, error)
 }
 
-// Interface for platforms.
-type Interface interface {
+// Platform is the interface for platform integration,
+// defining the basic set of functionality required for
+// Up applications.
+type Platform interface {
 	// Build the project.
 	Build() error
 
@@ -71,7 +48,6 @@ type Interface interface {
 	// empty string.
 	URL(region, stage string) (string, error)
 
-	// TODO: finalize and document
 	CreateStack(region, version string) error
 	DeleteStack(region string, wait bool) error
 	ShowStack(region string) error
@@ -85,7 +61,6 @@ type Interface interface {
 // runtime operations such as initializing environment
 // variables from remote storage.
 type Runtime interface {
-	// Init the runtime.
 	Init(stage string) error
 }
 
@@ -93,4 +68,27 @@ type Runtime interface {
 // utilize zips for delivery of deployments.
 type Zipper interface {
 	Zip() io.Reader
+}
+
+// Domain is a domain name and its availability.
+type Domain struct {
+	Name      string
+	Available bool
+	Expiry    time.Time
+	AutoRenew bool
+}
+
+// DomainContact is the domain name contact
+// information required for registration.
+type DomainContact struct {
+	Email            string
+	FirstName        string
+	LastName         string
+	CountryCode      string
+	City             string
+	Address          string
+	OrganizationName string
+	PhoneNumber      string
+	State            string
+	ZipCode          string
 }

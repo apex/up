@@ -12,7 +12,7 @@ import (
 	"github.com/apex/up/handler"
 	"github.com/apex/up/internal/proxy"
 	"github.com/apex/up/internal/util"
-	"github.com/apex/up/platform/lambda/runtime"
+	"github.com/apex/up/platform/aws/runtime"
 )
 
 func main() {

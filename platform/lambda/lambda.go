@@ -32,9 +32,10 @@ import (
 	"github.com/apex/up/internal/shim"
 	"github.com/apex/up/internal/util"
 	"github.com/apex/up/internal/zip"
-	"github.com/apex/up/platform"
+	"github.com/apex/up/platform/aws/domains"
+	"github.com/apex/up/platform/aws/logs"
+	"github.com/apex/up/platform/aws/runtime"
 	"github.com/apex/up/platform/event"
-	"github.com/apex/up/platform/lambda/runtime"
 	"github.com/apex/up/platform/lambda/stack"
 )
 
@@ -193,13 +194,13 @@ func (p *Platform) Deploy(stage string) error {
 }
 
 // Logs implementation.
-func (p *Platform) Logs(region, query string) platform.Logs {
-	return NewLogs(p, region, query)
+func (p *Platform) Logs(region, query string) up.Logs {
+	return logs.New(p.config.Name, region, query)
 }
 
 // Domains implementation.
-func (p *Platform) Domains() platform.Domains {
-	return NewDomains()
+func (p *Platform) Domains() up.Domains {
+	return domains.New()
 }
 
 // URL returns the stage url.

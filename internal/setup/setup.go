@@ -16,7 +16,7 @@ import (
 
 	"github.com/apex/up/internal/util"
 	"github.com/apex/up/internal/validate"
-	"github.com/apex/up/platform/lambda/regions"
+	"github.com/apex/up/platform/aws/regions"
 )
 
 // ErrNoCredentials is the error returned when no AWS credential profiles are available.

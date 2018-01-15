@@ -14,8 +14,8 @@ import (
 
 	"github.com/apex/up/internal/colors"
 	"github.com/apex/up/internal/util"
+	"github.com/apex/up/platform/aws/cost"
 	"github.com/apex/up/platform/event"
-	"github.com/apex/up/platform/lambda/cost"
 	lambdautil "github.com/apex/up/platform/lambda/reporter"
 	"github.com/apex/up/platform/lambda/stack"
 )
