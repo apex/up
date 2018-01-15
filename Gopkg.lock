@@ -271,6 +271,12 @@
   revision = "748ebc778a698c0df0eb9855caf3ef677ed99471"
 
 [[projects]]
+  name = "github.com/tj/aws"
+  packages = ["logs"]
+  revision = "db8659267414a37f7d4d286ee1ad030a39134a3d"
+  version = "v0.0.1"
+
+[[projects]]
   name = "github.com/tj/backoff"
   packages = ["."]
   revision = "1560017ae58934ab41c8393558fd179d7305941f"
@@ -363,6 +369,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "ee4de7c8d344bff47c99fcecbe13f16129f0c89026b934b16c4d2a803a0ac5f1"
+  inputs-digest = "072085a096691031e6fb88549367ad06ac54c92d76d86a488eecada88e96795c"
   solver-name = "gps-cdcl"
   solver-version = 1

@@ -15,15 +15,14 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudwatchlogs"
+	"github.com/tj/aws/logs"
 	"github.com/tj/go/term"
 
 	"github.com/apex/up/internal/logs/parser"
 	"github.com/apex/up/internal/logs/text"
 	"github.com/apex/up/internal/util"
-	"github.com/apex/up/platform/aws/logs/logs"
 )
 
-// TODO: refactor ./logs hahah...
 // TODO: move formatting logic outside of platform, reader interface
 // TODO: optionally expand fields
 
