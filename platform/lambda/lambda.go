@@ -194,8 +194,9 @@ func (p *Platform) Deploy(stage string) error {
 }
 
 // Logs implementation.
-func (p *Platform) Logs(region, query string) up.Logs {
-	return logs.New(p.config.Name, region, query)
+func (p *Platform) Logs(c up.LogsConfig) up.Logs {
+	g := "/aws/lambda/" + p.config.Name
+	return logs.New(g, c)
 }
 
 // Domains implementation.

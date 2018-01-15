@@ -5,11 +5,14 @@ import (
 	"os"
 	"time"
 
+	"github.com/pkg/errors"
+	"github.com/tj/go/term"
+	"github.com/tj/kingpin"
+
+	"github.com/apex/up"
 	"github.com/apex/up/internal/cli/root"
 	"github.com/apex/up/internal/stats"
 	"github.com/apex/up/internal/util"
-	"github.com/pkg/errors"
-	"github.com/tj/kingpin"
 )
 
 func init() {
@@ -53,11 +56,11 @@ func init() {
 			}
 		}
 
-		q := *query
-
 		if *follow {
 			s = time.Duration(0)
 		}
+
+		q := *query
 
 		stats.Track("Logs", map[string]interface{}{
 			"query":        q != "",
@@ -67,18 +70,14 @@ func init() {
 			"expand":       *expand,
 		})
 
-		// TODO: region flag
-		region := c.Regions[0]
-		logs := p.Logs(region, q)
-		logs.Since(time.Now().Add(-s))
-
-		if *expand {
-			logs.Expand()
-		}
-
-		if *follow {
-			logs.Follow()
-		}
+		logs := p.Logs(up.LogsConfig{
+			Region:     c.Regions[0],
+			Since:      time.Now().Add(-s),
+			Follow:     *follow,
+			Expand:     *expand,
+			Query:      q,
+			OutputJSON: !term.IsTerminal(os.Stdout.Fd()),
+		})
 
 		if _, err := io.Copy(os.Stdout, logs); err != nil {
 			return errors.Wrap(err, "writing logs")

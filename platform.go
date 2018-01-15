@@ -7,11 +7,30 @@ import (
 
 // TODO: finalize and finish documentation
 
+// LogsConfig is configuration for viewing logs.
+type LogsConfig struct {
+	// Region is the target region.
+	Region string
+
+	// Query is the filter pattern.
+	Query string
+
+	// Since is used as the starting point when filtering
+	// historical logs, no logs before this point are returned.
+	Since time.Time
+
+	// Follow is used to stream new logs.
+	Follow bool
+
+	// Expand is used to expand logs to a verbose format.
+	Expand bool
+
+	// OutputJSON is used to output raw json.
+	OutputJSON bool
+}
+
 // Logs is the interface for viewing platform logs.
 type Logs interface {
-	Follow()
-	Expand()
-	Since(time.Time)
 	io.Reader
 }
 
@@ -37,7 +56,7 @@ type Platform interface {
 
 	// Logs returns an interface for working
 	// with logging data.
-	Logs(region, query string) Logs
+	Logs(LogsConfig) Logs
 
 	// Domains returns an interface for
 	// managing domain names.

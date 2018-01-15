@@ -16,44 +16,37 @@ import (
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/cloudwatchlogs"
 	"github.com/tj/aws/logs"
-	"github.com/tj/go/term"
 
 	"github.com/apex/up/internal/logs/parser"
 	"github.com/apex/up/internal/logs/text"
 	"github.com/apex/up/internal/util"
 )
 
-// TODO: move formatting logic outside of platform, reader interface
-// TODO: optionally expand fields
-
 // Logs implementation.
 type Logs struct {
-	name   string
-	region string
-	query  string
-	follow bool
-	expand bool
-	since  time.Time
-	w      io.WriteCloser
+	up.LogsConfig
+	group string
+	query string
+	w     io.WriteCloser
 	io.Reader
 }
 
-// New returns a new logs tailer.
-func New(name, region, query string) up.Logs {
+// New log tailer.
+func New(group string, c up.LogsConfig) up.Logs {
 	r, w := io.Pipe()
 
-	query, err := parseQuery(query)
+	query, err := parseQuery(c.Query)
 	if err != nil {
 		w.CloseWithError(err)
 	}
 	log.Debugf("query %q", query)
 
 	l := &Logs{
-		name:   name,
-		region: region,
-		query:  query,
-		Reader: r,
-		w:      w,
+		LogsConfig: c,
+		query:      query,
+		group:      group,
+		Reader:     r,
+		w:          w,
 	}
 
 	go l.start()
@@ -61,50 +54,23 @@ func New(name, region, query string) up.Logs {
 	return l
 }
 
-// Since implementation.
-func (l *Logs) Since(t time.Time) {
-	l.since = t
-}
-
-// Follow implementation.
-func (l *Logs) Follow() {
-	log.Debug("follow")
-	l.follow = true
-}
-
-// Expand implementation.
-func (l *Logs) Expand() {
-	log.Debug("expand")
-	l.expand = true
-}
-
 // start fetching logs.
 func (l *Logs) start() {
-	// TODO: flag to override and allow querying other groups
-	// TODO: apply backoff instead of PollInterval
-	group := "/aws/lambda/" + l.name
-
-	config := logs.Config{
-		Service:       cloudwatchlogs.New(session.New(aws.NewConfig().WithRegion(l.region))),
-		StartTime:     l.since,
+	tailer := logs.New(logs.Config{
+		Service:       cloudwatchlogs.New(session.New(aws.NewConfig().WithRegion(l.Region))),
+		StartTime:     l.Since,
 		PollInterval:  2 * time.Second,
-		Follow:        l.follow,
+		Follow:        l.Follow,
 		FilterPattern: l.query,
-	}
-
-	tailer := &logs.Logs{
-		Config:     config,
-		GroupNames: []string{group},
-	}
-
-	// TODO: delegate isatty stuff...
+		GroupNames:    []string{l.group},
+	})
 
 	var handler log.Handler
 
-	if term.IsTerminal(os.Stdout.Fd()) {
-		handler = text.New(os.Stdout).WithExpandedFields(l.expand)
-	} else {
+	if l.OutputJSON {
 		handler = jsonlog.New(os.Stdout)
+	} else {
+		handler = text.New(os.Stdout).WithExpandedFields(l.Expand)
 	}
 
 	// TODO: transform to reader of nl-delimited json, move to apex/log?
