@@ -7,11 +7,12 @@ import (
 	"strconv"
 	"strings"
 
+	"github.com/aws/aws-lambda-go/events"
 	"github.com/pkg/errors"
 )
 
 // NewRequest returns a new http.Request from the given Lambda event.
-func NewRequest(e *Input) (*http.Request, error) {
+func NewRequest(e events.APIGatewayProxyRequest) (*http.Request, error) {
 	// path
 	u, err := url.Parse(e.Path)
 	if err != nil {
