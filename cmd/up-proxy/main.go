@@ -4,7 +4,6 @@ import (
 	"os"
 	"time"
 
-	"github.com/apex/go-apex"
 	"github.com/apex/log"
 	"github.com/apex/log/handlers/json"
 
@@ -48,5 +47,5 @@ func main() {
 	}
 
 	// serve
-	apex.Handle(proxy.NewHandler(h))
+	proxy.Start(h)
 }
