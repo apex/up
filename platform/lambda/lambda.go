@@ -345,8 +345,9 @@ func (p *Platform) createCerts() error {
 			continue
 		}
 
+		domainName := util.CertDomainName(s.Domain)
 		option := acm.DomainValidationOption{
-			DomainName:       &s.Domain,
+			DomainName:       &domainName,
 			ValidationDomain: aws.String(util.Domain(s.Domain)),
 		}
 
@@ -356,15 +357,15 @@ func (p *Platform) createCerts() error {
 
 		// request the cert
 		res, err := a.RequestCertificate(&acm.RequestCertificateInput{
-			DomainName:              &s.Domain,
+			DomainName:              &domainName,
 			DomainValidationOptions: options,
 		})
 
 		if err != nil {
-			return errors.Wrapf(err, "requesting cert for %s", s.Domain)
+			return errors.Wrapf(err, "requesting cert for %s", domainName)
 		}
 
-		domains = append(domains, s.Domain)
+		domains = append(domains, domainName)
 		s.Cert = *res.CertificateArn
 	}
 
@@ -788,9 +789,17 @@ func toEnv(env config.Environment, stage string) *lambda.Environment {
 }
 
 // getCert returns the ARN if the cert is present.
+// Prefer standard over wildcard certs.
 func getCert(certs []*acm.CertificateSummary, domain string) string {
+	// Standard certs
 	for _, c := range certs {
 		if *c.DomainName == domain {
+			return *c.CertificateArn
+		}
+	}
+	// Wildcard certs
+	for _, c := range certs {
+		if *c.DomainName == util.CertDomainName(domain) {
 			return *c.CertificateArn
 		}
 	}

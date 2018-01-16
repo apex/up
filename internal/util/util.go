@@ -363,6 +363,23 @@ func Domain(s string) string {
 	return d
 }
 
+// CertDomainName returns the certificate domain name. For example
+// the string "example.com" becomes "*.example.com",
+// while "sub.api.example.co.uk" becomes "*.api.example.co.uk".
+func CertDomainName(s string) string {
+	d := Domain(s)
+	if d == s {
+		// Effective TLD plus one
+		return "*." + s
+	}
+	// Effective TLD plus two (or more)
+	idx := strings.Index(s, ".")
+	if idx == -1 {
+		panic(errors.Errorf("cert domain name: %s", s))
+	}
+	return "*" + s[idx:]
+}
+
 // ParseSections returns INI style sections from r.
 func ParseSections(r io.Reader) (sections []string, err error) {
 	s := bufio.NewScanner(r)
