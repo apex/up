@@ -28,13 +28,13 @@ import (
 
 	"github.com/apex/up"
 	"github.com/apex/up/config"
-	"github.com/apex/up/internal/proxy/bin"
 	"github.com/apex/up/internal/util"
 	"github.com/apex/up/internal/zip"
 	"github.com/apex/up/platform/aws/domains"
 	"github.com/apex/up/platform/aws/logs"
 	"github.com/apex/up/platform/aws/runtime"
 	"github.com/apex/up/platform/event"
+	"github.com/apex/up/platform/lambda/proxy/bin"
 	"github.com/apex/up/platform/lambda/stack"
 )
 
