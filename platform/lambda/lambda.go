@@ -29,7 +29,6 @@ import (
 	"github.com/apex/up"
 	"github.com/apex/up/config"
 	"github.com/apex/up/internal/proxy/bin"
-	"github.com/apex/up/internal/shim"
 	"github.com/apex/up/internal/util"
 	"github.com/apex/up/internal/zip"
 	"github.com/apex/up/platform/aws/domains"
@@ -748,14 +747,6 @@ func (p *Platform) injectProxy() error {
 		return errors.Wrap(err, "writing up-proxy")
 	}
 
-	if err := ioutil.WriteFile("byline.js", shim.MustAsset("byline.js"), 0755); err != nil {
-		return errors.Wrap(err, "writing byline.js")
-	}
-
-	if err := ioutil.WriteFile("_proxy.js", shim.MustAsset("index.js"), 0755); err != nil {
-		return errors.Wrap(err, "writing _proxy.js")
-	}
-
 	return nil
 }
 
@@ -763,8 +754,6 @@ func (p *Platform) injectProxy() error {
 func (p *Platform) removeProxy() error {
 	log.Debugf("removing proxy")
 	os.Remove("main")
-	os.Remove("_proxy.js")
-	os.Remove("byline.js")
 	return nil
 }
 
