@@ -5,12 +5,14 @@ import (
 	"encoding/base64"
 	"net/http"
 	"strings"
+
+	"github.com/aws/aws-lambda-go/events"
 )
 
 // ResponseWriter implements the http.ResponseWriter interface
 // in order to support the API Gateway Lambda HTTP "protocol".
 type ResponseWriter struct {
-	out         Output
+	out         events.APIGatewayProxyResponse
 	buf         bytes.Buffer
 	header      http.Header
 	wroteHeader bool
@@ -66,7 +68,7 @@ func (w *ResponseWriter) WriteHeader(status int) {
 }
 
 // End the request.
-func (w *ResponseWriter) End() Output {
+func (w *ResponseWriter) End() events.APIGatewayProxyResponse {
 	w.out.IsBase64Encoded = isBinary(w.header)
 
 	if w.out.IsBase64Encoded {

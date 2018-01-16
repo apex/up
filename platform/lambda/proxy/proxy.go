@@ -11,19 +11,13 @@ import (
 // Start the proxy.
 func Start(h http.Handler) {
 	lambda.Start(func(r events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
-		req, err := NewRequest(e)
+		req, err := NewRequest(r)
 		if err != nil {
-			return nil, errors.Wrap(err, "creating proxy request")
+			return events.APIGatewayProxyResponse{}, errors.Wrap(err, "creating proxy request")
 		}
 
 		res := NewResponse()
-
 		h.ServeHTTP(res, req)
-
-		// return events.APIGatewayProxyResponse{
-		// 	Body:       "Hello from Native Go",
-		// 	StatusCode: 200,
-		// }, nil
 		return res.End(), nil
 	})
 }
