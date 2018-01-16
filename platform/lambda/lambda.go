@@ -490,13 +490,6 @@ retry:
 
 // updateFunction updates the function.
 func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up *s3manager.Uploader, region, stage string) (version string, err error) {
-	var publish bool
-
-	if stage != "development" {
-		publish = true
-		log.Debug("publishing new version")
-	}
-
 	b := aws.String(p.getS3BucketName(region))
 	k := aws.String(p.getS3Key(stage))
 
@@ -537,7 +530,7 @@ retry:
 	log.Debug("updating function code")
 	res, err := c.UpdateFunctionCode(&lambda.UpdateFunctionCodeInput{
 		FunctionName: &p.config.Name,
-		Publish:      &publish,
+		Publish:      aws.Bool(true),
 		S3Bucket:     b,
 		S3Key:        k,
 	})
@@ -546,22 +539,18 @@ retry:
 		return "", errors.Wrap(err, "updating function code")
 	}
 
-	if publish {
-		log.Debugf("alias %s to %s", stage, *res.Version)
-		_, err := c.UpdateAlias(&lambda.UpdateAliasInput{
-			FunctionName:    &p.config.Name,
-			FunctionVersion: res.Version,
-			Name:            &stage,
-		})
+	log.Debugf("alias %s to %s", stage, *res.Version)
+	_, err = c.UpdateAlias(&lambda.UpdateAliasInput{
+		FunctionName:    &p.config.Name,
+		FunctionVersion: res.Version,
+		Name:            &stage,
+	})
 
-		if err != nil {
-			return "", errors.Wrap(err, "creating function alias")
-		}
-
-		return *res.Version, nil
+	if err != nil {
+		return "", errors.Wrap(err, "creating function alias")
 	}
 
-	return "", nil
+	return *res.Version, nil
 }
 
 // deleteFunction deletes the lambda function.

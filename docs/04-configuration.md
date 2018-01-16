@@ -597,11 +597,9 @@ Plan the changes via `up stack plan` and `up stack apply` to perform the changes
 
 Custom stages may be supported in the future, for now there are three:
 
-- `development` – The latest deployment
-- `staging` – The latest deployment specific to "staging"
-- `production` – The latest deployment specific to "production"
-
-If you're familiar with AWS Lambda, "development" is the $LATEST version, while "staging" and "production" are aliases.
+- `development`
+- `staging`
+- `production`
 
 You may [purchase domains](#guides.development_to_production_workflow.purchasing_a_domain) from the command-line, or map custom domains from other registrars. Up uses Route53 to purchase domains using your AWS account credit card. See `up help domains`.
 

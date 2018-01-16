@@ -221,7 +221,7 @@ $ up -e 'path = "/static/*"'
        method: GET
          path: /static/3.jpg
         stage: development
-      version: $LATEST
+      version: 5
 
 1:36:34pm INFO response
      duration: 1ms
@@ -232,7 +232,7 @@ $ up -e 'path = "/static/*"'
          size: 0 B
         stage: development
        status: 304
-      version: $LATEST
+      version: 5
 
 1:36:34pm INFO request
            id: 8ff4bd57-c33a-11e7-bf4b-4f0d97c427c5
@@ -240,7 +240,7 @@ $ up -e 'path = "/static/*"'
        method: GET
          path: /static/1.png
         stage: development
-      version: $LATEST
+      version: 5
 ```
 
 ### JSON Output

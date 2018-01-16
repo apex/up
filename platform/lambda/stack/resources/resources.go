@@ -216,7 +216,7 @@ func api(c *Config, m Map) {
 			"Name":            "development",
 			"Description":     util.ManagedByUp("Development environment"),
 			"FunctionName":    ref("FunctionName"),
-			"FunctionVersion": "$LATEST",
+			"FunctionVersion": ref("FunctionVersionDevelopment"),
 		},
 	}
 
@@ -398,6 +398,10 @@ func parameters(c *Config) Map {
 		},
 		"FunctionName": Map{
 			"Description": "Name of application function",
+			"Type":        "String",
+		},
+		"FunctionVersionDevelopment": Map{
+			"Description": "Version of development deployment",
 			"Type":        "String",
 		},
 		"FunctionVersionStaging": Map{

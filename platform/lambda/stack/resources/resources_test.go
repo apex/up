@@ -340,7 +340,9 @@ func Example_apiFunctionAliasDevelopment() {
 	//     "FunctionName": {
 	//       "Ref": "FunctionName"
 	//     },
-	//     "FunctionVersion": "$LATEST",
+	//     "FunctionVersion": {
+	//       "Ref": "FunctionVersionDevelopment"
+	//     },
 	//     "Name": "development"
 	//   },
 	//   "Type": "AWS::Lambda::Alias"
