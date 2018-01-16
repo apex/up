@@ -9,9 +9,9 @@ import (
 
 	"github.com/apex/up"
 	"github.com/apex/up/handler"
-	"github.com/apex/up/internal/proxy"
 	"github.com/apex/up/internal/util"
 	"github.com/apex/up/platform/aws/runtime"
+	"github.com/apex/up/platform/lambda/proxy"
 )
 
 func main() {
