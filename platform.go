@@ -62,8 +62,10 @@ type Secrets interface {
 	Load() ([]*Secret, error)
 }
 
-// Interface for platforms.
-type Interface interface {
+// Platform is the interface for platform integration,
+// defining the basic set of functionality required for
+// Up applications.
+type Platform interface {
 	// Build the project.
 	Build() error
 
@@ -86,7 +88,7 @@ type Interface interface {
 	// managing secret variables.
 	Secrets(stage string) Secrets
 
-	// URL returns the endpoitn for the given
+	// URL returns the endpoint for the given
 	// region and stage combination, or an
 	// empty string.
 	URL(region, stage string) (string, error)

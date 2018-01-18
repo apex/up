@@ -28,7 +28,6 @@ type validator interface {
 
 // Config for the project.
 type Config struct {
-<<<<<<< HEAD:config/config.go
 	Name        string         `json:"name"`
 	Description string         `json:"description"`
 	Type        string         `json:"type"`
@@ -47,64 +46,7 @@ type Config struct {
 	Logs        Logs           `json:"logs"`
 	Stages      Stages         `json:"stages"`
 	DNS         DNS            `json:"dns"`
-=======
-	// Name of the project.
-	Name string `json:"name"`
-
-	// Description of the project.
-	Description string `json:"description"`
-
-	// Type of project.
-	Type string `json:"type"`
-
-	// Headers injection rules.
-	Headers header.Rules `json:"headers"`
-
-	// Redirects redirection rules.
-	Redirects redirect.Rules `json:"redirects"`
-
-	// Hooks defined for the project.
-	Hooks config.Hooks `json:"hooks"`
-
-	// Environment variables.
-	Environment config.Environment `json:"environment"`
-
-	// Regions is a list of regions to deploy to.
-	Regions []string `json:"regions"`
-
-	// Profile is the AWS profile name to reference for credentials.
-	Profile string `json:"profile"`
-
-	// Inject rules.
-	Inject inject.Rules `json:"inject"`
-
-	// Lambda provider configuration.
-	Lambda config.Lambda `json:"lambda"`
-
-	// CORS config.
-	CORS *config.CORS `json:"cors"`
-
-	// ErrorPages config.
-	ErrorPages config.ErrorPages `json:"error_pages"`
-
-	// Proxy config.
-	Proxy config.Relay `json:"proxy"`
-
-	// Static config.
-	Static config.Static `json:"static"`
-
-	// Logs config.
-	Logs config.Logs `json:"logs"`
-
-	// Stages config.
-	Stages config.Stages `json:"stages"`
-
-	// DNS config.
-	DNS config.DNS `json:"dns"`
-
-	// Alerting config.
-	config.Alerting
->>>>>>> add alerting support:config.go
+	Alerting
 }
 
 // Validate implementation.

@@ -8,9 +8,9 @@ import (
 	"github.com/aws/aws-sdk-go/service/ssm"
 	"github.com/pkg/errors"
 
+	"github.com/apex/up"
 	"github.com/apex/up/internal/secret"
 	"github.com/apex/up/internal/util"
-	"github.com/apex/up/platform"
 )
 
 // TODO: secret pagination
@@ -32,7 +32,7 @@ func NewSecrets(name, stage, region string) *Secrets {
 }
 
 // List implementation.
-func (s *Secrets) List() (v []*platform.Secret, err error) {
+func (s *Secrets) List() (v []*up.Secret, err error) {
 	res, err := s.client.DescribeParameters(&ssm.DescribeParametersInput{
 		MaxResults: aws.Int64(50),
 		Filters: []*ssm.ParametersFilter{
@@ -63,7 +63,7 @@ func (s *Secrets) List() (v []*platform.Secret, err error) {
 		}
 
 		app, stage, name := secret.Parse(*p.Name)
-		v = append(v, &platform.Secret{
+		v = append(v, &up.Secret{
 			App:              app,
 			Name:             name,
 			Stage:            stage,
@@ -78,7 +78,7 @@ func (s *Secrets) List() (v []*platform.Secret, err error) {
 }
 
 // Load implementation.
-func (s *Secrets) Load() (v []*platform.Secret, err error) {
+func (s *Secrets) Load() (v []*up.Secret, err error) {
 	var token *string
 
 	for {
@@ -96,7 +96,7 @@ func (s *Secrets) Load() (v []*platform.Secret, err error) {
 
 		for _, p := range res.Parameters {
 			app, stage, name := secret.Parse(*p.Name)
-			v = append(v, &platform.Secret{
+			v = append(v, &up.Secret{
 				App:   app,
 				Name:  name,
 				Stage: stage,

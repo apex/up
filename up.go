@@ -128,7 +128,7 @@ func (p *Project) Deploy(stage string) error {
 
 // Rollback the project.
 func (p *Project) Rollback(region, stage, version string) error {
-	return p.platform.Rollback(region, stage, version)
+	return p.Platform.Rollback(region, stage, version)
 }
 
 // deploy stage.
@@ -146,26 +146,6 @@ func (p *Project) deploy(stage string) error {
 	}
 
 	return nil
-}
-
-// Logs for the project.
-func (p *Project) Logs(region, query string) platform.Logs {
-	return p.platform.Logs(region, query)
-}
-
-// Domains for the project.
-func (p *Project) Domains() platform.Domains {
-	return p.platform.Domains()
-}
-
-// Secrets for the project.
-func (p *Project) Secrets(stage string) platform.Secrets {
-	return p.platform.Secrets(stage)
-}
-
-// URL returns the endpoint.
-func (p *Project) URL(region, stage string) (string, error) {
-	return p.platform.URL(region, stage)
 }
 
 // Zip returns the zip if supported by the platform.

@@ -3,7 +3,7 @@ package secret
 import (
 	"testing"
 
-	"github.com/apex/up/platform"
+	"github.com/apex/up"
 	"github.com/tj/assert"
 )
 
@@ -26,7 +26,7 @@ func TestParse(t *testing.T) {
 }
 
 func TestEnv(t *testing.T) {
-	s := []*platform.Secret{
+	s := []*up.Secret{
 		{
 			Name:  "foo",
 			Value: "bar",

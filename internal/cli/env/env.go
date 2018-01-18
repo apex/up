@@ -8,6 +8,7 @@ import (
 	"github.com/pkg/errors"
 	"github.com/tj/kingpin"
 
+	"github.com/apex/up"
 	"github.com/apex/up/internal/cli/root"
 	"github.com/apex/up/internal/colors"
 	"github.com/apex/up/internal/secret"
@@ -15,7 +16,6 @@ import (
 	"github.com/apex/up/internal/table"
 	"github.com/apex/up/internal/util"
 	"github.com/apex/up/internal/validate"
-	"github.com/apex/up/platform"
 )
 
 func init() {
@@ -82,7 +82,7 @@ func list(cmd *kingpin.Cmd) {
 }
 
 // rows helper.
-func rows(t *table.Table, secrets []*platform.Secret) {
+func rows(t *table.Table, secrets []*up.Secret) {
 	for _, s := range secrets {
 		mod := fmt.Sprintf("Modified %s", humanize.Time(s.LastModified))
 		if u := s.LastModifiedUser; u != "" {

@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/apex/up/platform"
+	"github.com/apex/up"
 )
 
 // delimiter.
@@ -32,8 +32,8 @@ func Parse(s string) (app, stage, name string) {
 }
 
 // GroupByStage returns secrets mapped by stage.
-func GroupByStage(secrets []*platform.Secret) map[string][]*platform.Secret {
-	m := make(map[string][]*platform.Secret)
+func GroupByStage(secrets []*up.Secret) map[string][]*up.Secret {
+	m := make(map[string][]*up.Secret)
 
 	for _, s := range secrets {
 		m[s.Stage] = append(m[s.Stage], s)
@@ -43,7 +43,7 @@ func GroupByStage(secrets []*platform.Secret) map[string][]*platform.Secret {
 }
 
 // FilterByApp returns secrets filtered by name.
-func FilterByApp(secrets []*platform.Secret, name string) (v []*platform.Secret) {
+func FilterByApp(secrets []*up.Secret, name string) (v []*up.Secret) {
 	for _, s := range secrets {
 		if s.App == name {
 			v = append(v, s)
@@ -53,7 +53,7 @@ func FilterByApp(secrets []*platform.Secret, name string) (v []*platform.Secret)
 }
 
 // Env returns a slice of env variables.
-func Env(secrets []*platform.Secret) (env []string) {
+func Env(secrets []*up.Secret) (env []string) {
 	for _, s := range secrets {
 		env = append(env, fmt.Sprintf("%s=%s", s.Name, s.Value))
 	}

@@ -236,7 +236,7 @@ func (p *Platform) Domains() up.Domains {
 }
 
 // Secrets implementation.
-func (p *Platform) Secrets(stage string) platform.Secrets {
+func (p *Platform) Secrets(stage string) up.Secrets {
 	// TODO: all regions
 	return runtime.NewSecrets(p.config.Name, stage, p.config.Regions[0])
 }
