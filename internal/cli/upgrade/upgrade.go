@@ -59,7 +59,7 @@ func init() {
 			p.Store = &apex.Store{
 				URL:       releasesAPI,
 				Product:   "up",
-				Version:   version,
+				Version:   normalizeVersion(version),
 				Plan:      "pro",
 				AccessKey: t.Token,
 			}
@@ -153,6 +153,11 @@ func getLatest(s update.Store) (*update.Release, error) {
 	}
 
 	return releases[0], nil
+}
+
+// normalizeVersion returns the version without "-pro".
+func normalizeVersion(s string) string {
+	return strings.Replace(s, "-pro", "", -1)
 }
 
 // versionName returns the humanized version name.
