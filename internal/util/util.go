@@ -351,9 +351,7 @@ func Md5(s string) string {
 	return hex.EncodeToString(h.Sum(nil))
 }
 
-// Domain returns the effective domain. For example
-// the string "api.example.com" becomes "example.com",
-// while "api.example.co.uk" becomes "example.co.uk".
+// Domain returns the effective domain (TLD plus one).
 func Domain(s string) string {
 	d, err := publicsuffix.EffectiveTLDPlusOne(s)
 	if err != nil {
@@ -361,6 +359,41 @@ func Domain(s string) string {
 	}
 
 	return d
+}
+
+// CertDomainNames returns the certificate domain name
+// and alternative names for a requested domain.
+func CertDomainNames(s string) []string {
+	// effective domain
+	if Domain(s) == s {
+		return []string{s, "*." + s}
+	}
+
+	// subdomain
+	return []string{RemoveSubdomains(s, 1), "*." + RemoveSubdomains(s, 1)}
+}
+
+// IsWildcardDomain returns true if the domain is a wildcard.
+func IsWildcardDomain(s string) bool {
+	return strings.HasPrefix(s, "*.")
+}
+
+// WildcardMatches returns true if wildcard is a wildcard domain
+// and it satisfies the given domain.
+func WildcardMatches(wildcard, domain string) bool {
+	if !IsWildcardDomain(wildcard) {
+		return false
+	}
+
+	w := RemoveSubdomains(wildcard, 1)
+	d := RemoveSubdomains(domain, 1)
+	return w == d
+}
+
+// RemoveSubdomains returns the domain without the n left-most subdomain(s).
+func RemoveSubdomains(s string, n int) string {
+	domains := strings.Split(s, ".")
+	return strings.Join(domains[n:], ".")
 }
 
 // ParseSections returns INI style sections from r.
@@ -376,5 +409,18 @@ func ParseSections(r io.Reader) (sections []string, err error) {
 
 	err = s.Err()
 
+	return
+}
+
+// UniqueStrings returns a string slice of unique values.
+func UniqueStrings(s []string) (v []string) {
+	m := make(map[string]struct{})
+	for _, val := range s {
+		_, ok := m[val]
+		if !ok {
+			v = append(v, val)
+			m[val] = struct{}{}
+		}
+	}
 	return
 }

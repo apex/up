@@ -8,6 +8,7 @@ import (
 	"io/ioutil"
 	"os"
 	"strings"
+	"sync"
 	"time"
 
 	"github.com/apex/log"
@@ -318,17 +319,14 @@ func (p *Platform) getHostedZone() (zones []*route53.HostedZone, err error) {
 func (p *Platform) createCerts() error {
 	s := session.New(aws.NewConfig().WithRegion("us-east-1"))
 	a := acm.New(s)
+	var domains []string
 
 	// existing certs
-	res, err := a.ListCertificates(&acm.ListCertificatesInput{
-		MaxItems: aws.Int64(1000),
-	})
-
+	log.Debug("fetching existing certs")
+	certs, err := getCerts(a)
 	if err != nil {
-		return errors.Wrap(err, "listing")
+		return errors.Wrap(err, "fetching certs")
 	}
-
-	var domains []string
 
 	// request certs
 	for _, s := range p.config.Stages.List() {
@@ -336,9 +334,11 @@ func (p *Platform) createCerts() error {
 			continue
 		}
 
+		certDomains := util.CertDomainNames(s.Domain)
+
 		// see if the cert exists
 		log.Debugf("looking up cert for %s", s.Domain)
-		arn := getCert(res.CertificateSummaryList, s.Domain)
+		arn := getCert(certs, s.Domain)
 		if arn != "" {
 			log.Debugf("found cert for %s: %s", s.Domain, arn)
 			s.Cert = arn
@@ -346,7 +346,7 @@ func (p *Platform) createCerts() error {
 		}
 
 		option := acm.DomainValidationOption{
-			DomainName:       &s.Domain,
+			DomainName:       aws.String(certDomains[0]),
 			ValidationDomain: aws.String(util.Domain(s.Domain)),
 		}
 
@@ -356,15 +356,16 @@ func (p *Platform) createCerts() error {
 
 		// request the cert
 		res, err := a.RequestCertificate(&acm.RequestCertificateInput{
-			DomainName:              &s.Domain,
+			DomainName:              aws.String(certDomains[0]),
 			DomainValidationOptions: options,
+			SubjectAlternativeNames: aws.StringSlice(certDomains[1:]),
 		})
 
 		if err != nil {
-			return errors.Wrapf(err, "requesting cert for %s", s.Domain)
+			return errors.Wrapf(err, "requesting cert for %v", certDomains)
 		}
 
-		domains = append(domains, s.Domain)
+		domains = append(domains, certDomains[0])
 		s.Cert = *res.CertificateArn
 	}
 
@@ -379,7 +380,7 @@ func (p *Platform) createCerts() error {
 
 	// wait for approval
 	for range time.Tick(4 * time.Second) {
-		res, err = a.ListCertificates(&acm.ListCertificatesInput{
+		res, err := a.ListCertificates(&acm.ListCertificatesInput{
 			MaxItems:            aws.Int64(1000),
 			CertificateStatuses: aws.StringSlice([]string{acm.CertificateStatusPendingValidation}),
 		})
@@ -787,12 +788,72 @@ func toEnv(env config.Environment, stage string) *lambda.Environment {
 	}
 }
 
-// getCert returns the ARN if the cert is present.
-func getCert(certs []*acm.CertificateSummary, domain string) string {
+// getCerts returns the certificates available.
+func getCerts(a *acm.ACM) (certs []*acm.CertificateDetail, err error) {
+	var g errgroup.Group
+	var mu sync.Mutex
+
+	res, err := a.ListCertificates(&acm.ListCertificatesInput{
+		MaxItems: aws.Int64(1000),
+	})
+
+	if err != nil {
+		return nil, errors.Wrap(err, "listing")
+	}
+
+	for _, c := range res.CertificateSummaryList {
+		c := c
+		g.Go(func() error {
+			res, err := a.DescribeCertificate(&acm.DescribeCertificateInput{
+				CertificateArn: c.CertificateArn,
+			})
+
+			if err != nil {
+				return errors.Wrap(err, "describing")
+			}
+
+			mu.Lock()
+			certs = append(certs, res.Certificate)
+			mu.Unlock()
+			return nil
+		})
+	}
+
+	err = g.Wait()
+	return
+}
+
+// getCert returns the ARN of a certificate with can satisfy domain,
+// favoring more specific certificates, then falling back on wildcards.
+func getCert(certs []*acm.CertificateDetail, domain string) string {
+	// exact domain
 	for _, c := range certs {
 		if *c.DomainName == domain {
 			return *c.CertificateArn
 		}
 	}
+
+	// exact alt
+	for _, c := range certs {
+		for _, a := range c.SubjectAlternativeNames {
+			if *a == domain {
+				return *c.CertificateArn
+			}
+		}
+	}
+
+	// wildcards
+	for _, c := range certs {
+		if util.WildcardMatches(*c.DomainName, domain) {
+			return *c.CertificateArn
+		}
+
+		for _, a := range c.SubjectAlternativeNames {
+			if util.WildcardMatches(*a, domain) {
+				return *c.CertificateArn
+			}
+		}
+	}
+
 	return ""
 }

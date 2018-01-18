@@ -85,6 +85,19 @@ func TestDomain(t *testing.T) {
 	assert.Equal(t, "example.co.uk", Domain("v1.api.example.co.uk"))
 }
 
+func TestCertDomainNames(t *testing.T) {
+	assert.Equal(t, []string{"example.com", "*.example.com"}, CertDomainNames("example.com"))
+	assert.Equal(t, []string{"example.com", "*.example.com"}, CertDomainNames("api.example.com"))
+	assert.Equal(t, []string{"api.example.com", "*.api.example.com"}, CertDomainNames("v1.api.example.com"))
+}
+
+func TestWildcardMatches(t *testing.T) {
+	assert.True(t, WildcardMatches("*.api.example.com", "v1.api.example.com"))
+	assert.True(t, WildcardMatches("*.example.com", "api.example.com"))
+	assert.False(t, WildcardMatches("example.com", "api.example.com"))
+	assert.False(t, WildcardMatches("*.api.example.com", "api.example.com"))
+}
+
 func TestParseSections(t *testing.T) {
 	r := strings.NewReader(`[personal]
 aws_access_key_id = personal_key
