@@ -16,13 +16,14 @@ import (
 )
 
 func main() {
+	start := time.Now()
 	stage := os.Getenv("UP_STAGE")
 
+	// setup logging
+	log.SetHandler(json.Default)
 	if s := os.Getenv("LOG_LEVEL"); s != "" {
 		log.SetLevelFromString(s)
 	}
-
-	log.SetHandler(json.Default)
 	log.Info("initializing")
 
 	// read config
@@ -31,22 +32,32 @@ func main() {
 		log.Fatalf("error reading config: %s", err)
 	}
 
+	ctx := log.WithFields(log.Fields{
+		"name": c.Name,
+		"type": c.Type,
+	})
+
 	// init project
 	p := runtime.New(c)
 
 	// init runtime
-	start := time.Now()
 	if err := p.Init(stage); err != nil {
-		log.Fatalf("error initializing: %s", err)
+		ctx.Fatalf("error initializing: %s", err)
 	}
-	log.WithField("duration", util.MillisecondsSince(start)).Info("initialized")
+
+	// select handler
+	h, err := handler.FromConfig(c)
+	if err != nil {
+		ctx.Fatalf("error selecting handler: %s", err)
+	}
 
 	// init handler
-	h, err := handler.New(c)
+	h, err = handler.New(c, h)
 	if err != nil {
-		log.Fatalf("error: %s", err)
+		ctx.Fatalf("error initializing handler: %s", err)
 	}
 
 	// serve
+	log.WithField("duration", util.MillisecondsSince(start)).Info("initialized")
 	apex.Handle(proxy.NewHandler(h))
 }

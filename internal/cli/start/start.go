@@ -41,7 +41,12 @@ func init() {
 			return errors.Wrap(err, "initializing")
 		}
 
-		h, err := handler.New(c)
+		h, err := handler.FromConfig(c)
+		if err != nil {
+			return errors.Wrap(err, "selecting handler")
+		}
+
+		h, err = handler.New(c, h)
 		if err != nil {
 			return errors.Wrap(err, "initializing handler")
 		}

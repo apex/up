@@ -10,6 +10,16 @@ import (
 	"github.com/tj/assert"
 )
 
+func newHandler(t testing.TB, c *up.Config) http.Handler {
+	h, err := FromConfig(c)
+	assert.NoError(t, err, "FromConfig")
+
+	h, err = New(c, h)
+	assert.NoError(t, err, "New")
+
+	return h
+}
+
 func TestNode(t *testing.T) {
 	os.Chdir("testdata/node")
 	defer os.Chdir("../..")
@@ -17,8 +27,7 @@ func TestNode(t *testing.T) {
 	c, err := up.ReadConfig("up.json")
 	assert.NoError(t, err, "read config")
 
-	h, err := New(c)
-	assert.NoError(t, err)
+	h := newHandler(t, c)
 
 	res := httptest.NewRecorder()
 	req := httptest.NewRequest("GET", "/", nil)
@@ -45,8 +54,7 @@ func TestStatic(t *testing.T) {
 	c, err := up.ReadConfig("up.json")
 	assert.NoError(t, err, "read config")
 
-	h, err := New(c)
-	assert.NoError(t, err)
+	h := newHandler(t, c)
 
 	res := httptest.NewRecorder()
 	req := httptest.NewRequest("GET", "/", nil)
@@ -74,8 +82,7 @@ func TestNodeWithPackage(t *testing.T) {
 	c, err := up.ReadConfig("up.json")
 	assert.NoError(t, err, "read config")
 
-	h, err := New(c)
-	assert.NoError(t, err)
+	h := newHandler(t, c)
 
 	res := httptest.NewRecorder()
 	req := httptest.NewRequest("GET", "/", nil)
@@ -92,8 +99,7 @@ func TestNodeWithPackageStart(t *testing.T) {
 	c, err := up.ReadConfig("up.json")
 	assert.NoError(t, err, "read config")
 
-	h, err := New(c)
-	assert.NoError(t, err)
+	h := newHandler(t, c)
 
 	res := httptest.NewRecorder()
 	req := httptest.NewRequest("GET", "/", nil)
@@ -110,8 +116,7 @@ func TestHandler_conditionalGet(t *testing.T) {
 	c, err := up.ReadConfig("up.json")
 	assert.NoError(t, err, "read config")
 
-	h, err := New(c)
-	assert.NoError(t, err)
+	h := newHandler(t, c)
 
 	res := httptest.NewRecorder()
 	req := httptest.NewRequest("GET", "/style.css", nil)
@@ -129,8 +134,7 @@ func TestHandler_rewrite(t *testing.T) {
 	c, err := up.ReadConfig("up.json")
 	assert.NoError(t, err, "read config")
 
-	h, err := New(c)
-	assert.NoError(t, err)
+	h := newHandler(t, c)
 
 	res := httptest.NewRecorder()
 	req := httptest.NewRequest("GET", "/docs/ping/guides/alerts", nil)
@@ -147,8 +151,7 @@ func TestHandler_redirect(t *testing.T) {
 	c, err := up.ReadConfig("up.json")
 	assert.NoError(t, err, "read config")
 
-	h, err := New(c)
-	assert.NoError(t, err)
+	h := newHandler(t, c)
 
 	res := httptest.NewRecorder()
 	req := httptest.NewRequest("GET", "/docs/ping/guides/alerts/", nil)
@@ -165,8 +168,7 @@ func TestHandler_spa(t *testing.T) {
 	c, err := up.ReadConfig("up.json")
 	assert.NoError(t, err, "read config")
 
-	h, err := New(c)
-	assert.NoError(t, err)
+	h := newHandler(t, c)
 
 	t.Run("index", func(t *testing.T) {
 		res := httptest.NewRecorder()
@@ -217,8 +219,7 @@ func BenchmarkHandler(b *testing.B) {
 		c, err := up.ReadConfig("up.json")
 		assert.NoError(b, err, "read config")
 
-		h, err := New(c)
-		assert.NoError(b, err)
+		h := newHandler(b, c)
 
 		b.ResetTimer()
 		b.SetParallelism(80)
@@ -238,8 +239,7 @@ func BenchmarkHandler(b *testing.B) {
 		c, err := up.ReadConfig("up.json")
 		assert.NoError(b, err, "read config")
 
-		h, err := New(c)
-		assert.NoError(b, err)
+		h := newHandler(b, c)
 
 		b.ResetTimer()
 		b.SetParallelism(80)

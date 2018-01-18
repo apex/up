@@ -5,9 +5,7 @@ package handler
 
 import (
 	"net/http"
-	"time"
 
-	"github.com/apex/log"
 	"github.com/pkg/errors"
 
 	"github.com/apex/up"
@@ -21,64 +19,52 @@ import (
 	"github.com/apex/up/http/redirects"
 	"github.com/apex/up/http/relay"
 	"github.com/apex/up/http/static"
-	"github.com/apex/up/internal/util"
 )
 
-// New reads up.json to configure and initialize
-// the http handler chain for serving an Up application.
-func New(c *up.Config) (http.Handler, error) {
-	start := time.Now()
-	var err error
-
-	log.WithFields(log.Fields{
-		"name": c.Name,
-		"type": c.Type,
-	}).Info("starting")
-
-	var h http.Handler
-
+// FromConfig returns the handler based on user config.
+func FromConfig(c *up.Config) (http.Handler, error) {
 	switch c.Type {
 	case "server":
-		h, err = relay.New(c)
-		if err != nil {
-			return nil, errors.Wrap(err, "initializing relay")
-		}
+		return relay.New(c)
 	case "static":
-		h = static.New(c)
+		return static.New(c), nil
+	default:
+		return nil, errors.Errorf("unknown .type %q", c.Type)
 	}
+}
 
+// New handler complete with all Up middleware.
+func New(c *up.Config, h http.Handler) (http.Handler, error) {
 	h = poweredby.New("up", h)
 
-	h, err = headers.New(c, h)
+	h, err := headers.New(c, h)
 	if err != nil {
-		return nil, errors.Wrap(err, "initializing headers")
+		return nil, errors.Wrap(err, "headers")
 	}
 
 	h, err = errorpages.New(c, h)
 	if err != nil {
-		return nil, errors.Wrap(err, "initializing error pages")
+		return nil, errors.Wrap(err, "error pages")
 	}
 
 	h, err = inject.New(c, h)
 	if err != nil {
-		return nil, errors.Wrap(err, "initializing inject")
+		return nil, errors.Wrap(err, "inject")
 	}
 
 	h = cors.New(c, h)
 
 	h, err = redirects.New(c, h)
 	if err != nil {
-		return nil, errors.Wrap(err, "initializing redirects")
+		return nil, errors.Wrap(err, "redirects")
 	}
 
 	h = gzip.New(c, h)
 
 	h, err = logs.New(c, h)
 	if err != nil {
-		return nil, errors.Wrap(err, "initializing logs")
+		return nil, errors.Wrap(err, "logs")
 	}
-
-	log.WithField("duration", util.MillisecondsSince(start)).Info("started")
 
 	return h, nil
 }
