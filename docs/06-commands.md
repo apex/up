@@ -156,7 +156,7 @@ Flags:
   -v, --verbose             Enable verbose log output.
       --format="text"       Output formatter.
       --version             Show application version.
-  -s, --stage="production"  Target stage name.
+  -s, --stage="development" Target stage name.
 
 Args:
 
@@ -165,16 +165,22 @@ Args:
 
 ### Examples
 
-Rollback to the previous production version.
+Rollback to the previous development version.
 
 ```
 $ up rollback
 ```
 
+Rollback to the previous production version.
+
+```
+$ up rollback -s production
+```
+
 Rollback to an explicit production version.
 
 ```
-$ up rollback 50
+$ up rollback  -s production 50
 ```
 
 ## Config
