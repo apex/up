@@ -1,4 +1,17 @@
 
+v0.4.7 / 2018-01-19
+===================
+
+  * add optimization of ACM certificate creation. Closes #452
+  * add `development` Lambda alias. Closes #542
+  * add start of stage overrides for config. Closes #314
+  * add support for upgrading to a specific version of Up. Closes #387
+  * update go-cli-analytics for disabled segment cli logging
+  * refactor handler.New() to accept an http.Handler
+  * refactor logging configuration, delegate isatty check etc
+  * refactor: move internal logs to tj/aws
+  * refactor platform integration quickly
+
 v0.4.6 / 2018-01-03
 ===================
 
