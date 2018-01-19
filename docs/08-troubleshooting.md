@@ -14,6 +14,11 @@ title: Help
 </details>
 
 <details>
+  <summary>I'm seeing 404 Not Found responses</summary>
+  <p>By default Up ignores files which are found in `.gitignore`. Use the verbose flag such as `up -v` to see if files have been filtered, or `up build --size` to see a list of files within the zip sorted by size. See [Ignoring Files](#configuration.ignoring_files) for more information.</p>
+</details>
+
+<details>
   <summary>My deployment seems stuck</summary>
   <p>The first deploy also creates resources associated with your project, and can take roughly 1-2 minutes. AWS provides limited granularity into the creation progress of these resources, so the progress bar may appear "stuck".</p>
 </details>
