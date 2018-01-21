@@ -64,6 +64,13 @@ If you're using Up for a production application it's highly recommended to confi
     },
     {
       "Action": [
+        "ssm:*"
+      ],
+      "Effect": "Allow",
+      "Resource": "*"
+    },
+    {
+      "Action": [
         "cloudfront:*"
       ],
       "Effect": "Allow",
