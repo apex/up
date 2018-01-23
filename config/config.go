@@ -200,7 +200,11 @@ func (c *Config) Override(stage string) error {
 
 	s.Override(c)
 
-	return c.Validate()
+	if err := c.Lambda.Validate(); err != nil {
+		return errors.Wrap(err, ".lambda")
+	}
+
+	return nil
 }
 
 // defaultRegions checks AWS_REGION and falls back on us-west-2.
