@@ -266,7 +266,13 @@ func (c *Client) AddInvite(token, email string) error {
 
 // RemoveMember removes a team member or invitation if present.
 func (c *Client) RemoveMember(token, email string) error {
-	res, err := c.request(token, "DELETE", "/members/"+email, nil)
+	in := struct {
+		Email string `json:"email"`
+	}{
+		Email: email,
+	}
+
+	res, err := c.requestJSON(token, "DELETE", "/member", in)
 	if err != nil {
 		return err
 	}
@@ -429,6 +435,8 @@ func (c *Client) request(token, method, path string, body io.Reader) (*http.Resp
 	if token != "" {
 		req.Header.Set("Authorization", "Bearer "+token)
 	}
+
+	req.Header.Set("Accept", "application/json")
 
 	res, err := http.DefaultClient.Do(req)
 	if err != nil {
