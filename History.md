@@ -1,4 +1,9 @@
 
+v0.4.9 / 2018-01-24
+===================
+
+  * revert tj/go-update, causing permission issues
+
 v0.4.8 / 2018-01-24
 ===================
 
