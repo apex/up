@@ -217,12 +217,6 @@
   version = "v0.8.0"
 
 [[projects]]
-  branch = "master"
-  name = "github.com/pkg/fileutils"
-  packages = ["."]
-  revision = "61fbb9f3c608665682894bb5a2e4777d3105b272"
-
-[[projects]]
   name = "github.com/pmezard/go-difflib"
   packages = ["difflib"]
   revision = "792786c7400a136282c1664665ae0a8db921c6c2"
@@ -327,8 +321,8 @@
 [[projects]]
   name = "github.com/tj/go-update"
   packages = [".","stores/apex","stores/github"]
-  revision = "c2b4bdea4c400901780c63f2b58113695f1b8f45"
-  version = "v2.2.0"
+  revision = "a963589e45a4db03407f81ef8ae6ec1995a08f62"
+  version = "v2.2.1"
 
 [[projects]]
   name = "github.com/tj/kingpin"
@@ -375,6 +369,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "d2010cdee1d3cd16baed6b36793f8a0ef0240bfecdb909151679c4da194ea7d7"
+  inputs-digest = "496a2ce2dc24bb6875babd57ac1abe1d0cd2fb225b9157ba1a2cdcafa0233d88"
   solver-name = "gps-cdcl"
   solver-version = 1
