@@ -1,4 +1,12 @@
 
+v0.4.8 / 2018-01-24
+===================
+
+  * update tj/go-update for copy instead of rename. Closes #329
+  * update api client for RemoveMember() json body change
+  * docs: add missing ssm to policy
+  * docs: add note about 404s
+
 v0.4.7 / 2018-01-19
 ===================
 
