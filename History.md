@@ -1,4 +1,10 @@
 
+v0.4.10 / 2018-01-25
+====================
+
+  * refactor to use a single account/region level S3 bucket, not per-project. Closes #550
+  * fix base64 encoded json when params are provided
+
 v0.4.9 / 2018-01-24
 ===================
 
