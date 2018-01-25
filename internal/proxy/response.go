@@ -3,6 +3,7 @@ package proxy
 import (
 	"bytes"
 	"encoding/base64"
+	"mime"
 	"net/http"
 	"strings"
 )
@@ -93,15 +94,21 @@ func isBinary(h http.Header) bool {
 
 // isTextMime returns true if the content type represents textual data.
 func isTextMime(kind string) bool {
-	// TODO: refactor textual mime type stuff
-	switch {
-	case strings.HasSuffix(kind, "svg+xml"):
+	mt, _, err := mime.ParseMediaType(kind)
+	if err != nil {
+		return false
+	}
+
+	if strings.HasPrefix(mt, "text/") {
 		return true
-	case strings.HasPrefix(kind, "text/"):
+	}
+
+	switch mt {
+	case "svg+xml":
 		return true
-	case strings.HasPrefix(kind, "application/") && strings.HasSuffix(kind, "json"):
+	case "application/json":
 		return true
-	case strings.HasPrefix(kind, "application/") && strings.HasSuffix(kind, "xml"):
+	case "application/xml":
 		return true
 	default:
 		return false
