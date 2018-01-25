@@ -140,6 +140,18 @@ func IsNotFound(err error) bool {
 	}
 }
 
+// IsBucketExists returns true if err is not nil and represents an existing bucket.
+func IsBucketExists(err error) bool {
+	switch {
+	case err == nil:
+		return false
+	case strings.Contains(err.Error(), "BucketAlreadyOwnedByYou"):
+		return true
+	default:
+		return false
+	}
+}
+
 // IsThrottled returns true if err is not nil and represents a throttled request.
 func IsThrottled(err error) bool {
 	switch {

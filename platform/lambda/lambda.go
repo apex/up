@@ -243,8 +243,8 @@ func (p *Platform) DeleteStack(region string, wait bool) error {
 		return errors.Wrap(err, "creating iam role")
 	}
 
-	if err := p.deleteBucket(region); err != nil && !util.IsNotFound(err) {
-		return errors.Wrap(err, "deleting s3 bucket")
+	if err := p.deleteBucketObjects(region); err != nil && !util.IsNotFound(err) {
+		return errors.Wrap(err, "deleting s3 objects")
 	}
 
 	log.Debug("deleting stack")
@@ -440,7 +440,7 @@ func (p *Platform) deploy(region, stage string) (version string, err error) {
 
 // createFunction creates the function.
 func (p *Platform) createFunction(c *lambda.Lambda, a *apigateway.APIGateway, up *s3manager.Uploader, region, stage string) (version string, err error) {
-	if err := p.createBucket(region); err != nil {
+	if err := p.createBucket(region); err != nil && !util.IsBucketExists(err) {
 		return "", errors.Wrap(err, "creating s3 bucket")
 	}
 
@@ -664,30 +664,15 @@ func (p *Platform) createBucket(region string) error {
 	return err
 }
 
-// deleteBucket deletes the bucket.
-func (p *Platform) deleteBucket(region string) error {
-	if err := p.emptyBucket(region); err != nil {
-		return errors.Wrap(err, "emptying bucket")
-	}
-
-	s := s3.New(session.New(aws.NewConfig().WithRegion(region)))
-	n := p.getS3BucketName(region)
-
-	log.WithField("name", n).Debug("deleting s3 bucket")
-	_, err := s.DeleteBucket(&s3.DeleteBucketInput{
-		Bucket: &n,
-	})
-
-	return err
-}
-
-// emptyBucket empty the bucket.
-func (p *Platform) emptyBucket(region string) error {
+// deleteBucketObjects deletes the objects for the app.
+func (p *Platform) deleteBucketObjects(region string) error {
 	s := s3.New(session.New(aws.NewConfig().WithRegion(region)))
 	b := aws.String(p.getS3BucketName(region))
+	prefix := p.config.Name + "/"
 
 	params := &s3.ListObjectsInput{
 		Bucket: b,
+		Prefix: &prefix,
 	}
 
 	return s.ListObjectsPages(params, func(page *s3.ListObjectsOutput, lastPage bool) bool {
@@ -765,7 +750,7 @@ func (p *Platform) getS3Key(stage string) string {
 
 // getS3BucketName returns the s3 bucket name.
 func (p *Platform) getS3BucketName(region string) string {
-	return fmt.Sprintf("up-%s-%s-%s", p.getAccountID(), p.config.Name, region)
+	return fmt.Sprintf("up-%s-%s", p.getAccountID(), region)
 }
 
 // getAccountID returns the AWS account id derived from Lambda role,
