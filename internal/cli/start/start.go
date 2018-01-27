@@ -41,6 +41,10 @@ func init() {
 			return errors.Wrap(err, "initializing")
 		}
 
+		if err := c.Override("development"); err != nil {
+			return errors.Wrap(err, "overriding")
+		}
+
 		h, err := handler.FromConfig(c)
 		if err != nil {
 			return errors.Wrap(err, "selecting handler")

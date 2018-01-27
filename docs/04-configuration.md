@@ -633,6 +633,21 @@ Currently the following properties may be specified at the stage level:
 - `lambda`
 - `proxy.command`
 
+For example you may want to override `proxy.command` for development, which is the env `up start` will also use:
+
+```json
+{
+  "name": "app",
+  "stages": {
+    "development": {
+      "proxy": {
+        "command": "node app.js --something here"
+      }
+    }
+  }
+}
+```
+
 ## Ignoring Files
 
 Up supports gitignore style pattern matching for omitting files from deployment. The following files are loaded in sequence:
