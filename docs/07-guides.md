@@ -402,7 +402,6 @@ $ up stack apply
 
 After you're done messing around, you may want to remove all the resources and the app itself. To do so simply run:
 
-
 ```
 $ up stack delete
 ```
@@ -691,4 +690,23 @@ There is also a special keyword for this case:
 
 ```
 message contains "login"
+```
+
+## Hot Reloading in Development
+
+The `up start` command uses your `proxy.command` by default, which may be inferred based on your application type, such as `node app.js` for Node.js or `./server` for Golang.
+
+You may alter this command for `up start` with the development environment. For example with Golang you may want `go run main.go`, or hot reloading with [gin](https://github.com/codegangsta/gin) as shown here:
+
+```json
+{
+  "name": "app",
+  "stages": {
+    "development": {
+      "proxy": {
+        "command": "gin --port $PORT"
+      }
+    }
+  }
+}
 ```
