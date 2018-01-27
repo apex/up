@@ -633,7 +633,7 @@ Currently the following properties may be specified at the stage level:
 - `lambda`
 - `proxy.command`
 
-For example you may want to override `proxy.command` for development, which is the env `up start` will also use:
+For example you may want to override `proxy.command` for development, which is the env `up start` uses. In the following example [gin](https://github.com/codegangsta/gin) is used for hot reloading of Go programs:
 
 ```json
 {
@@ -641,7 +641,7 @@ For example you may want to override `proxy.command` for development, which is t
   "stages": {
     "development": {
       "proxy": {
-        "command": "node app.js --something here"
+        "command": "gin --port $PORT"
       }
     }
   }
