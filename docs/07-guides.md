@@ -710,3 +710,5 @@ You may alter this command for `up start` with the development environment. For 
   }
 }
 ```
+
+Note that the server must always listen on `PORT` which is provided by `up start`.
