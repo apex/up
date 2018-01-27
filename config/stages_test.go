@@ -17,6 +17,9 @@ func TestStage_Override(t *testing.T) {
 			Build: Hook{"parcel index.html -o build"},
 			Clean: Hook{"rm -fr clean"},
 		},
+		Proxy: Relay{
+			Command: "./server",
+		},
 	}
 
 	t.Run("with no overrides", func(t *testing.T) {
@@ -34,6 +37,7 @@ func TestStage_Override(t *testing.T) {
 
 		assert.Equal(t, "parcel index.html -o build", c.Hooks.Build[0])
 		assert.Equal(t, "rm -fr clean", c.Hooks.Clean[0])
+		assert.Equal(t, `./server`, c.Proxy.Command)
 	})
 
 	t.Run("with overrides", func(t *testing.T) {
@@ -49,6 +53,9 @@ func TestStage_Override(t *testing.T) {
 				Lambda: Lambda{
 					Memory: 1024,
 				},
+				Proxy: Relay{
+					Command: "./server --foo",
+				},
 			},
 		}
 
@@ -60,6 +67,7 @@ func TestStage_Override(t *testing.T) {
 		assert.Equal(t, "parcel index.html -o build --production", c.Hooks.Build[0])
 		assert.Equal(t, "do something", c.Hooks.PostBuild[0])
 		assert.Equal(t, "rm -fr clean", c.Hooks.Clean[0])
+		assert.Equal(t, `./server --foo`, c.Proxy.Command)
 	})
 }
 

@@ -13,12 +13,14 @@ type Stage struct {
 type StageOverrides struct {
 	Hooks  Hooks  `json:"hooks"`
 	Lambda Lambda `json:"lambda"`
+	Proxy  Relay  `json:"proxy"`
 }
 
 // Override config.
 func (s *StageOverrides) Override(c *Config) {
 	s.Hooks.Override(c)
 	s.Lambda.Override(c)
+	s.Proxy.Override(c)
 }
 
 // Stages config.

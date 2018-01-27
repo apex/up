@@ -99,3 +99,10 @@ func (r *Relay) Validate() error {
 
 	return nil
 }
+
+// Override config.
+func (r *Relay) Override(c *Config) {
+	if r.Command != "" {
+		c.Proxy.Command = r.Command
+	}
+}

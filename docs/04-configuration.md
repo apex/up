@@ -631,6 +631,7 @@ Currently the following properties may be specified at the stage level:
 
 - `hooks`
 - `lambda`
+- `proxy.command`
 
 ## Ignoring Files
 
