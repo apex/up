@@ -256,7 +256,7 @@ $ up stack plan
      ⠧ confirm: up-example.com
 ```
 
-AWS requires email verification to prove you own the domain. It will attempt to send an email to all of the following emails:
+AWS requires email verification to prove you own the domain. AWS sends an email to the 3 contact addresses listed in WHOIS when you registered the domain, and to the following 5 common system addresses for your domain:
 
 - administrator@your_domain_name
 - hostmaster@your_domain_name
@@ -266,7 +266,7 @@ AWS requires email verification to prove you own the domain. It will attempt to 
 
 See [Validate Domain Ownership](https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate-email.html) for more information.
 
-After clicking "I Approve" in the email, the output will resume and you'll see some new resources Up will be creating.
+After clicking "I Approve" in one of the emails, the output will resume and you'll see some new resources Up will be creating.
 
 ```
 Add AWS::ApiGateway::DomainName
