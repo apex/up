@@ -264,7 +264,7 @@ AWS requires email verification to prove you own the domain. It will attempt to 
 - webmaster@your_domain_name
 - admin@your_domain_name
 
-See [Validate Domain Ownership](http://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate.html) for more information.
+See [Validate Domain Ownership](https://docs.aws.amazon.com/acm/latest/userguide/gs-acm-validate-email.html) for more information.
 
 After clicking "I Approve" in the email, the output will resume and you'll see some new resources Up will be creating.
 
