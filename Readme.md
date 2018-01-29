@@ -2,6 +2,12 @@
 
 Up deploys infinitely scalable serverless apps, APIs, and static websites in seconds, so you can get back to working on what makes your product unique.
 
+With Up you never need to scale machines, pay for idle servers which are not in use, worry about logging infrastructure, alerting, and more, Up has you covered!
+
+Use the free OSS version, or subscribe to [Up Pro](#pro-features) for a small monthly fee for unlimited use within your company, there is no additional cost per team-member or application. Deploy dozens or even hundreds of applications for pennies thanks to AWS Lambda's cost effective nature.
+
+## About
+
 Up focuses on deploying "vanilla" HTTP servers so there's nothing new to learn, just develop with your favorite existing frameworks such as Express, Koa, Django, Golang net/http or others.
 
 Up currently supports Node.js, Golang, Python, Java, Crystal, Clojure and static sites out of the box. Up is platform-agnostic, supporting AWS Lambda and API Gateway as the first targets. You can think of Up as self-hosted Heroku style user experience for a fraction of the price, with the security, isolation, flexibility, and scalability of AWS.
@@ -18,7 +24,7 @@ Open source community edition.
 
 ## Pro Features
 
-Up Pro is **$20/mo USD** for unlimited use within your company, with no additional cost per team member. Up Pro is currently in early-access alpha, please use the **up-early-adopter-57AAA8693354** coupon for 50% off indefinitely. Head over to [Subscribing to Up Pro](https://up.docs.apex.sh/#guides.subscribing_to_up_pro) to get started.
+Up Pro is **$20/mo USD** for unlimited use within your company. While in development, you may use the `up-early-adopter-DDD6B4D59963` coupon for 35% off forever. Head over to [Subscribing to Up Pro](https://up.docs.apex.sh/#guides.subscribing_to_up_pro) to get started.
 
 Note that the following Pro features are currently available:
 
