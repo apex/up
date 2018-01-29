@@ -2,7 +2,7 @@
 
 Up deploys infinitely scalable serverless apps, APIs, and static websites in seconds, so you can get back to working on what makes your product unique.
 
-With Up you never need to scale machines, pay for idle servers which are not in use, worry about logging infrastructure, alerting, and more, Up has you covered!
+With Up there's no need to worry about managing or scaling machines, paying for idle servers, worrying about logging infrastructure or alerting. Just deploy your app with `$ up` and you're done!
 
 Use the free OSS version, or subscribe to [Up Pro](#pro-features) for a small monthly fee for unlimited use within your company, there is no additional cost per team-member or application. Deploy dozens or even hundreds of applications for pennies thanks to AWS Lambda's cost effective nature.
 
