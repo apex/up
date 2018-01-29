@@ -1,4 +1,16 @@
 
+v0.4.11 / 2018-01-29
+====================
+
+  * add development config overrides to `up start`
+  * add the ability to override .proxy.command at the stage level
+  * docs: mention that the WHOIS contact emails are used
+  * docs: fix link for acm validation
+  * docs: tweak
+  * docs: add guide for hot reloading
+  * docs: remove old "Local Environment Variables" guide section
+  * docs: add gin example for dev command
+
 v0.4.10 / 2018-01-25
 ====================
 
