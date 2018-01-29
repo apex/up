@@ -24,7 +24,7 @@ Open source community edition.
 
 ## Pro Features
 
-Up Pro is **$20/mo USD** for unlimited use within your company. While in development, you may use the `up-early-adopter-DDD6B4D59963` coupon for 35% off forever. Head over to [Subscribing to Up Pro](https://up.docs.apex.sh/#guides.subscribing_to_up_pro) to get started.
+Up Pro is **$20/mo USD** for unlimited use within your company. While in development, you may use the `up-early-adopter-325BFABFAFF7` coupon for 50% off forever. Head over to [Subscribing to Up Pro](https://up.docs.apex.sh/#guides.subscribing_to_up_pro) to get started.
 
 Note that the following Pro features are currently available:
 
