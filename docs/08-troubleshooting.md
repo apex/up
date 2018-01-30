@@ -24,6 +24,11 @@ title: Help
 </details>
 
 <details>
-  <summary>How do I get my team back?</summary>
+  <summary>How do I sign into my team?</summary>
   <p>Run `up team login` if you aren't signed in, then run `up team login --team my-team-id` to sign into any teams you're an owner or member of.</p>
+</details>
+
+<details>
+  <summary>Unable to associate certificate error</summary>
+  <p>If you receive a `Unable to associate certificate` error it is because you have not verified the SSL certificate. Certs for CloudFront when creating a custom domain MUST be in us-east-1, so if you need to manually resend verification emails visit [ACM in US East 1](https://console.aws.amazon.com/acm/home?region=us-east-1).</p>
 </details>
