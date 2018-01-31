@@ -1,10 +1,13 @@
 package start
 
 import (
+	"fmt"
+	"net"
 	"net/http"
 	"os"
 
 	"github.com/apex/log"
+	"github.com/pkg/browser"
 	"github.com/pkg/errors"
 	"github.com/tj/kingpin"
 
@@ -62,6 +65,8 @@ func init() {
 			return errors.Wrap(err, "initializing handler")
 		}
 
+		open(*addr)
+
 		log.WithField("address", *addr).Info("listening")
 		if err := http.ListenAndServe(*addr, h); err != nil {
 			return errors.Wrap(err, "binding")
@@ -69,4 +74,10 @@ func init() {
 
 		return nil
 	})
+}
+
+// open addr in the browser.
+func open(addr string) {
+	_, port, _ := net.SplitHostPort(addr)
+	browser.OpenURL(fmt.Sprintf("http://localhost:%s", port))
 }
