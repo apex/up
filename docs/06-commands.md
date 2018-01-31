@@ -487,9 +487,11 @@ $ up metrics production -s 15d
 
 Start development server. The development server runs the same proxy that is used in production for serving, so you can test a static site or application locally with the same feature-set.
 
-Currently `up start` does not work with cross-compiled languages such as Go or Crystal.
+See [Stage Overrides](https://up.docs.apex.sh/#configuration.stage_overrides) for an example of overriding the proxy command per-stage, especially useful in development.
 
 ```
+Start development server.
+
 Usage:
 
   up start [<flags>]
@@ -497,10 +499,11 @@ Usage:
 Flags:
 
   -h, --help             Output usage information.
-  -r, --region=REGION    Override the region.
   -C, --chdir="."        Change working directory.
   -v, --verbose          Enable verbose log output.
+      --format="text"    Output formatter.
       --version          Show application version.
+  -c, --command=COMMAND  Proxy command override
       --address=":3000"  Address for server.
 ```
 
@@ -516,6 +519,14 @@ Start development server on port 5000.
 
 ```
 $ up start --address :5000
+```
+
+Override proxy command.
+
+```
+$ up start -c 'go run main.go'
+$ up start -c 'node --some-flag app.js'
+$ up start -c 'parcel'
 ```
 
 ## Domains

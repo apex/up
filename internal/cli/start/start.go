@@ -18,6 +18,8 @@ func init() {
 	cmd := root.Command("start", "Start development server.")
 	cmd.Example(`up start`, "Start development server on port 3000.")
 	cmd.Example(`up start --address :5000`, "Start development server on port 5000.")
+	cmd.Example(`up start -c 'go run main.go'`, "Override proxy command.")
+	command := cmd.Flag("command", "Proxy command override").Short('c').String()
 
 	addr := cmd.Flag("address", "Address for server.").Default(":3000").String()
 
@@ -34,7 +36,8 @@ func init() {
 		}
 
 		stats.Track("Start", map[string]interface{}{
-			"address": *addr,
+			"address":     *addr,
+			"has_command": *command != "",
 		})
 
 		if err := p.Init("development"); err != nil {
@@ -43,6 +46,10 @@ func init() {
 
 		if err := c.Override("development"); err != nil {
 			return errors.Wrap(err, "overriding")
+		}
+
+		if s := *command; s != "" {
+			c.Proxy.Command = s
 		}
 
 		h, err := handler.FromConfig(c)
