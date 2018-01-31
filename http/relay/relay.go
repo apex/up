@@ -88,12 +88,12 @@ type Proxy struct {
 func New(c *up.Config) (http.Handler, error) {
 	stdout, err := log.ParseLevel(c.Logs.Stdout)
 	if err != nil {
-		return nil, errors.Wrap(err, "invalid stdout error level")
+		return nil, errors.Wrap(err, "invalid stdout log level")
 	}
 
 	stderr, err := log.ParseLevel(c.Logs.Stderr)
 	if err != nil {
-		return nil, errors.Wrap(err, "invalid stdout error level")
+		return nil, errors.Wrap(err, "invalid stderr log level")
 	}
 
 	p := &Proxy{
