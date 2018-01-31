@@ -86,14 +86,24 @@ type Proxy struct {
 // number of concurrent processes executing, and prevent exhausting
 // the ulimits of the host OS.
 func New(c *up.Config) (http.Handler, error) {
+	stdout, err := log.ParseLevel(c.Logs.Stdout)
+	if err != nil {
+		return nil, errors.Wrap(err, "invalid stdout error level")
+	}
+
+	stderr, err := log.ParseLevel(c.Logs.Stderr)
+	if err != nil {
+		return nil, errors.Wrap(err, "invalid stdout error level")
+	}
+
 	p := &Proxy{
 		config:          c,
 		cmdCleanup:      make(chan *exec.Cmd, 3),
 		maxRetries:      c.Proxy.Backoff.Attempts,
 		timeout:         time.Duration(c.Proxy.Timeout) * time.Second,
 		shutdownTimeout: time.Duration(c.Proxy.ShutdownTimeout) * time.Second,
-		stdout:          writer.New(log.InfoLevel, ctx),
-		stderr:          writer.New(log.ErrorLevel, ctx),
+		stdout:          writer.New(stdout, ctx),
+		stderr:          writer.New(stderr, ctx),
 	}
 
 	defer p.flushLogs()

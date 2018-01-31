@@ -648,6 +648,23 @@ For example you may want to override `proxy.command` for development, which is t
 }
 ```
 
+## Logs
+
+By default Up treats stdout as `info` level logs, and stderr as `error` level. If your logger uses stderr, such as Node's `debug()` module and you'd like to change this behaviour you may override these levels:
+
+```json
+{
+  "name": "app",
+  "environment": {
+    "DEBUG": "myapp"
+  },
+  "logs": {
+    "stdout": "info",
+    "stderr": "info"
+  }
+}
+```
+
 ## Ignoring Files
 
 Up supports gitignore style pattern matching for omitting files from deployment. The following files are loaded in sequence:

@@ -142,6 +142,11 @@ func (c *Config) Default() error {
 		return errors.Wrap(err, ".dns")
 	}
 
+	// default .logs
+	if err := c.Logs.Default(); err != nil {
+		return errors.Wrap(err, ".logs")
+	}
+
 	// default .inject
 	if err := c.Inject.Default(); err != nil {
 		return errors.Wrap(err, ".inject")
