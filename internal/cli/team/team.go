@@ -41,7 +41,7 @@ func init() {
 	cmd.Example(`up team add "Apex Software"`, "Add a new team.")
 	cmd.Example(`up team subscribe`, "Subscribe to the Pro plan.")
 	cmd.Example(`up team members add asya@example.com`, "Invite a team member to your active team.")
-	cmd.Example(`up team members rm tobi@example.com`, "Invite a team member to your active team.")
+	cmd.Example(`up team members rm tobi@example.com`, "Remove a team member from your active team.")
 	cmd.Example(`up team switch`, "Switch teams interactively.")
 	status(cmd)
 	switchTeam(cmd)
