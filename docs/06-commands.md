@@ -521,10 +521,11 @@ Start development server on port 5000.
 $ up start --address :5000
 ```
 
-Override proxy command.
+Override proxy command. Note that the server created must listen on `PORT`, which is why `--port $PORT` is required for the [gin](https://github.com/codegangsta/gin) example.
 
 ```
 $ up start -c 'go run main.go'
+$ up start -c 'gin --port $PORT'
 $ up start -c 'node --some-flag app.js'
 $ up start -c 'parcel'
 ```
