@@ -20,9 +20,10 @@ import (
 func init() {
 	cmd := root.Command("start", "Start development server.")
 	cmd.Example(`up start`, "Start development server on port 3000.")
-	cmd.Example(`up start -o'`, "Start development server and open in the browser.")
+	cmd.Example(`up start -o`, "Start development server and open in the browser.")
 	cmd.Example(`up start --address :5000`, "Start development server on port 5000.")
 	cmd.Example(`up start -c 'go run main.go'`, "Override proxy command.")
+	cmd.Example(`up start -oc 'go run main.go'`, "Override proxy command and open in the browser.")
 
 	command := cmd.Flag("command", "Proxy command override").Short('c').String()
 	open := cmd.Flag("open", "Open endpoint in the browser.").Short('o').Bool()
