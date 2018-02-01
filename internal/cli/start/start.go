@@ -20,10 +20,12 @@ import (
 func init() {
 	cmd := root.Command("start", "Start development server.")
 	cmd.Example(`up start`, "Start development server on port 3000.")
+	cmd.Example(`up start -o'`, "Start development server and open in the browser.")
 	cmd.Example(`up start --address :5000`, "Start development server on port 5000.")
 	cmd.Example(`up start -c 'go run main.go'`, "Override proxy command.")
-	command := cmd.Flag("command", "Proxy command override").Short('c').String()
 
+	command := cmd.Flag("command", "Proxy command override").Short('c').String()
+	open := cmd.Flag("open", "Open endpoint in the browser.").Short('o').Bool()
 	addr := cmd.Flag("address", "Address for server.").Default(":3000").String()
 
 	cmd.Action(func(_ *kingpin.ParseContext) error {
@@ -65,7 +67,10 @@ func init() {
 			return errors.Wrap(err, "initializing handler")
 		}
 
-		open(*addr)
+		if *open {
+			_, port, _ := net.SplitHostPort(*addr)
+			browser.OpenURL(fmt.Sprintf("http://localhost:%s", port))
+		}
 
 		log.WithField("address", *addr).Info("listening")
 		if err := http.ListenAndServe(*addr, h); err != nil {
@@ -74,10 +79,4 @@ func init() {
 
 		return nil
 	})
-}
-
-// open addr in the browser.
-func open(addr string) {
-	_, port, _ := net.SplitHostPort(addr)
-	browser.OpenURL(fmt.Sprintf("http://localhost:%s", port))
 }
