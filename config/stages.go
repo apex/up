@@ -9,6 +9,16 @@ type Stage struct {
 	StageOverrides
 }
 
+// IsLocal returns true if the stage represents a local environment.
+func (s *Stage) IsLocal() bool {
+	return s.Name == "development"
+}
+
+// IsRemote returns true if the stage represents a remote environment.
+func (s *Stage) IsRemote() bool {
+	return !s.IsLocal()
+}
+
 // StageOverrides config.
 type StageOverrides struct {
 	Hooks  Hooks  `json:"hooks"`
@@ -25,12 +35,17 @@ func (s *StageOverrides) Override(c *Config) {
 
 // Stages config.
 type Stages struct {
-	Staging    *Stage `json:"staging"`
-	Production *Stage `json:"production"`
+	Development *Stage `json:"development"`
+	Staging     *Stage `json:"staging"`
+	Production  *Stage `json:"production"`
 }
 
 // Default implementation.
 func (s *Stages) Default() error {
+	if s := s.Development; s != nil {
+		s.Name = "development"
+	}
+
 	if s := s.Staging; s != nil {
 		s.Name = "staging"
 	}
@@ -49,6 +64,10 @@ func (s *Stages) Validate() error {
 
 // List returns configured stages.
 func (s *Stages) List() (v []*Stage) {
+	if s := s.Development; s != nil {
+		v = append(v, s)
+	}
+
 	if s := s.Staging; s != nil {
 		v = append(v, s)
 	}
