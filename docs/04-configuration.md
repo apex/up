@@ -176,7 +176,12 @@ By default the current directory (`.`) is served, however you can change this us
 }
 ```
 
-Note that `static.dir` only tells Up which directory to serve – it does not exclude other files from the directory – see [Ignoring Files](#configuration.ignoring_files).
+Note that `static.dir` only tells Up which directory to serve – it does not exclude other files from the directory – see [Ignoring Files](#configuration.ignoring_files). For example you may want an `.upignore` containing:
+
+```
+*
+!public/**
+```
 
 ## Environment Variables
 
