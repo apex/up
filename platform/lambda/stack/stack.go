@@ -164,6 +164,10 @@ func (s *Stack) Show() error {
 
 	// stages
 	for _, stage := range s.config.Stages.List() {
+		if stage.Domain == "" {
+			continue
+		}
+
 		s.events.Emit("platform.stack.show.stage", event.Fields{
 			"name":   stage.Name,
 			"domain": stage.Domain,

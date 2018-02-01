@@ -330,7 +330,7 @@ func (p *Platform) createCerts() error {
 
 	// request certs
 	for _, s := range p.config.Stages.List() {
-		if s == nil {
+		if s.Domain == "" {
 			continue
 		}
 

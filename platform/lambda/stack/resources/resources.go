@@ -246,6 +246,10 @@ func api(c *Config, m Map) {
 // Stages configuration.
 func stages(c *Config, m Map) {
 	for _, s := range c.Stages.List() {
+		if s.Domain == "" {
+			continue
+		}
+
 		stage(c, s, m)
 	}
 }
