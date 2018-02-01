@@ -119,7 +119,7 @@ func add(cmd *kingpin.Cmd) {
 	clear := c.Flag("clear", "Store as cleartext (unencrypted).").Short('c').Bool()
 
 	c.Action(func(_ *kingpin.ParseContext) error {
-		if err := validate.OptionalStage(*stage); err != nil {
+		if err := validate.OptionalStageWithLocal(*stage); err != nil {
 			return err
 		}
 
@@ -151,7 +151,7 @@ func remove(cmd *kingpin.Cmd) {
 	key := c.Arg("name", "Variable name.").Required().String()
 
 	c.Action(func(_ *kingpin.ParseContext) error {
-		if err := validate.OptionalStage(*stage); err != nil {
+		if err := validate.OptionalStageWithLocal(*stage); err != nil {
 			return err
 		}
 

@@ -87,6 +87,15 @@ func Lists(vals, list []string) error {
 	return nil
 }
 
+// StageWithLocal validation.
+func StageWithLocal(stage string) error {
+	if err := List(stage, []string{"development", "staging", "production"}); err != nil {
+		return errors.Wrap(err, "stage")
+	}
+
+	return nil
+}
+
 // OptionalStage validation.
 func OptionalStage(stage string) error {
 	if stage == "" {
@@ -94,4 +103,13 @@ func OptionalStage(stage string) error {
 	}
 
 	return Stage(stage)
+}
+
+// OptionalStageWithLocal validation.
+func OptionalStageWithLocal(stage string) error {
+	if stage == "" {
+		return nil
+	}
+
+	return StageWithLocal(stage)
 }
