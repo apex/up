@@ -11,11 +11,11 @@ import (
 
 func init() {
 	cmd := root.Command("rollback", "Rollback to a previous deployment.")
-	cmd.Example(`up rollback`, "Rollback to the previous development version.")
+	cmd.Example(`up rollback`, "Rollback to the previous staging version.")
 	cmd.Example(`up rollback -s production`, "Rollback to the previous production version.")
 	cmd.Example(`up rollback -s production 50`, "Rollback to an explicit production version.")
 
-	stage := cmd.Flag("stage", "Target stage name.").Short('s').Default("development").String()
+	stage := cmd.Flag("stage", "Target stage name.").Short('s').Default("staging").String()
 	version := cmd.Arg("version", "Target version for rollback.").String()
 
 	cmd.Action(func(_ *kingpin.ParseContext) error {
