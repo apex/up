@@ -1,4 +1,16 @@
 
+v0.4.12 / 2018-02-01
+====================
+
+  * add -o, --open to `up start` for opening in the browser
+  * add `logs.{stdout,stderr}` for configuring log levels. Closes #565
+  * add `-c, --command` flag to `up start`. Closes #564
+  * fix panic when .domain is missing from a stage, as it is now optional. Closes #567
+  * docs: add example .upignore for static sites
+  * docs: fix team members rm example. Closes #562
+  * docs: add "Unable to associate certificate error" to troubleshooting
+  * docs: add gin example
+
 v0.4.11 / 2018-01-29
 ====================
 
