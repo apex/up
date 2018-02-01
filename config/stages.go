@@ -25,17 +25,12 @@ func (s *StageOverrides) Override(c *Config) {
 
 // Stages config.
 type Stages struct {
-	Development *Stage `json:"development"`
-	Staging     *Stage `json:"staging"`
-	Production  *Stage `json:"production"`
+	Staging    *Stage `json:"staging"`
+	Production *Stage `json:"production"`
 }
 
 // Default implementation.
 func (s *Stages) Default() error {
-	if s := s.Development; s != nil {
-		s.Name = "development"
-	}
-
 	if s := s.Staging; s != nil {
 		s.Name = "staging"
 	}
@@ -54,10 +49,6 @@ func (s *Stages) Validate() error {
 
 // List returns configured stages.
 func (s *Stages) List() (v []*Stage) {
-	if s := s.Development; s != nil {
-		v = append(v, s)
-	}
-
 	if s := s.Staging; s != nil {
 		v = append(v, s)
 	}

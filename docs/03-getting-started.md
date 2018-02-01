@@ -21,7 +21,7 @@ Next you'll need to let Up know which profile in `~/.aws/credentials` to use. No
 $ export AWS_PROFILE=myapp
 ```
 
-Deploy it to the development stage:
+Deploy it to the staging environment:
 
 ```
 $ up

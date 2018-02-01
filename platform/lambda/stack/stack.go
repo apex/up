@@ -93,10 +93,6 @@ func (s *Stack) Create(version string) error {
 				ParameterValue: &name,
 			},
 			{
-				ParameterKey:   aws.String("FunctionVersionDevelopment"),
-				ParameterValue: &version,
-			},
-			{
 				ParameterKey:   aws.String("FunctionVersionStaging"),
 				ParameterValue: &version,
 			},
@@ -242,15 +238,6 @@ func (s *Stack) Plan() error {
 		return errors.Wrap(err, "fetching staging alias")
 	}
 
-	dev, err := s.lambda.GetAlias(&lambda.GetAliasInput{
-		FunctionName: &name,
-		Name:         aws.String("development"),
-	})
-
-	if err != nil {
-		return errors.Wrap(err, "fetching development alias")
-	}
-
 	log.Debug("deleting changeset")
 	_, err = s.client.DeleteChangeSet(&cloudformation.DeleteChangeSetInput{
 		StackName:     &name,
@@ -277,10 +264,6 @@ func (s *Stack) Plan() error {
 			{
 				ParameterKey:   aws.String("FunctionName"),
 				ParameterValue: &name,
-			},
-			{
-				ParameterKey:   aws.String("FunctionVersionDevelopment"),
-				ParameterValue: dev.FunctionVersion,
 			},
 			{
 				ParameterKey:   aws.String("FunctionVersionStaging"),

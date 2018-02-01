@@ -235,36 +235,6 @@ func Example_apiProxyMethod() {
 	// }
 }
 
-func Example_apiDeploymentDevelopment() {
-	c := &Config{
-		Config: &up.Config{
-			Name: "polls",
-		},
-	}
-
-	dump(c, "ApiDeploymentDevelopment")
-	// Output:
-	// {
-	//   "DependsOn": [
-	//     "ApiRootMethod",
-	//     "ApiProxyMethod",
-	//     "ApiFunctionAliasDevelopment"
-	//   ],
-	//   "Properties": {
-	//     "RestApiId": {
-	//       "Ref": "Api"
-	//     },
-	//     "StageDescription": {
-	//       "Variables": {
-	//         "qualifier": "development"
-	//       }
-	//     },
-	//     "StageName": "development"
-	//   },
-	//   "Type": "AWS::ApiGateway::Deployment"
-	// }
-}
-
 func Example_apiDeploymentStaging() {
 	c := &Config{
 		Config: &up.Config{
@@ -322,30 +292,6 @@ func Example_apiDeploymentProduction() {
 	//     "StageName": "production"
 	//   },
 	//   "Type": "AWS::ApiGateway::Deployment"
-	// }
-}
-
-func Example_apiFunctionAliasDevelopment() {
-	c := &Config{
-		Config: &up.Config{
-			Name: "polls",
-		},
-	}
-
-	dump(c, "ApiFunctionAliasDevelopment")
-	// Output:
-	// {
-	//   "Properties": {
-	//     "Description": "Development environment (Managed by Up).",
-	//     "FunctionName": {
-	//       "Ref": "FunctionName"
-	//     },
-	//     "FunctionVersion": {
-	//       "Ref": "FunctionVersionDevelopment"
-	//     },
-	//     "Name": "development"
-	//   },
-	//   "Type": "AWS::Lambda::Alias"
 	// }
 }
 
@@ -601,74 +547,6 @@ func Example_apiDomainDNSManual() {
 	//     "Type": "CNAME"
 	//   },
 	//   "Type": "AWS::Route53::RecordSet"
-	// }
-}
-
-func Example_iamLambdaDevelopment() {
-	c := &Config{
-		Config: up.MustParseConfigString(`{
-      "name": "polls"
-    }`),
-	}
-
-	dump(c, "ApiLambdaPermissionDevelopment")
-	// Output:
-	// {
-	//   "DependsOn": "ApiFunctionAliasDevelopment",
-	//   "Properties": {
-	//     "Action": "lambda:invokeFunction",
-	//     "FunctionName": {
-	//       "Fn::Join": [
-	//         ":",
-	//         [
-	//           "arn",
-	//           "aws",
-	//           "lambda",
-	//           {
-	//             "Ref": "AWS::Region"
-	//           },
-	//           {
-	//             "Ref": "AWS::AccountId"
-	//           },
-	//           "function",
-	//           {
-	//             "Fn::Join": [
-	//               ":",
-	//               [
-	//                 {
-	//                   "Ref": "FunctionName"
-	//                 },
-	//                 "development"
-	//               ]
-	//             ]
-	//           }
-	//         ]
-	//       ]
-	//     },
-	//     "Principal": "apigateway.amazonaws.com",
-	//     "SourceArn": {
-	//       "Fn::Join": [
-	//         "",
-	//         [
-	//           "arn:aws:execute-api",
-	//           ":",
-	//           {
-	//             "Ref": "AWS::Region"
-	//           },
-	//           ":",
-	//           {
-	//             "Ref": "AWS::AccountId"
-	//           },
-	//           ":",
-	//           {
-	//             "Ref": "Api"
-	//           },
-	//           "/*"
-	//         ]
-	//       ]
-	//     }
-	//   },
-	//   "Type": "AWS::Lambda::Permission"
 	// }
 }
 

@@ -168,20 +168,6 @@ func api(c *Config, m Map) {
 		},
 	}
 
-	m["ApiDeploymentDevelopment"] = Map{
-		"Type":      "AWS::ApiGateway::Deployment",
-		"DependsOn": []string{"ApiRootMethod", "ApiProxyMethod", "ApiFunctionAliasDevelopment"},
-		"Properties": Map{
-			"RestApiId": ref("Api"),
-			"StageName": "development",
-			"StageDescription": Map{
-				"Variables": Map{
-					"qualifier": "development",
-				},
-			},
-		},
-	}
-
 	m["ApiDeploymentStaging"] = Map{
 		"Type":      "AWS::ApiGateway::Deployment",
 		"DependsOn": []string{"ApiRootMethod", "ApiProxyMethod", "ApiFunctionAliasStaging"},
@@ -207,16 +193,6 @@ func api(c *Config, m Map) {
 					"qualifier": "production",
 				},
 			},
-		},
-	}
-
-	m["ApiFunctionAliasDevelopment"] = Map{
-		"Type": "AWS::Lambda::Alias",
-		"Properties": Map{
-			"Name":            "development",
-			"Description":     util.ManagedByUp("Development environment"),
-			"FunctionName":    ref("FunctionName"),
-			"FunctionVersion": ref("FunctionVersionDevelopment"),
 		},
 	}
 
@@ -326,25 +302,6 @@ func dns(c *Config, m Map) {
 
 // IAM resources.
 func iam(c *Config, m Map) {
-	m["ApiLambdaPermissionDevelopment"] = Map{
-		"Type":      "AWS::Lambda::Permission",
-		"DependsOn": "ApiFunctionAliasDevelopment",
-		"Properties": Map{
-			"Action":       "lambda:invokeFunction",
-			"FunctionName": lambdaArnQualifier("FunctionName", "development"),
-			"Principal":    "apigateway.amazonaws.com",
-			"SourceArn": join("",
-				"arn:aws:execute-api",
-				":",
-				ref("AWS::Region"),
-				":",
-				ref("AWS::AccountId"),
-				":",
-				ref("Api"),
-				"/*"),
-		},
-	}
-
 	m["ApiLambdaPermissionStaging"] = Map{
 		"Type":      "AWS::Lambda::Permission",
 		"DependsOn": "ApiFunctionAliasStaging",
@@ -402,10 +359,6 @@ func parameters(c *Config) Map {
 		},
 		"FunctionName": Map{
 			"Description": "Name of application function",
-			"Type":        "String",
-		},
-		"FunctionVersionDevelopment": Map{
-			"Description": "Version of development deployment",
 			"Type":        "String",
 		},
 		"FunctionVersionStaging": Map{

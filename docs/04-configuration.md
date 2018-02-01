@@ -202,7 +202,7 @@ These become available to you via `process.env.API_FEATURES_FOO`, `os.Getenv("AP
 The following environment variables are provided by Up:
 
 - `PORT` – port number such as "3000"
-- `UP_STAGE` – stage name such as "development" or "production"
+- `UP_STAGE` – stage name such as "staging" or "production"
 
 ## Header Injection
 
@@ -576,9 +576,6 @@ By defining a stage and its `domain`, Up knows it will need to create a free SSL
     },
     "staging": {
       "domain": "stage.gh-polls.com"
-    },
-    "development": {
-      "domain": "dev.gh-polls.com"
     }
   }
 }
@@ -600,9 +597,8 @@ You may also provide an optional base path, for example to prefix your API with 
 
 Plan the changes via `up stack plan` and `up stack apply` to perform the changes. Note that CloudFront can take up to ~40 minutes to distribute this configuration globally, so grab a coffee while these changes are applied.
 
-Custom stages may be supported in the future, for now there are three:
+Custom stages may be supported in the future, for now there are two:
 
-- `development`
 - `staging`
 - `production`
 

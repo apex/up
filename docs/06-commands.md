@@ -55,13 +55,13 @@ Commands:
 
 Examples:
 
-  Deploy the project to the development stage.
+  Deploy the project to staging.
   $ up
 
-  Deploy the project to the production stage.
+  Deploy the project to production.
   $ up deploy production
 
-  Show the development endpoint url.
+  Show the staging endpoint url.
   $ up url
 
   Tail project logs.
@@ -82,7 +82,7 @@ Examples:
 
 ## Deploy
 
-Deploy the project, by default to the "development" stage. Note that running `up` and `up deploy` are identical, however for staging and production you must run `up deploy <stage>`.
+Deploy the project, by default to the "staging" stage. Note that running `up` and `up deploy` are identical, as it is the default command.
 
 ```
 Usage:
@@ -220,7 +220,7 @@ $ up -e 'path = "/static/*"'
            ip: 70.66.179.182
        method: GET
          path: /static/3.jpg
-        stage: development
+        stage: production
       version: 5
 
 1:36:34pm INFO response
@@ -230,7 +230,7 @@ $ up -e 'path = "/static/*"'
        method: GET
          path: /static/3.jpg
          size: 0 B
-        stage: development
+        stage: production
        status: 304
       version: 5
 
@@ -239,7 +239,7 @@ $ up -e 'path = "/static/*"'
            ip: 70.66.179.182
        method: GET
          path: /static/1.png
-        stage: development
+        stage: production
       version: 5
 ```
 
@@ -485,7 +485,7 @@ $ up metrics production -s 15d
 
 ## Start
 
-Start development server. The development server runs the same proxy that is used in production for serving, so you can test a static site or application locally with the same feature-set.
+Start development server. The development server runs the same proxy that is used in production for serving, so you can test a static site or application locally with the same feature-set. The `UP_STAGE` and `NODE_ENV` environment variables will are set to "development".
 
 See [Stage Overrides](https://up.docs.apex.sh/#configuration.stage_overrides) for an example of overriding the proxy command per-stage, especially useful in development.
 

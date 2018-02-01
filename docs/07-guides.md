@@ -208,7 +208,7 @@ http.createServer((req, res) => {
 }).listen(PORT)
 ```
 
-Now deploy to development and production. Note that `up` is an alias of `up deploy development`.
+Now deploy to staging and production. Note that `up` is an alias of `up deploy staging`.
 
 ```
 $ up
@@ -222,20 +222,20 @@ $ up url -o
 $ up url production -o
 ```
 
-You should see "Hello World from production" and "Hello World from development".
+You should see "Hello World from production" and "Hello World from staging".
 
 ### Mapping Custom Domains to Stages
 
 Now that you have an application deployed, you probably want a fancy custom domain for it right? You can map these using the `stages` and `domain` properties.
 
-Here we let Up know that we want `up-example.com` for production and `dev.up-example` for development.
+Here we let Up know that we want `up-example.com` for production and `dev.up-example` for staging.
 
 ```json
 {
   "name": "up-example",
   "profile": "up-tobi",
   "stages": {
-    "development": {
+    "staging": {
       "domain": "dev.up-example.com"
     },
     "production": {
@@ -373,9 +373,6 @@ Suppose you wanted to map the "staging" stage, you would first add it to `up.jso
   "name": "up-example",
   "profile": "up-tobi",
   "stages": {
-    "development": {
-      "domain": "dev.up-example.com"
-    },
     "staging": {
       "domain": "stage.up-example.com"
     },

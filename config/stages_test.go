@@ -79,9 +79,6 @@ func TestStages_Validate(t *testing.T) {
 
 	t.Run("some stages", func(t *testing.T) {
 		s := Stages{
-			Development: &Stage{
-				Domain: "gh-polls-dev.com",
-			},
 			Staging: &Stage{
 				Domain: "gh-polls-stage.com",
 			},
@@ -92,15 +89,14 @@ func TestStages_Validate(t *testing.T) {
 
 		assert.NoError(t, s.Default(), "validate")
 		assert.NoError(t, s.Validate(), "validate")
-		assert.Equal(t, "development", s.Development.Name)
 		assert.Equal(t, "staging", s.Staging.Name)
 		assert.Equal(t, "production", s.Production.Name)
 	})
 }
 
 func TestStages_List(t *testing.T) {
-	dev := &Stage{
-		Domain: "gh-polls-dev.com",
+	stage := &Stage{
+		Domain: "gh-polls-stage.com",
 	}
 
 	prod := &Stage{
@@ -108,12 +104,12 @@ func TestStages_List(t *testing.T) {
 	}
 
 	s := Stages{
-		Development: dev,
-		Production:  prod,
+		Staging:    stage,
+		Production: prod,
 	}
 
 	list := []*Stage{
-		dev,
+		stage,
 		prod,
 	}
 
@@ -122,8 +118,8 @@ func TestStages_List(t *testing.T) {
 }
 
 func TestStages_GetByDomain(t *testing.T) {
-	dev := &Stage{
-		Domain: "gh-polls-dev.com",
+	stage := &Stage{
+		Domain: "gh-polls-stage.com",
 	}
 
 	prod := &Stage{
@@ -131,10 +127,9 @@ func TestStages_GetByDomain(t *testing.T) {
 	}
 
 	s := Stages{
-		Development: dev,
-		Production:  prod,
+		Staging:    stage,
+		Production: prod,
 	}
 
-	stage := s.GetByDomain("gh-polls.com")
-	assert.Equal(t, prod, stage)
+	assert.Equal(t, prod, s.GetByDomain("gh-polls.com"))
 }

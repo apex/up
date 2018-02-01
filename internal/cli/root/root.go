@@ -27,9 +27,9 @@ var Init func() (*up.Config, *up.Project, error)
 func init() {
 	log.SetHandler(cli.Default)
 
-	Cmd.Example(`up`, "Deploy the project to the development stage.")
+	Cmd.Example(`up`, "Deploy the project to the staging environment.")
 	Cmd.Example(`up deploy production`, "Deploy the project to the production stage.")
-	Cmd.Example(`up url`, "Show the development endpoint url.")
+	Cmd.Example(`up url`, "Show the staging endpoint url.")
 	Cmd.Example(`up logs -f`, "Tail project logs.")
 	Cmd.Example(`up logs 'error or fatal'`, "Show error or fatal level logs.")
 	Cmd.Example(`up run build`, "Run build command manually.")

@@ -53,7 +53,7 @@ title: FAQ
 </details>
 
 <details>
-  <summary>Can I remove the /development and /production paths?</summary>
+  <summary>Can I remove the /staging and /production paths?</summary>
   <p>Up uses AWS API Gateway, which imposes the stage base paths. Currently there is no way to remove them, however when you use
   custom domains these paths are not present.</p>
 </details>
