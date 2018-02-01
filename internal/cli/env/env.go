@@ -52,6 +52,7 @@ func list(cmd *kingpin.Cmd) {
 		}
 
 		if len(secrets) == 0 {
+			util.LogPad("No environment variables defined. See `up help env` for examples.")
 			return nil
 		}
 
