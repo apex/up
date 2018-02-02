@@ -7,7 +7,6 @@ import (
 	"io"
 	"io/ioutil"
 	"os"
-	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -202,23 +201,25 @@ func (p *Platform) Rollback(region, stage, version string) error {
 	log.Debugf("rolling back %s %s to %q", region, stage, version)
 
 	if version == "" {
-		log.Debug("fetching current version")
-		v, err := getAliasVersion(c, p.config.Name, stage)
+		log.Debug("fetching previous version")
+		v, err := getAliasVersion(c, p.config.Name, previous(stage))
 		if err != nil {
-			return errors.Wrap(err, "fetching alias")
+			return errors.Wrap(err, "fetching previous alias")
 		}
-		version = strconv.Itoa(v - 1)
+		version = v
 	}
 
-	log.Debugf("updating %s %s alias to %q", region, stage, version)
-	_, err := c.UpdateAlias(&lambda.UpdateAliasInput{
-		FunctionName:    &p.config.Name,
-		FunctionVersion: &version,
-		Name:            &stage,
-	})
-
+	curr, err := getAliasVersion(c, p.config.Name, stage)
 	if err != nil {
+		return errors.Wrap(err, "fetching current alias")
+	}
+
+	if err := p.alias(c, stage, version); err != nil {
 		return errors.Wrap(err, "updating alias")
+	}
+
+	if err := p.alias(c, previous(stage), curr); err != nil {
+		return errors.Wrap(err, "updating previous alias")
 	}
 
 	return nil
@@ -648,7 +649,16 @@ retry:
 		return "", errors.Wrap(err, "updating function code")
 	}
 
+	curr, err := getAliasVersion(c, p.config.Name, stage)
+	if err != nil {
+		return "", errors.Wrap(err, "fetching current version")
+	}
+
 	if err := p.alias(c, stage, *res.Version); err != nil {
+		return "", errors.Wrapf(err, "creating function %q alias", stage)
+	}
+
+	if err := p.alias(c, previous(stage), curr); err != nil {
 		return "", errors.Wrapf(err, "creating function %q alias", stage)
 	}
 
@@ -979,31 +989,21 @@ func getCert(certs []*acm.CertificateDetail, domain string) string {
 	return ""
 }
 
-// getAlias returns the alias for stage.
-func getAlias(c *lambda.Lambda, name, stage string) (*lambda.AliasConfiguration, error) {
-	res, err := c.ListAliases(&lambda.ListAliasesInput{
+// getAliasVersion returns the alias version if it is present, or an error.
+func getAliasVersion(c *lambda.Lambda, name, alias string) (string, error) {
+	res, err := c.GetAlias(&lambda.GetAliasInput{
 		FunctionName: &name,
+		Name:         &alias,
 	})
 
 	if err != nil {
-		return nil, errors.Wrap(err, "listing aliases")
+		return "", errors.Wrap(err, "fetching alias")
 	}
 
-	for _, a := range res.Aliases {
-		if *a.Name == stage {
-			return a, nil
-		}
-	}
-
-	return nil, errors.New("stage has no alias")
+	return *res.FunctionVersion, nil
 }
 
-// getAliasVersion returns the alias version for stage.
-func getAliasVersion(c *lambda.Lambda, name, stage string) (int, error) {
-	a, err := getAlias(c, name, stage)
-	if err != nil {
-		return 0, errors.Wrap(err, "fetching alias")
-	}
-
-	return strconv.Atoi(*a.FunctionVersion)
+// previous returns the "previous" alias.
+func previous(s string) string {
+	return s + "-previous"
 }

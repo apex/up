@@ -24,9 +24,13 @@ func init() {
 			return errors.Wrap(err, "initializing")
 		}
 
+		defer util.Pad()()
+
 		// TODO: multi-region
 		r := c.Regions[0]
 		v := *version
+
+		util.Log("Rolling back %s", *stage)
 
 		if err := p.Rollback(r, *stage, v); err != nil {
 			return errors.Wrap(err, "rollback")
@@ -37,7 +41,7 @@ func init() {
 			"stage":       *stage,
 		})
 
-		util.LogPad("Rollback complete")
+		util.LogClear("Rolling complete")
 
 		return nil
 	})
