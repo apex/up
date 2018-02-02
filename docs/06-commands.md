@@ -30,8 +30,12 @@ Commands:
   domains ls           List purchased domains.
   domains check        Check availability of a domain.
   domains buy          Purchase a domain.
+  env ls               List variables.
+  env add              Add a variable.
+  env rm               Remove a variable.
   logs                 Show log output.
   metrics              Show project metrics.
+  rollback             Rollback to a previous deployment.
   run                  Run a hook.
   stack plan           Plan configuration changes.
   stack apply          Apply configuration changes.
@@ -47,18 +51,19 @@ Commands:
   team members ls      List team members and invites.
   team subscribe       Subscribe to the Pro plan.
   team unsubscribe     Unsubscribe from the Pro plan.
+  team card change     Change the default card.
   team ci              Credentials for CI.
   team add             Add a new team.
-  upgrade              Install the latest release of Up.
+  upgrade              Install the latest or specified version of Up.
   url                  Show, open, or copy a stage endpoint.
   version              Show version.
 
 Examples:
 
-  Deploy the project to staging.
+  Deploy the project to the staging environment.
   $ up
 
-  Deploy the project to production.
+  Deploy the project to the production stage.
   $ up deploy production
 
   Show the staging endpoint url.
@@ -94,6 +99,7 @@ Flags:
   -h, --help           Output usage information.
   -C, --chdir="."      Change working directory.
   -v, --verbose        Enable verbose log output.
+      --format="text"  Output formatter.
       --version        Show application version.
 
 Args:
@@ -125,6 +131,13 @@ Deploy the project to the production stage.
 
 ```
 $ up deploy production
+```
+
+Note that since `deploy` is the default command the following are also valid:
+
+```
+$ up staging
+$ up production
 ```
 
 ## Config
@@ -198,6 +211,7 @@ Flags:
   -h, --help           Output usage information.
   -C, --chdir="."      Change working directory.
   -v, --verbose        Enable verbose log output.
+      --format="text"  Output formatter.
       --version        Show application version.
   -f, --follow         Follow or tail the live logs.
   -s, --since="1d"     Show logs since duration (30s, 5m, 2h, 1h30m, 3d, 1M).
@@ -397,6 +411,7 @@ Flags:
   -h, --help           Output usage information.
   -C, --chdir="."      Change working directory.
   -v, --verbose        Enable verbose log output.
+      --format="text"  Output formatter.
       --version        Show application version.
   -o, --open           Open endpoint in the browser.
   -c, --copy           Copy endpoint to the clipboard.
@@ -458,12 +473,14 @@ Flags:
   -h, --help           Output usage information.
   -C, --chdir="."      Change working directory.
   -v, --verbose        Enable verbose log output.
+      --format="text"  Output formatter.
       --version        Show application version.
   -s, --since="1M"     Show logs since duration (30s, 5m, 2h, 1h30m, 3d, 1M).
 
 Args:
 
   [<stage>]  Name of the stage.
+
 ```
 
 For example:
@@ -490,8 +507,6 @@ Start development server. The development server runs the same proxy that is use
 See [Stage Overrides](https://up.docs.apex.sh/#configuration.stage_overrides) for an example of overriding the proxy command per-stage, especially useful in development.
 
 ```
-Start development server.
-
 Usage:
 
   up start [<flags>]
@@ -504,6 +519,7 @@ Flags:
       --format="text"    Output formatter.
       --version          Show application version.
   -c, --command=COMMAND  Proxy command override
+  -o, --open             Open endpoint in the browser.
       --address=":3000"  Address for server.
 ```
 
@@ -699,6 +715,7 @@ Subcommands:
   team members ls      List team members and invites.
   team subscribe       Subscribe to the Pro plan.
   team unsubscribe     Unsubscribe from the Pro plan.
+  team card change     Change the default card.
   team ci              Credentials for CI.
   team add             Add a new team.
 ```
