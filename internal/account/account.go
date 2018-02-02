@@ -294,6 +294,23 @@ func (c *Client) RemovePlan(token, product, plan string) error {
 	return nil
 }
 
+// AddFeedback sends customer feedback.
+func (c *Client) AddFeedback(token, message string) error {
+	in := struct {
+		Message string `json:"message"`
+	}{
+		Message: message,
+	}
+
+	res, err := c.requestJSON(token, "POST", "/feedback", in)
+	if err != nil {
+		return err
+	}
+	defer res.Body.Close()
+
+	return nil
+}
+
 // Login signs in the user.
 func (c *Client) Login(email, team string) (code string, err error) {
 	in := struct {

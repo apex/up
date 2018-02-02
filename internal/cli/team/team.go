@@ -15,6 +15,7 @@ import (
 	"github.com/tj/go/clipboard"
 	"github.com/tj/go/env"
 	"github.com/tj/go/http/request"
+	"github.com/tj/go/term"
 	"github.com/tj/kingpin"
 	"github.com/tj/survey"
 
@@ -506,6 +507,20 @@ func unsubscribe(cmd *kingpin.Cmd) {
 			return nil
 		}
 
+		term.MoveUp(1)
+		term.ClearLine()
+
+		msg, err := feedback()
+		if err != nil {
+			util.LogPad("Aborted")
+			return nil
+		}
+
+		if strings.TrimSpace(msg) != "" {
+			util.Log("Thanks for the feedback!")
+			_ = a.AddFeedback(config.Token, msg)
+		}
+
 		stats.Track("Unsubscribe", nil)
 
 		if err := a.RemovePlan(config.Token, "up", "pro"); err != nil {
@@ -671,4 +686,14 @@ func changeCard(cmd *kingpin.Cmd) {
 func prompt(name string, s *string) error {
 	prompt := &survey.Input{Message: name}
 	return survey.AskOne(prompt, s, survey.Required)
+}
+
+// feedback prompt helper.
+func feedback() (string, error) {
+	var s string
+	prompt := &survey.Input{Message: "Have any feedback? (optional)"}
+	if err := survey.AskOne(prompt, &s, nil); err != nil {
+		return "", err
+	}
+	return s, nil
 }
