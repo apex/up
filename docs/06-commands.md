@@ -142,7 +142,7 @@ $ up production
 
 ## Rollback
 
-Rollback to a previous deployment. Note that rollbacks do not affect environment variables, as they are loaded at runtime.
+Rollback to a previous deployment. A subsequent `up rollback` will revert the rollback, as it simply toggles the deployment versions. Note that rollbacks do not affect environment variables, as they are loaded at runtime.
 
 ```
 Usage:
