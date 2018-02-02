@@ -42,6 +42,7 @@ func init() {
 	cmd.Example(`up team subscribe`, "Subscribe to the Pro plan.")
 	cmd.Example(`up team members add asya@example.com`, "Invite a team member to your active team.")
 	cmd.Example(`up team members rm tobi@example.com`, "Remove a team member from your active team.")
+	cmd.Example(`up team card change`, "Change the default credit card.")
 	cmd.Example(`up team switch`, "Switch teams interactively.")
 	status(cmd)
 	switchTeam(cmd)
@@ -50,6 +51,7 @@ func init() {
 	members(cmd)
 	subscribe(cmd)
 	unsubscribe(cmd)
+	card(cmd)
 	copy(cmd)
 	add(cmd)
 }
@@ -174,6 +176,11 @@ func status(cmd *kingpin.Cmd) {
 		defer util.Pad()()
 		util.LogName("team", t.ID)
 
+		team, err := a.GetTeam(t.Token)
+		if err != nil {
+			return errors.Wrap(err, "fetching team")
+		}
+
 		plans, err := a.GetPlans(t.Token)
 		if err != nil {
 			return errors.Wrap(err, "fetching plans")
@@ -184,16 +191,12 @@ func status(cmd *kingpin.Cmd) {
 			return nil
 		}
 
-		cards, err := a.GetCards(t.Token)
-		if err != nil {
-			return errors.Wrap(err, "fetching cards")
+		if c := team.Card; c != nil {
+			util.LogName("card", "%s ending with %s", c.Brand, c.LastFour)
 		}
 
 		// TODO: filter on plan type (later may be other products)
 		p := plans[0]
-		c := cards[0]
-
-		util.LogName("card", "%s ending with %s", c.Brand, c.LastFour)
 
 		if d := p.Discount; d != nil {
 			p.Amount = d.Coupon.Discount(p.Amount)
@@ -422,7 +425,7 @@ func subscribe(cmd *kingpin.Cmd) {
 
 		// add card
 		util.LogTitle("Credit Card")
-		util.Log("First add your credit card details which is transferred")
+		util.Log("First add your credit card details, these are transferred")
 		util.Log("directly to Stripe over HTTPS and never touch our servers.")
 		println()
 
@@ -613,6 +616,52 @@ func listMembers(cmd *kingpin.Cmd) {
 				util.LogListItem(email)
 			}
 		}
+
+		return nil
+	})
+}
+
+// card commands.
+func card(cmd *kingpin.Cmd) {
+	c := cmd.Command("card", "Card management.")
+	changeCard(c)
+}
+
+// changeCard command.
+func changeCard(cmd *kingpin.Cmd) {
+	c := cmd.Command("change", "Change the default card.")
+
+	c.Action(func(_ *kingpin.ParseContext) error {
+		t, err := userconfig.Require()
+		if err != nil {
+			return err
+		}
+
+		defer util.Pad()()
+
+		util.LogTitle("Credit Card")
+		util.Log("Enter new credit card details to replace the existing card.")
+		println()
+
+		card, err := account.PromptForCard()
+		if err != nil {
+			return errors.Wrap(err, "prompting for card")
+		}
+
+		tok, err := token.New(&stripe.TokenParams{
+			Card: &card,
+		})
+
+		if err != nil {
+			return errors.Wrap(err, "requesting card token")
+		}
+
+		if err := a.AddCard(t.Token, tok.ID); err != nil {
+			return errors.Wrap(err, "adding card")
+		}
+
+		println()
+		util.Log("Updated")
 
 		return nil
 	})

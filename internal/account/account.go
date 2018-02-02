@@ -112,6 +112,7 @@ type Team struct {
 	Name      string    `json:"name"`
 	Owner     string    `json:"owner"`
 	Type      string    `json:"type"`
+	Card      *Card     `json:"card"`
 	Members   []User    `json:"members"`
 	Invites   []string  `json:"invites"`
 	UpdatedAt time.Time `json:"updated_at"`
@@ -143,7 +144,7 @@ func (c *Client) GetCoupon(id string) (coupon *Coupon, err error) {
 	return
 }
 
-// AddCard adds the card via stripe token.
+// AddCard adds or updates the default card via stripe token.
 func (c *Client) AddCard(token, cardToken string) error {
 	in := struct {
 		Token string `json:"token"`
