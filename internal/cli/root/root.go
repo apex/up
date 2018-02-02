@@ -10,6 +10,7 @@ import (
 	"github.com/tj/kingpin"
 
 	"github.com/apex/up"
+	"github.com/apex/up/internal/util"
 	"github.com/apex/up/platform/event"
 	"github.com/apex/up/platform/lambda"
 	"github.com/apex/up/reporter"
@@ -61,7 +62,7 @@ func init() {
 			switch {
 			case *verbose:
 				go reporter.Discard(events)
-			case *format == "plain" || os.Getenv("CI") == "true":
+			case *format == "plain" || util.IsCI():
 				go reporter.Plain(events)
 			default:
 				go reporter.Text(events)

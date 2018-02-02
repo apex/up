@@ -436,3 +436,8 @@ func UniqueStrings(s []string) (v []string) {
 	}
 	return
 }
+
+// IsCI returns true if the env looks like it's a CI platform.
+func IsCI() bool {
+	return os.Getenv("CI") == "true"
+}
