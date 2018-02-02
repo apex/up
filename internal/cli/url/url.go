@@ -10,6 +10,7 @@ import (
 
 	"github.com/apex/up/internal/cli/root"
 	"github.com/apex/up/internal/stats"
+	"github.com/apex/up/internal/util"
 	"github.com/apex/up/internal/validate"
 )
 
@@ -56,7 +57,7 @@ func init() {
 			browser.OpenURL(url)
 		case *copy:
 			clipboard.Write(url)
-			fmt.Println("Copied to clipboard!")
+			util.LogPad("Copied to clipboard!")
 		default:
 			fmt.Println(url)
 		}
