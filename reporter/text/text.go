@@ -108,8 +108,10 @@ func (r *reporter) Start() {
 		case e := <-r.events:
 			switch e.Name {
 			case "account.login.verify":
+				term.HideCursor()
 				r.pending("verify", "Check your email for a confirmation link")
 			case "account.login.verified":
+				term.ShowCursor()
 				r.completeWithoutDuration("verify", "complete")
 			case "hook":
 				r.pending(e.String("name"), "")
