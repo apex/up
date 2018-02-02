@@ -156,7 +156,7 @@ Flags:
   -v, --verbose             Enable verbose log output.
       --format="text"       Output formatter.
       --version             Show application version.
-  -s, --stage="development" Target stage name.
+  -s, --stage="staging"     Target stage name.
 
 Args:
 
