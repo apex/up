@@ -27,12 +27,6 @@ var transform = archive.TransformFunc(func(r io.Reader, i os.FileInfo) (io.Reade
 
 // Build the given `dir`.
 func Build(dir string) (io.ReadCloser, *archive.Stats, error) {
-	gitignore, err := read(".gitignore")
-	if err != nil {
-		return nil, nil, errors.Wrap(err, "reading .gitignore")
-	}
-	defer gitignore.Close()
-
 	upignore, err := read(".upignore")
 	if err != nil {
 		return nil, nil, errors.Wrap(err, "reading .upignore")
@@ -41,7 +35,6 @@ func Build(dir string) (io.ReadCloser, *archive.Stats, error) {
 
 	r := io.MultiReader(
 		strings.NewReader(".*\n"),
-		gitignore,
 		strings.NewReader("\n!node_modules/**\n!.pypath/**\n"),
 		upignore,
 		strings.NewReader("\n!main\n!server\n!_proxy.js\n!byline.js\n!up.json\n!pom.xml\n!build.gradle\n!project.clj\n"))

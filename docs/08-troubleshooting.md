@@ -15,7 +15,7 @@ title: Help
 
 <details>
   <summary>I'm seeing 404 Not Found responses</summary>
-  <p>By default Up ignores files which are found in `.gitignore`. Use the verbose flag such as `up -v` to see if files have been filtered, or `up build --size` to see a list of files within the zip sorted by size. See [Ignoring Files](#configuration.ignoring_files) for more information.</p>
+  <p>By default Up ignores files which are found in `.upignore`. Use the verbose flag such as `up -v` to see if files have been filtered, or `up build --size` to see a list of files within the zip sorted by size. See [Ignoring Files](#configuration.ignoring_files) for more information.</p>
 </details>
 
 <details>

@@ -668,10 +668,7 @@ By default Up treats stdout as `info` level logs, and stderr as `error` level. I
 
 ## Ignoring Files
 
-Up supports gitignore style pattern matching for omitting files from deployment. The following files are loaded in sequence:
-
-- .gitignore
-- .upignore
+Up supports gitignore style pattern matching for omitting files from deployment, via the `.upignore` file.
 
 An example `.upignore` to omit markdown and `.go` source files might look like this:
 
@@ -714,16 +711,6 @@ DEBU filtered node_modules/chalk/readme.md – 6136
 ```
 
 You may also wish to use `up build --size` to view the largest files within the zip.
-
-### Node specifics
-
-When building a Node project, `node_modules` is often added to `.gitignore`, so Up special-cases this scenario so that `node_modules` is not excluded by default.
-
-If you're using a bundler such as Webpack or Browserify instead, you may wish to ignore `node_modules` as they're not required in production, add this to your `./.upignore`:
-
-```
-node_modules
-```
 
 ### Pattern matching
 
