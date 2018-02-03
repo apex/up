@@ -668,7 +668,7 @@ By default Up treats stdout as `info` level logs, and stderr as `error` level. I
 
 ## Ignoring Files
 
-Up supports gitignore style pattern matching for omitting files from deployment, via the `.upignore` file.
+Up supports gitignore style pattern matching for omitting files from deployment via the `.upignore` file.
 
 An example `.upignore` to omit markdown and `.go` source files might look like this:
 
