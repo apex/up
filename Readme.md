@@ -35,6 +35,8 @@ Note that the following Pro features are currently available:
 
 ![Pro edition features](assets/features-pro.png)
 
+[![](https://gui.apex.sh/component?name=ShadowButton&config=%7B%22text%22%3A%22SUBSCRIBE%22%2C%22color%22%3A%227956EF%22%7D)](https://up.docs.apex.sh/#guides.subscribing_to_up_pro)
+
 ## Quick Start
 
 Install Up:
