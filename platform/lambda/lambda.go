@@ -445,7 +445,6 @@ func (p *Platform) createFunction(c *lambda.Lambda, a *apigateway.APIGateway, up
 	}
 
 	log.Debug("uploading function")
-retry:
 	b := aws.String(p.getS3BucketName(region))
 	k := aws.String(p.getS3Key(stage))
 
@@ -459,6 +458,7 @@ retry:
 		return "", errors.Wrap(err, "uploading function")
 	}
 
+retry:
 	log.Debug("creating function")
 	res, err := c.CreateFunction(&lambda.CreateFunctionInput{
 		FunctionName: &p.config.Name,
@@ -494,7 +494,6 @@ func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up
 	b := aws.String(p.getS3BucketName(region))
 	k := aws.String(p.getS3Key(stage))
 
-retry:
 	log.Debug("uploading function")
 	_, err = up.Upload(&s3manager.UploadInput{
 		Bucket: b,
@@ -513,6 +512,7 @@ retry:
 		return "", errors.Wrap(err, "uploading function")
 	}
 
+retry:
 	log.Debug("updating function")
 	_, err = c.UpdateFunctionConfiguration(&lambda.UpdateFunctionConfigurationInput{
 		FunctionName: &p.config.Name,
