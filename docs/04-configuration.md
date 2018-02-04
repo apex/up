@@ -253,9 +253,13 @@ Date: Mon, 31 Jul 2017 20:49:35 GMT
 
 ## Error Pages
 
-By default Up will serve a minimalistic error page for requests accepting `text/html`.
+By default Up will serve a minimalistic error page for requests accepting `text/html`. The following settings are available:
 
-The default template's `color` and optionally provide a `support_email` to allow customers to contact your support team.
+- `disable` — remove the error page feature and default pages
+- `dir` — the directory where the error pages are located
+- `variables` — vars available to the pages
+
+The default template's `color` and optionally provide a `support_email` to allow customers to contact your support team, for example:
 
 ```json
 {
@@ -296,16 +300,6 @@ Variables specified via `variables`, as well as `.StatusText` and `.StatusCode` 
     {{end}}
   </body>
 </html>
-```
-
-To disable the default template use:
-
-```json
-{
-  "error_pages": {
-    "disable": true
-  }
-}
 ```
 
 ## Script Injection
