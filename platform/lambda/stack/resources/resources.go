@@ -276,17 +276,17 @@ func stageDomain(c *Config, s *config.Stage, m Map, deploymentID string) {
 		},
 	}
 
-	stagePathMapping(c, s, m, deploymentID)
+	stagePathMapping(c, s, m, deploymentID, id)
 	stageDNSRecord(c, s, m, id)
 }
 
 // stagePathMapping sets up the stage deployment mapping.
-func stagePathMapping(c *Config, s *config.Stage, m Map, deploymentID string) {
+func stagePathMapping(c *Config, s *config.Stage, m Map, deploymentID, domainID string) {
 	id := util.Camelcase("api_domain_%s_path_mapping", s.Name)
 
 	m[id] = Map{
 		"Type":      "AWS::ApiGateway::BasePathMapping",
-		"DependsOn": deploymentID,
+		"DependsOn": []string{deploymentID, domainID},
 		"Properties": Map{
 			"DomainName": s.Domain,
 			"BasePath":   util.BasePath(s.Path),

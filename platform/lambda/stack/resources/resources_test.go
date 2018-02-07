@@ -423,7 +423,10 @@ func Example_stagePathMapping() {
 	dump(c, "ApiDomainProductionPathMapping")
 	// Output:
 	// {
-	//   "DependsOn": "ApiDeploymentProduction",
+	//   "DependsOn": [
+	//     "ApiDeploymentProduction",
+	//     "ApiDomainProduction"
+	//   ],
 	//   "Properties": {
 	//     "BasePath": "",
 	//     "DomainName": "up-example.com",
