@@ -118,7 +118,7 @@ func (s *Stack) Create(versions resources.Versions) error {
 }
 
 // Delete the stack, optionally waiting for completion.
-func (s *Stack) Delete(wait bool) error {
+func (s *Stack) Delete(versions resources.Versions, wait bool) error {
 	_, err := s.client.DeleteStack(&cloudformation.DeleteStackInput{
 		StackName: &s.config.Name,
 	})
@@ -128,7 +128,7 @@ func (s *Stack) Delete(wait bool) error {
 	}
 
 	if wait {
-		tmpl := s.template(resources.Versions{})
+		tmpl := s.template(versions)
 		if err := s.report(resourceStateFromTemplate(tmpl, DeleteComplete)); err != nil {
 			return errors.Wrap(err, "reporting")
 		}

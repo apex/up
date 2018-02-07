@@ -250,12 +250,17 @@ func (p *Platform) DeleteStack(region string, wait bool) error {
 		return errors.Wrap(err, "creating iam role")
 	}
 
+	versions, err := p.getAliasVersions(region)
+	if err != nil {
+		return errors.Wrap(err, "fetching alias versions")
+	}
+
 	if err := p.deleteBucketObjects(region); err != nil && !util.IsNotFound(err) {
 		return errors.Wrap(err, "deleting s3 objects")
 	}
 
 	log.Debug("deleting stack")
-	if err := stack.New(p.config, p.events, nil, region).Delete(wait); err != nil {
+	if err := stack.New(p.config, p.events, nil, region).Delete(versions, wait); err != nil {
 		return errors.Wrap(err, "deleting stack")
 	}
 
