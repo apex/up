@@ -38,6 +38,7 @@ import (
 	"github.com/apex/up/platform/aws/runtime"
 	"github.com/apex/up/platform/event"
 	"github.com/apex/up/platform/lambda/stack"
+	"github.com/apex/up/platform/lambda/stack/resources"
 )
 
 // errFirstDeploy is returned from .deploy() when a function is created.
@@ -225,6 +226,12 @@ func (p *Platform) URL(region, stage string) (string, error) {
 
 // CreateStack implementation.
 func (p *Platform) CreateStack(region, version string) error {
+	versions := make(resources.Versions)
+
+	for _, s := range p.config.Stages {
+		versions[s.Name] = version
+	}
+
 	if err := p.createCerts(); err != nil {
 		return errors.Wrap(err, "creating certs")
 	}
@@ -234,7 +241,7 @@ func (p *Platform) CreateStack(region, version string) error {
 		return errors.Wrap(err, "fetching zones")
 	}
 
-	return stack.New(p.config, p.events, zones, region).Create(version)
+	return stack.New(p.config, p.events, zones, region).Create(versions)
 }
 
 // DeleteStack implementation.
@@ -272,6 +279,11 @@ func (p *Platform) ShowStack(region string) error {
 
 // PlanStack implementation.
 func (p *Platform) PlanStack(region string) error {
+	versions, err := p.getAliasVersions(region)
+	if err != nil {
+		return errors.Wrap(err, "fetching alias versions")
+	}
+
 	if err := p.createCerts(); err != nil {
 		return errors.Wrap(err, "creating certs")
 	}
@@ -281,7 +293,7 @@ func (p *Platform) PlanStack(region string) error {
 		return errors.Wrap(err, "fetching zones")
 	}
 
-	return stack.New(p.config, p.events, zones, region).Plan()
+	return stack.New(p.config, p.events, zones, region).Plan(versions)
 }
 
 // ApplyStack implementation.
@@ -291,6 +303,60 @@ func (p *Platform) ApplyStack(region string) error {
 	}
 
 	return stack.New(p.config, p.events, nil, region).Apply()
+}
+
+// getAliasVersions returns the function alias versions.
+func (p *Platform) getAliasVersions(region string) (resources.Versions, error) {
+	var g errgroup.Group
+	var mu sync.Mutex
+
+	c := lambda.New(session.New(aws.NewConfig().WithRegion(region)))
+	versions := make(resources.Versions)
+
+	log.Debug("fetching aliases")
+	for _, s := range p.config.Stages {
+		s := s
+
+		g.Go(func() error {
+			log.Debugf("fetching %s alias", s.Name)
+			version, err := p.getAliasVersion(c, s.Name)
+
+			if util.IsNotFound(err) {
+				log.Debugf("%s has no alias, defaulting to staging", s.Name)
+				version, err = p.getAliasVersion(c, "staging")
+				if err != nil {
+					return errors.Wrap(err, "fetching staging alias")
+				}
+			}
+
+			if err != nil {
+				return errors.Wrapf(err, "fetching %q alias", s.Name)
+			}
+
+			log.Debugf("fetched %s alias (%s)", s.Name, version)
+			mu.Lock()
+			versions[s.Name] = version
+			mu.Unlock()
+
+			return nil
+		})
+	}
+
+	return versions, g.Wait()
+}
+
+// getAliasVersion retruns the alias version for a stage.
+func (p *Platform) getAliasVersion(c *lambda.Lambda, stage string) (string, error) {
+	res, err := c.GetAlias(&lambda.GetAliasInput{
+		FunctionName: &p.config.Name,
+		Name:         &stage,
+	})
+
+	if err != nil {
+		return "", err
+	}
+
+	return *res.FunctionVersion, nil
 }
 
 // getHostedZone returns existing hosted zones.

@@ -43,7 +43,7 @@ func init() {
 			"copy":   *copy,
 		})
 
-		if err := validate.Stage(*stage); err != nil {
+		if err := validate.List(*stage, c.Stages.RemoteNames()); err != nil {
 			return err
 		}
 

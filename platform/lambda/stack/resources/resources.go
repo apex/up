@@ -13,6 +13,9 @@ import (
 // Map type.
 type Map map[string]interface{}
 
+// Versions is a map of stage to lambda function version.
+type Versions map[string]string
+
 // Config for the resource template.
 type Config struct {
 	// Zones already present in route53. This is used to
@@ -20,6 +23,10 @@ type Config struct {
 	// automatically configured when purchasing a domain
 	// are not duplicated.
 	Zones []*route53.HostedZone
+
+	// Versions map used to maintain the correct lambda
+	// function aliases when updating a stack.
+	Versions Versions
 
 	*up.Config
 }
@@ -111,15 +118,13 @@ func dnsZone(c *Config, m Map, domain string) interface{} {
 	return ref(id)
 }
 
-// API resources.
+// api sets up the app resources.
 func api(c *Config, m Map) {
-	desc := util.ManagedByUp(c.Description)
-
 	m["Api"] = Map{
 		"Type": "AWS::ApiGateway::RestApi",
 		"Properties": Map{
 			"Name":        ref("Name"),
-			"Description": desc,
+			"Description": util.ManagedByUp(c.Description),
 			"BinaryMediaTypes": []string{
 				"*/*",
 			},
@@ -168,72 +173,100 @@ func api(c *Config, m Map) {
 		},
 	}
 
-	m["ApiDeploymentStaging"] = Map{
-		"Type":      "AWS::ApiGateway::Deployment",
-		"DependsOn": []string{"ApiRootMethod", "ApiProxyMethod", "ApiFunctionAliasStaging"},
-		"Properties": Map{
-			"RestApiId": ref("Api"),
-			"StageName": "staging",
-			"StageDescription": Map{
-				"Variables": Map{
-					"qualifier": "staging",
-				},
-			},
-		},
-	}
-
-	m["ApiDeploymentProduction"] = Map{
-		"Type":      "AWS::ApiGateway::Deployment",
-		"DependsOn": []string{"ApiRootMethod", "ApiProxyMethod", "ApiFunctionAliasProduction"},
-		"Properties": Map{
-			"RestApiId": ref("Api"),
-			"StageName": "production",
-			"StageDescription": Map{
-				"Variables": Map{
-					"qualifier": "production",
-				},
-			},
-		},
-	}
-
-	m["ApiFunctionAliasStaging"] = Map{
-		"Type": "AWS::Lambda::Alias",
-		"Properties": Map{
-			"Name":            "staging",
-			"Description":     util.ManagedByUp("Staging environment"),
-			"FunctionName":    ref("FunctionName"),
-			"FunctionVersion": ref("FunctionVersionStaging"),
-		},
-	}
-
-	m["ApiFunctionAliasProduction"] = Map{
-		"Type": "AWS::Lambda::Alias",
-		"Properties": Map{
-			"Name":            "production",
-			"Description":     util.ManagedByUp("Production environment"),
-			"FunctionName":    ref("FunctionName"),
-			"FunctionVersion": ref("FunctionVersionProduction"),
-		},
-	}
-
 	stages(c, m)
 }
 
-// Stages configuration.
+// stages sets up the stage specific resources.
 func stages(c *Config, m Map) {
 	for _, s := range c.Stages.List() {
-		if s.Domain == "" {
-			continue
+		if s.IsRemote() {
+			stage(c, s, m)
 		}
-
-		stage(c, s, m)
 	}
 }
 
-// Stage configuration.
+// stage sets up the stage specific resources.
 func stage(c *Config, s *config.Stage, m Map) {
+	aliasID := stageAlias(c, s, m)
+	deploymentID := stageDeployment(c, s, m, aliasID)
+	stagePermissions(c, s, m, aliasID)
+	stageDomain(c, s, m, deploymentID)
+}
+
+// stageAlias sets up the lambda alias and deployment and returns the alias id.
+func stageAlias(c *Config, s *config.Stage, m Map) string {
+	id := util.Camelcase("api_function_alias_%s", s.Name)
+	version, ok := c.Versions[s.Name]
+
+	if !ok {
+		panic(fmt.Sprintf("stage %q is missing a function version mapping", s.Name))
+	}
+
+	m[id] = Map{
+		"Type": "AWS::Lambda::Alias",
+		"Properties": Map{
+			"Name":            s.Name,
+			"Description":     util.ManagedByUp(""),
+			"FunctionName":    ref("FunctionName"),
+			"FunctionVersion": version,
+		},
+	}
+
+	return id
+}
+
+// stagePermissions sets up the lambda:invokeFunction permissions for API Gateway.
+func stagePermissions(c *Config, s *config.Stage, m Map, aliasID string) {
+	id := util.Camelcase("api_lambda_permission_%s", s.Name)
+
+	m[id] = Map{
+		"Type":      "AWS::Lambda::Permission",
+		"DependsOn": aliasID,
+		"Properties": Map{
+			"Action":       "lambda:invokeFunction",
+			"FunctionName": lambdaArnQualifier("FunctionName", s.Name),
+			"Principal":    "apigateway.amazonaws.com",
+			"SourceArn": join("",
+				"arn:aws:execute-api",
+				":",
+				ref("AWS::Region"),
+				":",
+				ref("AWS::AccountId"),
+				":",
+				ref("Api"),
+				"/*"),
+		},
+	}
+}
+
+// stageDeployment sets up the API Gateway deployment.
+func stageDeployment(c *Config, s *config.Stage, m Map, aliasID string) string {
+	id := util.Camelcase("api_deployment_%s", s.Name)
+
+	m[id] = Map{
+		"Type":      "AWS::ApiGateway::Deployment",
+		"DependsOn": []string{"ApiRootMethod", "ApiProxyMethod", aliasID},
+		"Properties": Map{
+			"RestApiId": ref("Api"),
+			"StageName": s.Name,
+			"StageDescription": Map{
+				"Variables": Map{
+					"qualifier": s.Name,
+				},
+			},
+		},
+	}
+
+	return id
+}
+
+// stageDomain sets up a custom domain, dns record and path mapping.
+func stageDomain(c *Config, s *config.Stage, m Map, deploymentID string) {
+	if s.Domain == "" {
+		return
+	}
+
 	id := util.Camelcase("api_domain_%s", s.Name)
-	deploymentID := util.Camelcase("api_deployment_%s", s.Name)
 
 	m[id] = Map{
 		"Type": "AWS::ApiGateway::DomainName",
@@ -243,9 +276,17 @@ func stage(c *Config, s *config.Stage, m Map) {
 		},
 	}
 
-	m[id+"PathMapping"] = Map{
+	stagePathMapping(c, s, m, deploymentID)
+	stageDNSRecord(c, s, m, id)
+}
+
+// stagePathMapping sets up the stage deployment mapping.
+func stagePathMapping(c *Config, s *config.Stage, m Map, deploymentID string) {
+	id := util.Camelcase("api_domain_%s_path_mapping", s.Name)
+
+	m[id] = Map{
 		"Type":      "AWS::ApiGateway::BasePathMapping",
-		"DependsOn": []string{id, deploymentID},
+		"DependsOn": deploymentID,
 		"Properties": Map{
 			"DomainName": s.Domain,
 			"BasePath":   util.BasePath(s.Path),
@@ -253,12 +294,10 @@ func stage(c *Config, s *config.Stage, m Map) {
 			"Stage":      s.Name,
 		},
 	}
-
-	stageAliasRecord(c, s, m, id)
 }
 
-// stageAliasRecord configuration.
-func stageAliasRecord(c *Config, s *config.Stage, m Map, domainID string) {
+// stageDNSRecord sets up an ALIAS record and zone if necessary for a custom domain.
+func stageDNSRecord(c *Config, s *config.Stage, m Map, domainID string) {
 	id := util.Camelcase("dns_zone_%s_record_%s", util.Domain(s.Domain), s.Domain)
 	zone := dnsZone(c, m, util.Domain(s.Domain))
 
@@ -277,7 +316,7 @@ func stageAliasRecord(c *Config, s *config.Stage, m Map, domainID string) {
 	}
 }
 
-// DNS resources.
+// dns setups the the user-defined DNS zones and records.
 func dns(c *Config, m Map) {
 	for _, z := range c.DNS.Zones {
 		zone := dnsZone(c, m, z.Name)
@@ -300,52 +339,10 @@ func dns(c *Config, m Map) {
 	}
 }
 
-// IAM resources.
-func iam(c *Config, m Map) {
-	m["ApiLambdaPermissionStaging"] = Map{
-		"Type":      "AWS::Lambda::Permission",
-		"DependsOn": "ApiFunctionAliasStaging",
-		"Properties": Map{
-			"Action":       "lambda:invokeFunction",
-			"FunctionName": lambdaArnQualifier("FunctionName", "staging"),
-			"Principal":    "apigateway.amazonaws.com",
-			"SourceArn": join("",
-				"arn:aws:execute-api",
-				":",
-				ref("AWS::Region"),
-				":",
-				ref("AWS::AccountId"),
-				":",
-				ref("Api"),
-				"/*"),
-		},
-	}
-
-	m["ApiLambdaPermissionProduction"] = Map{
-		"Type":      "AWS::Lambda::Permission",
-		"DependsOn": "ApiFunctionAliasProduction",
-		"Properties": Map{
-			"Action":       "lambda:invokeFunction",
-			"FunctionName": lambdaArnQualifier("FunctionName", "production"),
-			"Principal":    "apigateway.amazonaws.com",
-			"SourceArn": join("",
-				"arn:aws:execute-api",
-				":",
-				ref("AWS::Region"),
-				":",
-				ref("AWS::AccountId"),
-				":",
-				ref("Api"),
-				"/*"),
-		},
-	}
-}
-
 // resources of the stack.
 func resources(c *Config) Map {
 	m := Map{}
 	api(c, m)
-	iam(c, m)
 	dns(c, m)
 	return m
 }
@@ -359,14 +356,6 @@ func parameters(c *Config) Map {
 		},
 		"FunctionName": Map{
 			"Description": "Name of application function",
-			"Type":        "String",
-		},
-		"FunctionVersionStaging": Map{
-			"Description": "Version of staging deployment",
-			"Type":        "String",
-		},
-		"FunctionVersionProduction": Map{
-			"Description": "Version of production deployment",
 			"Type":        "String",
 		},
 	}

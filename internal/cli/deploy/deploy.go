@@ -57,7 +57,7 @@ retry:
 	}
 
 	// validate stage name
-	if err := validate.Stage(stage); err != nil {
+	if err := validate.List(stage, c.Stages.RemoteNames()); err != nil {
 		return err
 	}
 

@@ -197,6 +197,9 @@ func (r *reporter) Start() {
 				fmt.Printf("\n")
 			case "platform.stack.plan.change":
 				c := e.Fields["change"].(*cloudformation.Change).ResourceChange
+				if *c.ResourceType == "AWS::Lambda::Alias" {
+					continue
+				}
 				color := actionColor(*c.Action)
 				fmt.Printf("  %s %s\n", color(*c.Action), lambdautil.ResourceType(*c.ResourceType))
 				fmt.Printf("    %s: %s\n", color("id"), *c.LogicalResourceId)

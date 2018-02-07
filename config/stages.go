@@ -1,5 +1,19 @@
 package config
 
+import (
+	"sort"
+
+	"github.com/apex/up/internal/validate"
+	"github.com/pkg/errors"
+)
+
+// defaultStages is a list of default stage names.
+var defaultStages = []string{
+	"development",
+	"staging",
+	"production",
+}
+
 // Stage config.
 type Stage struct {
 	Domain string `json:"domain"`
@@ -19,6 +33,15 @@ func (s *Stage) IsRemote() bool {
 	return !s.IsLocal()
 }
 
+// Validate implementation.
+func (s *Stage) Validate() error {
+	if err := validate.Stage(s.Name); err != nil {
+		return errors.Wrap(err, ".name")
+	}
+
+	return nil
+}
+
 // StageOverrides config.
 type StageOverrides struct {
 	Hooks  Hooks  `json:"hooks"`
@@ -34,45 +57,38 @@ func (s *StageOverrides) Override(c *Config) {
 }
 
 // Stages config.
-type Stages struct {
-	Development *Stage `json:"development"`
-	Staging     *Stage `json:"staging"`
-	Production  *Stage `json:"production"`
-}
+type Stages map[string]*Stage
 
 // Default implementation.
-func (s *Stages) Default() error {
-	if s := s.Development; s != nil {
-		s.Name = "development"
+func (s Stages) Default() error {
+	// defaults
+	for _, name := range defaultStages {
+		if _, ok := s[name]; !ok {
+			s[name] = &Stage{}
+		}
 	}
 
-	if s := s.Staging; s != nil {
-		s.Name = "staging"
-	}
-
-	if s := s.Production; s != nil {
-		s.Name = "production"
+	// assign names
+	for name, s := range s {
+		s.Name = name
 	}
 
 	return nil
 }
 
 // Validate implementation.
-func (s *Stages) Validate() error {
+func (s Stages) Validate() error {
+	for _, s := range s {
+		if err := s.Validate(); err != nil {
+			return errors.Wrapf(err, "stage %q", s.Name)
+		}
+	}
 	return nil
 }
 
 // List returns configured stages.
-func (s *Stages) List() (v []*Stage) {
-	if s := s.Development; s != nil {
-		v = append(v, s)
-	}
-
-	if s := s.Staging; s != nil {
-		v = append(v, s)
-	}
-
-	if s := s.Production; s != nil {
+func (s Stages) List() (v []*Stage) {
+	for _, s := range s {
 		v = append(v, s)
 	}
 
@@ -80,7 +96,7 @@ func (s *Stages) List() (v []*Stage) {
 }
 
 // Domains returns configured domains.
-func (s *Stages) Domains() (v []string) {
+func (s Stages) Domains() (v []string) {
 	for _, s := range s.List() {
 		if s.Domain != "" {
 			v = append(v, s.Domain)
@@ -90,22 +106,46 @@ func (s *Stages) Domains() (v []string) {
 	return
 }
 
+// Names returns configured stage names.
+func (s Stages) Names() (v []string) {
+	for _, s := range s.List() {
+		v = append(v, s.Name)
+	}
+
+	sort.Strings(v)
+	return
+}
+
+// RemoteNames returns configured remote stage names.
+func (s Stages) RemoteNames() (v []string) {
+	for _, s := range s.List() {
+		if s.IsRemote() {
+			v = append(v, s.Name)
+		}
+	}
+
+	sort.Strings(v)
+	return
+}
+
 // GetByDomain returns the stage by domain or nil.
-func (s *Stages) GetByDomain(domain string) *Stage {
+func (s Stages) GetByDomain(domain string) *Stage {
 	for _, s := range s.List() {
 		if s.Domain == domain {
 			return s
 		}
 	}
+
 	return nil
 }
 
 // GetByName returns the stage by name or nil.
-func (s *Stages) GetByName(name string) *Stage {
+func (s Stages) GetByName(name string) *Stage {
 	for _, s := range s.List() {
 		if s.Name == name {
 			return s
 		}
 	}
+
 	return nil
 }

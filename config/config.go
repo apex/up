@@ -102,6 +102,10 @@ func (c *Config) Validate() error {
 
 // Default implementation.
 func (c *Config) Default() error {
+	if c.Stages == nil {
+		c.Stages = make(Stages)
+	}
+
 	// TODO: hack, move to the instantiation of aws clients
 	if c.Profile != "" {
 		os.Setenv("AWS_PROFILE", c.Profile)

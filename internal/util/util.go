@@ -131,6 +131,8 @@ func IsNotFound(err error) bool {
 	switch {
 	case err == nil:
 		return false
+	case strings.Contains(err.Error(), "ResourceNotFoundException"):
+		return true
 	case strings.Contains(err.Error(), "does not exist"):
 		return true
 	case strings.Contains(err.Error(), "not found"):

@@ -59,17 +59,18 @@ func New(c *up.Config, events event.Events, zones []*route53.HostedZone, region 
 }
 
 // template returns a configured resource template.
-func (s *Stack) template() Map {
+func (s *Stack) template(versions resources.Versions) Map {
 	return resources.New(&resources.Config{
-		Config: s.config,
-		Zones:  s.zones,
+		Config:   s.config,
+		Zones:    s.zones,
+		Versions: versions,
 	})
 }
 
 // Create the stack.
-func (s *Stack) Create(version string) error {
+func (s *Stack) Create(versions resources.Versions) error {
 	c := s.config
-	tmpl := s.template()
+	tmpl := s.template(versions)
 	name := c.Name
 
 	b, err := json.MarshalIndent(tmpl, "", "  ")
@@ -91,14 +92,6 @@ func (s *Stack) Create(version string) error {
 			{
 				ParameterKey:   aws.String("FunctionName"),
 				ParameterValue: &name,
-			},
-			{
-				ParameterKey:   aws.String("FunctionVersionStaging"),
-				ParameterValue: &version,
-			},
-			{
-				ParameterKey:   aws.String("FunctionVersionProduction"),
-				ParameterValue: &version,
 			},
 		},
 	})
@@ -135,7 +128,7 @@ func (s *Stack) Delete(wait bool) error {
 	}
 
 	if wait {
-		tmpl := s.template()
+		tmpl := s.template(resources.Versions{})
 		if err := s.report(resourceStateFromTemplate(tmpl, DeleteComplete)); err != nil {
 			return errors.Wrap(err, "reporting")
 		}
@@ -207,9 +200,9 @@ func (s *Stack) Show() error {
 }
 
 // Plan changes.
-func (s *Stack) Plan() error {
+func (s *Stack) Plan(versions resources.Versions) error {
 	c := s.config
-	tmpl := s.template()
+	tmpl := s.template(versions)
 	name := c.Name
 
 	b, err := json.MarshalIndent(tmpl, "", "  ")
@@ -218,25 +211,6 @@ func (s *Stack) Plan() error {
 	}
 
 	defer s.events.Time("platform.stack.plan", nil)
-
-	log.Debug("fetching aliases")
-	prod, err := s.lambda.GetAlias(&lambda.GetAliasInput{
-		FunctionName: &name,
-		Name:         aws.String("production"),
-	})
-
-	if err != nil {
-		return errors.Wrap(err, "fetching production alias")
-	}
-
-	stage, err := s.lambda.GetAlias(&lambda.GetAliasInput{
-		FunctionName: &name,
-		Name:         aws.String("staging"),
-	})
-
-	if err != nil {
-		return errors.Wrap(err, "fetching staging alias")
-	}
 
 	log.Debug("deleting changeset")
 	_, err = s.client.DeleteChangeSet(&cloudformation.DeleteChangeSetInput{
@@ -264,14 +238,6 @@ func (s *Stack) Plan() error {
 			{
 				ParameterKey:   aws.String("FunctionName"),
 				ParameterValue: &name,
-			},
-			{
-				ParameterKey:   aws.String("FunctionVersionStaging"),
-				ParameterValue: stage.FunctionVersion,
-			},
-			{
-				ParameterKey:   aws.String("FunctionVersionProduction"),
-				ParameterValue: prod.FunctionVersion,
 			},
 		},
 	})

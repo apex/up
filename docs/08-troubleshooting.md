@@ -8,8 +8,8 @@ title: Help
 </details>
 
 <details>
-  <summary>My application times out</summary>
-  <p>Lambda `memory` scales CPU alongside the RAM – so if your application is booting or serving responses slowly you may want to try `1024` or above, see [Lambda Pricing](https://aws.amazon.com/lambda/pricing/) for options.</p>
+  <summary>My application times out or seems slow</summary>
+  <p>Lambda `memory` scales CPU alongside the RAM – so if your application is slow to initialize or serve responses slowly you may want to try `1024` or above, see [Lambda Pricing](https://aws.amazon.com/lambda/pricing/) for options.</p>
   <p>Ensure that all of your dependencies are deployed, you may use `up -v` to view what is added or filtered from the deployment, or `up build --size` to output the contents of the zip.</p>
 </details>
 

@@ -71,6 +71,31 @@ func TestStage_Override(t *testing.T) {
 	})
 }
 
+func TestStages_Default(t *testing.T) {
+	t.Run("no custom stages", func(t *testing.T) {
+		s := Stages{}
+
+		assert.NoError(t, s.Default(), "validate")
+		assert.NoError(t, s.Validate(), "validate")
+
+		assert.Len(t, s, 3)
+		assert.Equal(t, "staging", s["staging"].Name)
+		assert.Equal(t, "production", s["production"].Name)
+	})
+
+	t.Run("custom stages", func(t *testing.T) {
+		s := Stages{
+			"beta": &Stage{},
+		}
+
+		assert.NoError(t, s.Default(), "validate")
+		assert.NoError(t, s.Validate(), "validate")
+
+		assert.Len(t, s, 4)
+		assert.Equal(t, "beta", s["beta"].Name)
+	})
+}
+
 func TestStages_Validate(t *testing.T) {
 	t.Run("no stages", func(t *testing.T) {
 		s := Stages{}
@@ -79,18 +104,18 @@ func TestStages_Validate(t *testing.T) {
 
 	t.Run("some stages", func(t *testing.T) {
 		s := Stages{
-			Staging: &Stage{
+			"staging": &Stage{
 				Domain: "gh-polls-stage.com",
 			},
-			Production: &Stage{
+			"production": &Stage{
 				Domain: "gh-polls.com",
 			},
 		}
 
 		assert.NoError(t, s.Default(), "validate")
 		assert.NoError(t, s.Validate(), "validate")
-		assert.Equal(t, "staging", s.Staging.Name)
-		assert.Equal(t, "production", s.Production.Name)
+		assert.Equal(t, "staging", s["staging"].Name)
+		assert.Equal(t, "production", s["production"].Name)
 	})
 }
 
@@ -104,8 +129,8 @@ func TestStages_List(t *testing.T) {
 	}
 
 	s := Stages{
-		Staging:    stage,
-		Production: prod,
+		"staging":    stage,
+		"production": prod,
 	}
 
 	list := []*Stage{
@@ -127,8 +152,8 @@ func TestStages_GetByDomain(t *testing.T) {
 	}
 
 	s := Stages{
-		Staging:    stage,
-		Production: prod,
+		"staging":    stage,
+		"production": prod,
 	}
 
 	assert.Equal(t, prod, s.GetByDomain("gh-polls.com"))

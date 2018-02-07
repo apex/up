@@ -53,6 +53,18 @@ func Name(s string) error {
 	return nil
 }
 
+// stage regexp.
+var stage = regexp.MustCompile(`^[a-zA-Z0-9_]+$`)
+
+// Stage name validation.
+func Stage(s string) error {
+	if !stage.MatchString(s) {
+		return errors.Errorf("must contain only alphanumeric characters and '_'")
+	}
+
+	return nil
+}
+
 // List validation.
 func List(s string, list []string) error {
 	for _, v := range list {
@@ -70,15 +82,6 @@ func Lists(vals, list []string) error {
 		if err := List(v, list); err != nil {
 			return err
 		}
-	}
-
-	return nil
-}
-
-// Stage validation.
-func Stage(stage string) error {
-	if err := List(stage, []string{"staging", "production"}); err != nil {
-		return errors.Wrap(err, "stage")
 	}
 
 	return nil

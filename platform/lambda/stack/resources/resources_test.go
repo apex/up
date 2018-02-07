@@ -5,12 +5,9 @@ import (
 	"fmt"
 	"os"
 	"strings"
-	"testing"
 
 	"github.com/apex/up"
-	"github.com/aws/aws-sdk-go/aws"
-	"github.com/aws/aws-sdk-go/service/route53"
-	"github.com/tj/assert"
+	"github.com/apex/up/config"
 )
 
 // keys returns keys from a map.
@@ -77,7 +74,7 @@ func Example_apiRootMethod() {
 
 	dump(c, "ApiRootMethod")
 	// Output:
-	//  {
+	// {
 	//   "Properties": {
 	//     "AuthorizationType": "NONE",
 	//     "HttpMethod": "ANY",
@@ -235,94 +232,18 @@ func Example_apiProxyMethod() {
 	// }
 }
 
-func Example_apiDeploymentStaging() {
+func Example_stageAlias() {
 	c := &Config{
 		Config: &up.Config{
 			Name: "polls",
+			Stages: config.Stages{
+				"production": &config.Stage{
+					Name: "production",
+				},
+			},
 		},
-	}
-
-	dump(c, "ApiDeploymentStaging")
-	// Output:
-	// {
-	//   "DependsOn": [
-	//     "ApiRootMethod",
-	//     "ApiProxyMethod",
-	//     "ApiFunctionAliasStaging"
-	//   ],
-	//   "Properties": {
-	//     "RestApiId": {
-	//       "Ref": "Api"
-	//     },
-	//     "StageDescription": {
-	//       "Variables": {
-	//         "qualifier": "staging"
-	//       }
-	//     },
-	//     "StageName": "staging"
-	//   },
-	//   "Type": "AWS::ApiGateway::Deployment"
-	// }
-}
-
-func Example_apiDeploymentProduction() {
-	c := &Config{
-		Config: &up.Config{
-			Name: "polls",
-		},
-	}
-
-	dump(c, "ApiDeploymentProduction")
-	// Output:
-	// {
-	//   "DependsOn": [
-	//     "ApiRootMethod",
-	//     "ApiProxyMethod",
-	//     "ApiFunctionAliasProduction"
-	//   ],
-	//   "Properties": {
-	//     "RestApiId": {
-	//       "Ref": "Api"
-	//     },
-	//     "StageDescription": {
-	//       "Variables": {
-	//         "qualifier": "production"
-	//       }
-	//     },
-	//     "StageName": "production"
-	//   },
-	//   "Type": "AWS::ApiGateway::Deployment"
-	// }
-}
-
-func Example_apiFunctionAliasStaging() {
-	c := &Config{
-		Config: &up.Config{
-			Name: "polls",
-		},
-	}
-
-	dump(c, "ApiFunctionAliasStaging")
-	// Output:
-	// {
-	//   "Properties": {
-	//     "Description": "Staging environment (Managed by Up).",
-	//     "FunctionName": {
-	//       "Ref": "FunctionName"
-	//     },
-	//     "FunctionVersion": {
-	//       "Ref": "FunctionVersionStaging"
-	//     },
-	//     "Name": "staging"
-	//   },
-	//   "Type": "AWS::Lambda::Alias"
-	// }
-}
-
-func Example_apiFunctionAliasProduction() {
-	c := &Config{
-		Config: &up.Config{
-			Name: "polls",
+		Versions: Versions{
+			"production": "15",
 		},
 	}
 
@@ -330,299 +251,30 @@ func Example_apiFunctionAliasProduction() {
 	// Output:
 	// {
 	//   "Properties": {
-	//     "Description": "Production environment (Managed by Up).",
+	//     "Description": "Managed by Up.",
 	//     "FunctionName": {
 	//       "Ref": "FunctionName"
 	//     },
-	//     "FunctionVersion": {
-	//       "Ref": "FunctionVersionProduction"
-	//     },
+	//     "FunctionVersion": "15",
 	//     "Name": "production"
 	//   },
 	//   "Type": "AWS::Lambda::Alias"
 	// }
 }
 
-func Example_apiDomainName() {
+func Example_stagePermission() {
 	c := &Config{
-		Config: up.MustParseConfigString(`{
-      "name": "polls",
-      "stages": {
-        "production": {
-          "domain": "gh-polls.com"
-        }
-      }
-    }`),
-	}
-
-	dump(c, "ApiDomainProduction")
-	// Output:
-	// {
-	//   "Properties": {
-	//     "CertificateArn": "",
-	//     "DomainName": "gh-polls.com"
-	//   },
-	//   "Type": "AWS::ApiGateway::DomainName"
-	// }
-}
-
-func Example_apiDomainNameMapping() {
-	c := &Config{
-		Config: up.MustParseConfigString(`{
-      "name": "polls",
-      "stages": {
-        "production": {
-          "domain": "gh-polls.com"
-        }
-      }
-    }`),
-	}
-
-	dump(c, "ApiDomainProductionPathMapping")
-	// Output:
-	// {
-	//   "DependsOn": [
-	//     "ApiDomainProduction",
-	//     "ApiDeploymentProduction"
-	//   ],
-	//   "Properties": {
-	//     "BasePath": "",
-	//     "DomainName": "gh-polls.com",
-	//     "RestApiId": {
-	//       "Ref": "Api"
-	//     },
-	//     "Stage": "production"
-	//   },
-	//   "Type": "AWS::ApiGateway::BasePathMapping"
-	// }
-}
-
-func Example_apiDomainDNSRecord() {
-	c := &Config{
-		Config: up.MustParseConfigString(`{
-      "name": "polls",
-      "stages": {
-        "production": {
-          "domain": "gh-polls.com"
-        }
-      }
-    }`),
-	}
-
-	dump(c, "DnsZoneGhPollsComRecordGhPollsCom")
-	// Output:
-	// {
-	//   "Properties": {
-	//     "AliasTarget": {
-	//       "DNSName": {
-	//         "Fn::GetAtt": [
-	//           "ApiDomainProduction",
-	//           "DistributionDomainName"
-	//         ]
-	//       },
-	//       "HostedZoneId": "Z2FDTNDATAQYW2"
-	//     },
-	//     "Comment": "Managed by Up.",
-	//     "HostedZoneId": {
-	//       "Ref": "DnsZoneGhPollsCom"
-	//     },
-	//     "Name": "gh-polls.com",
-	//     "Type": "A"
-	//   },
-	//   "Type": "AWS::Route53::RecordSet"
-	// }
-}
-
-func Example_apiDomainDNSZone() {
-	c := &Config{
-		Config: up.MustParseConfigString(`{
-      "name": "polls",
-      "stages": {
-        "production": {
-          "domain": "gh-polls.com"
-        }
-      }
-    }`),
-	}
-
-	dump(c, "DnsZoneGhPollsCom")
-	// Output:
-	// {
-	//   "Properties": {
-	//     "Name": "gh-polls.com"
-	//   },
-	//   "Type": "AWS::Route53::HostedZone"
-	// }
-}
-
-func Test_apiDomainDNSZone_existingZoneWithSubdomain(t *testing.T) {
-	c := &Config{
-		Config: up.MustParseConfigString(`{
-      "name": "polls",
-      "stages": {
-        "production": {
-          "domain": "api.gh-polls.com"
-        }
-      }
-    }`),
-		Zones: []*route53.HostedZone{
-			{
-				Name: aws.String("gh-polls.com."),
-				Id:   aws.String("SOMETHING"),
+		Config: &up.Config{
+			Name: "polls",
+			Stages: config.Stages{
+				"production": &config.Stage{
+					Name: "production",
+				},
 			},
 		},
-	}
-
-	r := New(c)["Resources"].(Map)
-
-	_, ok := r["DnsZoneGhPollsCom"].(Map)
-	assert.False(t, ok, "should not create hosted zone")
-
-	record, ok := r["DnsZoneGhPollsComRecordApiGhPollsCom"].(Map)
-	assert.True(t, ok, "should have A record")
-
-	id := record["Properties"].(Map)["HostedZoneId"]
-	assert.Equal(t, "SOMETHING", id)
-}
-
-func Test_apiDomainDNSZone_existingZoneWithApexdomain(t *testing.T) {
-	c := &Config{
-		Config: up.MustParseConfigString(`{
-      "name": "polls",
-      "stages": {
-        "production": {
-          "domain": "gh-polls.com"
-        }
-      }
-    }`),
-		Zones: []*route53.HostedZone{
-			{
-				Name: aws.String("gh-polls.com."),
-				Id:   aws.String("SOMETHING"),
-			},
+		Versions: Versions{
+			"production": "15",
 		},
-	}
-
-	r := New(c)["Resources"].(Map)
-
-	_, ok := r["DnsZoneGhPollsCom"].(Map)
-	assert.False(t, ok, "should not create hosted zone")
-
-	record, ok := r["DnsZoneGhPollsComRecordGhPollsCom"].(Map)
-	assert.True(t, ok, "should have A record")
-
-	id := record["Properties"].(Map)["HostedZoneId"]
-	assert.Equal(t, "SOMETHING", id)
-}
-
-func Example_apiDomainDNSManual() {
-	c := &Config{
-		Config: up.MustParseConfigString(`{
-      "name": "polls",
-      "dns": {
-        "gh-polls.com": [
-          {
-            "name": "blog.gh-polls.com",
-            "type": "CNAME",
-            "value": ["medium.com"]
-          }
-        ]
-      }
-    }`),
-	}
-
-	dump(c, "DnsZoneGhPollsComRecordBlogGhPollsComCNAME")
-	// Output:
-	// {
-	//   "Properties": {
-	//     "Comment": "Managed by Up.",
-	//     "HostedZoneId": {
-	//       "Ref": "DnsZoneGhPollsCom"
-	//     },
-	//     "Name": "blog.gh-polls.com",
-	//     "ResourceRecords": [
-	//       "medium.com"
-	//     ],
-	//     "TTL": "300",
-	//     "Type": "CNAME"
-	//   },
-	//   "Type": "AWS::Route53::RecordSet"
-	// }
-}
-
-func Example_iamLambdaStaging() {
-	c := &Config{
-		Config: up.MustParseConfigString(`{
-      "name": "polls"
-    }`),
-	}
-
-	dump(c, "ApiLambdaPermissionStaging")
-	// Output:
-	// {
-	//   "DependsOn": "ApiFunctionAliasStaging",
-	//   "Properties": {
-	//     "Action": "lambda:invokeFunction",
-	//     "FunctionName": {
-	//       "Fn::Join": [
-	//         ":",
-	//         [
-	//           "arn",
-	//           "aws",
-	//           "lambda",
-	//           {
-	//             "Ref": "AWS::Region"
-	//           },
-	//           {
-	//             "Ref": "AWS::AccountId"
-	//           },
-	//           "function",
-	//           {
-	//             "Fn::Join": [
-	//               ":",
-	//               [
-	//                 {
-	//                   "Ref": "FunctionName"
-	//                 },
-	//                 "staging"
-	//               ]
-	//             ]
-	//           }
-	//         ]
-	//       ]
-	//     },
-	//     "Principal": "apigateway.amazonaws.com",
-	//     "SourceArn": {
-	//       "Fn::Join": [
-	//         "",
-	//         [
-	//           "arn:aws:execute-api",
-	//           ":",
-	//           {
-	//             "Ref": "AWS::Region"
-	//           },
-	//           ":",
-	//           {
-	//             "Ref": "AWS::AccountId"
-	//           },
-	//           ":",
-	//           {
-	//             "Ref": "Api"
-	//           },
-	//           "/*"
-	//         ]
-	//       ]
-	//     }
-	//   },
-	//   "Type": "AWS::Lambda::Permission"
-	// }
-}
-
-func Example_iamLambdaProduction() {
-	c := &Config{
-		Config: up.MustParseConfigString(`{
-      "name": "polls"
-    }`),
 	}
 
 	dump(c, "ApiLambdaPermissionProduction")
@@ -683,5 +335,234 @@ func Example_iamLambdaProduction() {
 	//     }
 	//   },
 	//   "Type": "AWS::Lambda::Permission"
+	// }
+}
+
+func Example_stageDeployment() {
+	c := &Config{
+		Config: &up.Config{
+			Name: "polls",
+			Stages: config.Stages{
+				"production": &config.Stage{
+					Name: "production",
+				},
+			},
+		},
+		Versions: Versions{
+			"production": "15",
+		},
+	}
+
+	dump(c, "ApiDeploymentProduction")
+	// Output:
+	// {
+	//   "DependsOn": [
+	//     "ApiRootMethod",
+	//     "ApiProxyMethod",
+	//     "ApiFunctionAliasProduction"
+	//   ],
+	//   "Properties": {
+	//     "RestApiId": {
+	//       "Ref": "Api"
+	//     },
+	//     "StageDescription": {
+	//       "Variables": {
+	//         "qualifier": "production"
+	//       }
+	//     },
+	//     "StageName": "production"
+	//   },
+	//   "Type": "AWS::ApiGateway::Deployment"
+	// }
+}
+
+func Example_stageDomain() {
+	c := &Config{
+		Config: &up.Config{
+			Name: "polls",
+			Stages: config.Stages{
+				"production": &config.Stage{
+					Name:   "production",
+					Domain: "up-example.com",
+					Cert:   "arn::something",
+				},
+			},
+		},
+		Versions: Versions{
+			"production": "15",
+		},
+	}
+
+	dump(c, "ApiDomainProduction")
+	// Output:
+	// 	{
+	//   "Properties": {
+	//     "CertificateArn": "arn::something",
+	//     "DomainName": "up-example.com"
+	//   },
+	//   "Type": "AWS::ApiGateway::DomainName"
+	// }
+}
+
+func Example_stagePathMapping() {
+	c := &Config{
+		Config: &up.Config{
+			Name: "polls",
+			Stages: config.Stages{
+				"production": &config.Stage{
+					Name:   "production",
+					Domain: "up-example.com",
+				},
+			},
+		},
+		Versions: Versions{
+			"production": "15",
+		},
+	}
+
+	dump(c, "ApiDomainProductionPathMapping")
+	// Output:
+	// {
+	//   "DependsOn": "ApiDeploymentProduction",
+	//   "Properties": {
+	//     "BasePath": "",
+	//     "DomainName": "up-example.com",
+	//     "RestApiId": {
+	//       "Ref": "Api"
+	//     },
+	//     "Stage": "production"
+	//   },
+	//   "Type": "AWS::ApiGateway::BasePathMapping"
+	// }
+}
+
+func Example_stageDNSZone() {
+	c := &Config{
+		Config: &up.Config{
+			Name: "polls",
+			Stages: config.Stages{
+				"production": &config.Stage{
+					Name:   "production",
+					Domain: "up-example.com",
+				},
+			},
+		},
+		Versions: Versions{
+			"production": "15",
+		},
+	}
+
+	dump(c, "DnsZoneUpExampleCom")
+	// Output:
+	// {
+	//   "Properties": {
+	//     "Name": "up-example.com"
+	//   },
+	//   "Type": "AWS::Route53::HostedZone"
+	// }
+}
+
+func Example_stageDNSZoneRecord() {
+	c := &Config{
+		Config: &up.Config{
+			Name: "polls",
+			Stages: config.Stages{
+				"production": &config.Stage{
+					Name:   "production",
+					Domain: "up-example.com",
+				},
+			},
+		},
+		Versions: Versions{
+			"production": "15",
+		},
+	}
+
+	dump(c, "DnsZoneUpExampleComRecordUpExampleCom")
+	// Output:
+	// {
+	//   "Properties": {
+	//     "AliasTarget": {
+	//       "DNSName": {
+	//         "Fn::GetAtt": [
+	//           "ApiDomainProduction",
+	//           "DistributionDomainName"
+	//         ]
+	//       },
+	//       "HostedZoneId": "Z2FDTNDATAQYW2"
+	//     },
+	//     "Comment": "Managed by Up.",
+	//     "HostedZoneId": {
+	//       "Ref": "DnsZoneUpExampleCom"
+	//     },
+	//     "Name": "up-example.com",
+	//     "Type": "A"
+	//   },
+	//   "Type": "AWS::Route53::RecordSet"
+	// }
+}
+
+func Example_dnsZone() {
+	c := &Config{
+		Config: &up.Config{
+			Name: "polls",
+			DNS: config.DNS{
+				Zones: []*config.Zone{
+					{
+						Name: "up-example.com",
+					},
+				},
+			},
+		},
+	}
+
+	dump(c, "DnsZoneUpExampleCom")
+	// Output:
+	// {
+	//   "Properties": {
+	//     "Name": "up-example.com"
+	//   },
+	//   "Type": "AWS::Route53::HostedZone"
+	// }
+}
+
+func Example_dnsZoneRecord() {
+	c := &Config{
+		Config: &up.Config{
+			Name: "polls",
+			DNS: config.DNS{
+				Zones: []*config.Zone{
+					{
+						Name: "up-example.com",
+						Records: []*config.Record{
+							{
+								Name:  "blog.up-example.com",
+								Type:  "CNAME",
+								TTL:   600,
+								Value: []string{"example.medium.com"},
+							},
+						},
+					},
+				},
+			},
+		},
+	}
+
+	dump(c, "DnsZoneUpExampleComRecordBlogUpExampleComCNAME")
+	// Output:
+	// {
+	//   "Properties": {
+	//     "Comment": "Managed by Up.",
+	//     "HostedZoneId": {
+	//       "Ref": "DnsZoneUpExampleCom"
+	//     },
+	//     "Name": "blog.up-example.com",
+	//     "ResourceRecords": [
+	//       "example.medium.com"
+	//     ],
+	//     "TTL": "600",
+	//     "Type": "CNAME"
+	//   },
+	//   "Type": "AWS::Route53::RecordSet"
 	// }
 }

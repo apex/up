@@ -543,9 +543,63 @@ The record `type` must be one of:
 - SRV
 - TXT
 
-## Stages & Custom Domains
+## Stages
 
-Up supports per-stage configuration, such as mapping of custom domains.
+Up supports the concept of "stages" for configuration, such as mapping of custom domains, or tuneing the size of Lambda function to use.
+
+By default the following stages are defined:
+
+- `development` — local development environment
+- `staging` — remote environment for staging new features or releases
+- `production` — aptly named production environment
+
+To create a new stage, first add it to your configuration, in this case we'll call it "beta":
+
+```json
+{
+  "name": "app",
+  "lambda": {
+    "memory": 128
+  },
+  "stages": {
+    "beta": {
+
+    }
+  }
+}
+```
+
+Now you'll need to plan your stack changes, which will set up a new API Gateway and permissions:
+
+
+```
+$ up stack plan
+
+Add api deployment
+  id: ApiDeploymentBeta
+
+Add lambda permission
+  id: ApiLambdaPermissionBeta
+```
+
+Apply those changes:
+
+```
+$ up stack apply
+```
+
+Now you can deploy to your new stage by passing the name `beta` and open the end-point in the browser:
+
+```
+$ up beta
+$ up url -o beta
+```
+
+To delete a stage, simply remove it from the `up.json` configuration and run `up stack plan` again, and `up stack apply` after reviewing the changes.
+
+You may of course assign a custom domain to these stages as well, let's take a look at that next!
+
+## Stages & Custom Domains
 
 By defining a stage and its `domain`, Up knows it will need to create a free SSL certificate for `gh-polls.com`, setup the DNS records, and map the domain to API Gateway.
 
@@ -559,14 +613,14 @@ By defining a stage and its `domain`, Up knows it will need to create a free SSL
 }
 ```
 
- Here's another example mapping each stage to a domain:
+ Here's another example mapping each stage to a domain, note that the domains do not need to be related, you could use `stage-gh-polls.com` for example.
 
 
 ```json
 {
   "stages": {
     "production": {
-      "domain": "api.gh-polls.com"
+      "domain": "gh-polls.com"
     },
     "staging": {
       "domain": "stage.gh-polls.com"
@@ -591,12 +645,8 @@ You may also provide an optional base path, for example to prefix your API with 
 
 Plan the changes via `up stack plan` and `up stack apply` to perform the changes. Note that CloudFront can take up to ~40 minutes to distribute this configuration globally, so grab a coffee while these changes are applied.
 
-Custom stages may be supported in the future, for now there are two:
-
-- `staging`
-- `production`
-
 You may [purchase domains](#guides.development_to_production_workflow.purchasing_a_domain) from the command-line, or map custom domains from other registrars. Up uses Route53 to purchase domains using your AWS account credit card. See `up help domains`.
+
 
 ## Stage Overrides
 
