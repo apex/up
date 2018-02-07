@@ -39,7 +39,7 @@ func list(cmd *kingpin.Cmd) {
 	c := cmd.Command("ls", "List variables.").Alias("list").Default()
 
 	c.Action(func(_ *kingpin.ParseContext) error {
-		_, p, err := root.Init()
+		c, p, err := root.Init()
 		if err != nil {
 			return errors.Wrap(err, "initializing")
 		}
@@ -59,7 +59,8 @@ func list(cmd *kingpin.Cmd) {
 		grouped := secret.GroupByStage(secrets)
 		t := table.New()
 
-		for _, name := range []string{"all", "development", "staging", "production"} {
+		stages := append([]string{"all"}, c.Stages.Names()...)
+		for _, name := range stages {
 			secrets, ok := grouped[name]
 			if !ok {
 				continue
@@ -77,6 +78,75 @@ func list(cmd *kingpin.Cmd) {
 
 		t.Println()
 		println()
+
+		return nil
+	})
+}
+
+// add variables.
+func add(cmd *kingpin.Cmd) {
+	c := cmd.Command("add", "Add a variable.").Alias("set")
+	key := c.Arg("name", "Variable name.").Required().String()
+	val := c.Arg("value", "Variable value.").Required().String()
+	stage := c.Flag("stage", "Target stage name.").Short('s').Default("all").String()
+	desc := c.Flag("desc", "Variable description message.").Short('d').String()
+	clear := c.Flag("clear", "Store as cleartext (unencrypted).").Short('c').Bool()
+
+	c.Action(func(_ *kingpin.ParseContext) error {
+		c, p, err := root.Init()
+		if err != nil {
+			return errors.Wrap(err, "initializing")
+		}
+
+		stages := append(c.Stages.Names(), "all")
+		if err := validate.List(*stage, stages); err != nil {
+			return err
+		}
+		normalizeStage(stage)
+
+		stats.Track("Add Secret", map[string]interface{}{
+			"cleartext": *clear,
+			"stage":     *stage,
+			"has_desc":  *desc != "",
+		})
+
+		if err := p.Secrets(*stage).Add(*key, *val, *desc, *clear); err != nil {
+			return errors.Wrap(err, "adding secret")
+		}
+
+		util.LogPad("Added " + *key)
+
+		return nil
+	})
+}
+
+// remove variables.
+func remove(cmd *kingpin.Cmd) {
+	c := cmd.Command("rm", "Remove a variable.").Alias("remove")
+	stage := c.Flag("stage", "Target stage name.").Short('s').Default("all").String()
+	key := c.Arg("name", "Variable name.").Required().String()
+
+	c.Action(func(_ *kingpin.ParseContext) error {
+		defer util.Pad()()
+
+		c, p, err := root.Init()
+		if err != nil {
+			return errors.Wrap(err, "initializing")
+		}
+
+		stages := append(c.Stages.Names(), "all")
+		if err := validate.List(*stage, stages); err != nil {
+			return err
+		}
+		normalizeStage(stage)
+
+		stats.Track("Remove Secret", nil)
+
+		if err := p.Secrets(*stage).Remove(*key); err != nil {
+			return errors.Wrap(err, "removing secret")
+		}
+
+		util.LogPad("Removed " + *key)
 
 		return nil
 	})
@@ -109,67 +179,9 @@ func rows(t *table.Table, secrets []*up.Secret) {
 	}
 }
 
-// add variables.
-func add(cmd *kingpin.Cmd) {
-	c := cmd.Command("add", "Add a variable.").Alias("set")
-	key := c.Arg("name", "Variable name.").Required().String()
-	val := c.Arg("value", "Variable value.").Required().String()
-	stage := c.Flag("stage", "Target stage name.").Short('s').String()
-	desc := c.Flag("desc", "Variable description message.").Short('d').String()
-	clear := c.Flag("clear", "Store as cleartext (unencrypted).").Short('c').Bool()
-
-	c.Action(func(_ *kingpin.ParseContext) error {
-		if err := validate.OptionalStageWithLocal(*stage); err != nil {
-			return err
-		}
-
-		_, p, err := root.Init()
-		if err != nil {
-			return errors.Wrap(err, "initializing")
-		}
-
-		stats.Track("Add Secret", map[string]interface{}{
-			"cleartext": *clear,
-			"stage":     *stage,
-			"has_desc":  *desc != "",
-		})
-
-		if err := p.Secrets(*stage).Add(*key, *val, *desc, *clear); err != nil {
-			return errors.Wrap(err, "adding secret")
-		}
-
-		util.LogPad("Added " + *key)
-
-		return nil
-	})
-}
-
-// remove variables.
-func remove(cmd *kingpin.Cmd) {
-	c := cmd.Command("rm", "Remove a variable.").Alias("remove")
-	stage := c.Flag("stage", "Stage name.").Short('s').String()
-	key := c.Arg("name", "Variable name.").Required().String()
-
-	c.Action(func(_ *kingpin.ParseContext) error {
-		if err := validate.OptionalStageWithLocal(*stage); err != nil {
-			return err
-		}
-
-		defer util.Pad()()
-
-		_, p, err := root.Init()
-		if err != nil {
-			return errors.Wrap(err, "initializing")
-		}
-
-		stats.Track("Remove Secret", nil)
-
-		if err := p.Secrets(*stage).Remove(*key); err != nil {
-			return errors.Wrap(err, "removing secret")
-		}
-
-		util.LogPad("Removed " + *key)
-
-		return nil
-	})
+// normalizeStage normalizes "all" which is internally represented as "".
+func normalizeStage(s *string) {
+	if *s == "all" {
+		*s = ""
+	}
 }
