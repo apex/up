@@ -59,3 +59,16 @@ func Env(secrets []*up.Secret) (env []string) {
 	}
 	return
 }
+
+// String returns a string representation of the secret,
+// using * as the wildcard when the secret is sensitive.
+func String(s *up.Secret) string {
+	switch s.Type {
+	case "String":
+		return s.Value
+	case "SecureString":
+		return strings.Repeat("*", len(s.Value))
+	default:
+		return ""
+	}
+}

@@ -67,6 +67,7 @@ func (s *Secrets) List() (v []*up.Secret, err error) {
 			App:              app,
 			Name:             name,
 			Stage:            stage,
+			Type:             *p.Type,
 			Description:      util.DefaultString(p.Description, ""),
 			LastModifiedUser: userFromARN(p.LastModifiedUser),
 			LastModified:     *p.LastModifiedDate,
@@ -100,6 +101,7 @@ func (s *Secrets) Load() (v []*up.Secret, err error) {
 				App:   app,
 				Name:  name,
 				Stage: stage,
+				Type:  *p.Type,
 				Value: *p.Value,
 			})
 		}

@@ -79,8 +79,17 @@ func (r *Runtime) loadSecrets(stage string) error {
 
 	for _, name := range precedence {
 		if secrets := stages[name]; len(secrets) > 0 {
-			r.log.WithField("stage", name).WithField("count", len(secrets)).Info("initialized variables")
+			r.log.WithFields(log.Fields{
+				"name":  name,
+				"count": len(secrets),
+			}).Info("initializing variables")
+
 			for _, s := range secrets {
+				r.log.WithFields(log.Fields{
+					"name":  s.Name,
+					"value": secret.String(s),
+				}).Info("variable")
+
 				os.Setenv(s.Name, s.Value)
 			}
 		}

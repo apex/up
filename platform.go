@@ -47,6 +47,7 @@ type Domains interface {
 type Secret struct {
 	App              string
 	Name             string
+	Type             string
 	Stage            string
 	Value            string
 	Description      string

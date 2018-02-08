@@ -40,3 +40,23 @@ func TestEnv(t *testing.T) {
 	env := Env(s)
 	assert.Equal(t, []string{"foo=bar", "bar=baz"}, env)
 }
+
+func TestString(t *testing.T) {
+	t.Run("String", func(t *testing.T) {
+		s := &up.Secret{
+			Type:  "String",
+			Value: "hello",
+		}
+
+		assert.Equal(t, `hello`, String(s))
+	})
+
+	t.Run("SecureString", func(t *testing.T) {
+		s := &up.Secret{
+			Type:  "SecureString",
+			Value: "hello",
+		}
+
+		assert.Equal(t, `*****`, String(s))
+	})
+}
