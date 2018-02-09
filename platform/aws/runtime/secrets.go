@@ -32,7 +32,7 @@ func NewSecrets(name, stage, region string) *Secrets {
 }
 
 // List implementation.
-func (s *Secrets) List() (v []*up.Secret, err error) {
+func (s *Secrets) List(decrypt bool) (v []*up.Secret, err error) {
 	res, err := s.client.DescribeParameters(&ssm.DescribeParametersInput{
 		MaxResults: aws.Int64(50),
 		Filters: []*ssm.ParametersFilter{
@@ -50,9 +50,10 @@ func (s *Secrets) List() (v []*up.Secret, err error) {
 	for _, p := range res.Parameters {
 		var value string
 
-		if *p.Type == "String" {
+		if *p.Type == "String" || decrypt {
 			p, err := s.client.GetParameter(&ssm.GetParameterInput{
-				Name: p.Name,
+				Name:           p.Name,
+				WithDecryption: &decrypt,
 			})
 
 			if err != nil {

@@ -59,7 +59,7 @@ type Secret struct {
 type Secrets interface {
 	Add(key, val, desc string, clear bool) error
 	Remove(key string) error
-	List() ([]*Secret, error)
+	List(decrypt bool) ([]*Secret, error)
 	Load() ([]*Secret, error)
 }
 

@@ -21,6 +21,7 @@ import (
 func init() {
 	cmd := root.Command("env", "Manage encrypted env variables.")
 	cmd.Example(`up env`, "List variables available to all stages.")
+	cmd.Example(`up env -d`, "List decrypted values.")
 	cmd.Example(`up env add MONGO_URL "mongodb://db1.example.net:2500/" -s production`, "Add a production env variable.")
 	cmd.Example(`up env add MONGO_URL "mongodb://db2.example.net:2500/" -s staging`, "Add a staging env variable.")
 	cmd.Example(`up env add S3_KEY xxxxxxx`, "Add add a global env variable for all stages.")
@@ -37,6 +38,7 @@ func init() {
 // list variables.
 func list(cmd *kingpin.Cmd) {
 	c := cmd.Command("ls", "List variables.").Alias("list").Default()
+	decrypt := c.Flag("decrypt", "Output decrypted values.").Short('d').Bool()
 
 	c.Action(func(_ *kingpin.ParseContext) error {
 		c, p, err := root.Init()
@@ -44,9 +46,11 @@ func list(cmd *kingpin.Cmd) {
 			return errors.Wrap(err, "initializing")
 		}
 
-		stats.Track("List Secrets", nil)
+		stats.Track("List Secrets", map[string]interface{}{
+			"decrypt": *decrypt,
+		})
 
-		secrets, err := p.Secrets("").List()
+		secrets, err := p.Secrets("").List(*decrypt)
 		if err != nil {
 			return errors.Wrap(err, "listing secrets")
 		}
