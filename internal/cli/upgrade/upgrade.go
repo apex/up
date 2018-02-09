@@ -143,7 +143,7 @@ func getLatest(s update.Store) (*update.Release, error) {
 // versionName returns the humanized version name.
 func versionName(s string) string {
 	if strings.Contains(s, "-pro") {
-		return s + " Pro"
+		return strings.Replace(s, "-pro", "", 1) + " Pro"
 	}
 
 	return s + " OSS"
