@@ -848,6 +848,30 @@ The sms action notifies your team via sms text message.
 }
 ```
 
+#### Slack
+
+The slack action notifies your team via Slack message.
+
+```json
+{
+  "name": "slack.backend",
+  "type": "slack",
+  "url": "https://hooks.slack.com/services/T0YS6H6S5/..."
+}
+```
+
+Optionally `gifs` can be enabled and a `channel` can be specified instead of using the default for the `url`.
+
+```json
+{
+  "name": "slack.backend",
+  "type": "slack",
+  "url": "https://hooks.slack.com/services/T0YS6H6S5/...",
+  "channel": "alerts",
+  "gifs": true
+}
+```
+
 ### Defining Alerts
 
 An alert requires a `metric` such as request count or latency, statistic such as sum or svg, threshold, and an action to perform when the alert is triggered. Here's a simple example emailing the backend team when we encounter a spike of over 1000 requests.
