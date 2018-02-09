@@ -124,6 +124,10 @@ func (h *Handler) handleInline(e *log.Entry) error {
 	ts := formatDate(e.Timestamp.Local())
 	fmt.Fprintf(h.Writer, "  %s %s %s", colors.Gray(ts), bold(color(level)), colors.Purple(e.Message))
 
+	if len(names) > 0 {
+		fmt.Fprintf(h.Writer, " %s", colors.Gray("-"))
+	}
+
 	for _, name := range names {
 		if omit[name] {
 			continue
