@@ -8,6 +8,7 @@ Up supports a number of interpreted languages, and virtually any language which 
 - Golang
 - Node.js
 - Crystal
+- Clojure
 - Java
 - Static sites
 
