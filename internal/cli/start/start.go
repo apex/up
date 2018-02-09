@@ -9,6 +9,7 @@ import (
 	"github.com/apex/log"
 	"github.com/pkg/browser"
 	"github.com/pkg/errors"
+	"github.com/tj/go/env"
 	"github.com/tj/kingpin"
 
 	"github.com/apex/up/handler"
@@ -27,7 +28,7 @@ func init() {
 
 	command := cmd.Flag("command", "Proxy command override").Short('c').String()
 	open := cmd.Flag("open", "Open endpoint in the browser.").Short('o').Bool()
-	addr := cmd.Flag("address", "Address for server.").Default(":3000").String()
+	addr := cmd.Flag("address", "Address for server.").String()
 
 	cmd.Action(func(_ *kingpin.ParseContext) error {
 		log.SetHandler(text.New(os.Stdout))
@@ -39,6 +40,10 @@ func init() {
 
 		for k, v := range c.Environment {
 			os.Setenv(k, v)
+		}
+
+		if *addr == "" {
+			*addr = ":" + env.GetDefault("PORT", "3000")
 		}
 
 		stats.Track("Start", map[string]interface{}{

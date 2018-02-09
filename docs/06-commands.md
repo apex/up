@@ -537,6 +537,12 @@ Start development server on port 5000.
 $ up start --address :5000
 ```
 
+Start development server on port 6000.
+
+```
+$ PORT=6000 up start
+```
+
 Override proxy command. Note that the server created must listen on `PORT`, which is why `--port $PORT` is required for the [gin](https://github.com/codegangsta/gin) example.
 
 ```
