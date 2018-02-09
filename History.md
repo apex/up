@@ -1,4 +1,17 @@
 
+v0.5.0 / 2018-02-08
+===================
+
+  * add custom stage support. Closes #326
+  * add customer feedback option when unsubscribing
+  * add `up team card change` command for updating the CC
+  * remove sourcing of .gitignore. Closes #557
+  * remove development as a remote stage (now local only). Closes #563
+  * refactor: add separator to make log message more obvious
+  * refactor: add hiding of cursor when verifying email
+  * refactor retry labels below s3 uploads (improves performance)
+  * refactor: add nicer output when using `up url -c`
+
 v0.4.12 / 2018-02-01
 ====================
 
