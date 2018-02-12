@@ -32,6 +32,7 @@ Note that the following Pro features are currently available:
  - Alerting (email, sms, slack)
  - S3 upload acceleration (optional)
  - Instant rollback support
+ - Active warming
 
 ![Pro edition features](assets/features-pro.png)
 
