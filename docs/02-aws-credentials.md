@@ -38,111 +38,56 @@ If you're using Up for a production application it's highly recommended to confi
   <summary>Show policy</summary>
 ```json
 {
-  "Version": "2012-10-17",
-  "Statement": [
-    {
-      "Action": [
-        "route53:*",
-        "route53domains:*"
-      ],
-      "Effect": "Allow",
-      "Resource": "*"
-    },
-    {
-      "Action": [
-        "acm:*"
-      ],
-      "Effect": "Allow",
-      "Resource": "*"
-    },
-    {
-      "Action": [
-        "s3:*"
-      ],
-      "Effect": "Allow",
-      "Resource": "*"
-    },
-    {
-      "Action": [
-        "ssm:*"
-      ],
-      "Effect": "Allow",
-      "Resource": "*"
-    },
-    {
-      "Action": [
-        "cloudfront:*"
-      ],
-      "Effect": "Allow",
-      "Resource": "*"
-    },
-    {
-      "Action": [
-        "cloudformation:Create*",
-        "cloudformation:Update*",
-        "cloudformation:Delete*",
-        "cloudformation:Describe*",
-        "cloudformation:ExecuteChangeSet"
-      ],
-      "Effect": "Allow",
-      "Resource": "*"
-    },
-    {
-      "Action": [
-        "iam:AttachRolePolicy",
-        "iam:CreatePolicy",
-        "iam:CreateRole",
-        "iam:DeleteRole",
-        "iam:DeleteRolePolicy",
-        "iam:GetRole",
-        "iam:PassRole",
-        "iam:PutRolePolicy"
-      ],
-      "Effect": "Allow",
-      "Resource": "*"
-    },
-    {
-      "Action": [
-        "lambda:Create*",
-        "lambda:Delete*",
-        "lambda:Get*",
-        "lambda:List*",
-        "lambda:Update*",
-        "lambda:AddPermission",
-        "lambda:RemovePermission",
-        "lambda:InvokeFunction"
-      ],
-      "Effect": "Allow",
-      "Resource": "*"
-    },
-    {
-      "Action": [
-        "logs:Create*",
-        "logs:Put*",
-        "logs:Test*",
-        "logs:Describe*",
-        "logs:FilterLogEvents"
-      ],
-      "Effect": "Allow",
-      "Resource": "*"
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "cloudwatch:*"
-      ],
-      "Resource": "*"
-    },
-    {
-      "Effect": "Allow",
-      "Action": [
-        "apigateway:*"
-      ],
-      "Resource": [
-        "arn:aws:apigateway:*::/*"
-      ]
-    }
-  ]
+    "Version": "2012-10-17",
+    "Statement": [
+        {
+            "Effect": "Allow",
+            "Action": [
+                "acm:*",
+                "cloudformation:Create*",
+                "cloudformation:Delete*",
+                "cloudformation:Describe*",
+                "cloudformation:ExecuteChangeSet",
+                "cloudformation:Update*",
+                "cloudfront:*",
+                "cloudwatch:*",
+                "ec2:*",
+                "ecs:*",
+                "events:*",
+                "iam:AttachRolePolicy",
+                "iam:CreatePolicy",
+                "iam:CreateRole",
+                "iam:DeleteRole",
+                "iam:DeleteRolePolicy",
+                "iam:GetRole",
+                "iam:PassRole",
+                "iam:PutRolePolicy",
+                "lambda:AddPermission",
+                "lambda:Create*",
+                "lambda:Delete*",
+                "lambda:Get*",
+                "lambda:InvokeFunction",
+                "lambda:List*",
+                "lambda:RemovePermission",
+                "lambda:Update*",
+                "logs:Create*",
+                "logs:Describe*",
+                "logs:FilterLogEvents",
+                "logs:Put*",
+                "logs:Test*",
+                "route53:*",
+                "route53domains:*",
+                "s3:*",
+                "ssm:*"
+            ],
+            "Resource": "*"
+        },
+        {
+            "Effect": "Allow",
+            "Action": "apigateway:*",
+            "Resource": "arn:aws:apigateway:*::/*"
+        }
+    ]
 }
 ```
 </details>
