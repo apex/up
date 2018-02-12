@@ -104,7 +104,7 @@ func isTextMime(kind string) bool {
 	}
 
 	switch mt {
-	case "svg+xml":
+	case "image/svg+xml":
 		return true
 	case "application/json":
 		return true
