@@ -66,7 +66,7 @@ func main() {
 	// metrics
 	err = p.Metric("initialize", float64(util.MillisecondsSince(start)))
 	if err != nil {
-		ctx.WithError(err).Error("putting metric")
+		ctx.WithError(err).Warn("putting metric")
 	}
 
 	// serve
