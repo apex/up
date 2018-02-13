@@ -193,6 +193,8 @@ func (r *reporter) Start() {
 				}
 			case "platform.stack.show.domain":
 				util.LogName("endpoint", e.String("endpoint"))
+			case "platform.stack.show.version":
+				util.LogName("version", e.String("version"))
 			case "stack.plan":
 				fmt.Printf("\n")
 			case "platform.stack.plan.change":

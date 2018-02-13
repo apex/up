@@ -167,6 +167,11 @@ func (s *Stack) Show() error {
 			log.WithError(err).Debug("showing cloudfront")
 		}
 
+		// show function version
+		if err := s.showVersion(stage); err != nil {
+			log.WithError(err).Debug("showing version")
+		}
+
 		// show nameservers
 		if err := s.showNameservers(stage); err != nil {
 			return errors.Wrap(err, "showing nameservers")
@@ -386,6 +391,25 @@ func (s *Stack) report(states map[string]Status) error {
 			"complete": complete,
 		})
 	}
+
+	return nil
+}
+
+// showVersion emits events for showing the Lambda version.
+func (s *Stack) showVersion(stage *config.Stage) error {
+	res, err := s.lambda.GetAlias(&lambda.GetAliasInput{
+		FunctionName: &s.config.Name,
+		Name:         &stage.Name,
+	})
+
+	if err != nil {
+		return errors.Wrap(err, "fetching alias")
+	}
+
+	s.events.Emit("platform.stack.show.version", event.Fields{
+		"domain":  stage.Domain,
+		"version": *res.FunctionVersion,
+	})
 
 	return nil
 }
