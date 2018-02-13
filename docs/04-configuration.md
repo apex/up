@@ -98,6 +98,35 @@ Lambda uploads may be optionally accelerated for Up Pro users, using [S3 Transfe
 
 Changes to Lambda configuration do not require a `up stack apply`, just deploy and these changes are picked up!
 
+### Active Warming
+
+An AWS Lambda "cold start" happens when there are no freely available containers to serve the request, Lambda must fetch your code and create a new container, after this it is "warm" and remains in the Lambda cluster to serve subsequent requests for roughly an hour.
+
+If a container does not receive any traffic within the hour, it is removed from the AWS Lambda cluster, and thus a new request may incur a cold start. Up Pro's "active warming" feature mitigates this by periodically requesting against your app, at the specified concurrency.
+
+For example when a user visits your web application, a cold start may occur for each resource, say you have one JavaScript file, CSS file, and the HTML itself, then this will be 3 concurrent containers. By default Up will warm `15` containers, however you may want to adjust `warm_count` this for your use-case.
+
+- `warm` – Enable active warming (Default: false)
+- `warm_count` – Number of concurrent containers to warm (Default: "15")
+- `warm_rate` – Rate at which to perform the warming (Default: "15m")
+
+Here's a example, requesting `50` containers:
+
+```json
+{
+  "name": "app",
+  "lambda": {
+    "warm": true,
+    "warm_count": 50,
+    "warm_rate": "30m"
+  }
+}
+```
+
+Another way to mitigate cold starts is to use an uptime monitoring tool, such as [Apex Ping](https://apex.sh/ping/) which also monitors global performance, so it's a win-win! Use the "up" coupon for 15% off your first year if you choose to use Ping.
+
+[![Uptime Monitoring Tool](https://apex-software.imgix.net/ping/marketing/overview.png?compress=auto)](https://apex.sh/ping)
+
 ## Hook Scripts
 
 Up provides "hooks" which are commands invoked at certain points within the deployment workflow for automating builds, linting and so on. The following hooks are available:

@@ -1,6 +1,9 @@
 package config
 
-import "errors"
+import (
+	"errors"
+	"time"
+)
 
 // Lambda configuration.
 type Lambda struct {
@@ -15,12 +18,29 @@ type Lambda struct {
 
 	// Accelerate enables S3 acceleration.
 	Accelerate bool `json:"accelerate"`
+
+	// Warm enables active warming.
+	Warm bool `json:"warm"`
+
+	// WarmCount is the number of containers to keep active.
+	WarmCount int `json:"warm_count"`
+
+	// WarmRate is the schedule for performing worming.
+	WarmRate Duration `json:"warm_rate"`
 }
 
 // Default implementation.
 func (l *Lambda) Default() error {
 	if l.Memory == 0 {
 		l.Memory = 512
+	}
+
+	if l.WarmRate == 0 {
+		l.WarmRate = Duration(15 * time.Minute)
+	}
+
+	if l.WarmCount == 0 {
+		l.WarmCount = 15
 	}
 
 	return nil

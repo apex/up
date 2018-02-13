@@ -8,6 +8,9 @@ import (
 	"github.com/apex/up"
 	"github.com/apex/up/internal/secret"
 	"github.com/apex/up/internal/util"
+	"github.com/aws/aws-sdk-go/aws"
+	"github.com/aws/aws-sdk-go/aws/session"
+	"github.com/aws/aws-sdk-go/service/cloudwatch"
 	"github.com/pkg/errors"
 )
 
@@ -52,6 +55,33 @@ func (r *Runtime) Init(stage string) error {
 	}
 
 	return nil
+}
+
+// Metric records a metric value.
+func (r *Runtime) Metric(name string, value float64) error {
+	// TODO: move
+	c := cloudwatch.New(session.New(aws.NewConfig()))
+
+	// TODO: conventions for Name? ByApp ?
+	// TODO: timeouts or delegate
+	// TODO: stage dim?
+	_, err := c.PutMetricData(&cloudwatch.PutMetricDataInput{
+		Namespace: aws.String("up"),
+		MetricData: []*cloudwatch.MetricDatum{
+			{
+				MetricName: &name,
+				Value:      &value,
+				Dimensions: []*cloudwatch.Dimension{
+					{
+						Name:  aws.String("app"),
+						Value: &r.config.Name,
+					},
+				},
+			},
+		},
+	})
+
+	return err
 }
 
 // loadSecrets loads secrets.

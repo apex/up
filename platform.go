@@ -108,6 +108,7 @@ type Platform interface {
 // variables from remote storage.
 type Runtime interface {
 	Init(stage string) error
+	Metric(name string, value float64) error
 }
 
 // Zipper is the interface used by platforms which
