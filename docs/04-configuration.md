@@ -106,6 +106,8 @@ If a container does not receive any traffic within the hour, it is removed from 
 
 For example when a user visits your web application, a cold start may occur for each resource, say you have one JavaScript file, CSS file, and the HTML itself, then this will be 3 concurrent containers. By default Up will warm `15` containers, however you may want to adjust `warm_count` this for your use-case.
 
+Note that if your application receives a reasonable amount of traffic this may not be an issue at all in practice, as containers will already be warm.
+
 - `warm` – Enable active warming (Default: false)
 - `warm_count` – Number of concurrent containers to warm (Default: "15")
 - `warm_rate` – Rate at which to perform the warming (Default: "15m")
