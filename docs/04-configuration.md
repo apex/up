@@ -125,6 +125,8 @@ Here's a example, requesting `50` containers:
 }
 ```
 
+The cost of adding warming will vary slightly depending on the cold start time of your app, however to give you an idea: a cold start of 1 second the default settings of `15` requests each 15 minutes will cost roughly $0.02 per month, so it is typically nothing worth worrying about. 
+
 Another way to mitigate cold starts is to use an uptime monitoring tool, such as [Apex Ping](https://apex.sh/ping/) which also monitors global performance, so it's a win-win! Use the "up" coupon for 15% off your first year.
 
 [![Uptime Monitoring Tool](https://apex-software.imgix.net/ping/marketing/overview.png?compress=auto)](https://apex.sh/ping)
