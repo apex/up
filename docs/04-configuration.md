@@ -100,7 +100,7 @@ Changes to Lambda configuration do not require a `up stack apply`, just deploy a
 
 ### Active Warming
 
-An AWS Lambda "cold start" happens when there are no freely available containers to serve the request, Lambda must fetch your code and create a new container, after this it is "warm" and remains in the Lambda cluster to serve subsequent requests for roughly an hour.
+A "cold start" occurs in AWS Lambda when there are no idle containers available to serve a request—Lambda must fetch your code and create a new container, after this it is "warm" and remains in the Lambda cluster to serve subsequent requests for roughly an hour.
 
 If a container does not receive any traffic within the hour, it is removed from the AWS Lambda cluster, and thus a new request may incur a cold start. Up Pro's "active warming" feature mitigates this by periodically requesting against your app, at the specified concurrency.
 
