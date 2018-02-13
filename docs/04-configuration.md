@@ -109,8 +109,8 @@ For example when a user visits your web application, a cold start may occur for 
 Note that if your application receives steady traffic this may not be an issue at all in practice, as containers will already be warm and re-used.
 
 - `warm` – Enable active warming (Default: false)
-- `warm_count` – Number of concurrent containers to warm (Default: "15")
-- `warm_rate` – Rate at which to perform the warming (Default: "15m")
+- `warm_count` – Number of concurrent containers to warm (Default: `15`)
+- `warm_rate` – Rate at which to perform the warming (Default: `"15m"`)
 
 Here's a example specifying `50` idle containers:
 
