@@ -106,7 +106,7 @@ If a container does not receive any traffic within the hour, it is removed from 
 
 For example when a user visits your web application, a cold start may occur for each resource, say you have one JavaScript file, CSS file, and the HTML itself, then this will be 3 concurrent containers. By default Up will warm `15` containers, however you may want to adjust `warm_count` this for your use-case.
 
-Note that if your application receives a reasonable amount of traffic this may not be an issue at all in practice, as containers will already be warm.
+Note that if your application receives steady traffic this may not be an issue at all in practice, as containers will already be warm and re-used.
 
 - `warm` – Enable active warming (Default: false)
 - `warm_count` – Number of concurrent containers to warm (Default: "15")
@@ -125,7 +125,7 @@ Here's a example, requesting `50` containers:
 }
 ```
 
-The cost of adding warming will vary slightly depending on the cold start time of your app, however to give you an idea: a cold start of 1 second the default settings of `15` requests each 15 minutes will cost roughly $0.02 per month, so it is typically nothing worth worrying about. 
+The cost of adding warming will vary slightly depending on the cold start time of your app, however to give you an idea: a cold start of 1 second the default settings of `15` requests each 15 minutes will cost roughly $0.02 per month, so it is typically nothing worth worrying about.
 
 Another way to mitigate cold starts is to use an uptime monitoring tool, such as [Apex Ping](https://apex.sh/ping/) which also monitors global performance, so it's a win-win! Use the "up" coupon for 15% off your first year.
 
