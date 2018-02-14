@@ -16,7 +16,7 @@ The name of the application, which is used to name resources such as the Lambda 
 
 ## Profile
 
-The `profile` property is equivalent to setting `AWS_PROFILE` for referencing AWS credentials in the `~/.aws` directory. Use of this property is preferred it prevents accidents with environment variables.
+The `profile` property is equivalent to setting `AWS_PROFILE` for referencing AWS credentials in the `~/.aws` directory. Use of this property is preferred as it prevents accidents with environment variables.
 
 ```json
 {
