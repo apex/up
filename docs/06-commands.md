@@ -502,7 +502,7 @@ $ up metrics production -s 15d
 
 ## Start
 
-Start development server. The development server runs the same proxy that is used in production for serving, so you can test a static site or application locally with the same feature-set. The `UP_STAGE` and `NODE_ENV` environment variables will are set to "development".
+Start development server. The development server runs the same proxy that is used in production for serving, so you can test a static site or application locally with the same feature-set. The `UP_STAGE` and `NODE_ENV` environment variables will be set to "development".
 
 See [Stage Overrides](https://up.docs.apex.sh/#configuration.stage_overrides) for an example of overriding the proxy command per-stage, especially useful in development.
 
