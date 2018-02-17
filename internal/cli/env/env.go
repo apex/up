@@ -31,9 +31,9 @@ func init() {
 	cmd.Example(`up env get DB_URL`, "Get a variable value.")
 	cmd.Example(`up env rm S3_KEY`, "Remove a variable.")
 	cmd.Example(`up env rm S3_KEY -s production`, "Remove a production variable.")
+	add(cmd)
 	get(cmd)
 	list(cmd)
-	add(cmd)
 	remove(cmd)
 }
 
