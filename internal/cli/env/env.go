@@ -28,11 +28,44 @@ func init() {
 	cmd.Example(`up env add S3_KEY xxxxxxx -s production`, "Add a stage specific env var to override the previous.")
 	cmd.Example(`up env add -c DB_USER tobi`, "Add a cleartext env var.")
 	cmd.Example(`up env add -d 'Mongo password' DB_PASS xxxxxxx`, "Add a description.")
+	cmd.Example(`up env get DB_URL`, "Get a variable value.")
 	cmd.Example(`up env rm S3_KEY`, "Remove a variable.")
 	cmd.Example(`up env rm S3_KEY -s production`, "Remove a production variable.")
+	get(cmd)
 	list(cmd)
 	add(cmd)
 	remove(cmd)
+}
+
+// get variables.
+func get(cmd *kingpin.Cmd) {
+	c := cmd.Command("get", "Get a variable value.")
+	key := c.Arg("name", "Variable name.").Required().String()
+	stage := c.Flag("stage", "Target stage name.").Short('s').Default("all").String()
+
+	c.Action(func(_ *kingpin.ParseContext) error {
+		c, p, err := root.Init()
+		if err != nil {
+			return errors.Wrap(err, "initializing")
+		}
+
+		stages := append(c.Stages.Names(), "all")
+		if err := validate.List(*stage, stages); err != nil {
+			return err
+		}
+		normalizeStage(stage)
+
+		stats.Track("Get Secret", nil)
+
+		v, err := p.Secrets(*stage).Get(*key)
+		if err != nil {
+			return errors.Wrap(err, "listing secrets")
+		}
+
+		fmt.Printf("%s\n", v)
+
+		return nil
+	})
 }
 
 // list variables.

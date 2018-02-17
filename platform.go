@@ -58,6 +58,7 @@ type Secret struct {
 // Secrets is the interface for managing encrypted secrets.
 type Secrets interface {
 	Add(key, val, desc string, clear bool) error
+	Get(key string) (string, error)
 	Remove(key string) error
 	List(decrypt bool) ([]*Secret, error)
 	Load() ([]*Secret, error)

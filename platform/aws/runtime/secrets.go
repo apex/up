@@ -141,6 +141,22 @@ func (s *Secrets) Add(key, val, desc string, clear bool) error {
 	return err
 }
 
+// Get implementation.
+func (s *Secrets) Get(key string) (string, error) {
+	key = s.secretName(key)
+
+	res, err := s.client.GetParameter(&ssm.GetParameterInput{
+		Name:           &key,
+		WithDecryption: aws.Bool(true),
+	})
+
+	if err != nil {
+		return "", err
+	}
+
+	return *res.Parameter.Value, nil
+}
+
 // Remove implementation.
 func (s *Secrets) Remove(key string) error {
 	key = s.secretName(key)
