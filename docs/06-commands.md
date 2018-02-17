@@ -30,8 +30,9 @@ Commands:
   domains ls           List purchased domains.
   domains check        Check availability of a domain.
   domains buy          Purchase a domain.
-  env ls               List variables.
   env add              Add a variable.
+  env get              Get a variable value.
+  env ls               List variables.
   env rm               Remove a variable.
   logs                 Show log output.
   metrics              Show project metrics.
@@ -866,15 +867,16 @@ Usage:
 Flags:
 
   -h, --help           Output usage information.
-  -r, --region=REGION  Override the region.
   -C, --chdir="."      Change working directory.
   -v, --verbose        Enable verbose log output.
+      --format="text"  Output formatter.
       --version        Show application version.
 
 Subcommands:
 
-  env ls               List variables.
   env add              Add a variable.
+  env get              Get a variable value.
+  env ls               List variables.
   env rm               Remove a variable.
 ```
 
@@ -901,6 +903,13 @@ Environment variables may also be plain or "clear" text, using the `-c, --clear`
 $ up env add -c DB_NAME users
 $ up env add -c DB_USER sloth
 $ up env add DB_PASS amazingpass
+```
+
+Get environment variable values with:
+
+```
+$ up env get DB_NAME
+$ up env get DB_NAME -s production
 ```
 
 List the env vars with:

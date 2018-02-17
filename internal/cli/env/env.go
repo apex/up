@@ -62,7 +62,7 @@ func get(cmd *kingpin.Cmd) {
 			return errors.Wrap(err, "listing secrets")
 		}
 
-		fmt.Printf("%s\n", v)
+		fmt.Printf("%s", v)
 
 		return nil
 	})
