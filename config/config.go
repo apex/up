@@ -108,7 +108,7 @@ func (c *Config) Default() error {
 
 	// TODO: hack, move to the instantiation of aws clients
 	if c.Profile != "" {
-		os.Setenv("AWS_PROFILE", c.Profile)
+		setProfile(c.Profile)
 	}
 
 	// default type to server
@@ -419,4 +419,12 @@ func python(c *Config) {
 	if c.Hooks.Clean.IsEmpty() {
 		c.Hooks.Clean = Hook{`rm -r .pypath/`}
 	}
+}
+
+// setProfile sets the AWS_PROFILE.
+func setProfile(name string) {
+	os.Setenv("AWS_PROFILE", name)
+	os.Unsetenv("AWS_ACCESS_KEY")
+	os.Unsetenv("AWS_SECRET_ACCESS_KEY")
+	os.Unsetenv("AWS_SECRET_KEY")
 }
