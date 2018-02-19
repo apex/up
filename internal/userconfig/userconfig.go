@@ -2,11 +2,13 @@
 package userconfig
 
 import (
+	"encoding/base64"
 	"encoding/json"
 	"io/ioutil"
 	"os"
 	"path/filepath"
 
+	"github.com/apex/up/internal/util"
 	"github.com/mitchellh/go-homedir"
 	"github.com/pkg/errors"
 )
@@ -123,6 +125,15 @@ func (c *Config) Load() error {
 
 	// env
 	if s := os.Getenv(envName); s != "" {
+		// if not JSON, check for base64 encoding
+		if !util.IsJSON(s) {
+			decoded, err := base64.StdEncoding.DecodeString(s)
+			if err != nil {
+				return errors.Wrap(err, "decoding base64")
+			}
+			s = string(decoded)
+		}
+
 		if err := json.Unmarshal([]byte(s), &c); err != nil {
 			return errors.Wrap(err, "unmarshaling")
 		}
