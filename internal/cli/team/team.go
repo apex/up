@@ -2,6 +2,7 @@ package team
 
 import (
 	"context"
+	"encoding/base64"
 	"encoding/json"
 	"fmt"
 	"sort"
@@ -142,13 +143,15 @@ func copy(cmd *kingpin.Cmd) {
 			return errors.Wrap(err, "marshaling")
 		}
 
+		s := base64.StdEncoding.EncodeToString(b)
+
 		if *copy {
-			clipboard.Write(string(b))
+			clipboard.Write(s)
 			fmt.Println("Copied to clipboard!")
 			return nil
 		}
 
-		fmt.Printf("%s\n", string(b))
+		fmt.Printf("%s\n", s)
 
 		return nil
 	})
