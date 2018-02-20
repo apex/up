@@ -416,7 +416,7 @@ The first step is to set up environment variables so that you have access to you
 
 If using running Up Pro you'll need your Up credentials:
 
-- `UP_CONFIG` – Up configuration
+- `UP_CONFIG` – Up configuration as base64-encoded JSON
 
 To obtain this run `up team ci` or `up team ci --copy` to copy it directly to your clipboard, then paste this as the env var's value.
 
