@@ -551,7 +551,7 @@ By default the following stages are defined:
 
 - `development` — local development environment
 - `staging` — remote environment for staging new features or releases
-- `production` — aptly named production environment
+- `production` — remote environment for production
 
 To create a new stage, first add it to your configuration, in this case we'll call it "beta":
 
