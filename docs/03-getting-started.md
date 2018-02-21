@@ -2,7 +2,17 @@
 title: Getting Started
 ---
 
-The simplest Up application is a single file for the application itself, with zero dependencies.
+The simplest Up application is a single file for the application itself, with zero dependencies, and an `up.json` file which requires only a `name`.
+
+If the directory does not contain an `up.json` file, the first execution of `up` will prompt you to create it, or you can manually create an `up.json` with some preferences:
+
+```json
+{
+  "name": "appname-api",
+  "profile": "companyname",
+  "regions": ["us-west-2"]
+}
+```
 
 Up runs "vanilla" HTTP servers listening on the `PORT` environment variable, which is passed to your program by Up. For example create a new directory with the following `app.js` file:
 
