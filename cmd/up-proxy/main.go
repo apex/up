@@ -45,6 +45,11 @@ func main() {
 		ctx.Fatalf("error initializing: %s", err)
 	}
 
+	// overrides
+	if err := c.Override(stage); err != nil {
+		ctx.Fatalf("error overriding: %s", err)
+	}
+
 	// select handler
 	h, err := handler.FromConfig(c)
 	if err != nil {
