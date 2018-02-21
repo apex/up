@@ -16,17 +16,18 @@ aws_access_key_id = xxxxxxxx
 aws_secret_access_key = xxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
-## Best Practices
+### Best Practices
 
 You may store the profile name in the `up.json` file itself as shown in the following snippet:
 
 ```json
 {
-  "profile": "myapp"
+  "name": "appname-api",
+  "profile": "companyname"
 }
 ```
 
-This is ideal since it ensures that you do not accidentally have a different environment set and deploy to another account, potentially to an app of the same name, as apps are account-specific you may have one named "api" in many.
+This is ideal as it ensures you will not accidentally deploy to a different AWS account.
 
 ## IAM Policy for Up CLI
 
