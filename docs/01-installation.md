@@ -10,6 +10,12 @@ The quickest way to get `up` is to run the following command, which installs to 
 $ curl -sf https://up.apex.sh/install | sh
 ```
 
+To install `up` to a specific directory, use `BINDIR`. Here's an example installing to the current directory:
+
+```
+$ curl -sf https://up.apex.sh/install | BINDIR=. sh
+```
+
 NPM's `up` package runs the same script as above.
 
 ```
