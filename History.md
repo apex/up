@@ -1,4 +1,11 @@
 
+v0.5.3-pro / 2018-02-22
+=======================
+
+  * add 1s sleep to `/_ping` endpoint
+  * add `up env get` command
+  * Rebase
+
 v0.5.1 / 2018-02-22
 ===================
 
@@ -7,6 +14,26 @@ v0.5.1 / 2018-02-22
   * change UP_CONFIG to attempt base64-decode when not JSON (#594)
   * fix proxy.command overrides. Closes #597
   * fix .profile precedence. Closes #590
+
+v0.5.2-pro / 2018-02-12
+=======================
+
+  * add active warming support
+  * Rebase
+
+v0.5.1-pro / 2018-02-08
+=======================
+
+  * add `up env` --decrypt flag for emergencies when you need to list
+
+v0.5.0-pro / 2018-02-08
+=======================
+
+  * add nicer env var logging with masking
+  * add custom stage support to `up env`
+  * add message for `up env` when no vars are defined
+  * fix rollbacks using -previous aliases
+  * Rebase
 
 v0.5.0 / 2018-02-08
 ===================
@@ -21,6 +48,11 @@ v0.5.0 / 2018-02-08
   * refactor retry labels below s3 uploads (improves performance)
   * refactor: add nicer output when using `up url -c`
 
+v0.4.12-pro / 2018-02-01
+========================
+
+  * Rebase
+
 v0.4.12 / 2018-02-01
 ====================
 
@@ -32,6 +64,11 @@ v0.4.12 / 2018-02-01
   * docs: fix team members rm example. Closes #562
   * docs: add "Unable to associate certificate error" to troubleshooting
   * docs: add gin example
+
+v0.4.11-pro / 2018-01-29
+========================
+
+  * Rebase
 
 v0.4.11 / 2018-01-29
 ====================
@@ -45,16 +82,31 @@ v0.4.11 / 2018-01-29
   * docs: remove old "Local Environment Variables" guide section
   * docs: add gin example for dev command
 
+v0.4.10-pro / 2018-01-25
+========================
+
+  * Rebase
+
 v0.4.10 / 2018-01-25
 ====================
 
   * refactor to use a single account/region level S3 bucket, not per-project. Closes #550
   * fix base64 encoded json when params are provided
 
+v0.4.9-pro / 2018-01-24
+=======================
+
+  * Rebase
+
 v0.4.9 / 2018-01-24
 ===================
 
   * revert tj/go-update, causing permission issues
+
+v0.4.8-pro / 2018-01-24
+=======================
+
+  * fix validating after overrides
 
 v0.4.8 / 2018-01-24
 ===================
@@ -63,6 +115,12 @@ v0.4.8 / 2018-01-24
   * update api client for RemoveMember() json body change
   * docs: add missing ssm to policy
   * docs: add note about 404s
+
+v0.4.7-pro / 2018-01-19
+=======================
+
+  * add rollback support
+  * fix upgrade deduplication due to version having -pro suffix
 
 v0.4.7 / 2018-01-19
 ===================
@@ -76,6 +134,17 @@ v0.4.7 / 2018-01-19
   * refactor logging configuration, delegate isatty check etc
   * refactor: move internal logs to tj/aws
   * refactor platform integration quickly
+
+v0.4.6-pro / 2018-01-03
+=======================
+
+  * add rollback support
+
+v0.4.5-pro / 2018-01-03
+=======================
+
+  * add s3 acceleration
+  * fix a log call in runtime
 
 v0.4.6 / 2018-01-03
 ===================
@@ -95,6 +164,11 @@ v0.4.6 / 2018-01-03
   * fix output flickering before build output
   * fix: add a ! in front of build.gradle for forced inclusion (#518)
 
+v0.4.4-pro / 2017-12-22
+=======================
+
+  * Rebase
+
 v0.4.5 / 2017-12-22
 ===================
 
@@ -108,16 +182,32 @@ v0.4.5 / 2017-12-22
   * refactor: drop unnecessary `fmt.Sprintf` in reporter/text (#506)
   * refactor: simplify personal team check (#500)
 
+v0.4.3-pro / 2017-12-19
+=======================
+
+  * Rebase
+
 v0.4.4 / 2017-12-19
 ===================
 
   * fix `up stack status` scenario before a domain is mapped
   * refactor: config, simplify unmarshal json of dns. Closes #497
 
+v0.4.2-pro / 2017-12-19
+=======================
+
+  * Rebase
+
 v0.4.3 / 2017-12-19
 ===================
 
   * refactor: shorten s3 bucket name
+
+v0.4.1-pro / 2017-12-19
+=======================
+
+  * remove 0.0.0 hack for pro upgrade
+  * Rebase
 
 v0.4.2 / 2017-12-19
 ===================
@@ -130,6 +220,18 @@ v0.4.1 / 2017-12-18
 ===================
 
   * fix upgrades to pro when version matches
+
+v0.4.0-pro / 2017-12-18
+=======================
+
+  * add slack `gif` option
+  * add slack alert support
+  * add initialization of env vars for builds. Closes #458
+  * add initialization of env vars for deployments. Closes #458
+  * add initialization of env vars for `up start`. Closes #458
+  * add `{alerts,actions}_count` to Deploy track
+  * change missing default to `notBreaching`
+  * refactor: add title casing to `up env` output
 
 v0.4.0 / 2017-12-18
 ===================
@@ -148,7 +250,26 @@ v0.4.0 / 2017-12-18
   * change how expanded log mode looks
   * remove `--region` flag
   * fix upgrade messages for OSS -> Pro
-  * fix clearing state in text reporter  
+  * fix clearing state in text reporter
+
+v0.3.0-pro / 2017-12-03
+=======================
+
+  * add sms alerting support
+
+v0.2.0-pro / 2017-12-03
+=======================
+
+  * add hosted email alerting for nicer formatting
+  * change alert default `period` to 1m
+
+v0.1.11-pro / 2017-11-30
+========================
+
+  * add support for listing secrets without last modified user name
+  * fix secrets listing when user ARN is not present. Closes #433
+  * refactor alerting into new resources sub-pkg
+  * Rebase
 
 v0.3.8 / 2017-11-30
 ===================
@@ -171,10 +292,22 @@ v0.3.7 / 2017-11-24
   * remove project init from `up account login`
   * fix timestamps for lambda plain text logs
 
+v0.1.10-pro / 2017-11-23
+========================
+
+  * add support for listing secrets without last modified user name
+  * fix secrets listing when user ARN is not present. Closes #433
+  * Rebase
+
 v0.3.6 / 2017-11-22
 ===================
 
   * fix subscription without coupon
+
+v0.1.9-pro / 2017-11-21
+=======================
+
+  * Rebase
 
 v0.3.5 / 2017-11-21
 ===================
@@ -183,6 +316,27 @@ v0.3.5 / 2017-11-21
   * fix DNS record logical id collision. Closes #420
   * refactor `up stack` output
 
+v0.1.8-pro / 2017-11-20
+=======================
+
+  * add TreatMissingData as ignore by default
+
+v0.1.7-pro / 2017-11-20
+=======================
+
+  * fix email alerting
+
+v0.1.6-pro / 2017-11-20
+=======================
+
+  * add initial alerting support
+
+v0.1.5-pro / 2017-11-20
+=======================
+
+  * fix "development" env support for `up env`
+  * Rebase
+
 v0.3.4 / 2017-11-20
 ===================
 
@@ -190,10 +344,20 @@ v0.3.4 / 2017-11-20
   * fix domain verification for ssl certificates. Closes #425
   * update tj/kingpin for arg output formatting fix
 
+v0.1.4-pro / 2017-11-18
+=======================
+
+  * Rebase
+
 v0.3.3 / 2017-11-18
 ===================
 
   * fix zip paths on Windows. Closes #418
+
+v0.1.3-pro / 2017-11-18
+=======================
+
+  * Rebase
 
 v0.3.2 / 2017-11-18
 ===================
@@ -216,6 +380,16 @@ v0.3.1 / 2017-11-15
   * refactor: remove .size defaulting of 0
   * refactor progress bar with diffing, making it more responsive
   * fix missing logs when json does not take the shape of a log. Closes #411
+
+v0.1.2-pro / 2017-11-15
+=======================
+
+  * fix missing logs when json does not take the shape of a log. Closes #411
+
+v0.1.0-pro / 2017-11-15
+=======================
+
+  * add `env` command
 
 v0.3.0 / 2017-10-19
 ===================
