@@ -1,4 +1,13 @@
 
+v0.5.1 / 2018-02-22
+===================
+
+  * add function version to `up stack` output
+  * change `up team ci` to output base64 encoded config
+  * change UP_CONFIG to attempt base64-decode when not JSON (#594)
+  * fix proxy.command overrides. Closes #597
+  * fix .profile precedence. Closes #590
+
 v0.5.0 / 2018-02-08
 ===================
 
