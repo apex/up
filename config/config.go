@@ -425,6 +425,7 @@ func python(c *Config) {
 func setProfile(name string) {
 	os.Setenv("AWS_PROFILE", name)
 	os.Unsetenv("AWS_ACCESS_KEY")
+	os.Unsetenv("AWS_ACCESS_KEY_ID")
 	os.Unsetenv("AWS_SECRET_ACCESS_KEY")
 	os.Unsetenv("AWS_SECRET_KEY")
 }
