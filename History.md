@@ -1,11 +1,4 @@
 
-v0.5.3-pro / 2018-02-22
-=======================
-
-  * add 1s sleep to `/_ping` endpoint
-  * add `up env get` command
-  * Rebase
-
 v0.5.1 / 2018-02-22
 ===================
 
