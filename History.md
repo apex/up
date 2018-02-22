@@ -1,4 +1,11 @@
 
+v0.5.3-pro / 2018-02-22
+=======================
+
+  * add 1s sleep to /_ping endpoint for improved warming concurrency accuracy  
+  * add `up env get` command for fetching a value
+  * Rebase
+
 v0.5.2 / 2018-02-22
 ===================
 
