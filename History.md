@@ -1,4 +1,11 @@
 
+v0.5.3 / 2018-02-23
+===================
+
+  * fix log flushing, make it synchronous. Closes #545
+  * docs: add changelog link
+  * docs: add mention of BINDIR
+
 v0.5.3-pro / 2018-02-22
 =======================
 
