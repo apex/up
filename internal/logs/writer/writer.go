@@ -4,64 +4,48 @@
 package writer
 
 import (
+	"bufio"
+	"bytes"
 	"encoding/json"
-	"io"
 
 	"github.com/apex/log"
-	"github.com/apex/up/internal/linereader"
 	"github.com/apex/up/internal/util"
 	"github.com/pkg/errors"
 )
 
-// New writer with the given log level.
-func New(l log.Level, ctx log.Interface) *Writer {
-	pr, pw := io.Pipe()
-
-	w := &Writer{
-		PipeWriter: pw,
-		LineReader: linereader.New(pr),
-		done:       make(chan struct{}),
-	}
-
-	lw := &logWriter{
-		log:   ctx,
-		level: l,
-	}
-
-	go func() {
-		defer close(w.done)
-		io.Copy(lw, w.LineReader)
-	}()
-
-	return w
-}
-
-// Writer is a writer which copies lines with
-// indentation support to a logWriter.
+// Writer struct.
 type Writer struct {
-	*io.PipeWriter
-	*linereader.LineReader
-	done chan struct{}
-}
-
-// Close implementation.
-func (w *Writer) Close() error {
-	if err := w.PipeWriter.Close(); err != nil {
-		return err
-	}
-
-	<-w.done
-	return nil
-}
-
-// logWriter is a write which logs distinct writes as log lines.
-type logWriter struct {
 	log   log.Interface
 	level log.Level
 }
 
+// New writer with the given log level.
+func New(l log.Level, ctx log.Interface) *Writer {
+	return &Writer{
+		log:   ctx,
+		level: l,
+	}
+}
+
 // Write implementation.
-func (w *logWriter) Write(b []byte) (int, error) {
+func (w *Writer) Write(b []byte) (int, error) {
+	s := bufio.NewScanner(bytes.NewReader(b))
+
+	for s.Scan() {
+		if n, err := w.write(s.Bytes()); err != nil {
+			return n, err
+		}
+	}
+
+	if err := s.Err(); err != nil {
+		return 0, err
+	}
+
+	return len(b), nil
+}
+
+// write the line.
+func (w *Writer) write(b []byte) (int, error) {
 	if util.IsJSONLog(string(b)) {
 		return w.writeJSON(b)
 	}
@@ -70,7 +54,7 @@ func (w *logWriter) Write(b []byte) (int, error) {
 }
 
 // writeJSON writes a json log, interpreting it as a log.Entry.
-func (w *logWriter) writeJSON(b []byte) (int, error) {
+func (w *Writer) writeJSON(b []byte) (int, error) {
 	// TODO: make this less ugly in apex/log,
 	// you should be able to write an arbitrary Entry.
 	var e log.Entry
@@ -97,7 +81,7 @@ func (w *logWriter) writeJSON(b []byte) (int, error) {
 }
 
 // writeText writes plain text.
-func (w *logWriter) writeText(b []byte) (int, error) {
+func (w *Writer) writeText(b []byte) (int, error) {
 	switch w.level {
 	case log.InfoLevel:
 		w.log.Info(string(b))

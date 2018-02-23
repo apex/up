@@ -469,24 +469,6 @@ Would be collected as:
 ERROR: Failed to sign in: something broke
 ```
 
-Multi-line indented logs are also supported, and are treated as a single message. For example:
-
-```js
-console.log('User signed in')
-console.log('  name: %s', user.name)
-console.log('  email: %s', user.email)
-```
-
-Would be collected as the single entry:
-
-```
-INFO: User signed in
-  name: tj
-  email: tj@apex.sh
-```
-
-This feature is especially useful for stack traces.
-
 ### JSON
 
 The second option is structured logging with JSON events, which is preferred as it allows you to query against specific fields and treat logs like events.

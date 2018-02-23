@@ -35,56 +35,11 @@ POST /logout
 	_, err := io.Copy(w, strings.NewReader(input))
 	assert.NoError(t, err, "copy")
 
-	assert.NoError(t, w.Close(), `close`)
-
 	expected := `{"fields":{},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"GET /"}
 {"fields":{},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"GET /account"}
 {"fields":{},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"GET /login"}
 {"fields":{},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"POST /"}
 {"fields":{},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"POST /logout"}
-`
-
-	assert.Equal(t, expected, buf.String())
-}
-
-func TestWriter_plainTextIndented(t *testing.T) {
-	var buf bytes.Buffer
-
-	log.SetHandler(json.New(&buf))
-
-	w := New(log.InfoLevel, log.Log)
-
-	input := `GET /
-GET /account
-SomethingError: one
-  at foo
-  at bar
-  at baz
-  at raz
-GET /login
-SomethingError: two
-  at foo
-  at bar
-  at baz
-POST /
-SomethingError: three
-  at foo
-  at bar
-  at baz
-`
-
-	_, err := io.Copy(w, strings.NewReader(input))
-	assert.NoError(t, err, "copy")
-
-	assert.NoError(t, w.Close(), `close`)
-
-	expected := `{"fields":{},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"GET /"}
-{"fields":{},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"GET /account"}
-{"fields":{},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"SomethingError: one\n  at foo\n  at bar\n  at baz\n  at raz"}
-{"fields":{},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"GET /login"}
-{"fields":{},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"SomethingError: two\n  at foo\n  at bar\n  at baz"}
-{"fields":{},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"POST /"}
-{"fields":{},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"SomethingError: three\n  at foo\n  at bar\n  at baz"}
 `
 
 	assert.Equal(t, expected, buf.String())
@@ -104,8 +59,6 @@ func TestWriter_json(t *testing.T) {
 
 	_, err := io.Copy(w, strings.NewReader(input))
 	assert.NoError(t, err, "copy")
-
-	assert.NoError(t, w.Close(), `close`)
 
 	expected := `{"fields":{"method":"GET","path":"/"},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"request"}
 {"fields":{"method":"GET","path":"/login"},"level":"info","timestamp":"1970-01-01T00:00:00Z","message":"request"}
