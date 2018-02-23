@@ -32,8 +32,8 @@ func (w *Writer) Write(b []byte) (int, error) {
 	s := bufio.NewScanner(bytes.NewReader(b))
 
 	for s.Scan() {
-		if n, err := w.write(s.Bytes()); err != nil {
-			return n, err
+		if err := w.write(s.Text()); err != nil {
+			return 0, err
 		}
 	}
 
@@ -45,22 +45,22 @@ func (w *Writer) Write(b []byte) (int, error) {
 }
 
 // write the line.
-func (w *Writer) write(b []byte) (int, error) {
-	if util.IsJSONLog(string(b)) {
-		return w.writeJSON(b)
+func (w *Writer) write(s string) error {
+	if util.IsJSONLog(s) {
+		return w.writeJSON(s)
 	}
 
-	return w.writeText(b)
+	return w.writeText(s)
 }
 
 // writeJSON writes a json log, interpreting it as a log.Entry.
-func (w *Writer) writeJSON(b []byte) (int, error) {
+func (w *Writer) writeJSON(s string) error {
 	// TODO: make this less ugly in apex/log,
 	// you should be able to write an arbitrary Entry.
 	var e log.Entry
 
-	if err := json.Unmarshal(b, &e); err != nil {
-		return 0, errors.Wrap(err, "unmarshaling")
+	if err := json.Unmarshal([]byte(s), &e); err != nil {
+		return errors.Wrap(err, "unmarshaling")
 	}
 
 	switch e.Level {
@@ -77,17 +77,16 @@ func (w *Writer) writeJSON(b []byte) (int, error) {
 		w.log.WithFields(e.Fields).Error(e.Message)
 	}
 
-	return len(b), nil
+	return nil
 }
 
 // writeText writes plain text.
-func (w *Writer) writeText(b []byte) (int, error) {
+func (w *Writer) writeText(s string) error {
 	switch w.level {
 	case log.InfoLevel:
-		w.log.Info(string(b))
+		w.log.Info(s)
 	case log.ErrorLevel:
-		w.log.Error(string(b))
+		w.log.Error(s)
 	}
-
-	return len(b), nil
+	return nil
 }
