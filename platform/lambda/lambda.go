@@ -255,6 +255,7 @@ func (p *Platform) DeleteStack(region string, wait bool) error {
 		return errors.Wrap(err, "fetching alias versions")
 	}
 
+	log.Debug("deleting bucket objects")
 	if err := p.deleteBucketObjects(region); err != nil && !util.IsNotFound(err) {
 		return errors.Wrap(err, "deleting s3 objects")
 	}
