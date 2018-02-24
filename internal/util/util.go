@@ -166,6 +166,18 @@ func IsThrottled(err error) bool {
 	}
 }
 
+// IsNoCredentials returns true if err is not nil and represents missing credentials.
+func IsNoCredentials(err error) bool {
+	switch {
+	case err == nil:
+		return false
+	case strings.Contains(err.Error(), "NoCredentialProviders"):
+		return true
+	default:
+		return false
+	}
+}
+
 // Env returns a slice from environment variable map.
 func Env(m map[string]string) (env []string) {
 	for k, v := range m {
