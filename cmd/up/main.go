@@ -46,15 +46,14 @@ func main() {
 
 	term.ShowCursor()
 
-	if util.IsNotFound(err) {
+	switch {
+	case util.IsNotFound(err):
 		util.Fatal(errors.New("Cannot find application, make sure you deployed with `$ up`."))
-	}
-
-	if util.IsNoCredentials(err) {
+	case util.IsNoCredentials(err):
 		util.Fatal(errors.New("Cannot find credentials, visit https://up.docs.apex.sh/#aws_credentials for help."))
+	default:
+		util.Fatal(err)
 	}
-
-	util.Fatal(err)
 }
 
 // run the cli.
