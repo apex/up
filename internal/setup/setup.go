@@ -106,7 +106,7 @@ func Create() error {
 	}
 
 	b, _ := json.MarshalIndent(c, "", "  ")
-	return ioutil.WriteFile("up.json", b, 0755)
+	return ioutil.WriteFile("up.json", b, 0644)
 }
 
 // defaultName returns the default app name.
