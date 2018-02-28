@@ -7,68 +7,47 @@ import (
 )
 
 func TestStage_Override(t *testing.T) {
-	c := &Config{
-		Regions: []string{"us-west-2"},
-		Lambda: Lambda{
-			Memory: 128,
-			Role:   "arn::something",
+	c, err := ParseConfigString(`{
+		"name": "app",
+		"regions": ["us-west-2"],
+		"lambda": {
+			"memory": 128
 		},
-		Hooks: Hooks{
-			Build: Hook{"parcel index.html -o build"},
-			Clean: Hook{"rm -fr clean"},
+		"hooks": {
+			"build": "parcel index.html -o build",
+			"clean": "rm -fr build"
 		},
-		Proxy: Relay{
-			Command: "./server",
+		"proxy": {
+			"command": "node app.js"
 		},
-	}
-
-	t.Run("with no overrides", func(t *testing.T) {
-		c := *c
-
-		s := &Stage{
-			Domain: "example.com",
-		}
-
-		s.Override(&c)
-
-		assert.Equal(t, []string{"us-west-2"}, c.Regions)
-		assert.Equal(t, 128, c.Lambda.Memory)
-		assert.Equal(t, "arn::something", c.Lambda.Role)
-
-		assert.Equal(t, "parcel index.html -o build", c.Hooks.Build[0])
-		assert.Equal(t, "rm -fr clean", c.Hooks.Clean[0])
-		assert.Equal(t, `./server`, c.Proxy.Command)
-	})
-
-	t.Run("with overrides", func(t *testing.T) {
-		c := *c
-
-		s := &Stage{
-			Domain: "example.com",
-			StageOverrides: StageOverrides{
-				Hooks: Hooks{
-					Build:     Hook{"parcel index.html -o build --production"},
-					PostBuild: Hook{"do something"},
+		"stages": {
+			"production": {
+				"lambda": {
+					"memory": 1024
 				},
-				Lambda: Lambda{
-					Memory: 1024,
-				},
-				Proxy: Relay{
-					Command: "./server --foo",
-				},
+				"hooks": {
+					"build": "parcel index.html -o build --production"
+				}
 			},
+			"staging": {
+				"proxy": {
+					"command": "node app.js --foo=bar"
+				}
+			}
 		}
+	}`)
 
-		s.Override(&c)
+	assert.NoError(t, err, "parse")
+	assert.NoError(t, c.Default(), "default")
+	assert.NoError(t, c.Validate(), "validate")
 
-		assert.Equal(t, 1024, c.Lambda.Memory)
-		assert.Equal(t, "arn::something", c.Lambda.Role)
+	assert.NoError(t, c.Override("production"), "override")
+	assert.Equal(t, 1024, c.Lambda.Memory)
+	assert.Equal(t, Hook{`parcel index.html -o build --production`}, c.Hooks.Build)
+	assert.Equal(t, `node app.js`, c.Proxy.Command)
 
-		assert.Equal(t, "parcel index.html -o build --production", c.Hooks.Build[0])
-		assert.Equal(t, "do something", c.Hooks.PostBuild[0])
-		assert.Equal(t, "rm -fr clean", c.Hooks.Clean[0])
-		assert.Equal(t, `./server --foo`, c.Proxy.Command)
-	})
+	assert.NoError(t, c.Override("staging"), "override")
+	assert.Equal(t, `node app.js --foo=bar`, c.Proxy.Command)
 }
 
 func TestStages_Default(t *testing.T) {
