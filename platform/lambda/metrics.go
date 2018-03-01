@@ -62,6 +62,7 @@ func (p *Platform) ShowMetrics(region, stage string, start time.Time) error {
 	s := session.New(aws.NewConfig().WithRegion(region))
 	c := cloudwatch.New(s)
 	var g errgroup.Group
+	name := p.config.Name
 
 	d := time.Now().UTC().Sub(start)
 
@@ -77,9 +78,9 @@ func (p *Platform) ShowMetrics(region, stage string, start time.Time) error {
 
 			switch s.Namespace {
 			case "AWS/ApiGateway":
-				m = m.Dimension("ApiName", p.config.Name).Dimension("Stage", stage)
+				m = m.Dimension("ApiName", name).Dimension("Stage", stage)
 			case "AWS/Lambda":
-				m = m.Dimension("FunctionName", p.config.Name)
+				m = m.Dimension("FunctionName", name).Dimension("Resource", name+":"+stage)
 			}
 
 			res, err := c.GetMetricStatistics(m.Params())
