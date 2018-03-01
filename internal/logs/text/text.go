@@ -2,6 +2,7 @@
 package text
 
 import (
+	"bytes"
 	"fmt"
 	"io"
 	"sync"
@@ -14,20 +15,28 @@ import (
 	"github.com/apex/up/internal/util"
 )
 
-// TODO: rename since it's specific to log querying ATM
 // TODO: output larger timestamp when older
 // TODO: option to output UTC
 // TODO: option to truncate
 // TODO: move to apex/log?
+
+var (
+	spacerPlaceholderBytes = []byte("{{spacer}}")
+	spacerBytes            = []byte(" " + colors.Gray("–"))
+	newlineBytes           = []byte("\n")
+	emptyBytes             = []byte("")
+)
 
 // color function.
 type colorFunc func(string) string
 
 // omit fields.
 var omit = map[string]bool{
-	"app":    true,
-	"region": true,
-	"plugin": true,
+	"app":     true,
+	"stage":   true,
+	"region":  true,
+	"plugin":  true,
+	"version": true,
 }
 
 // Colors mapping.
@@ -114,18 +123,18 @@ func (h *Handler) handleExpanded(e *log.Entry) error {
 
 // handleInline fields.
 func (h *Handler) handleInline(e *log.Entry) error {
+	var buf bytes.Buffer
+	var fields int
+
 	color := Colors[e.Level]
 	level := Strings[e.Level]
 	names := e.Fields.Names()
-
-	h.mu.Lock()
-	defer h.mu.Unlock()
-
 	ts := formatDate(e.Timestamp.Local())
-	fmt.Fprintf(h.Writer, "  %s %s %s", colors.Gray(ts), bold(color(level)), colors.Purple(e.Message))
 
-	if len(names) > 0 {
-		fmt.Fprintf(h.Writer, " %s", colors.Gray("-"))
+	if stage, ok := e.Fields.Get("stage").(string); ok && stage != "" {
+		fmt.Fprintf(&buf, "  %s %s %s %s{{spacer}}", colors.Gray(ts), bold(color(level)), colors.Gray(stage), colors.Purple(e.Message))
+	} else {
+		fmt.Fprintf(&buf, "  %s %s %s{{spacer}}", colors.Gray(ts), bold(color(level)), colors.Purple(e.Message))
 	}
 
 	for _, name := range names {
@@ -139,10 +148,22 @@ func (h *Handler) handleInline(e *log.Entry) error {
 			continue
 		}
 
-		fmt.Fprintf(h.Writer, " %s%s%v", color(name), colors.Gray(": "), value(name, v))
+		fields++
+		fmt.Fprintf(&buf, " %s%s%v", color(name), colors.Gray(": "), value(name, v))
 	}
 
-	fmt.Fprintln(h.Writer)
+	b := buf.Bytes()
+
+	if fields > 0 {
+		b = bytes.Replace(b, spacerPlaceholderBytes, spacerBytes, 1)
+	} else {
+		b = bytes.Replace(b, spacerPlaceholderBytes, emptyBytes, 1)
+	}
+
+	h.mu.Lock()
+	h.Writer.Write(b)
+	h.Writer.Write(newlineBytes)
+	h.mu.Unlock()
 
 	return nil
 }
