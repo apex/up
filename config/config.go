@@ -115,7 +115,10 @@ func (c *Config) Default() error {
 
 	// runtime defaults
 	if c.Type != "static" {
-		if err := inferRuntime(c); err != nil {
+		runtime := inferRuntime()
+		log.WithField("type", runtime).Info("inferred runtime")
+
+		if err := runtimeConfig(runtime, c); err != nil {
 			return errors.Wrap(err, "runtime")
 		}
 	}
