@@ -612,18 +612,31 @@ retry:
 		return "", errors.Wrap(err, "updating function code")
 	}
 
-	log.Debugf("alias %s to %s", stage, *res.Version)
-	_, err = c.UpdateAlias(&lambda.UpdateAliasInput{
-		FunctionName:    &p.config.Name,
-		FunctionVersion: res.Version,
-		Name:            &stage,
-	})
-
-	if err != nil {
-		return "", errors.Wrap(err, "updating function alias")
+	if err := p.alias(c, stage, *res.Version); err != nil {
+		return "", errors.Wrapf(err, "creating function %q alias", stage)
 	}
 
 	return *res.Version, nil
+}
+
+// alias creates or updates an alias.
+func (p *Platform) alias(c *lambda.Lambda, alias, version string) error {
+	log.Debugf("alias %s to %s", alias, version)
+	_, err := c.UpdateAlias(&lambda.UpdateAliasInput{
+		FunctionName:    &p.config.Name,
+		FunctionVersion: &version,
+		Name:            &alias,
+	})
+
+	if util.IsNotFound(err) {
+		_, err = c.CreateAlias(&lambda.CreateAliasInput{
+			FunctionName:    &p.config.Name,
+			FunctionVersion: &version,
+			Name:            &alias,
+		})
+	}
+
+	return err
 }
 
 // deleteFunction deletes the lambda function.
