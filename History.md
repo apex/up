@@ -1,4 +1,19 @@
 
+v0.5.4 / 2018-03-01
+===================
+
+  * add default `up start` command for Go and Crystal. Closes #581
+  * add log stage field to all logs, not just request-level
+  * add owner to `up team` output
+  * fix `up metrics` output, should be stage-specific, not global
+  * refactor: add humanized error when the stack (app) does not exist
+  * refactor: add stage name to beginning of log line instead of as a field
+  * refactor: add os/arch to debug logs to aid in support
+  * refactor: add alias upserts when updating (merged from pro)
+  * refactor: remove a redundant "deploying" error wrap
+  * refactor: tweak some error messages
+  * refactor: change perms of up.json to 0644. Closes #601
+
 v0.5.4-pro / 2018-02-23
 =======================
 
