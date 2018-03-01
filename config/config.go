@@ -103,6 +103,13 @@ func (c *Config) Default() error {
 		c.Stages = make(Stages)
 	}
 
+	// we default stages here before others simply to
+	// initialize the default stages such as "development"
+	// allowing runtime inference to default values.
+	if err := c.Stages.Default(); err != nil {
+		return errors.Wrap(err, ".stages")
+	}
+
 	// TODO: hack, move to the instantiation of aws clients
 	if c.Profile != "" {
 		setProfile(c.Profile)
