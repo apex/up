@@ -77,11 +77,6 @@ title: FAQ
 </details>
 
 <details>
-  <summary>How do I redirect "www" to my domain?</summary>
-  <p>Currently there is no built-in support for redirecting "www" to a "naked" domain, however, you may deploy a tiny application in the language of your choice to perform the redirect—check out the [Node Redirect](https://github.com/apex/up-examples/tree/master/oss/node-redirect) example.</p>
-</details>
-
-<details>
   <summary>Can I donate?</summary>
   <p>Yes you can! Head over to the <a href="https://opencollective.com/apex-up">OpenCollective</a> page. Any donations are greatly appreciated and help me focus more on Up's implementation, documentation, and examples. If you're using the free OSS version for personal or commercial use please consider giving back, even a few bucks buys a coffee :).</p>
 </details>
