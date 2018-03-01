@@ -722,7 +722,7 @@ func (p *Platform) deleteRole(region string) error {
 	})
 
 	if err != nil {
-		return errors.Wrap(err, "deleting role policy")
+		return errors.Wrap(err, "deleting policy")
 	}
 
 	_, err = c.DeleteRole(&iam.DeleteRoleInput{
@@ -730,7 +730,7 @@ func (p *Platform) deleteRole(region string) error {
 	})
 
 	if err != nil {
-		return errors.Wrap(err, "deleting role")
+		return errors.Wrap(err, "deleting iam role")
 	}
 
 	return nil
