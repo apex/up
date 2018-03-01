@@ -33,8 +33,8 @@ var questions = []*survey.Question{
 		Validate: survey.Required,
 	},
 	{
-		Name:     "country",
-		Prompt:   &survey.Input{Message: "Country:"},
+		Name:     "address1",
+		Prompt:   &survey.Input{Message: "Street Address:"},
 		Validate: survey.Required,
 	},
 	{
@@ -48,8 +48,8 @@ var questions = []*survey.Question{
 		Validate: survey.Required,
 	},
 	{
-		Name:     "address1",
-		Prompt:   &survey.Input{Message: "Address:"},
+		Name:     "country",
+		Prompt:   &survey.Input{Message: "Country:"},
 		Validate: survey.Required,
 	},
 	{
