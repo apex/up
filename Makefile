@@ -67,3 +67,8 @@ clean:
 		internal/proxy/bin/bin_assets.go \
 		internal/shim/bindata.go
 .PHONY: clean
+
+# Backup repository.
+backup:
+	@git push -f tj-backup
+.PHONY: backup
