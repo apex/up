@@ -620,7 +620,7 @@ retry:
 	})
 
 	if err != nil {
-		return "", errors.Wrap(err, "creating function alias")
+		return "", errors.Wrap(err, "updating function alias")
 	}
 
 	return *res.Version, nil
