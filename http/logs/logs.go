@@ -63,7 +63,6 @@ func New(c *up.Config, next http.Handler) (http.Handler, error) {
 // logContext returns the common log context for a request.
 func logContext(r *http.Request) log.Interface {
 	return ctx.WithFields(log.Fields{
-		"stage":  r.Header.Get("X-Stage"),
 		"id":     r.Header.Get("X-Request-Id"),
 		"method": r.Method,
 		"path":   r.URL.Path,

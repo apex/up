@@ -24,6 +24,7 @@ func main() {
 	if s := os.Getenv("LOG_LEVEL"); s != "" {
 		log.SetLevelFromString(s)
 	}
+	log.Log = log.WithField("stage", stage)
 	log.Info("initializing")
 
 	// read config
