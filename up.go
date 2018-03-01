@@ -133,7 +133,7 @@ func (p *Project) deploy(stage string) error {
 	}
 
 	if err := p.Platform.Deploy(stage); err != nil {
-		return errors.Wrap(err, "deploying")
+		return err
 	}
 
 	if err := p.RunHooks("postdeploy"); err != nil {
