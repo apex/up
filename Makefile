@@ -28,7 +28,7 @@ test: internal/proxy/bin/bin_assets.go
 
 # Run all tests in CI.
 test.ci: internal/proxy/bin/bin_assets.go
-	@$(GO) test -timeout 2m -race ./... && echo "\n==>\033[32m Ok\033[m\n"
+	@$GOCACHE=off (GO) test -timeout 5m -race ./... && echo "\n==>\033[32m Ok\033[m\n"
 .PHONY: test.ci
 
 internal/proxy/bin/bin_assets.go:
