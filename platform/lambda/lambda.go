@@ -272,7 +272,7 @@ func (p *Platform) DeleteStack(region string, wait bool) error {
 
 	log.Debug("deleting role")
 	if err := p.deleteRole(region); err != nil && !util.IsNotFound(err) {
-		return errors.Wrap(err, "deleting role")
+		return errors.Wrap(err, "deleting function iam role")
 	}
 
 	return nil
