@@ -208,6 +208,7 @@ func status(cmd *kingpin.Cmd) {
 		}
 
 		util.LogName("amount", "$%0.2f/mo USD", float64(p.Amount)/100)
+		util.LogName("owner", team.Owner)
 		util.LogName("created", p.CreatedAt.Format("January 2, 2006"))
 		if p.Canceled {
 			util.LogName("canceled", p.CanceledAt.Format("January 2, 2006"))
