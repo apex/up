@@ -2,6 +2,7 @@ package root
 
 import (
 	"os"
+	"runtime"
 
 	"github.com/apex/log"
 	"github.com/apex/log/handlers/cli"
@@ -47,7 +48,7 @@ func init() {
 		if *verbose {
 			log.SetHandler(delta.Default)
 			log.SetLevel(log.DebugLevel)
-			log.Debugf("up version %s", Cmd.GetVersion())
+			log.Debugf("up version %s (os: %s, arch: %s)", Cmd.GetVersion(), runtime.GOOS, runtime.GOARCH)
 		}
 
 		Init = func() (*up.Config, *up.Project, error) {
