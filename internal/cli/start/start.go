@@ -27,7 +27,7 @@ func init() {
 
 	command := cmd.Flag("command", "Proxy command override").Short('c').String()
 	open := cmd.Flag("open", "Open endpoint in the browser.").Short('o').Bool()
-	addr := cmd.Flag("address", "Address for server.").Default(":3000").String()
+	addr := cmd.Flag("address", "Address for server.").Default("localhost:3000").String()
 
 	cmd.Action(func(_ *kingpin.ParseContext) error {
 		log.SetHandler(text.New(os.Stdout))
@@ -73,7 +73,7 @@ func init() {
 			browser.OpenURL(fmt.Sprintf("http://localhost:%s", port))
 		}
 
-		log.WithField("address", *addr).Info("listening")
+		log.WithField("address", "http://"+*addr).Info("listening")
 		if err := http.ListenAndServe(*addr, h); err != nil {
 			return errors.Wrap(err, "binding")
 		}

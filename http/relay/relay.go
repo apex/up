@@ -121,13 +121,13 @@ func (p *Proxy) Start() error {
 
 	start := time.Now()
 	timeout := time.Duration(p.config.Proxy.ListenTimeout) * time.Second
-	ctx.WithField("url", p.target.String()).Info("starting server")
+	ctx.Info("waiting for app to listen on PORT")
 
 	if err := util.WaitForListen(p.target, timeout); err != nil {
 		return errors.Wrapf(err, "waiting for %s to be in listening state", p.target.String())
 	}
 
-	ctx.WithField("duration", util.MillisecondsSince(start)).Info("started server")
+	ctx.WithField("duration", util.MillisecondsSince(start)).Info("app listening")
 	return nil
 }
 
@@ -256,7 +256,6 @@ func (p *Proxy) start() error {
 		return errors.Wrap(err, "getting free port")
 	}
 
-	ctx.WithField("port", port).Info("found free port")
 	target, err := url.Parse(fmt.Sprintf("http://127.0.0.1:%d", port))
 	if err != nil {
 		return errors.Wrap(err, "parsing url")
@@ -265,7 +264,7 @@ func (p *Proxy) start() error {
 	p.port = port
 	p.target = target
 
-	ctx.WithField("command", p.config.Proxy.Command).Info("executing")
+	ctx.WithField("command", p.config.Proxy.Command).WithField("PORT", port).Info("starting app")
 	cmd = p.command(p.config.Proxy.Command, p.environment())
 	if err := cmd.Start(); err != nil {
 		return errors.Wrap(err, "running command")
@@ -273,7 +272,7 @@ func (p *Proxy) start() error {
 
 	// Only remember this if it was successfully started
 	p.cmd = cmd
-	ctx.WithField("pid", cmd.Process.Pid).Info("proxy started")
+	ctx.WithField("pid", cmd.Process.Pid).Info("started app")
 
 	return nil
 }

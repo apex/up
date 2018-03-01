@@ -15,14 +15,9 @@ import (
 	"github.com/apex/up/internal/util"
 )
 
-// TODO: output larger timestamp when older
-// TODO: option to output UTC
-// TODO: option to truncate
-// TODO: move to apex/log?
-
 var (
 	spacerPlaceholderBytes = []byte("{{spacer}}")
-	spacerBytes            = []byte(" " + colors.Gray("–"))
+	spacerBytes            = []byte(colors.Gray(":"))
 	newlineBytes           = []byte("\n")
 	emptyBytes             = []byte("")
 )
@@ -149,7 +144,7 @@ func (h *Handler) handleInline(e *log.Entry) error {
 		}
 
 		fields++
-		fmt.Fprintf(&buf, " %s%s%v", color(name), colors.Gray(": "), value(name, v))
+		fmt.Fprintf(&buf, " %s%s%v", color(name), colors.Gray("="), value(name, v))
 	}
 
 	b := buf.Bytes()
