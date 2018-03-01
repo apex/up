@@ -123,7 +123,7 @@ func (c *Config) Default() error {
 	// runtime defaults
 	if c.Type != "static" {
 		runtime := inferRuntime()
-		log.WithField("type", runtime).Info("inferred runtime")
+		log.WithField("type", runtime).Debug("inferred runtime")
 
 		if err := runtimeConfig(runtime, c); err != nil {
 			return errors.Wrap(err, "runtime")
