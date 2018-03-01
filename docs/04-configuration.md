@@ -448,6 +448,8 @@ Suppose you have `https://api.myapp.com`, you may want to customize `cors` to pe
 - `max_age` – A number indicating how long (in seconds) the results of a preflight request can be cached.
 - `allow_credentials` – A boolean indicating whether the request can include user credentials such as cookies, HTTP authentication or client side SSL certificates. (Default: `true`)
 
+Note that you do not need to `up stack plan`, as CORS is provided as middleware, simply re-deploy the stage.
+
 ## Reverse Proxy
 
 Up acts as a reverse proxy in front of your server, this is how CORS, redirection, script injection and other middleware style features are provided.
