@@ -879,17 +879,17 @@ Flags:
 
 Subcommands:
 
-  env add              Add a variable.
+  env add              Add variables.
   env get              Get a variable value.
   env ls               List variables.
-  env rm               Remove a variable.
+  env rm               Remove variables.
 ```
 
 Here are some examples:
 
 ```
-$ up env add DB_NAME users
-$ up env add DB_USER sloth
+$ up env add DB_NAME users DB_USER sloth
+$ up env add DB_NAME=users DB_USER=sloth
 $ up env add DB_URL stage.mydb.hosted.com
 $ up env add DB_PASS passforstage
 $ up env add DB_CONN "host=localhost port=5432"
