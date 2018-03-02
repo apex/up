@@ -124,7 +124,7 @@ func list(cmd *kingpin.Cmd) {
 
 // add variables.
 func add(cmd *kingpin.Cmd) {
-	c := cmd.Command("add", "Add a variable.").Alias("set")
+	c := cmd.Command("add", "Add variables.").Alias("set")
 	vars := c.Arg("env", "Environment variables list.").Required().Strings()
 	stage := c.Flag("stage", "Target stage name.").Short('s').Default("all").String()
 	desc := c.Flag("desc", "Variable description message.").Short('d').String()
@@ -172,7 +172,7 @@ func add(cmd *kingpin.Cmd) {
 
 // remove variables.
 func remove(cmd *kingpin.Cmd) {
-	c := cmd.Command("rm", "Remove a variable.").Alias("remove")
+	c := cmd.Command("rm", "Remove variables.").Alias("remove")
 	stage := c.Flag("stage", "Target stage name.").Short('s').Default("all").String()
 	vars := c.Arg("env", "Environment variables list.").Required().Strings()
 
