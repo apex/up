@@ -473,3 +473,13 @@ func UniqueStrings(s []string) (v []string) {
 func IsCI() bool {
 	return os.Getenv("CI") == "true"
 }
+
+// EnvironMap returns environment as a map.
+func EnvironMap() map[string]string {
+	m := make(map[string]string)
+	for _, s := range os.Environ() {
+		p := strings.SplitN(s, "=", 2)
+		m[p[0]] = p[1]
+	}
+	return m
+}

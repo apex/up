@@ -115,3 +115,13 @@ aws_secret_access_key = foo_bar_secret
 
 	assert.Equal(t, []string{"personal", "app", "foo_bar"}, v)
 }
+
+func TestEnvironMap(t *testing.T) {
+	env := EnvironMap()
+
+	_, ok := env["HOME"]
+	assert.True(t, ok)
+
+	_, ok = env["PATH"]
+	assert.True(t, ok)
+}

@@ -554,10 +554,15 @@ Up Pro supports environment variables, and these will be loaded with `up start`,
 
 ```
 $ up env set NAME Tobi
-$ up start # app has NAME available as Tobi
+$ up start
+# NAME is available as "Tobi"
 
 $ up env set NAME Loki -s development
-$ up start # app has NAME available Loki
+$ up start
+# NAME is available as "Loki"
+
+$ NAME=Jane up start
+# NAME is available as "Jane"
 ```
 
 The `UP_STAGE` and `NODE_ENV` environment variables will be set to "development" automatically.

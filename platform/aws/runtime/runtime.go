@@ -87,6 +87,7 @@ func (r *Runtime) Metric(name string, value float64) error {
 // loadSecrets loads secrets.
 func (r *Runtime) loadSecrets(stage string) error {
 	start := time.Now()
+	initialEnv := util.EnvironMap()
 
 	r.log.Info("initializing secrets")
 	defer func() {
@@ -115,11 +116,18 @@ func (r *Runtime) loadSecrets(stage string) error {
 			}).Info("initializing variables")
 
 			for _, s := range secrets {
-				r.log.WithFields(log.Fields{
+				ctx := r.log.WithFields(log.Fields{
 					"name":  s.Name,
 					"value": secret.String(s),
-				}).Info("variable")
+				})
 
+				// in development we allow existing vars to override `up env`
+				if _, ok := initialEnv[s.Name]; ok && stage == "development" {
+					ctx.Debug("variable already defined")
+					continue
+				}
+
+				ctx.Info("set variable")
 				os.Setenv(s.Name, s.Value)
 			}
 		}
