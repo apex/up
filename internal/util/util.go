@@ -476,10 +476,36 @@ func IsCI() bool {
 
 // EnvironMap returns environment as a map.
 func EnvironMap() map[string]string {
-	m := make(map[string]string)
-	for _, s := range os.Environ() {
-		p := strings.SplitN(s, "=", 2)
-		m[p[0]] = p[1]
-	}
+	m, _ := ParseEnviron(os.Environ())
 	return m
+}
+
+// ParseEnviron returns environment as a map from the given env slice.
+func ParseEnviron(env []string) (map[string]string, error) {
+	m := make(map[string]string)
+
+	for i := 0; i < len(env); i++ {
+		s := env[i]
+
+		if strings.ContainsRune(s, '=') {
+			p := strings.SplitN(s, "=", 2)
+			m[p[0]] = p[1]
+			continue
+		}
+
+		if i == len(env)-1 {
+			return nil, errors.Errorf("%q is missing a value", s)
+		}
+
+		n := env[i+1]
+
+		if strings.ContainsRune(n, '=') {
+			return nil, errors.Errorf("%q is missing a value", s)
+		}
+
+		m[s] = n
+		i++
+	}
+
+	return m, nil
 }
