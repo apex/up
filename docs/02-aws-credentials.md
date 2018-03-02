@@ -79,7 +79,8 @@ If you're using Up for a production application it's highly recommended to confi
                 "route53:*",
                 "route53domains:*",
                 "s3:*",
-                "ssm:*"
+                "ssm:*",
+                "sns:*"
             ],
             "Resource": "*"
         },
