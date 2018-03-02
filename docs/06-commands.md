@@ -502,9 +502,21 @@ $ up metrics production -s 15d
 
 ## Start
 
-Start development server. The development server runs the same proxy that is used in production for serving, so you can test a static site or application locally with the same feature-set. The `UP_STAGE` and `NODE_ENV` environment variables will be set to "development".
+Start development server. The development server runs the same proxy that is used in production for serving, so you can test a static site or application locally with the same feature-set.
 
 See [Stage Overrides](https://up.docs.apex.sh/#configuration.stage_overrides) for an example of overriding the proxy command per-stage, especially useful in development.
+
+Up Pro supports environment variables, and these will be loaded with `up start`, and variables mapped to the "development" stage will take precedence. For example:
+
+```
+$ up env set NAME Tobi
+$ up start # app has NAME available as Tobi
+
+$ up env set NAME Loki -s development
+$ up start # app has NAME available Loki
+```
+
+The `UP_STAGE` and `NODE_ENV` environment variables will be set to "development" automatically.
 
 ```
 Usage:
