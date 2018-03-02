@@ -1,4 +1,11 @@
 
+v0.5.6-pro / 2018-03-02
+=======================
+
+  * add support for `=` delimited env vars ("FOO=bar")
+  * add support for passing multiple env vars to `up env set`
+  * add support for overriding envs for `up start` (`$ URL=xxx up start`)
+
 v0.5.5-pro / 2018-03-01
 =======================
 
