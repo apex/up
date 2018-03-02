@@ -14,7 +14,14 @@ import (
 
 	"github.com/apex/up"
 	"github.com/apex/up/config"
+	"github.com/apex/up/internal/util"
 )
+
+func skipCI(t testing.TB) {
+	if util.IsCI() {
+		t.SkipNow()
+	}
+}
 
 func TestRelay(t *testing.T) {
 	os.Chdir("testdata/basic")
@@ -236,6 +243,7 @@ func TestRelay(t *testing.T) {
 		// Test that a child process who swallows the "nice" shutdown signal
 		// will eventually be sent a SIGKILL and shut down
 		t.Run("signal swallower", func(t *testing.T) {
+			skipCI(t)
 			newHandler(t)
 
 			pid := childPID(t)
