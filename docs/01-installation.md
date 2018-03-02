@@ -16,12 +16,6 @@ To install `up` to a specific directory, use `BINDIR`. Here's an example install
 $ curl -sf https://up.apex.sh/install | BINDIR=. sh
 ```
 
-NPM's `up` package runs the same script as above.
-
-```
-$ npm i -g up
-```
-
 Verify installation with:
 
 ```
