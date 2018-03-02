@@ -171,12 +171,7 @@ func TestRelay(t *testing.T) {
 
 		t.Run("use after close", func(t *testing.T) {
 			closeApp(t)
-		})
-
-		t.Run("use after close restart loop", func(t *testing.T) {
-			for i := 0; i < 7; i++ {
-				closeApp(t)
-			}
+			closeApp(t)
 		})
 	})
 
