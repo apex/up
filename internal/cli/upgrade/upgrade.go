@@ -1,6 +1,9 @@
 package upgrade
 
 import (
+	"os"
+	"os/exec"
+	"path/filepath"
 	"runtime"
 	"strings"
 	"time"
@@ -89,8 +92,15 @@ func init() {
 			return errors.Wrap(err, "downloading tarball")
 		}
 
+		// determine path
+		path, err := exec.LookPath(os.Args[0])
+		if err != nil {
+			return errors.Wrap(err, "looking up executable path")
+		}
+		dst := filepath.Dir(path)
+
 		// install it
-		if err := p.Install(tarball); err != nil {
+		if err := p.InstallTo(tarball, dst); err != nil {
 			return errors.Wrap(err, "installing")
 		}
 
