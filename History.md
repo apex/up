@@ -1,4 +1,10 @@
 
+v0.5.5 / 2018-03-03
+===================
+
+  * fix: improve idempotency of stack deletion
+  * docs: add sns to policy (necesary for Pro's alerting)
+
 v0.5.6-pro / 2018-03-02
 =======================
 
