@@ -246,13 +246,14 @@ func (p *Platform) CreateStack(region, version string) error {
 
 // DeleteStack implementation.
 func (p *Platform) DeleteStack(region string, wait bool) error {
-	if err := p.createRole(); err != nil {
-		return errors.Wrap(err, "creating iam role")
+	versions := resources.Versions{}
+
+	for _, s := range p.config.Stages {
+		versions[s.Name] = "1"
 	}
 
-	versions, err := p.getAliasVersions(region)
-	if err != nil {
-		return errors.Wrap(err, "fetching alias versions")
+	if err := p.createRole(); err != nil {
+		return errors.Wrap(err, "creating iam role")
 	}
 
 	log.Debug("deleting bucket objects")
@@ -261,7 +262,7 @@ func (p *Platform) DeleteStack(region string, wait bool) error {
 	}
 
 	log.Debug("deleting stack")
-	if err := stack.New(p.config, p.events, nil, region).Delete(versions, wait); err != nil {
+	if err := stack.New(p.config, p.events, nil, region).Delete(versions, wait); err != nil && !util.IsNotFound(err) {
 		return errors.Wrap(err, "deleting stack")
 	}
 
