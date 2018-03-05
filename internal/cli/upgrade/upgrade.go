@@ -87,9 +87,17 @@ func init() {
 		}
 
 		// download tarball to a tmp dir
-		tarball, err := a.DownloadProxy(progressreader.New)
-		if err != nil {
-			return errors.Wrap(err, "downloading tarball")
+		var tarball string
+		if util.IsCI() {
+			tarball, err = a.Download()
+			if err != nil {
+				return errors.Wrap(err, "downloading tarball")
+			}
+		} else {
+			tarball, err = a.DownloadProxy(progressreader.New)
+			if err != nil {
+				return errors.Wrap(err, "downloading tarball")
+			}
 		}
 
 		// determine path
