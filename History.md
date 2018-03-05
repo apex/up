@@ -1,4 +1,11 @@
 
+v0.5.6 / 2018-03-05
+===================
+
+  * add support for upgrading in-place up(1). Closes #607
+  * add CI specific upgrade to avoid progress bar
+  * fix: remove IsNotFound error check, masks the real issue
+
 v0.5.7-pro / 2018-03-03
 =======================
 
