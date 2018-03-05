@@ -47,8 +47,6 @@ func main() {
 	term.ShowCursor()
 
 	switch {
-	case util.IsNotFound(err):
-		util.Fatal(errors.New("Cannot find application, make sure you deployed with `$ up`."))
 	case util.IsNoCredentials(err):
 		util.Fatal(errors.New("Cannot find credentials, visit https://up.docs.apex.sh/#aws_credentials for help."))
 	default:
