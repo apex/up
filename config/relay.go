@@ -87,8 +87,8 @@ func (r *Relay) Validate() error {
 		return errors.Wrap(err, ".listen_timeout")
 	}
 
-	if r.platform == "lambda" && r.Timeout > 25 {
-		err := errors.New("should be <= 25")
+	if r.platform == "lambda" && r.Timeout > 300 {
+		err := errors.New("should be <= 300")
 		return errors.Wrap(err, ".timeout")
 	}
 
