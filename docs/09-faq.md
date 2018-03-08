@@ -58,6 +58,10 @@ title: FAQ
   custom domains these paths are not present.</p>
 </details>
 
+<details>
+  <summary>How should my app handle the /staging and /production base paths?</summary>
+  <p>The reverse proxy that up provides removes that path before it comes to your server, so you should not need to care about that! You can make the app so it responds to `/`.</p>
+</details>
 
 <details>
   <summary>Do the servers stay active while idle?</summary>
