@@ -1,4 +1,9 @@
 
+v0.5.9-pro / 2018-03-09
+=======================
+
+  * add stage overrides for lambda warming. Closes #615
+
 v0.5.8-pro / 2018-03-05
 =======================
 
