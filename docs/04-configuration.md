@@ -112,7 +112,7 @@ Note that if your application receives steady traffic this may not be an issue a
 - `warm_count` – Number of concurrent containers to warm (Default: `15`)
 - `warm_rate` – Rate at which to perform the warming (Default: `"15m"`)
 
-Here's a example specifying `50` idle containers:
+Here's a example specifying `50` idle containers, for all remote stages (staging, production, and custom):
 
 ```json
 {
@@ -125,7 +125,21 @@ Here's a example specifying `50` idle containers:
 }
 ```
 
-Run `up stack plan` and `up stack apply` to make the changes to your stack!
+Run `up stack plan` and `up stack apply` to make the changes to your stack! You may apply stage level changes as well, or enable warming for a specific stage only if desired, as shown here:
+
+```json
+{
+  "name": "app",
+  "stages": {
+    "production": {
+      "lambda": {
+        "warm": true,
+        "warm_count": 50
+      }
+    }
+  }
+}
+```
 
 Another way to mitigate cold starts is to use an uptime monitoring tool, such as [Apex Ping](https://apex.sh/ping/) which also monitors global performance, so it's a win-win! Use the "up" coupon for 15% off your first year.
 

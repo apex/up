@@ -28,14 +28,78 @@ exports.handle = function(e, ctx, fn) {
 
 // warming resources.
 func warming(c *Config, m Map) {
-	if !c.Lambda.Warm {
+	for _, s := range c.Stages.List() {
+		if s.IsRemote() {
+			warmingStage(c, s, m)
+		}
+	}
+}
+
+// warmingStage sets up the warming resources for a given stage.
+func warmingStage(c *Config, s *config.Stage, m Map) {
+	// TODO: refactor overrides so this is not necessary
+	g := c.Lambda
+	l := s.Lambda
+
+	if l.Warm == nil {
+		l.Warm = g.Warm
+	}
+
+	if l.WarmCount == 0 {
+		l.WarmCount = g.WarmCount
+	}
+
+	if l.WarmRate == 0 {
+		l.WarmRate = g.WarmRate
+	}
+
+	if l.Warm == nil || !*l.Warm {
 		return
 	}
 
 	warmingFunctionRole(c, m)
 	warmingFunction(c, m)
-	warmingFunctionPermission(c, m)
-	warmingEvent(c, m)
+	eventID := warmingStageEvent(c, s, &l, m)
+	warmingStageFunctionPermission(c, s, m, eventID)
+}
+
+// warmingStageFunctionPermission sets up function permissions.
+func warmingStageFunctionPermission(c *Config, s *config.Stage, m Map, eventID string) {
+	id := util.Camelcase("warming_function_permission_%s", s.Name)
+	m[id] = Map{
+		"Type": "AWS::Lambda::Permission",
+		"Properties": Map{
+			"FunctionName": ref("WarmingFunction"),
+			"Action":       "lambda:InvokeFunction",
+			"Principal":    "events.amazonaws.com",
+			"SourceArn":    get(eventID, "Arn"),
+		},
+	}
+}
+
+// warmingStageEvent sets up a warming scheduled event.
+func warmingStageEvent(c *Config, s *config.Stage, l *config.Lambda, m Map) string {
+	url := endpoint(s.Name)
+	input := join("", `{ "url": "`, url, fmt.Sprintf(`", "count": %d }`, l.WarmCount))
+	id := util.Camelcase("warming_event_%s", s.Name)
+
+	m[id] = Map{
+		"Type": "AWS::Events::Rule",
+		"Properties": Map{
+			"State":              "ENABLED",
+			"Description":        util.ManagedByUp("Warming function scheduled event"),
+			"ScheduleExpression": rate(l.WarmRate),
+			"Targets": []Map{
+				{
+					"Arn":   get("WarmingFunction", "Arn"),
+					"Id":    "WarmingFunction",
+					"Input": input,
+				},
+			},
+		},
+	}
+
+	return id
 }
 
 // warmingFunction sets up a scheduled function for warming.
@@ -52,41 +116,6 @@ func warmingFunction(c *Config, m Map) {
 			"Timeout":      300,
 			"Code": Map{
 				"ZipFile": warmingFunctionSource,
-			},
-		},
-	}
-}
-
-// warmingFunctionPermission sets up function permissions.
-func warmingFunctionPermission(c *Config, m Map) {
-	m["WarmingFunctionPermission"] = Map{
-		"Type": "AWS::Lambda::Permission",
-		"Properties": Map{
-			"FunctionName": ref("WarmingFunction"),
-			"Action":       "lambda:InvokeFunction",
-			"Principal":    "events.amazonaws.com",
-			"SourceArn":    get("WarmingEvent", "Arn"),
-		},
-	}
-}
-
-// warmingEvent sets up a warming scheduled event.
-func warmingEvent(c *Config, m Map) {
-	url := endpoint("production")
-	input := join("", `{ "url": "`, url, fmt.Sprintf(`", "count": %d }`, c.Lambda.WarmCount))
-
-	m["WarmingEvent"] = Map{
-		"Type": "AWS::Events::Rule",
-		"Properties": Map{
-			"State":              "ENABLED",
-			"Description":        util.ManagedByUp("Warming function scheduled event"),
-			"ScheduleExpression": rate(c.Lambda.WarmRate),
-			"Targets": []Map{
-				{
-					"Arn":   get("WarmingFunction", "Arn"),
-					"Id":    "WarmingFunction",
-					"Input": input,
-				},
 			},
 		},
 	}

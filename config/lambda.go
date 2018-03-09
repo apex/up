@@ -20,7 +20,7 @@ type Lambda struct {
 	Accelerate bool `json:"accelerate"`
 
 	// Warm enables active warming.
-	Warm bool `json:"warm"`
+	Warm *bool `json:"warm"`
 
 	// WarmCount is the number of containers to keep active.
 	WarmCount int `json:"warm_count"`
@@ -67,5 +67,17 @@ func (l *Lambda) Override(c *Config) {
 
 	if l.Role != "" {
 		c.Lambda.Role = l.Role
+	}
+
+	if l.Warm != nil {
+		c.Lambda.Warm = l.Warm
+	}
+
+	if l.WarmCount > 0 {
+		c.Lambda.WarmCount = l.WarmCount
+	}
+
+	if l.WarmRate != 0 {
+		c.Lambda.WarmRate = l.WarmRate
 	}
 }
