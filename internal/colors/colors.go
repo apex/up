@@ -2,11 +2,18 @@
 package colors
 
 import (
+	"fmt"
+
 	color "github.com/aybabtme/rgbterm"
 )
 
 // Func is a color function.
 type Func func(string) string
+
+// Bold string.
+func Bold(s string) string {
+	return fmt.Sprintf("\x1b[1m%s\x1b[m", s)
+}
 
 // Gray string.
 func Gray(s string) string {
