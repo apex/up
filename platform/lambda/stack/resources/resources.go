@@ -355,6 +355,8 @@ func resources(c *Config) Map {
 	m := Map{}
 	api(c, m)
 	dns(c, m)
+	alerting(c, m)
+	warming(c, m)
 	return m
 }
 
