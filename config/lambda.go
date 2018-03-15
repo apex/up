@@ -1,6 +1,9 @@
 package config
 
-import "errors"
+import (
+	"errors"
+	"time"
+)
 
 // Lambda configuration.
 type Lambda struct {
@@ -15,6 +18,18 @@ type Lambda struct {
 
 	// Runtime of the function.
 	Runtime string `json:"runtime"`
+
+	// Accelerate enables S3 acceleration.
+	Accelerate bool `json:"accelerate"`
+
+	// Warm enables active warming.
+	Warm *bool `json:"warm"`
+
+	// WarmCount is the number of containers to keep active.
+	WarmCount int `json:"warm_count"`
+
+	// WarmRate is the schedule for performing worming.
+	WarmRate Duration `json:"warm_rate"`
 }
 
 // Default implementation.
@@ -25,6 +40,14 @@ func (l *Lambda) Default() error {
 
 	if l.Runtime == "" {
 		l.Runtime = "nodejs8.10"
+	}
+
+	if l.WarmRate == 0 {
+		l.WarmRate = Duration(15 * time.Minute)
+	}
+
+	if l.WarmCount == 0 {
+		l.WarmCount = 15
 	}
 
 	return nil
@@ -51,5 +74,17 @@ func (l *Lambda) Override(c *Config) {
 
 	if l.Role != "" {
 		c.Lambda.Role = l.Role
+	}
+
+	if l.Warm != nil {
+		c.Lambda.Warm = l.Warm
+	}
+
+	if l.WarmCount > 0 {
+		c.Lambda.WarmCount = l.WarmCount
+	}
+
+	if l.WarmRate != 0 {
+		c.Lambda.WarmRate = l.WarmRate
 	}
 }

@@ -43,6 +43,27 @@ type Domains interface {
 	List() ([]*Domain, error)
 }
 
+// Secret is an encrypted variable..
+type Secret struct {
+	App              string
+	Name             string
+	Type             string
+	Stage            string
+	Value            string
+	Description      string
+	LastModifiedUser string
+	LastModified     time.Time
+}
+
+// Secrets is the interface for managing encrypted secrets.
+type Secrets interface {
+	Add(key, val, desc string, clear bool) error
+	Get(key string) (string, error)
+	Remove(key string) error
+	List(decrypt bool) ([]*Secret, error)
+	Load() ([]*Secret, error)
+}
+
 // Deploy config.
 type Deploy struct {
 	Stage  string
@@ -61,6 +82,9 @@ type Platform interface {
 	// region(s) configured by the user.
 	Deploy(Deploy) error
 
+	// Rollback to the given version.
+	Rollback(region, stage, version string) error
+
 	// Logs returns an interface for working
 	// with logging data.
 	Logs(LogsConfig) Logs
@@ -68,6 +92,10 @@ type Platform interface {
 	// Domains returns an interface for
 	// managing domain names.
 	Domains() Domains
+
+	// Secrets returns an interface for
+	// managing secret variables.
+	Secrets(stage string) Secrets
 
 	// URL returns the endpoint for the given
 	// region and stage combination, or an
@@ -81,6 +109,7 @@ type Platform interface {
 	ApplyStack(region string) error
 
 	ShowMetrics(region, stage string, start time.Time) error
+	ShowDeploys(region string) error
 }
 
 // Runtime is the interface used by a platform to support
@@ -88,6 +117,7 @@ type Platform interface {
 // variables from remote storage.
 type Runtime interface {
 	Init(stage string) error
+	// Metric(name string, value float64) error
 }
 
 // Zipper is the interface used by platforms which
