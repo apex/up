@@ -738,4 +738,57 @@ Output will be similar to the following. Visit the [AWS Documentation](https://d
   },
   "authorizer": null
 }
+
+## GIT Integration
+
+Up automatically detects and utilizes GIT commit information when you deploy, such as recording the GIT commit SHA or tag, and author. This information can be used for:
+
+- Viewing and filtering logs by version
+- Viewing the GIT SHA or tag in the deployment history
+- Rolling back to a previous version via GIT SHA or tag
+
+### Logging
+
+When deploying from a GIT repo the commit is also available in the logs for display and filtering, for example the tag `v1.8.2` in the following log output:
+
+```
+Mar 15th 11:32:54am INFO production v1.8.2 request: id=467991e8-287f-11e8-bd4e-0ba9f514a0f0 ip=207.194.38.50 method=GET path=/favicon.ico
+Mar 15th 11:32:54am INFO production v1.8.2 response: duration=0s id=467991e8-287f-11e8-bd4e-0ba9f514a0f0 ip=207.194.38.50 method=GET path=/favicon.ico size=66 B status=200
+```
+
+Filtering can be performed with the `commit` field:
+
+```
+$ up logs 'commit = "v1.8.2"'
+```
+
+### Deployment History
+
+Up Pro allows you to view deployment history via `up deploys` which will display the GIT SHA, tag, or Lambda version if you are not using GIT for the project.
+
+```
+$ up deploys
+
+ Stage       Version  Author          Date           
+
+ production  v1.8.0   TJ Holowaychuk  22 minutes ago
+ production  v1.7.3   TJ Holowaychuk  23 minutes ago
+ staging     f4f3143  TJ Holowaychuk  24 minutes ago
+ staging     ca781f7  TJ Holowaychuk  24 minutes ago
+ production  v1.7.2   TJ Holowaychuk  56 minutes ago
+ staging     v1.7.2   TJ Holowaychuk  2 hours ago    
+ production  7e62daf  TJ Holowaychuk  2 hours ago    
+ production  v1.7.1   TJ Holowaychuk  2 hours ago    
+ staging     v1.7.1   TJ Holowaychuk  2 hours ago    
+ staging     15c46ba  TJ Holowaychuk  2 hours ago    
+ staging     15c46ba  TJ Holowaychuk  2 hours ago    
+ staging     74f9a92  TJ Holowaychuk  2 hours ago
+```
+
+### Rollbacks
+
+As mentioned in the [rollback](#commands.rollback) command section, with Up Pro you may use the GIT tag or SHA for reverting to an older release:
+
+```
+$ up rollback -s production v1.8.0
 ```
