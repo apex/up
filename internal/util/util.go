@@ -15,11 +15,14 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
+	"regexp"
+	"sort"
 	"strings"
 	"syscall"
 	"time"
 
 	"github.com/apex/up/internal/colors"
+	humanize "github.com/dustin/go-humanize"
 	"github.com/pascaldekloe/name"
 	"github.com/pkg/errors"
 	"github.com/tj/backoff"
@@ -194,6 +197,15 @@ func PrefixLines(s string, prefix string) string {
 // Indent the given string.
 func Indent(s string) string {
 	return PrefixLines(s, "  ")
+}
+
+// DefaultString returns d unless s is present.
+func DefaultString(s *string, d string) string {
+	if s == nil || *s == "" {
+		return d
+	}
+
+	return *s
 }
 
 // WaitForListen blocks until `u` is listening with timeout.
@@ -430,7 +442,15 @@ func ParseSections(r io.Reader) (sections []string, err error) {
 	}
 
 	err = s.Err()
+	return
+}
 
+// StringMapKeys returns keys for m.
+func StringMapKeys(m map[string]string) (keys []string) {
+	for k := range m {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
 	return
 }
 
@@ -450,6 +470,42 @@ func UniqueStrings(s []string) (v []string) {
 // IsCI returns true if the env looks like it's a CI platform.
 func IsCI() bool {
 	return os.Getenv("CI") == "true"
+}
+
+// EnvironMap returns environment as a map.
+func EnvironMap() map[string]string {
+	m, _ := ParseEnviron(os.Environ())
+	return m
+}
+
+// ParseEnviron returns environment as a map from the given env slice.
+func ParseEnviron(env []string) (map[string]string, error) {
+	m := make(map[string]string)
+
+	for i := 0; i < len(env); i++ {
+		s := env[i]
+
+		if strings.ContainsRune(s, '=') {
+			p := strings.SplitN(s, "=", 2)
+			m[p[0]] = p[1]
+			continue
+		}
+
+		if i == len(env)-1 {
+			return nil, errors.Errorf("%q is missing a value", s)
+		}
+
+		n := env[i+1]
+
+		if strings.ContainsRune(n, '=') {
+			return nil, errors.Errorf("%q is missing a value", s)
+		}
+
+		m[s] = n
+		i++
+	}
+
+	return m, nil
 }
 
 // EncodeAlias encodes an alias string so that it conforms to the
@@ -530,4 +586,25 @@ func BinaryCase(s string, n int) string {
 	}
 
 	return string(res)
+}
+
+// RelativeDate returns a date formatted relative to now.
+func RelativeDate(t time.Time) string {
+	switch d := time.Since(t); {
+	case d <= 12*time.Hour:
+		return humanize.RelTime(time.Now(), t, "from now", "ago")
+	case d <= 24*time.Hour:
+		return t.Format(`Today at 03:04:05pm`)
+	case d <= 24*time.Hour*2:
+		return t.Format(`Yesterday at 03:04:05pm`)
+	default:
+		return t.Format(`Jan 2` + DateSuffix(t) + ` 03:04:05pm`)
+	}
+}
+
+var numericRe = regexp.MustCompile(`^[0-9]+$`)
+
+// IsNumeric returns true if s is numeric.
+func IsNumeric(s string) bool {
+	return numericRe.MatchString(s)
 }
