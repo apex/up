@@ -1,4 +1,12 @@
 
+v0.5.10-pro / 2018-03-15
+===================
+
+  * add nicer `up rollback` failure message when version does not exist
+  * add git sha and tag support to `up rollback`
+  * add `up deploys` for listing deployments and versions
+  * fix log filter relational and equality operators with strings
+
 v0.5.8 / 2018-03-15
 ===================
 
