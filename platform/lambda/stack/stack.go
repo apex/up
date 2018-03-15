@@ -395,7 +395,8 @@ func (s *Stack) report(states map[string]Status) error {
 	return nil
 }
 
-// showVersion emits events for showing the Lambda version.
+// showVersion emits events for showing the Lambda version,
+// and any aliases associated with the version.
 func (s *Stack) showVersion(stage *config.Stage) error {
 	res, err := s.lambda.GetAlias(&lambda.GetAliasInput{
 		FunctionName: &s.config.Name,
