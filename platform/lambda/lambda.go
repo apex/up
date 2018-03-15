@@ -189,6 +189,52 @@ func (p *Platform) Deploy(d up.Deploy) error {
 	return g.Wait()
 }
 
+// Rollback implementation.
+func (p *Platform) Rollback(region, stage, version string) error {
+	c := lambda.New(session.New(aws.NewConfig().WithRegion(region)))
+	log.Debugf("rolling back %s %s to %q", region, stage, version)
+
+	// git commit or tag
+	if version != "" && !util.IsNumeric(version) {
+		log.Debugf("fetching version for %q", version)
+		v, err := getAliasVersion(c, p.config.Name, util.EncodeAlias(version))
+		if err != nil {
+			return errors.Wrapf(err, "fetching alias %q", version)
+		}
+		log.Debugf("version for %q is %s", version, v)
+		version = v
+	}
+
+	// previous version
+	if version == "" {
+		log.Debug("fetching previous version")
+		v, err := getAliasVersion(c, p.config.Name, previous(stage))
+		if err != nil {
+			return errors.Wrap(err, "fetching previous alias")
+		}
+		version = v
+	}
+
+	// current version
+	curr, err := getAliasVersion(c, p.config.Name, stage)
+	if err != nil {
+		return errors.Wrap(err, "fetching current alias")
+	}
+	log.Debugf("current version is %s", curr)
+
+	// update stage
+	if err := p.alias(c, stage, version); err != nil {
+		return errors.Wrap(err, "updating alias")
+	}
+
+	// update stage previous
+	if err := p.alias(c, previous(stage), curr); err != nil {
+		return errors.Wrap(err, "updating previous alias")
+	}
+
+	return nil
+}
+
 // Logs implementation.
 func (p *Platform) Logs(c up.LogsConfig) up.Logs {
 	g := "/aws/lambda/" + p.config.Name
@@ -198,6 +244,12 @@ func (p *Platform) Logs(c up.LogsConfig) up.Logs {
 // Domains implementation.
 func (p *Platform) Domains() up.Domains {
 	return domains.New()
+}
+
+// Secrets implementation.
+func (p *Platform) Secrets(stage string) up.Secrets {
+	// TODO: all regions
+	return runtime.NewSecrets(p.config.Name, stage, p.config.Regions[0])
 }
 
 // URL returns the stage url.
@@ -504,7 +556,7 @@ func (p *Platform) deploy(region string, d up.Deploy) (version string, err error
 	}()
 
 	ctx := log.WithField("region", region)
-	s := session.New(aws.NewConfig().WithRegion(region))
+	s := session.New(aws.NewConfig().WithRegion(region).WithS3UseAccelerate(p.config.Lambda.Accelerate))
 	u := s3manager.NewUploaderWithClient(s3.New(s))
 	a := apigateway.New(s)
 	c := lambda.New(s)
@@ -649,9 +701,20 @@ func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up
 		return "", errors.Wrap(err, "updating function code")
 	}
 
+	// get current alias
+	curr, err := getAliasVersion(c, p.config.Name, d.Stage)
+	if err != nil {
+		return "", errors.Wrap(err, "fetching current version")
+	}
+
 	// create stage alias
 	if err := p.alias(c, d.Stage, *res.Version); err != nil {
 		return "", errors.Wrapf(err, "creating function stage %q alias", d.Stage)
+	}
+
+	// create previous alias
+	if err := p.alias(c, previous(d.Stage), curr); err != nil {
+		return "", errors.Wrapf(err, "creating function %q alias", d.Stage)
 	}
 
 	// create git alias
@@ -659,6 +722,10 @@ func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up
 		if err := p.alias(c, util.EncodeAlias(d.Commit), *res.Version); err != nil {
 			return "", errors.Wrapf(err, "creating function git %q alias", d.Commit)
 		}
+	}
+
+	if err := p.alias(c, previous(d.Stage), curr); err != nil {
+		return "", errors.Wrapf(err, "creating function %q alias", d.Stage)
 	}
 
 	return *res.Version, nil
@@ -843,7 +910,22 @@ func (p *Platform) createBucket(region string) error {
 		Bucket: &n,
 	})
 
-	return err
+	if err != nil {
+		return errors.Wrap(err, "creating bucket")
+	}
+
+	_, err = s.PutBucketAccelerateConfiguration(&s3.PutBucketAccelerateConfigurationInput{
+		Bucket: &n,
+		AccelerateConfiguration: &s3.AccelerateConfiguration{
+			Status: aws.String(s3.BucketAccelerateStatusEnabled),
+		},
+	})
+
+	if err != nil {
+		return errors.Wrap(err, "updating acceleration status")
+	}
+
+	return nil
 }
 
 // deleteBucketObjects deletes the objects for the app.
@@ -1034,4 +1116,23 @@ func getCert(certs []*acm.CertificateDetail, domain string) string {
 	}
 
 	return ""
+}
+
+// getAliasVersion returns the alias version if it is present, or an error.
+func getAliasVersion(c *lambda.Lambda, name, alias string) (string, error) {
+	res, err := c.GetAlias(&lambda.GetAliasInput{
+		FunctionName: &name,
+		Name:         &alias,
+	})
+
+	if err != nil {
+		return "", errors.Wrap(err, "fetching alias")
+	}
+
+	return *res.FunctionVersion, nil
+}
+
+// previous returns the "previous" alias.
+func previous(s string) string {
+	return s + "-previous"
 }

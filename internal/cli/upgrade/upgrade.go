@@ -56,13 +56,10 @@ func init() {
 
 		// commercial edition
 		if t := config.GetActiveTeam(); t != nil {
-			// we pass 0.0.0 here beause the OSS
-			// binary should always upgrade to Pro
-			// regardless of versions matching.
 			p.Store = &apex.Store{
 				URL:       releasesAPI,
 				Product:   "up",
-				Version:   "0.0.0",
+				Version:   normalizeVersion(version),
 				Plan:      "pro",
 				AccessKey: t.Token,
 			}
@@ -156,6 +153,11 @@ func getLatest(s update.Store) (*update.Release, error) {
 	}
 
 	return releases[0], nil
+}
+
+// normalizeVersion returns the version without "-pro".
+func normalizeVersion(s string) string {
+	return strings.Replace(s, "-pro", "", -1)
 }
 
 // versionName returns the humanized version name.
