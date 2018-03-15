@@ -55,6 +55,15 @@ $ up team switch
      tj@apex.sh
 ```
 
+At any time you can ensure you're on Up Pro `up version`:
+
+```
+$ up version
+0.1.1-pro
+```
+
+Note that AWS charges for your resource usage, and is not associated with Up Pro's subscription. Most small to medium applications will fit within AWS' free tier, however, you should consult AWS' pricing documentation for details. The [Serverless Calc](http://serverlesscalc.com/) is a useful tool for estimating the API Gateway and Lambda charges.
+
 ## Inviting Team Members
 
 To invite members use the following command:
@@ -95,7 +104,7 @@ This section guides you through taking a small application from development, to 
 
 ### Deploying
 
-First create `app.js` in an empty directory with the following Node.js app. Note that it must listen on __PORT__ which is passed by Up.
+First, create `app.js` in an empty directory with the following Node.js app. Note that it must listen on __PORT__ which is passed by Up.
 
 ```js
 const http = require('http')
@@ -106,7 +115,7 @@ http.createServer((req, res) => {
 }).listen(PORT)
 ```
 
-Next you should give your application a name and start configuring. The `profile` name should correspond with the name in `~/.aws/credentials` so that Up knows which AWS account to deploy to, and which credentials to use.
+Next, you should give your application a name and start configuring. The `profile` name should correspond to the name in `~/.aws/credentials` so that Up knows which AWS account to deploy to, and which credentials to use.
 
 ```json
 {
@@ -435,7 +444,7 @@ If you're on Up Pro you'll need to upgrade to install the Pro binary:
 $ up upgrade
 ```
 
-After that all you need to do is deploy to your desired stage!
+After that, all you need to do is deploy to your desired stage!
 
 ```
 $ up deploy production
@@ -580,7 +589,7 @@ status >= 200 status < 300
 
 ### Stages
 
-Currently all development, staging, and production logs are all stored in the same location, however you may filter to find exactly what you need.
+Currently all development, staging, and production logs are all stored in the same location, however, you may filter to find exactly what you need.
 
 The keywords `production`, `staging`, and `development` expand to:
 
@@ -691,11 +700,3 @@ You may alter this command for `up start` with the development environment. For 
 ```
 
 Note that the server must always listen on `PORT` which is provided by `up start`.
-
-## Pre-Warming Lambda's, Monitoring Performance & Uptime
-
-AWS Lambda works by serving your app on-demand, only when it is receiving traffic. Upon the first request it has to fetch your app's zip from S3 and initialize, this is called a "cold start", which incurs some additional latency. After this the Lambda is considered "warm" while in use, which can last several hours even between requests.
-
-To mitigate cold starts with "pre-warming" you can schedule requests to your app—one convenient way to do this is to use an uptime monitoring tool such as [Apex Ping](https://apex.sh/ping/) which also monitors performance, so it's a win-win! Use the "up" coupon for 15% off your first year if you choose to use Ping.
-
-[![Uptime Monitoring Tool](https://apex-software.imgix.net/ping/marketing/overview.png?compress=auto)](https://apex.sh/ping)
