@@ -85,6 +85,11 @@ var cases = []struct {
 	{`name = tj`, `{ $.fields.name = "tj" }`},
 	{`method = GET path = /account/billing`, `{ $.fields.method = "GET" && $.fields.path = "/account/billing" }`},
 	{`cart.products[0].name = ps4`, `{ $.fields.cart.products[0].name = "ps4" }`},
+	{`path = "/_health"`, `{ $.fields.path = "/_health" }`},
+	{`path == "/_health"`, `{ $.fields.path = "/_health" }`},
+	{`path > "/_health"`, `{ $.fields.path > "/_health" }`},
+	{`path >= "/_health"`, `{ $.fields.path >= "/_health" }`},
+	{`path != "/_health"`, `{ $.fields.path != "/_health" }`},
 }
 
 func TestParse(t *testing.T) {
