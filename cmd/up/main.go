@@ -13,12 +13,15 @@ import (
 	_ "github.com/apex/up/internal/cli/build"
 	_ "github.com/apex/up/internal/cli/config"
 	_ "github.com/apex/up/internal/cli/deploy"
+	_ "github.com/apex/up/internal/cli/deploys"
 	_ "github.com/apex/up/internal/cli/disable-stats"
 	_ "github.com/apex/up/internal/cli/docs"
 	_ "github.com/apex/up/internal/cli/domains"
+	_ "github.com/apex/up/internal/cli/env"
 	_ "github.com/apex/up/internal/cli/logs"
 	_ "github.com/apex/up/internal/cli/metrics"
 	_ "github.com/apex/up/internal/cli/prune"
+	_ "github.com/apex/up/internal/cli/rollback"
 	_ "github.com/apex/up/internal/cli/run"
 	_ "github.com/apex/up/internal/cli/stack"
 	_ "github.com/apex/up/internal/cli/start"
@@ -63,6 +66,7 @@ func run() error {
 		"arch":    runtime.GOARCH,
 		"version": version,
 		"ci":      os.Getenv("CI") == "true" || os.Getenv("CI") == "1",
+		"plan":    "pro",
 	})
 
 	return app.Run(version)
