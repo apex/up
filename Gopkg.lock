@@ -33,13 +33,19 @@
 
 [[projects]]
   branch = "master"
+  name = "github.com/araddon/dateparse"
+  packages = ["."]
+  revision = "c9a50ad15ed95a301129d74b25ede60000713c8d"
+
+[[projects]]
+  branch = "master"
   name = "github.com/atotto/clipboard"
   packages = ["."]
   revision = "bb272b845f1112e10117e3e45ce39f690c0001ad"
 
 [[projects]]
   name = "github.com/aws/aws-sdk-go"
-  packages = ["aws","aws/awserr","aws/awsutil","aws/client","aws/client/metadata","aws/corehandlers","aws/credentials","aws/credentials/ec2rolecreds","aws/credentials/endpointcreds","aws/credentials/stscreds","aws/defaults","aws/ec2metadata","aws/endpoints","aws/request","aws/session","aws/signer/v4","internal/shareddefaults","private/protocol","private/protocol/json/jsonutil","private/protocol/jsonrpc","private/protocol/query","private/protocol/query/queryutil","private/protocol/rest","private/protocol/restjson","private/protocol/restxml","private/protocol/xml/xmlutil","service/acm","service/apigateway","service/cloudformation","service/cloudwatch","service/cloudwatchlogs","service/cloudwatchlogs/cloudwatchlogsiface","service/iam","service/lambda","service/route53","service/route53domains","service/s3","service/s3/s3iface","service/s3/s3manager","service/sts"]
+  packages = ["aws","aws/awserr","aws/awsutil","aws/client","aws/client/metadata","aws/corehandlers","aws/credentials","aws/credentials/ec2rolecreds","aws/credentials/endpointcreds","aws/credentials/stscreds","aws/defaults","aws/ec2metadata","aws/endpoints","aws/request","aws/session","aws/signer/v4","internal/shareddefaults","private/protocol","private/protocol/json/jsonutil","private/protocol/jsonrpc","private/protocol/query","private/protocol/query/queryutil","private/protocol/rest","private/protocol/restjson","private/protocol/restxml","private/protocol/xml/xmlutil","service/acm","service/apigateway","service/cloudformation","service/cloudwatch","service/cloudwatchlogs","service/cloudwatchlogs/cloudwatchlogsiface","service/iam","service/lambda","service/route53","service/route53domains","service/s3","service/s3/s3iface","service/s3/s3manager","service/ssm","service/sts"]
   revision = "ee1f179877b2daf2aaabf71fa900773bf8842253"
   version = "v1.12.19"
 
@@ -329,6 +335,12 @@
   packages = ["."]
   revision = "7efc93be00e1a3a7d419da9035344e4edd3131c5"
   version = "v2.5.0"
+
+[[projects]]
+  name = "github.com/tj/simpletable"
+  packages = ["."]
+  revision = "814d668bd09822de839026562f7f80c8c9a1ec7a"
+  version = "v1.0.0"
 
 [[projects]]
   name = "github.com/tj/survey"
