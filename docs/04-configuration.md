@@ -67,6 +67,7 @@ The following Lambda-specific settings are available:
 - `policy` – IAM function policy statement(s)
 - `runtime` — Lambda function runtime. (Default `nodejs10.x`)
 - `vpc` - VPC subnets and security groups
+- `accelerate` – Enable [S3 Transfer Acceleration](https://docs.aws.amazon.com/AmazonS3/latest/dev/transfer-acceleration.html) (Default `false`)
 
 For example:
 
@@ -124,6 +125,53 @@ To add additional permissions add one or more IAM policy statements to the `poli
 ```
 
 Deploy to update the IAM function role permissions.
+
+### Active warming
+
+A "cold start" occurs in AWS Lambda when there are no idle containers available to serve a request—Lambda must fetch your code and create a new container, after this it is "warm" and remains in the Lambda cluster to serve subsequent requests for roughly an hour.
+
+If a container does not receive any traffic within the hour, it is removed from the AWS Lambda cluster, and thus a new request may incur a cold start. Up Pro's "active warming" feature mitigates this by periodically requesting against your app, at the specified concurrency. It tries to maintain at least `warm_count` idle containers.
+
+For example when a user visits your web application, a cold start may occur for each resource, say you have one JavaScript file, CSS file, and the HTML itself, then this will be 3 concurrent containers. By default Up will warm `15` containers, however you may want to adjust `warm_count` this for your use-case.
+
+Note that if your application receives steady traffic this may not be an issue at all in practice, as containers will already be warm and re-used.
+
+- `warm` – Enable active warming (Default: false)
+- `warm_count` – Number of concurrent containers to warm (Default: `15`)
+- `warm_rate` – Rate at which to perform the warming (Default: `"15m"`)
+
+Here's a example specifying `50` idle containers, for all remote stages (staging, production, and custom):
+
+```json
+{
+  "name": "app",
+  "lambda": {
+    "warm": true,
+    "warm_count": 50,
+    "warm_rate": "30m"
+  }
+}
+```
+
+Run `up stack plan` and `up stack apply` to make the changes to your stack! You may apply stage level changes as well, or enable warming for a specific stage only if desired, as shown here:
+
+```json
+{
+  "name": "app",
+  "stages": {
+    "production": {
+      "lambda": {
+        "warm": true,
+        "warm_count": 50
+      }
+    }
+  }
+}
+```
+
+Another way to mitigate cold starts is to use an uptime monitoring tool, such as [Apex Ping](https://apex.sh/ping/) which also monitors global performance, so it's a win-win! Use the "up" coupon for 15% off your first year.
+
+[![Uptime Monitoring Tool](https://apex-software.imgix.net/ping/marketing/overview.png?compress=auto)](https://apex.sh/ping)
 
 ## Hook scripts
 
@@ -247,7 +295,9 @@ The following environment variables are provided by Up:
 - `PORT` – port number such as "3000"
 - `UP_STAGE` – stage name such as "staging" or "production"
 
-## Header injection
+Up Pro offers encrypted environment variables via the [up env](#commands.env) sub-command.
+
+## Header Injection
 
 The `headers` object allows you to map HTTP header fields to paths. The most specific pattern takes precedence.
 
@@ -845,3 +895,141 @@ Files can be matched recursively using `**`, for example ignoring everything exc
 *
 !dist/**
 ```
+
+## Alerting
+
+The Pro version of Up supports defining alerts which can notify your team when your service is failing, responding slowly, or receiving traffic spikes.
+
+```json
+{
+  "name": "app",
+  "actions": [
+    {
+      "name": "email.backend",
+      "type": "email",
+      "emails": ["tj@apex.sh"]
+    },
+    {
+      "name": "text.backend",
+      "type": "sms",
+      "numbers": ["+12508183100"]
+    }
+  ],
+  "alerts": [
+    {
+      "metric": "http.count",
+      "statistic": "sum",
+      "threshold": 100,
+      "action": "email.backend"
+    },
+    {
+      "metric": "http.5xx",
+      "statistic": "sum",
+      "threshold": 1,
+      "period": "1m",
+      "action": "email.backend"
+    },
+    {
+      "metric": "http.4xx",
+      "statistic": "sum",
+      "threshold": 50,
+      "period": "5m",
+      "action": "email.backend"
+    },
+    {
+      "metric": "http.latency",
+      "statistic": "avg",
+      "threshold": 1000,
+      "period": "5m",
+      "action": "email.backend",
+      "description": "Large traffic spike"
+    }
+  ]
+}
+```
+
+### Defining Actions
+
+An action must be defined in order to notify your team of triggered and resolved  alerts. The action requires a `name`, which can be any string such as `backend`, `frontend_team`, `email.backend`, `email backend` – whichever you prefer.
+
+#### Email
+
+The email action notifies your team via email.
+
+```json
+{
+  "name": "email.backend",
+  "type": "email",
+  "emails": ["tj@apex.sh"]
+}
+```
+
+#### SMS
+
+The sms action notifies your team via sms text message.
+
+```json
+{
+  "name": "text.backend",
+  "type": "sms",
+  "numbers": ["+12508183100"]
+}
+```
+
+#### Slack
+
+The slack action notifies your team via Slack message.
+
+```json
+{
+  "name": "slack.backend",
+  "type": "slack",
+  "url": "https://hooks.slack.com/services/T0YS6H6S5/..."
+}
+```
+
+Optionally `gifs` can be enabled and a `channel` can be specified instead of using the default for the `url`.
+
+```json
+{
+  "name": "slack.backend",
+  "type": "slack",
+  "url": "https://hooks.slack.com/services/T0YS6H6S5/...",
+  "channel": "alerts",
+  "gifs": true
+}
+```
+
+### Defining Alerts
+
+An alert requires a `metric` such as request count or latency, statistic such as sum or svg, threshold, and an action to perform when the alert is triggered. Here's a simple example emailing the backend team when we encounter a spike of over 1000 requests.
+
+```json
+{
+  "metric": "http.count",
+  "statistic": "sum",
+  "threshold": 1000,
+  "action": "email.backend"
+}
+```
+
+#### Required settings
+
+- `metric` – Metric to alert against
+  - `http.count` – Request count
+  - `http.latency` – Request latency in milliseconds
+  - `http.4xx` – HTTP 4xx client errors
+  - `http.5xx` – HTTP 5xx server errors
+- `statistic` – Statistic name ("sum", "min", "max", "avg", "count")
+- `threshold` – Threshold which is compared to `operator`
+- `action` – Name of the action to perform
+
+#### Optional settings
+
+- `period` – Period is the alert query time-span (default: `1m`)
+- `evaluation_periods` – Number of periods to evaluate over (default: `1`)
+- `operator` – Operator is the comparison operator (default `>`)
+- `namespace` – Metric namespace (example: "AWS/ApiGateway")
+- `missing`– How to treat missing data (default: `notBreaching`)
+- `disable` – Disable or mute the alert
+- `description` – Description of the alert

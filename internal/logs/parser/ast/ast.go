@@ -167,7 +167,7 @@ func (n Binary) String() string {
 			s = append(s, fmt.Sprintf(`%s %s %s`, n.Left, EQ, value(v)))
 		}
 		return fmt.Sprintf(`(%s)`, strings.Join(s, " || "))
-	case EQ, NE, GT, LT, GE, LE:
+	case EQ:
 		return fmt.Sprintf(`%s %s %s`, n.Left, n.Op, value(n.Right))
 	default:
 		return fmt.Sprintf(`%s %s %s`, n.Left, n.Op, n.Right)
