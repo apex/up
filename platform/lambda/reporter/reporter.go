@@ -20,6 +20,8 @@ var types = map[string]string{
 	"AWS::Route53::RecordSet":          "DNS record",
 	"AWS::IAM::Role":                   "IAM role",
 	"AWS::Events::Rule":                "scheduled event",
+	"AWS::CloudWatch::Alarm":           "alarm",
+	"AWS::SNS::Subscription":           "alarm subscription",
 }
 
 // ResourceType returns a human-friendly resource type name.
