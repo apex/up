@@ -15,6 +15,7 @@ import (
 	"github.com/apex/up/http/headers"
 	"github.com/apex/up/http/inject"
 	"github.com/apex/up/http/logs"
+	"github.com/apex/up/http/ping"
 	"github.com/apex/up/http/poweredby"
 	"github.com/apex/up/http/redirects"
 	"github.com/apex/up/http/relay"
@@ -68,6 +69,8 @@ func New(c *up.Config, h http.Handler) (http.Handler, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "logs")
 	}
+
+	h = ping.New(c, h)
 
 	return h, nil
 }
