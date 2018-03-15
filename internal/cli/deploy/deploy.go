@@ -102,6 +102,7 @@ retry:
 		"dns_zone_count":       len(c.DNS.Zones),
 		"stage_count":          len(c.Stages.List()),
 		"stage_domain_count":   len(c.Stages.Domains()),
+		"lambda_accelerate":    c.Lambda.Accelerate,
 		"lambda_memory":        c.Lambda.Memory,
 		"has_cors":             c.CORS != nil,
 		"has_logs":             !c.Logs.Disable,
@@ -109,6 +110,8 @@ retry:
 		"has_error_pages":      !c.ErrorPages.Disable,
 		"app_name_hash":        util.Md5(c.Name),
 		"is_git":               commit.Author.Name != "",
+		"alerts_count":         len(c.Alerts),
+		"actions_count":        len(c.Actions),
 	})
 
 	stats.Flush()
