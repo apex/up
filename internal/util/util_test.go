@@ -115,3 +115,11 @@ aws_secret_access_key = foo_bar_secret
 
 	assert.Equal(t, []string{"personal", "app", "foo_bar"}, v)
 }
+
+func TestEncodeAlias(t *testing.T) {
+	assert.Equal(t, `commit-v1_2_3-beta`, EncodeAlias(`v1.2.3-beta`))
+}
+
+func TestDecodeAlias(t *testing.T) {
+	assert.Equal(t, `v1.2.3-beta`, DecodeAlias(EncodeAlias(`v1.2.3-beta`)))
+}

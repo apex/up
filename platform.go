@@ -43,6 +43,13 @@ type Domains interface {
 	List() ([]*Domain, error)
 }
 
+// Deploy config.
+type Deploy struct {
+	Stage  string
+	Commit string
+	Author string
+}
+
 // Platform is the interface for platform integration,
 // defining the basic set of functionality required for
 // Up applications.
@@ -52,7 +59,7 @@ type Platform interface {
 
 	// Deploy to the given stage, to the
 	// region(s) configured by the user.
-	Deploy(stage string) error
+	Deploy(Deploy) error
 
 	// Logs returns an interface for working
 	// with logging data.

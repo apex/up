@@ -31,6 +31,7 @@ var omit = map[string]bool{
 	"stage":   true,
 	"region":  true,
 	"plugin":  true,
+	"commit":  true,
 	"version": true,
 }
 
@@ -96,10 +97,6 @@ func (h *Handler) handleExpanded(e *log.Entry) error {
 	fmt.Fprintf(h.Writer, "  %s %s %s\n", colors.Gray(ts), bold(color(level)), colors.Purple(e.Message))
 
 	for _, name := range names {
-		if omit[name] {
-			continue
-		}
-
 		v := e.Fields.Get(name)
 
 		if v == "" {
@@ -127,7 +124,7 @@ func (h *Handler) handleInline(e *log.Entry) error {
 	ts := formatDate(e.Timestamp.Local())
 
 	if stage, ok := e.Fields.Get("stage").(string); ok && stage != "" {
-		fmt.Fprintf(&buf, "  %s %s %s %s{{spacer}}", colors.Gray(ts), bold(color(level)), colors.Gray(stage), colors.Purple(e.Message))
+		fmt.Fprintf(&buf, "  %s %s %s %s %s{{spacer}}", colors.Gray(ts), bold(color(level)), colors.Gray(stage), colors.Gray(version(e)), colors.Purple(e.Message))
 	} else {
 		fmt.Fprintf(&buf, "  %s %s %s{{spacer}}", colors.Gray(ts), bold(color(level)), colors.Purple(e.Message))
 	}
@@ -182,26 +179,25 @@ var day = time.Hour * 24
 func formatDate(t time.Time) string {
 	switch d := time.Since(t); {
 	case d >= day*7:
-		return t.Format(`Jan 2` + dateSuffix(t) + ` 03:04:05pm`)
+		return t.Format(`Jan 2` + util.DateSuffix(t) + ` 03:04:05pm`)
 	case d >= day:
-		return t.Format(`2` + dateSuffix(t) + ` 03:04:05pm`)
+		return t.Format(`2` + util.DateSuffix(t) + ` 03:04:05pm`)
 	default:
 		return t.Format(`03:04:05pm`)
 	}
 }
 
-// dateSuffix returns the date suffix for t.
-func dateSuffix(t time.Time) string {
-	switch t.Day() {
-	case 1, 21, 31:
-		return "st"
-	case 2, 22:
-		return "nd"
-	case 3, 23:
-		return "rd"
-	default:
-		return "th"
+// version returns the entry version via GIT commit or lambda version.
+func version(e *log.Entry) string {
+	if s, ok := e.Fields.Get("commit").(string); ok && s != "" {
+		return s
 	}
+
+	if s, ok := e.Fields.Get("version").(string); ok && s != "" {
+		return s
+	}
+
+	return ""
 }
 
 // bold string.

@@ -5,9 +5,11 @@ import (
 	"time"
 
 	"github.com/pkg/errors"
+	"github.com/tj/go/git"
 	"github.com/tj/go/term"
 	"github.com/tj/kingpin"
 
+	"github.com/apex/up"
 	"github.com/apex/up/internal/cli/root"
 	"github.com/apex/up/internal/setup"
 	"github.com/apex/up/internal/stats"
@@ -66,6 +68,12 @@ retry:
 		return errors.Wrap(err, "overriding")
 	}
 
+	// git information
+	commit, err := getCommit()
+	if err != nil {
+		return errors.Wrap(err, "fetching git tag or sha")
+	}
+
 	defer util.Pad()()
 	start := time.Now()
 
@@ -73,7 +81,11 @@ retry:
 		return errors.Wrap(err, "initializing")
 	}
 
-	if err := p.Deploy(stage); err != nil {
+	if err := p.Deploy(up.Deploy{
+		Stage:  stage,
+		Commit: commit.Describe(),
+		Author: commit.Author.Name,
+	}); err != nil {
 		return err
 	}
 
@@ -90,11 +102,13 @@ retry:
 		"dns_zone_count":       len(c.DNS.Zones),
 		"stage_count":          len(c.Stages.List()),
 		"stage_domain_count":   len(c.Stages.Domains()),
+		"lambda_memory":        c.Lambda.Memory,
 		"has_cors":             c.CORS != nil,
 		"has_logs":             !c.Logs.Disable,
 		"has_profile":          c.Profile != "",
 		"has_error_pages":      !c.ErrorPages.Disable,
 		"app_name_hash":        util.Md5(c.Name),
+		"is_git":               commit.Author.Name != "",
 	})
 
 	stats.Flush()
@@ -106,4 +120,28 @@ func isMissingConfig(err error) bool {
 	err = errors.Cause(err)
 	e, ok := err.(*os.PathError)
 	return ok && e.Path == "up.json"
+}
+
+// getCommit returns the git information when available.
+func getCommit() (git.Commit, error) {
+	c, err := git.GetCommit(".", "HEAD")
+	if err != nil && !isIgnorable(err) {
+		return git.Commit{}, err
+	}
+
+	if c == nil {
+		return git.Commit{}, nil
+	}
+
+	return *c, nil
+}
+
+// isIgnorable returns true if the GIT error is ignorable.
+func isIgnorable(err error) bool {
+	switch err {
+	case git.ErrLookup, git.ErrNoRepo, git.ErrDirty:
+		return true
+	default:
+		return false
+	}
 }

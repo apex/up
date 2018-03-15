@@ -108,14 +108,17 @@ func (p *Project) Build() error {
 }
 
 // Deploy the project.
-func (p *Project) Deploy(stage string) error {
-	defer p.events.Time("deploy", nil)()
+func (p *Project) Deploy(d Deploy) error {
+	defer p.events.Time("deploy", event.Fields{
+		"commit": d.Commit,
+		"stage":  d.Stage,
+	})()
 
 	if err := p.Build(); err != nil {
 		return errors.Wrap(err, "building")
 	}
 
-	if err := p.deploy(stage); err != nil {
+	if err := p.deploy(d); err != nil {
 		return errors.Wrap(err, "deploying")
 	}
 
@@ -127,13 +130,13 @@ func (p *Project) Deploy(stage string) error {
 }
 
 // deploy stage.
-func (p *Project) deploy(stage string) error {
+func (p *Project) deploy(d Deploy) error {
 	if err := p.RunHooks("predeploy", "deploy"); err != nil {
 		return err
 	}
 
-	if err := p.Platform.Deploy(stage); err != nil {
-		return err
+	if err := p.Platform.Deploy(d); err != nil {
+		return errors.Wrap(err, "deploying")
 	}
 
 	if err := p.RunHooks("postdeploy"); err != nil {

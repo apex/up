@@ -90,6 +90,11 @@ func (l *Logs) start() {
 			continue
 		}
 
+		// skip START / END logs since they are redundant
+		if skippable(l.Message) {
+			continue
+		}
+
 		// lambda textual logs
 		handler.HandleLog(&log.Entry{
 			Timestamp: l.Timestamp,
@@ -118,4 +123,10 @@ func parseQuery(s string) (string, error) {
 	}
 
 	return n.String(), nil
+}
+
+// skippable returns true if the message is skippable.
+func skippable(s string) bool {
+	return strings.Contains(s, "END RequestId") ||
+		strings.Contains(s, "START RequestId")
 }

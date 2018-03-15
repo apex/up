@@ -10,6 +10,7 @@ import (
 
 	"github.com/apex/up"
 	"github.com/apex/up/handler"
+	"github.com/apex/up/internal/logs"
 	"github.com/apex/up/internal/proxy"
 	"github.com/apex/up/internal/util"
 	"github.com/apex/up/platform/aws/runtime"
@@ -24,7 +25,8 @@ func main() {
 	if s := os.Getenv("LOG_LEVEL"); s != "" {
 		log.SetLevelFromString(s)
 	}
-	log.Log = log.WithField("stage", stage)
+
+	log.Log = log.WithFields(logs.Fields())
 	log.Info("initializing")
 
 	// read config

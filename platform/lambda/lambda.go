@@ -164,7 +164,7 @@ func (p *Platform) Init(stage string) error {
 }
 
 // Deploy implementation.
-func (p *Platform) Deploy(stage string) error {
+func (p *Platform) Deploy(d up.Deploy) error {
 	regions := p.config.Regions
 	var g errgroup.Group
 
@@ -175,7 +175,7 @@ func (p *Platform) Deploy(stage string) error {
 	for _, r := range regions {
 		region := r
 		g.Go(func() error {
-			version, err := p.deploy(region, stage)
+			version, err := p.deploy(region, d)
 			if err == nil {
 				return nil
 			}
@@ -471,11 +471,12 @@ func (p *Platform) createCerts() error {
 }
 
 // deploy to the given region.
-func (p *Platform) deploy(region, stage string) (version string, err error) {
+func (p *Platform) deploy(region string, d up.Deploy) (version string, err error) {
 	start := time.Now()
 
 	fields := event.Fields{
-		"stage":  stage,
+		"commit": d.Commit,
+		"stage":  d.Stage,
 		"region": region,
 	}
 
@@ -483,6 +484,7 @@ func (p *Platform) deploy(region, stage string) (version string, err error) {
 
 	defer func() {
 		fields["duration"] = time.Since(start)
+		fields["commit"] = d.Commit
 		fields["version"] = version
 		p.events.Emit("platform.deploy.complete", fields)
 	}()
@@ -500,7 +502,7 @@ func (p *Platform) deploy(region, stage string) (version string, err error) {
 
 	if util.IsNotFound(err) {
 		defer p.events.Time("platform.function.create", fields)
-		return p.createFunction(c, a, u, region, stage)
+		return p.createFunction(c, a, u, region, d)
 	}
 
 	if err != nil {
@@ -508,18 +510,18 @@ func (p *Platform) deploy(region, stage string) (version string, err error) {
 	}
 
 	defer p.events.Time("platform.function.update", fields)
-	return p.updateFunction(c, a, u, region, stage)
+	return p.updateFunction(c, a, u, region, d)
 }
 
 // createFunction creates the function.
-func (p *Platform) createFunction(c *lambda.Lambda, a *apigateway.APIGateway, up *s3manager.Uploader, region, stage string) (version string, err error) {
+func (p *Platform) createFunction(c *lambda.Lambda, a *apigateway.APIGateway, up *s3manager.Uploader, region string, d up.Deploy) (version string, err error) {
 	if err := p.createBucket(region); err != nil && !util.IsBucketExists(err) {
 		return "", errors.Wrap(err, "creating s3 bucket")
 	}
 
 	log.Debug("uploading function")
 	b := aws.String(p.getS3BucketName(region))
-	k := aws.String(p.getS3Key(stage))
+	k := aws.String(p.getS3Key(d.Stage))
 
 	_, err = up.Upload(&s3manager.UploadInput{
 		Bucket: b,
@@ -541,7 +543,7 @@ retry:
 		MemorySize:   aws.Int64(int64(p.config.Lambda.Memory)),
 		Timeout:      aws.Int64(int64(p.config.Proxy.Timeout + 3)),
 		Publish:      aws.Bool(true),
-		Environment:  toEnv(p.config.Environment, stage),
+		Environment:  toEnv(p.config.Environment, d),
 		Code: &lambda.FunctionCode{
 			S3Bucket: b,
 			S3Key:    k,
@@ -563,10 +565,11 @@ retry:
 }
 
 // updateFunction updates the function.
-func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up *s3manager.Uploader, region, stage string) (version string, err error) {
+func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up *s3manager.Uploader, region string, d up.Deploy) (version string, err error) {
 	b := aws.String(p.getS3BucketName(region))
-	k := aws.String(p.getS3Key(stage))
+	k := aws.String(p.getS3Key(d.Stage))
 
+	// upload
 	log.Debug("uploading function")
 	_, err = up.Upload(&s3manager.UploadInput{
 		Bucket: b,
@@ -574,18 +577,19 @@ func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up
 		Body:   bytes.NewReader(p.zip.Bytes()),
 	})
 
+	// ensure bucket exists
 	if util.IsNotFound(err) {
 		if err := p.createBucket(region); err != nil {
 			return "", errors.Wrap(err, "creating s3 bucket")
 		}
-		goto retry
+		err = nil
 	}
 
 	if err != nil {
 		return "", errors.Wrap(err, "uploading function")
 	}
 
-retry:
+	// update function config
 	log.Debug("updating function")
 	_, err = c.UpdateFunctionConfiguration(&lambda.UpdateFunctionConfigurationInput{
 		FunctionName: &p.config.Name,
@@ -594,13 +598,14 @@ retry:
 		Role:         &p.config.Lambda.Role,
 		MemorySize:   aws.Int64(int64(p.config.Lambda.Memory)),
 		Timeout:      aws.Int64(int64(p.config.Proxy.Timeout + 3)),
-		Environment:  toEnv(p.config.Environment, stage),
+		Environment:  toEnv(p.config.Environment, d),
 	})
 
 	if err != nil {
 		return "", errors.Wrap(err, "updating function config")
 	}
 
+	// update function code
 	log.Debug("updating function code")
 	res, err := c.UpdateFunctionCode(&lambda.UpdateFunctionCodeInput{
 		FunctionName: &p.config.Name,
@@ -613,8 +618,16 @@ retry:
 		return "", errors.Wrap(err, "updating function code")
 	}
 
-	if err := p.alias(c, stage, *res.Version); err != nil {
-		return "", errors.Wrapf(err, "creating function %q alias", stage)
+	// create stage alias
+	if err := p.alias(c, d.Stage, *res.Version); err != nil {
+		return "", errors.Wrapf(err, "creating function stage %q alias", d.Stage)
+	}
+
+	// create git alias
+	if d.Commit != "" {
+		if err := p.alias(c, util.EncodeAlias(d.Commit), *res.Version); err != nil {
+			return "", errors.Wrapf(err, "creating function git %q alias", d.Commit)
+		}
 	}
 
 	return *res.Version, nil
@@ -627,6 +640,7 @@ func (p *Platform) alias(c *lambda.Lambda, alias, version string) error {
 		FunctionName:    &p.config.Name,
 		FunctionVersion: &version,
 		Name:            &alias,
+		Description:     aws.String(util.ManagedByUp("")),
 	})
 
 	if util.IsNotFound(err) {
@@ -634,6 +648,7 @@ func (p *Platform) alias(c *lambda.Lambda, alias, version string) error {
 			FunctionName:    &p.config.Name,
 			FunctionVersion: &version,
 			Name:            &alias,
+			Description:     aws.String(util.ManagedByUp("")),
 		})
 	}
 
@@ -851,9 +866,11 @@ func isCreatingRole(err error) bool {
 }
 
 // toEnv returns a lambda environment.
-func toEnv(env config.Environment, stage string) *lambda.Environment {
+func toEnv(env config.Environment, d up.Deploy) *lambda.Environment {
 	m := aws.StringMap(env)
-	m["UP_STAGE"] = &stage
+	m["UP_STAGE"] = &d.Stage
+	m["UP_COMMIT"] = &d.Commit
+	m["UP_AUTHOR"] = &d.Author
 	return &lambda.Environment{
 		Variables: m,
 	}

@@ -455,3 +455,31 @@ func UniqueStrings(s []string) (v []string) {
 func IsCI() bool {
 	return os.Getenv("CI") == "true"
 }
+
+// EncodeAlias encodes an alias string so that it conforms to the
+// requirement of matching (?!^[0-9]+$)([a-zA-Z0-9-_]+).
+func EncodeAlias(s string) string {
+	return "commit-" + strings.Replace(s, ".", "_", -1)
+}
+
+// DecodeAlias decodes an alias string which was encoded by
+// the EncodeAlias function.
+func DecodeAlias(s string) string {
+	s = strings.Replace(s, "_", ".", -1)
+	s = strings.Replace(s, "commit-", "", 1)
+	return s
+}
+
+// DateSuffix returns the date suffix for t.
+func DateSuffix(t time.Time) string {
+	switch t.Day() {
+	case 1, 21, 31:
+		return "st"
+	case 2, 22:
+		return "nd"
+	case 3, 23:
+		return "rd"
+	default:
+		return "th"
+	}
+}

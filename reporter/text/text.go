@@ -131,7 +131,9 @@ func (r *reporter) Start() {
 				r.pending("deploy", "")
 			case "platform.deploy.complete":
 				s := "complete"
-				if v := e.String("version"); v != "" {
+				if v := e.String("commit"); v != "" {
+					s = "commit " + v
+				} else if v := e.String("version"); v != "" {
 					s = "version " + v
 				}
 				r.complete("deploy", s, e.Duration("duration"))
