@@ -1,4 +1,9 @@
 
+v0.5.7 / 2018-03-15
+===================
+
+  * add git versioning, used for Pro rollbacks and deployment changelog. Closes #100
+
 v0.5.9-pro / 2018-03-09
 =======================
 
