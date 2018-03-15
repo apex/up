@@ -1,0 +1,6 @@
+{
+  "name": "app",
+  "logs": {
+    "enable": false
+  }
+}

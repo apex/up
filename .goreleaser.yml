@@ -1,0 +1,19 @@
+build:
+  main: cmd/up/main.go
+  binary: up
+  goos:
+    - darwin
+    - linux
+    - windows
+    - freebsd
+    - netbsd
+    - openbsd
+  goarch:
+    - amd64
+    - 386
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - '^docs:'
+      - '^refactor'

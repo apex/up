@@ -1,0 +1,14 @@
+.envrc
+node_modules/
+.shards/
+lib
+vendor/
+testing
+up-proxy
+!cmd/up-proxy
+dist
+.idea
+.vscode
+.DS_Store
+internal/proxy/bin/bin_assets.go
+internal/shim/bindata.go

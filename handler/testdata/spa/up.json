@@ -1,0 +1,13 @@
+{
+  "name": "app",
+  "type": "static",
+  "logs": {
+    "enable": false
+  },
+  "redirects": {
+    "/*": {
+      "location": "/",
+      "status": 200
+    }
+  }
+}

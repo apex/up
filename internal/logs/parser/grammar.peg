@@ -1,0 +1,292 @@
+package parser
+
+import "github.com/apex/up/internal/logs/parser/ast"
+
+type parser Peg {
+  stack []ast.Node
+  number string
+}
+
+Query <- _ Expr _ EOF
+
+PrimaryExpr
+  <- Numbers Unit _         { p.AddNumber(text) }
+  / Numbers _               { p.AddNumber("")   }
+  / Severity                { p.AddLevel(text)  }
+  / Stage                   { p.AddStage(text)  }
+  / Id                      { p.AddField(text)  }
+  / String                  { p.AddString(text) }
+  / UnquotedString          { p.AddString(text) }
+  / LPAR Expr RPAR          { p.AddExpr()       }
+
+TupleExpr
+  <- LPAR
+    Expr                    { p.AddTupleValue() }
+    (COMMA
+      Expr                  { p.AddTupleValue() }
+    )*
+  RPAR
+
+InExpr
+  <- IN                     { p.AddTuple() }
+  TupleExpr                 { p.AddBinary(ast.IN) }
+
+NotInExpr
+  <- NOT IN                 { p.AddTuple() }
+  TupleExpr                 { p.AddBinary(ast.IN); p.AddUnary(ast.LNOT) }
+
+PostfixExpr
+  <- PrimaryExpr (
+      DOT Id                { p.AddMember(text)    }
+    / LBRK Number _ RBRK    { p.AddSubscript(text) }
+    / InExpr
+    / NotInExpr
+  )*
+
+UnaryExpr
+  <- PostfixExpr
+  / BANG RelationalExpr     { p.AddUnary(ast.NOT) }
+
+RelationalExpr
+  <- UnaryExpr (
+      GE UnaryExpr          { p.AddBinary(ast.GE) }
+    / GT UnaryExpr          { p.AddBinary(ast.GT) }
+    / LE UnaryExpr          { p.AddBinary(ast.LE) }
+    / LT UnaryExpr          { p.AddBinary(ast.LT) }
+  )*
+
+EqualityExpr
+  <- RelationalExpr (
+      EQEQ RelationalExpr     { p.AddBinary(ast.EQ)   }
+    / NE RelationalExpr       { p.AddBinary(ast.NE)   }
+    / EQ RelationalExpr       { p.AddBinary(ast.EQ)   }
+    / CONTAINS RelationalExpr { p.AddBinaryContains() }
+  )*
+
+LogicalAndExpr <-
+  EqualityExpr (
+      AND EqualityExpr      { p.AddBinary(ast.AND) }
+    / ANDAND EqualityExpr   { p.AddBinary(ast.AND) }
+    / _ EqualityExpr        { p.AddBinary(ast.AND) }
+  )*
+
+LogicalOrExpr <-
+  LogicalAndExpr (
+      OR LogicalAndExpr     { p.AddBinary(ast.OR) }
+    / OROR LogicalAndExpr   { p.AddBinary(ast.OR) }
+  )*
+
+LowNotExpr <-
+    LogicalOrExpr
+  / NOT LogicalOrExpr       { p.AddUnary(ast.LNOT) }
+
+Expr <- LowNotExpr
+
+#
+# Strings
+#
+
+String
+  <- ["] < StringChar* > ["] _
+
+StringChar
+  <- Escape / ![\"\n\\] .
+
+UnquotedString
+  <- !Keyword < UnquotedStringStartChar UnquotedStringChar* > _
+
+UnquotedStringStartChar
+  <- [a-z] / [A-Z] / [/_]
+
+UnquotedStringChar
+  <- [a-z] / [A-Z] / [0-9] / [/_]
+
+Escape
+  <- SimpleEscape
+  / OctalEscape
+  / HexEscape
+  / UniversalCharacter
+
+SimpleEscape
+  <- '\\' ['\"?\\abfnrtv]
+
+OctalEscape
+  <- '\\' [0-7][0-7]?[0-7]?
+
+HexEscape
+  <- '\\x' HexDigit+
+
+UniversalCharacter
+   <- '\\u' HexQuad
+    / '\\U' HexQuad HexQuad
+
+HexQuad
+  <- HexDigit HexDigit HexDigit HexDigit
+
+HexDigit
+  <- [a-f] / [A-F] / [0-9]
+
+#
+# Numeric
+#
+
+Numbers
+  <- Number { p.SetNumber(text) }
+
+Number
+  <- < Float >
+  / < Integer >
+
+Integer
+  <- [0-9]*
+
+Float
+  <- Fraction Exponent?
+  / [0-9]+ Exponent
+
+Fraction
+  <- [0-9]* '.' [0-9]+
+  / [0-9]+ '.'
+
+Exponent
+  <- [eE][+\-]? [0-9]+
+
+#
+# Stages
+#
+
+Stage
+  <- DEVELOPMENT
+  / STAGING
+  / PRODUCTION
+
+DEVELOPMENT <- < 'development' > !IdChar _
+STAGING     <- < 'staging' > !IdChar _
+PRODUCTION  <- < 'production' > !IdChar _
+
+#
+# Units
+#
+
+Unit
+  <- Bytes
+  / Duration
+
+Duration
+  <- S
+  / MS
+
+S  <- < 's'  > !IdChar _
+MS <- < 'ms' > !IdChar _
+
+
+Bytes
+  <- B
+  / KB
+  / MB
+  / GB
+
+B  <- < 'b'  > !IdChar _
+KB <- < 'kb' > !IdChar _
+MB <- < 'mb' > !IdChar _
+GB <- < 'gb' > !IdChar _
+
+#
+# Identifiers
+#
+
+Id
+  <- !Keyword < IdCharNoDigit IdChar* > _
+
+IdChar
+  <- [a-z] / [A-Z] / [0-9] / [_]
+
+IdCharNoDigit
+  <- [a-z] / [A-Z] / [_]
+
+#
+# Severity
+#
+
+Severity
+  <- DEBUG
+  / INFO
+  / WARN
+  / ERROR
+  / FATAL
+
+#
+# Keywords
+#
+
+IN       <- 'in'       !IdChar _
+OR       <- 'or'       !IdChar _
+AND      <- 'and'      !IdChar _
+NOT      <- 'not'      !IdChar _
+CONTAINS <- 'contains' !IdChar _
+
+DEBUG  <- < 'debug' > !IdChar  _
+INFO   <- < 'info'  > !IdChar  _
+WARN   <- < 'warn'  > !IdChar  _
+ERROR  <- < 'error' > !IdChar  _
+FATAL  <- < 'fatal' > !IdChar  _
+
+Keyword
+  <- (
+      'production'
+    / 'staging'
+    / 'development'
+    / 'or'
+    / 'and'
+    / 'not'
+    / 'contains'
+    / 'debug'
+    / 'info'
+    / 'warn'
+    / 'error'
+    / 'fatal'
+    / 'in'
+    / 'gb'
+    / 'mb'
+    / 'kb'
+    / 'b'
+    / 'ms'
+    / 's'
+  ) !IdChar
+
+#
+# Punctuators
+#
+
+EQ      <-  '='       _
+LBRK    <-  '['       _
+RBRK    <-  ']'       _
+LPAR    <-  '('       _
+RPAR    <-  ')'       _
+DOT     <-  '.'       _
+BANG    <-  '!'  ![=] _
+LT      <-  '<'  ![=] _
+GT      <-  '>'  ![=] _
+LE      <-  '<='      _
+EQEQ    <-  '=='      _
+GE      <-  '>='      _
+NE      <-  '!='      _
+ANDAND  <-  '&&'      _
+OROR    <-  '||'      _
+COMMA   <-  ','       _
+
+#
+# Whitespace
+#
+
+_
+  <- Whitespace*
+
+Whitespace
+  <- ' ' / '\t' / EOL
+
+EOL
+  <- '\r\n' / '\n' / '\r'
+
+EOF
+  <- !.
