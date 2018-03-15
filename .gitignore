@@ -12,3 +12,5 @@ dist
 .DS_Store
 internal/proxy/bin/bin_assets.go
 internal/shim/bindata.go
+*.zip
+platform/lambda/stack/warming/bindata.go
