@@ -22,6 +22,14 @@ func keys(m Map) (v []string) {
 func getResource(c *Config, name string) Map {
 	tmpl := New(c)
 	r := tmpl["Resources"].(Map)
+	v, _ := r[name].(Map)
+	return v
+}
+
+// dump a resource to stdout.
+func dump(c *Config, name string) {
+	tmpl := New(c)
+	r := tmpl["Resources"].(Map)
 
 	v, ok := r[name].(Map)
 	if !ok {
@@ -29,16 +37,10 @@ func getResource(c *Config, name string) Map {
 		panic(fmt.Sprintf("resource %q does not exist in:\n\n  - %s", name, k))
 	}
 
-	return v
-}
-
-// dump a resource to stdout.
-func dump(c *Config, name string) {
-	r := getResource(c, name)
 	{
 		enc := json.NewEncoder(os.Stdout)
 		enc.SetIndent("", "  ")
-		enc.Encode(r)
+		enc.Encode(v)
 	}
 }
 

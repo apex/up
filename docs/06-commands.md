@@ -30,8 +30,9 @@ Commands:
   domains ls           List purchased domains.
   domains check        Check availability of a domain.
   domains buy          Purchase a domain.
-  env ls               List variables.
   env add              Add a variable.
+  env get              Get a variable value.
+  env ls               List variables.
   env rm               Remove a variable.
   logs                 Show log output.
   metrics              Show project metrics.
@@ -132,6 +133,67 @@ Note that since `deploy` is the default command the following is also valid:
 
 ```
 $ up production
+```
+
+## Rollback
+
+Rollback to a previous deployment. A subsequent `up rollback` will revert the rollback, as it simply toggles the deployment versions. Note that rollbacks do not affect environment variables, as they are loaded at runtime.
+
+```
+Usage:
+
+  up rollback [<flags>] [<version>]
+
+Flags:
+
+  -h, --help                Output usage information.
+  -C, --chdir="."           Change working directory.
+  -v, --verbose             Enable verbose log output.
+      --format="text"       Output formatter.
+      --version             Show application version.
+  -s, --stage="staging"     Target stage name.
+
+Args:
+
+  [<version>]  Target version for rollback.
+```
+
+### Examples
+
+Rollback to the previous staging version.
+
+```
+$ up rollback
+```
+
+Rollback to a specific git commit
+
+```
+$ up rollback 15c46ba
+```
+
+Rollback to a specific git tag
+
+```
+$ up rollback v1.7.2
+```
+
+Rollback to the previous production version.
+
+```
+$ up rollback -s production
+```
+
+Rollback to a specific git commit
+
+```
+$ up rollback -s production 15c46ba
+```
+
+Rollback to a specific git tag
+
+```
+$ up rollback -s production v1.7.2
 ```
 
 ## Config
@@ -497,10 +559,15 @@ Up Pro supports environment variables, and these will be loaded with `up start`,
 
 ```
 $ up env set NAME Tobi
-$ up start # app has NAME available as Tobi
+$ up start
+# NAME is available as "Tobi"
 
 $ up env set NAME Loki -s development
-$ up start # app has NAME available Loki
+$ up start
+# NAME is available as "Loki"
+
+$ NAME=Jane up start
+# NAME is available as "Jane"
 ```
 
 The `UP_STAGE` and `NODE_ENV` environment variables will be set to "development" automatically.
@@ -800,10 +867,16 @@ Upgrade to the specified version.
 $ up upgrade -t 0.4.4
 ```
 
+<<<<<<< HEAD
 
 ## Prune
 
 Prune old S3 deployments of a stage.
+=======
+## Env
+
+Manage encrypted environment variables. Environment variables are scoped to all stages by default, with stage-level overrides. The `up env` command is available in the Pro plan.
+>>>>>>> add up pro features
 
 ```
 Usage:
@@ -840,3 +913,96 @@ Prune and retain the most recent 15 production versions.
 ```
 $ up prune -s production -r 15
 ```
+  up env <command> [<args> ...]
+
+Flags:
+
+  -h, --help           Output usage information.
+  -C, --chdir="."      Change working directory.
+  -v, --verbose        Enable verbose log output.
+      --format="text"  Output formatter.
+      --version        Show application version.
+
+Subcommands:
+
+  env add              Add variables.
+  env get              Get a variable value.
+  env ls               List variables.
+  env rm               Remove variables.
+```
+
+Here are some examples:
+
+```
+$ up env add DB_NAME users DB_USER sloth
+$ up env add DB_NAME=users DB_USER=sloth
+$ up env add DB_URL stage.mydb.hosted.com
+$ up env add DB_PASS passforstage
+$ up env add DB_CONN "host=localhost port=5432"
+```
+
+Overriding for a stage such as production can be specified with the `-s, --stage` flag. For example `DB_NAME` and `DB_USER` would likely remain the same in production, however the `DB_URL` and `DB_PASS` would not, so we should assign them as shown here:
+
+```
+$ up env add -s production DB_URL prod.mydb.hosted.com
+$ up env add -s production DB_PASS passforprod
+```
+
+Environment variables may also be plain or "clear" text, using the `-c, --clear` flag, which may be viewed in the output.
+
+```
+$ up env add -c DB_NAME users
+$ up env add -c DB_USER sloth
+$ up env add DB_PASS amazingpass
+```
+
+Get environment variable values with:
+
+```
+$ up env get DB_NAME
+$ up env get DB_NAME -s production
+```
+
+List the env vars with:
+
+```
+$ up env
+
+all                                                   
+
+DB_NAME  users  -  Modified 34 seconds ago by tobi
+DB_PASS  -      -  Modified 22 seconds ago by tobi
+DB_URL   -      -  Modified 24 seconds ago by tobi
+DB_USER  sloth  -  Modified 30 seconds ago by tobi
+
+production                                            
+
+DB_PASS  -      -  Modified 2 seconds ago by tobi  
+DB_URL   -      -  Modified 4 seconds ago by tobi  
+```
+
+Note that you can also assign descriptions with the `-d, --desc` flag. Note that `-cd` is equivalent to `-c, -d` marking the first two variables as cleartext.
+
+```
+$ up env set -cd 'MongoDB collection name' DB_NAME users
+$ up env set -cd 'MongoDB name' DB_NAME users
+$ up env set -d 'MongoDB address' DB_URL bar
+$ up env set -d 'MongoDB password' DB_PASS foo
+```
+
+Check the output and you'll see the descriptions:
+
+```
+$ up env
+
+all                                                                         
+
+DB_NAME  users  MongoDB collection name  Modified 2 minutes ago by tobi  
+DB_PASS  -      MongoDB password         Modified 19 seconds ago by tobi
+DB_URL   -      MongoDB address          Modified 1 second ago by tobi   
+DB_USER  sloth  MongoDB username         Modified 2 minutes ago by tobi  
+```
+
+Note that while changes made to the variables are effective immediately, AWS Lambda may retain idle containers with the previous values. Currently you must perform a deploy in order to receive the new values. This can be used to your advantage, as it allows you to change for example both `DB_USER` and `DB_PASS` at the same time.
+
+Variables defined via `up env` are also available to the build hooks, as well as `up start`. The `UP_STAGE` and `NODE_ENV` are defined to the target stage name automatically, unless specified manually. See the [Env Static](https://github.com/apex/up-examples/tree/master/pro/env-static) example to see how it works with build hooks.
