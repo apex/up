@@ -1,4 +1,9 @@
 
+v0.5.8 / 2018-03-15
+===================
+
+  * fix log filter relational and equality operators with strings
+
 v0.5.7 / 2018-03-15
 ===================
 
