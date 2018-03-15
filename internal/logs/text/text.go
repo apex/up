@@ -177,14 +177,7 @@ var day = time.Hour * 24
 
 // formatDate formats t relative to now.
 func formatDate(t time.Time) string {
-	switch d := time.Since(t); {
-	case d >= day*7:
-		return t.Format(`Jan 2` + util.DateSuffix(t) + ` 03:04:05pm`)
-	case d >= day:
-		return t.Format(`2` + util.DateSuffix(t) + ` 03:04:05pm`)
-	default:
-		return t.Format(`03:04:05pm`)
-	}
+	return t.Format(`Jan 2` + util.DateSuffix(t) + ` 03:04:05pm`)
 }
 
 // version returns the entry version via GIT commit or lambda version.
