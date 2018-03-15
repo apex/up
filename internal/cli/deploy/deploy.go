@@ -71,7 +71,7 @@ retry:
 	// git information
 	commit, err := getCommit()
 	if err != nil {
-		return errors.Wrap(err, "fetching git tag or sha")
+		return errors.Wrap(err, "fetching git commit")
 	}
 
 	defer util.Pad()()
