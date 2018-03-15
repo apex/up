@@ -7,6 +7,7 @@ import (
 	"time"
 
 	"github.com/aws/aws-sdk-go/service/cloudformation"
+	"github.com/aws/aws-sdk-go/service/lambda"
 	"github.com/dustin/go-humanize"
 	"github.com/tj/go-progress"
 	"github.com/tj/go-spin"
@@ -203,6 +204,11 @@ func (r *reporter) Start() {
 				util.LogName("endpoint", e.String("endpoint"))
 			case "platform.stack.show.version":
 				util.LogName("version", e.String("version"))
+			case "platform.deploys":
+				aliases := e.Fields["aliases"].([]*lambda.AliasConfiguration)
+				for _, a := range aliases {
+					fmt.Printf("- %s -> %s\n", *a.Name, *a.FunctionVersion)
+				}
 			case "stack.plan":
 				fmt.Printf("\n")
 			case "platform.stack.plan.change":
