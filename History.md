@@ -1,4 +1,9 @@
 
+v0.5.9 / 2018-03-16
+===================
+
+  * add support for serving static files with dynamic applications. Closes #174
+
 v0.5.10-pro / 2018-03-15
 ===================
 
