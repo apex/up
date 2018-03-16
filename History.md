@@ -4,6 +4,13 @@ v0.5.10 / 2018-03-19
 
   * fix: update tj/go for Git subject fix
 
+v0.5.11-pro / 2018-03-16
+========================
+
+  * refactor: add mapping of Alarm and Subscription for `up stack plan` output
+  * refactor: add .duration to Deploys track call
+  * Rebase
+
 v0.5.9 / 2018-03-16
 ===================
 
