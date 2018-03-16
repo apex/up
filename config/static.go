@@ -10,15 +10,9 @@ import (
 type Static struct {
 	// Dir containing static files.
 	Dir string `json:"dir"`
-}
 
-// Default implementation.
-func (s *Static) Default() error {
-	if s.Dir == "" {
-		s.Dir = "."
-	}
-
-	return nil
+	// Prefix is an optional URL prefix for serving static files.
+	Prefix string `json:"prefix"`
 }
 
 // Validate implementation.

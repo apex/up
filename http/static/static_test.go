@@ -1,6 +1,8 @@
 package static
 
 import (
+	"fmt"
+	"net/http"
 	"net/http/httptest"
 	"os"
 	"testing"
@@ -11,10 +13,10 @@ import (
 )
 
 func TestStatic_defaults(t *testing.T) {
-	os.Chdir("testdata")
-	defer os.Chdir("..")
+	os.Chdir("testdata/static")
+	defer os.Chdir("../..")
 
-	c := &up.Config{Name: "app"}
+	c := &up.Config{Name: "app", Type: "static"}
 	assert.NoError(t, c.Default(), "default")
 	assert.NoError(t, c.Validate(), "validate")
 	test(t, c)
@@ -23,8 +25,9 @@ func TestStatic_defaults(t *testing.T) {
 func TestStatic_dir(t *testing.T) {
 	c := &up.Config{
 		Name: "app",
+		Type: "static",
 		Static: config.Static{
-			Dir: "testdata",
+			Dir: "testdata/static",
 		},
 	}
 
@@ -78,4 +81,97 @@ func test(t *testing.T, c *up.Config) {
 		assert.Equal(t, "", res.Header().Get("Content-Length"))
 		assert.Equal(t, "", res.Body.String())
 	})
+}
+
+func TestStatic_dynamic(t *testing.T) {
+	c := &up.Config{
+		Name: "app",
+		Static: config.Static{
+			Dir: "testdata/dynamic/public",
+		},
+	}
+
+	assert.NoError(t, c.Default(), "default")
+	assert.NoError(t, c.Validate(), "validate")
+
+	h := NewDynamic(c, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, ":)")
+	}))
+
+	t.Run("file", func(t *testing.T) {
+		res := httptest.NewRecorder()
+		req := httptest.NewRequest("GET", "/css/style.css", nil)
+
+		h.ServeHTTP(res, req)
+
+		assert.Equal(t, 200, res.Code)
+		assert.Equal(t, "text/css; charset=utf-8", res.Header().Get("Content-Type"))
+		assert.Equal(t, "body { background: whatever }\n", res.Body.String())
+	})
+
+	t.Run("missing", func(t *testing.T) {
+		res := httptest.NewRecorder()
+		req := httptest.NewRequest("GET", "/notfound", nil)
+
+		h.ServeHTTP(res, req)
+
+		assert.Equal(t, 200, res.Code)
+		assert.Equal(t, "text/plain; charset=utf-8", res.Header().Get("Content-Type"))
+		assert.Equal(t, ":)\n", res.Body.String())
+	})
+}
+
+func TestStatic_dynamicPrefix(t *testing.T) {
+	c := &up.Config{
+		Name: "app",
+		Static: config.Static{
+			Dir:    "testdata/dynamic/public",
+			Prefix: "/public",
+		},
+	}
+
+	assert.NoError(t, c.Default(), "default")
+	assert.NoError(t, c.Validate(), "validate")
+
+	h := NewDynamic(c, http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintln(w, ":)")
+	}))
+
+	t.Run("/", func(t *testing.T) {
+		res := httptest.NewRecorder()
+		req := httptest.NewRequest("GET", "/index.html", nil)
+
+		h.ServeHTTP(res, req)
+
+		assert.Equal(t, 200, res.Code)
+		assert.Equal(t, ":)\n", res.Body.String())
+	})
+
+	t.Run("file", func(t *testing.T) {
+		res := httptest.NewRecorder()
+		req := httptest.NewRequest("GET", "/public/css/style.css", nil)
+
+		h.ServeHTTP(res, req)
+
+		assert.Equal(t, 200, res.Code)
+		assert.Equal(t, "text/css; charset=utf-8", res.Header().Get("Content-Type"))
+		assert.Equal(t, "body { background: whatever }\n", res.Body.String())
+	})
+
+	t.Run("missing", func(t *testing.T) {
+		res := httptest.NewRecorder()
+		req := httptest.NewRequest("GET", "/public/notfound", nil)
+
+		h.ServeHTTP(res, req)
+
+		assert.Equal(t, 200, res.Code)
+		assert.Equal(t, ":)\n", res.Body.String())
+	})
+}
+
+func TestNormalizePrefix(t *testing.T) {
+	assert.Equal(t, `/public/`, normalizePrefix(`public`))
+	assert.Equal(t, `/public/`, normalizePrefix(`public/`))
+	assert.Equal(t, `/public/`, normalizePrefix(`/public`))
+	assert.Equal(t, `/public/`, normalizePrefix(`/public/`))
 }

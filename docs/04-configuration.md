@@ -176,11 +176,36 @@ By default the current directory (`.`) is served, however you can change this us
 }
 ```
 
-Note that `static.dir` only tells Up which directory to serve – it does not exclude other files from the directory – see [Ignoring Files](#configuration.ignoring_files). For example you may want an `.upignore` containing:
+Note that `static.dir` only tells Up which directory to serve – it does not exclude other files from the deployment – see [Ignoring Files](#configuration.ignoring_files). For example you may want an `.upignore` containing:
 
 ```
 *
 !public/**
+```
+
+### Dynamic Apps
+
+If your project is not strictly static, for example a Node.js web app, you may omit `type` and add static file serving simply by defining `static` as shown below. With this setup Up will serve the file if it exists, before passing control to your application.
+
+```json
+{
+  "name": "app",
+  "static": {
+    "dir": "public"
+  }
+}
+```
+
+By default there is no prefix, so `GET /index.css` will resolve to `./public/index.css`, however, you may specify a prefix such as "/static/" for `GET /static/index.css` to ensure static files never conflict with your app's routes:
+
+```json
+{
+  "name": "app",
+  "static": {
+    "dir": "public",
+    "prefix": "/static/"
+  }
+}
 ```
 
 ## Environment Variables

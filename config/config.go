@@ -163,11 +163,6 @@ func (c *Config) Default() error {
 		return errors.Wrap(err, ".inject")
 	}
 
-	// default .static
-	if err := c.Static.Default(); err != nil {
-		return errors.Wrap(err, ".static")
-	}
-
 	// default .error_pages
 	if err := c.ErrorPages.Default(); err != nil {
 		return errors.Wrap(err, ".error_pages")

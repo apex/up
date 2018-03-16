@@ -36,6 +36,7 @@ func FromConfig(c *up.Config) (http.Handler, error) {
 // New handler complete with all Up middleware.
 func New(c *up.Config, h http.Handler) (http.Handler, error) {
 	h = poweredby.New("up", h)
+	h = static.NewDynamic(c, h)
 
 	h, err := headers.New(c, h)
 	if err != nil {
