@@ -1,11 +1,14 @@
 package deploys
 
 import (
+	"time"
+
 	"github.com/pkg/errors"
 	"github.com/tj/kingpin"
 
 	"github.com/apex/up/internal/cli/root"
 	"github.com/apex/up/internal/stats"
+	"github.com/apex/up/internal/util"
 )
 
 func init() {
@@ -18,9 +21,17 @@ func init() {
 			return errors.Wrap(err, "initializing")
 		}
 
-		stats.Track("Deploys", nil)
+		start := time.Now()
 
 		region := c.Regions[0]
-		return p.ShowDeploys(region)
+		if err := p.ShowDeploys(region); err != nil {
+			return err
+		}
+
+		stats.Track("Deploys", map[string]interface{}{
+			"duration": util.MillisecondsSince(start),
+		})
+
+		return nil
 	})
 }
