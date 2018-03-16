@@ -738,17 +738,17 @@ Output will be similar to the following. Visit the [AWS Documentation](https://d
   "authorizer": null
 }
 
-## GIT Integration
+## Git Integration
 
-Up automatically detects and utilizes GIT commit information when you deploy, such as recording the GIT commit SHA or tag, and author. This information can be used for:
+Up automatically detects and utilizes Git commit information when you deploy, such as recording the Git commit SHA or tag, and author. This information can be used for:
 
 - Viewing and filtering logs by version
-- Viewing the GIT SHA or tag in the deployment history
-- Rolling back to a previous version via GIT SHA or tag
+- Viewing the Git SHA or tag in the deployment history
+- Rolling back to a previous version via Git SHA or tag
 
 ### Logging
 
-When deploying from a GIT repo the commit is also available in the logs for display and filtering, for example the tag `v1.8.2` in the following log output:
+When deploying from a Git repo the commit is also available in the logs for display and filtering, for example the tag `v1.8.2` in the following log output:
 
 ```
 Mar 15th 11:32:54am INFO production v1.8.2 request: id=467991e8-287f-11e8-bd4e-0ba9f514a0f0 ip=207.194.38.50 method=GET path=/favicon.ico
@@ -763,7 +763,7 @@ $ up logs 'commit = "v1.8.2"'
 
 ### Deployment History
 
-Up Pro allows you to view deployment history via `up deploys` which will display the GIT SHA, tag, or Lambda version if you are not using GIT for the project.
+Up Pro allows you to view deployment history via `up deploys` which will display the Git SHA, tag, or Lambda version if you are not using Git for the project.
 
 ```
 $ up deploys
@@ -786,7 +786,7 @@ $ up deploys
 
 ### Rollbacks
 
-As mentioned in the [rollback](#commands.rollback) command section, with Up Pro you may use the GIT tag or SHA for reverting to an older release:
+As mentioned in the [rollback](#commands.rollback) command section, with Up Pro you may use the Git tag or SHA for reverting to an older release:
 
 ```
 $ up rollback -s production v1.8.0
