@@ -603,25 +603,6 @@ v0.1.11-pro / 2017-11-30
   * refactor alerting into new resources sub-pkg
   * Rebase
 
-v0.3.0-pro / 2017-12-03
-=======================
-
-  * add sms alerting support
-
-v0.2.0-pro / 2017-12-03
-=======================
-
-  * add hosted email alerting for nicer formatting
-  * change alert default `period` to 1m
-
-v0.1.11-pro / 2017-11-30
-========================
-
-  * add support for listing secrets without last modified user name
-  * fix secrets listing when user ARN is not present. Closes #433
-  * refactor alerting into new resources sub-pkg
-  * Rebase
-
 v0.3.8 / 2017-11-30
 ===================
 
