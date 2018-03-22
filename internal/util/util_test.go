@@ -172,19 +172,19 @@ func TestEnvironMap(t *testing.T) {
 
 func TestParseEnviron(t *testing.T) {
 	t.Run("with equals", func(t *testing.T) {
-		m, err := ParseEnviron([]string{"FOO=bar", "BAR=baz", "BAZ=raz"})
+		m, err := ParseEnviron([]string{"FOO=bar", "BAR=baz", "BAZ=user=tobi,db=cats"})
 		assert.NoError(t, err)
 		assert.Equal(t, "bar", m["FOO"])
 		assert.Equal(t, "baz", m["BAR"])
-		assert.Equal(t, "raz", m["BAZ"])
+		assert.Equal(t, "user=tobi,db=cats", m["BAZ"])
 	})
 
 	t.Run("without equals", func(t *testing.T) {
-		m, err := ParseEnviron([]string{"FOO", "bar", "BAR", "baz", "BAZ", "raz"})
+		m, err := ParseEnviron([]string{"FOO", "bar", "BAR", "baz", "BAZ", "user=tobi,db=cats"})
 		assert.NoError(t, err)
 		assert.Equal(t, "bar", m["FOO"])
 		assert.Equal(t, "baz", m["BAR"])
-		assert.Equal(t, "raz", m["BAZ"])
+		assert.Equal(t, "user=tobi,db=cats", m["BAZ"])
 	})
 
 	t.Run("mixed", func(t *testing.T) {
@@ -198,9 +198,6 @@ func TestParseEnviron(t *testing.T) {
 	t.Run("missing", func(t *testing.T) {
 		_, err := ParseEnviron([]string{"FOO=bar", "BAR=baz", "BAZ"})
 		assert.EqualError(t, err, `"BAZ" is missing a value`)
-
-		_, err = ParseEnviron([]string{"FOO=bar", "BAR", "BAZ=raz"})
-		assert.EqualError(t, err, `"BAR" is missing a value`)
 	})
 }
 
