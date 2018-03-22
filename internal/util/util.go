@@ -499,13 +499,7 @@ func ParseEnviron(env []string) (map[string]string, error) {
 			return nil, errors.Errorf("%q is missing a value", s)
 		}
 
-		n := env[i+1]
-
-		if strings.ContainsRune(n, '=') {
-			return nil, errors.Errorf("%q is missing a value", s)
-		}
-
-		m[s] = n
+		m[s] = env[i+1]
 		i++
 	}
 
