@@ -214,6 +214,11 @@ v0.5.12 / 2018-04-03
   * change default runtime to nodejs 8.10
   * refactor: remove redundant wrapping of "deploying" message
 
+v0.5.14-pro / 2018-03-22
+========================
+
+  * fix env var case with '=' in the value
+
 v0.5.13-pro / 2018-03-19
 ========================
 
