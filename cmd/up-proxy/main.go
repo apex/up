@@ -53,10 +53,10 @@ func main() {
 		ctx.Fatalf("error overriding: %s", err)
 	}
 
-	// select handler
+	// create handler
 	h, err := handler.FromConfig(c)
 	if err != nil {
-		ctx.Fatalf("error selecting handler: %s", err)
+		ctx.Fatalf("error creating handler: %s", err)
 	}
 
 	// init handler
