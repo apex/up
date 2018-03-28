@@ -148,7 +148,7 @@ Deploy to update the IAM function role permissions.
 
 ### Active Warming
 
-A "cold start" occurs in AWS Lambda when there are no idle containers available to serve a request—Lambda must fetch your code and create a new container, after this it is "warm" and remains in the Lambda cluster to serve subsequent requests for roughly an hour.
+[Up Pro](#guides.subscribing_to_up_pro) supports active warming to mitigate cold starts. A "cold start" occurs in AWS Lambda when there are no idle containers available to serve a request—Lambda must fetch your code and create a new container, after this it is "warm" and remains in the Lambda cluster to serve subsequent requests for roughly an hour.
 
 If a container does not receive any traffic within the hour, it is removed from the AWS Lambda cluster, and thus a new request may incur a cold start. Up Pro's "active warming" feature mitigates this by periodically requesting against your app, at the specified concurrency. It tries to maintain at least `warm_count` idle containers.
 
@@ -313,7 +313,7 @@ The following environment variables are provided by Up:
 - `PORT` – port number such as "3000"
 - `UP_STAGE` – stage name such as "staging" or "production"
 
-Up Pro offers encrypted environment variables via the [up env](#commands.env) sub-command.
+[Up Pro](#guides.subscribing_to_up_pro) offers encrypted environment variables via the [up env](#commands.env) sub-command which supports per-stage environment variable mapping.
 
 ## Header Injection
 
@@ -677,7 +677,7 @@ The record `type` must be one of:
 
 ## Stages
 
-Up supports the concept of "stages" for configuration, such as mapping of custom domains, or tuneing the size of Lambda function to use.
+Up supports the concept of "stages" for configuration, such as mapping of custom domains, or tuning the size of Lambda function to use.
 
 By default the following stages are defined:
 
@@ -939,7 +939,7 @@ Files can be matched recursively using `**`, for example ignoring everything exc
 
 ## Alerting
 
-The Pro version of Up supports defining alerts which can notify your team when your service is failing, responding slowly, or receiving traffic spikes.
+[Up Pro](#guides.subscribing_to_up_pro) supports defining alerts which can notify your team when your service is failing, responding slowly, or receiving traffic spikes.
 
 ```json
 {
