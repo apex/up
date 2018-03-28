@@ -439,7 +439,7 @@ If you wish to force the rewrite regardless of a file existing, set `force` to `
 }
 ```
 
-Note: More specific target paths take precedence over those which are less specific, for example `/blog` will win over and `/*`.
+More specific target paths take precedence over those which are less specific, for example `/blog` will win over and `/*`.
 
 ## Cross-Origin Resource Sharing
 
