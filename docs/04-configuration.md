@@ -85,7 +85,7 @@ Currently Lambda supports the following regions:
 - **eu-west-2** – EU (London)
 - **sa-east-1** – South America (São Paulo)
 
-**WARNING**: multi-region support won't be complete until https://github.com/apex/up/issues/134 is closed.
+Note: Currently only a single region is supported until the issue https://github.com/apex/up/issues/134 is closed.
 
 ## Lambda Settings
 
@@ -109,7 +109,7 @@ Lambda timeout is implied from the [Reverse Proxy](#configuration.reverse_proxy)
 
 Lambda `memory` also scales the CPU, if your app is slow, or for cases such as larger Node applications with many `require()`s you may need to increase this value. View the [Lambda Pricing](https://aws.amazon.com/lambda/pricing/) page for more information regarding the `memory` setting.
 
-Changes to Lambda configuration do not require a `up stack apply`, just deploy and these changes are picked up!
+Note: Changes to Lambda configuration do not require a `up stack apply`, just deploy and these changes are picked up!
 
 ## Hook Scripts
 
@@ -439,7 +439,7 @@ If you wish to force the rewrite regardless of a file existing, set `force` to `
 }
 ```
 
-Note that more specific target paths take precedence over those which are less specific, for example `/blog` will win over and `/*`.
+Note: More specific target paths take precedence over those which are less specific, for example `/blog` will win over and `/*`.
 
 ## Cross-Origin Resource Sharing
 
@@ -473,7 +473,7 @@ Suppose you have `https://api.myapp.com`, you may want to customize `cors` to pe
 - `max_age` – A number indicating how long (in seconds) the results of a preflight request can be cached.
 - `allow_credentials` – A boolean indicating whether the request can include user credentials such as cookies, HTTP authentication or client side SSL certificates. (Default: `true`)
 
-Note that you do not need to `up stack plan`, as CORS is provided as middleware, simply re-deploy the stage.
+Note: You do not need to run `up stack plan` for CORS settings, simply redeploy the stage.
 
 ## Reverse Proxy
 
@@ -670,10 +670,9 @@ You may also provide an optional base path, for example to prefix your API with 
 ```
 
 
-Plan the changes via `up stack plan` and `up stack apply` to perform the changes. Note that CloudFront can take up to ~40 minutes to distribute this configuration globally, so grab a coffee while these changes are applied.
+Plan the changes via `up stack plan` and `up stack apply` to perform the changes. You may [purchase domains](#guides.development_to_production_workflow.purchasing_a_domain) from the command-line, or map custom domains from other registrars. Up uses Route53 to purchase domains using your AWS account credit card. See `up help domains`.
 
-You may [purchase domains](#guides.development_to_production_workflow.purchasing_a_domain) from the command-line, or map custom domains from other registrars. Up uses Route53 to purchase domains using your AWS account credit card. See `up help domains`.
-
+Note: CloudFront can take up to ~40 minutes to distribute this configuration the first time, so grab a coffee while these changes are applied.
 
 ## Stage Overrides
 
