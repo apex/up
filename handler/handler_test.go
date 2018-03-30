@@ -40,6 +40,7 @@ func TestNode(t *testing.T) {
 
 	header := make(http.Header)
 	header.Add("X-Powered-By", "up")
+	header.Add("X-Robots-Tag", "none")
 	header.Add("X-Foo", "bar")
 	header.Add("Content-Length", "11")
 	header.Add("Content-Type", "text/plain; charset=utf-8")
@@ -67,6 +68,7 @@ func TestStatic(t *testing.T) {
 
 	header := make(http.Header)
 	header.Add("X-Powered-By", "up")
+	header.Add("X-Robots-Tag", "none")
 	header.Add("Content-Length", "12")
 	header.Add("Content-Type", "text/html; charset=utf-8")
 	header.Add("Accept-Ranges", "bytes")
