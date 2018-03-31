@@ -136,7 +136,7 @@ func (p *Project) deploy(d Deploy) error {
 	}
 
 	if err := p.Platform.Deploy(d); err != nil {
-		return errors.Wrap(err, "deploying")
+		return err
 	}
 
 	if err := p.RunHooks("postdeploy"); err != nil {
