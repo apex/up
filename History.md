@@ -1,4 +1,12 @@
 
+v0.5.12 / 2018-04-03
+====================
+
+  * add support for defining `lambda.runtime`
+  * add robots middleware (#627)
+  * change default runtime to nodejs 8.10
+  * refactor: remove redundant wrapping of "deploying" message
+
 v0.5.11 / 2018-03-19
 ====================
 
