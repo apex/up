@@ -103,7 +103,7 @@ type Platform struct {
 func New(c *up.Config, events event.Events) *Platform {
 	return &Platform{
 		config:  c,
-		runtime: "nodejs6.10",
+		runtime: "nodejs8.10",
 		handler: "_proxy.handle",
 		events:  events,
 	}
