@@ -14,7 +14,7 @@ Up supports a number of interpreted languages, and virtually any language which 
 
 ## Node.js
 
-When a `package.json` file is detected, Node.js is the assumed runtime. By default the latest version supported by Lambda is used (6.10). If you'd like to deploy other versions of Node you may want to consider using the [Node binaries](https://github.com/apex/up-examples/tree/master/oss/node-8).
+When a `package.json` file is detected, Node.js is the assumed runtime. By default the latest version supported by Lambda is used (nodejs8.10), see [Lambda Settings](#configuration.lambda_settings) for details.
 
 The `build` hook becomes:
 
