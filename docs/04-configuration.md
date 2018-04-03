@@ -83,6 +83,7 @@ Currently Lambda supports the following regions:
 - **eu-central-1** – EU (Frankfurt)
 - **eu-west-1** – EU (Ireland)
 - **eu-west-2** – EU (London)
+- **eu-west-3** – EU (Paris)
 - **sa-east-1** – South America (São Paulo)
 
 Note: Currently only a single region is supported until the issue https://github.com/apex/up/issues/134 is closed.
@@ -93,6 +94,7 @@ The following Lambda-specific settings are available:
 
 - `role` – IAM role ARN, defaulting to the one Up creates for you
 - `memory` – Function memory in mb (Default `512`, Min `128`, Max `1536`)
+- `runtime` – Function runtime (Default `nodejs8.10`)
 
 For example:
 
@@ -100,7 +102,8 @@ For example:
 {
   "name": "api",
   "lambda": {
-    "memory": 512
+    "memory": 512,
+    "runtime": "nodejs6.10"
   }
 }
 ```

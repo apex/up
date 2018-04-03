@@ -12,12 +12,19 @@ type Lambda struct {
 
 	// Role of the function.
 	Role string `json:"role"`
+
+	// Runtime of the function.
+	Runtime string `json:"runtime"`
 }
 
 // Default implementation.
 func (l *Lambda) Default() error {
 	if l.Memory == 0 {
 		l.Memory = 512
+	}
+
+	if l.Runtime == "" {
+		l.Runtime = "nodejs8.10"
 	}
 
 	return nil
