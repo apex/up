@@ -631,7 +631,7 @@ You may of course assign a custom domain to these stages as well, let's take a l
 
 ## Stages & Custom Domains
 
-By defining a stage and its `domain`, Up knows it will need to create a free SSL certificate for `gh-polls.com`, setup the DNS records, and map the domain to API Gateway.
+By defining a stage and its `domain`, Up knows it will need to create a free SSL certificate—`gh-polls.com` in the following example—setup the DNS records, and map the domain to API Gateway. SSL certificates are managed via [AWS ACM](https://aws.amazon.com/certificate-manager/) which automatically renew for you, there's no additional work or cost associated with them.
 
 ```json
 {
