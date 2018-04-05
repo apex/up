@@ -675,7 +675,7 @@ You may also provide an optional base path, for example to prefix your API with 
 
 Plan the changes via `up stack plan` and `up stack apply` to perform the changes. You may [purchase domains](#guides.development_to_production_workflow.purchasing_a_domain) from the command-line, or map custom domains from other registrars. Up uses Route53 to purchase domains using your AWS account credit card. See `up help domains`.
 
-Note: CloudFront can take up to ~40 minutes to distribute this configuration the first time, so grab a coffee while these changes are applied.
+Note: CloudFront can take up to ~40 minutes to distribute this configuration the first time, so grab a coffee while these changes are applied. Also note that ACM certificates are always created in the Virginia (us-east-1) region due to how API Gateway interoperates with CloudFront.
 
 ## Stage Overrides
 
