@@ -1,3 +1,9 @@
+
+v0.5.13 / 2018-04-07
+====================
+
+  * fix "Error: fetching git commit: " error when Git is missing from the system
+
 v0.5.15-pro / 2018-04-03
 ========================
 
