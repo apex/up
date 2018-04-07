@@ -211,6 +211,8 @@ By default there is no prefix, so `GET /index.css` will resolve to `./public/ind
 }
 ```
 
+Note: Static file serving for dynamic apps does not automatically resolve `index.html` files. The presence of a file is checked before passing control to your application.
+
 ## Environment Variables
 
 The `environment` object may be used for plain-text environment variables. Note that these are not encrypted, and are stored in up.json which is typically committed to GIT, so do not store secrets here.
