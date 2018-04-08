@@ -28,6 +28,8 @@ The `profile` property is equivalent to setting `AWS_PROFILE` for referencing AW
 
 You may specify one or more target regions for deployment using the `regions` array. Glob style patterns may be used to match region ids. By default "us-west-2" is used unless the `AWS_REGION` environment variable is defined.
 
+Note: Currently only a single region is supported until the issue https://github.com/apex/up/issues/134 is closed.
+
 A single region:
 
 ```json
@@ -85,8 +87,6 @@ Currently Lambda supports the following regions:
 - **eu-west-2** – EU (London)
 - **eu-west-3** – EU (Paris)
 - **sa-east-1** – South America (São Paulo)
-
-Note: Currently only a single region is supported until the issue https://github.com/apex/up/issues/134 is closed.
 
 ## Lambda Settings
 
