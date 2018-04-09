@@ -478,7 +478,7 @@ func subscribe(cmd *kingpin.Cmd) {
 			return errors.Wrap(err, "subscribing")
 		}
 
-		util.LogClear("Subscribed")
+		util.LogClear("Thanks for subscribing! Run `up upgrade` to install the Pro release.")
 
 		return nil
 	})
