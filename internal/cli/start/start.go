@@ -25,6 +25,7 @@ func init() {
 	cmd.Example(`up start -c 'go run main.go'`, "Override proxy command.")
 	cmd.Example(`up start -oc 'gin --port $PORT'`, "Override proxy command and open in the browser.")
 
+	stage := cmd.Flag("stage", "Target stage name.").Short('s').Default("development").String()
 	command := cmd.Flag("command", "Proxy command override").Short('c').String()
 	open := cmd.Flag("open", "Open endpoint in the browser.").Short('o').Bool()
 	addr := cmd.Flag("address", "Address for server.").Default("localhost:3000").String()
@@ -46,11 +47,11 @@ func init() {
 			"has_command": *command != "",
 		})
 
-		if err := p.Init("development"); err != nil {
+		if err := p.Init(*stage); err != nil {
 			return errors.Wrap(err, "initializing")
 		}
 
-		if err := c.Override("development"); err != nil {
+		if err := c.Override(*stage); err != nil {
 			return errors.Wrap(err, "overriding")
 		}
 
