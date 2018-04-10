@@ -23,6 +23,7 @@ import (
 	"github.com/apex/log"
 	"github.com/apex/up/internal/account"
 	"github.com/apex/up/internal/cli/root"
+	"github.com/apex/up/internal/colors"
 	"github.com/apex/up/internal/stats"
 	"github.com/apex/up/internal/userconfig"
 	"github.com/apex/up/internal/util"
@@ -30,10 +31,23 @@ import (
 	"github.com/apex/up/reporter"
 )
 
-var (
-	api = env.GetDefault("APEX_TEAMS_API", "https://teams.apex.sh")
-	a   = account.New(api)
-)
+// api endpoint.
+var api = env.GetDefault("APEX_TEAMS_API", "https://teams.apex.sh")
+
+// api client.
+var a = account.New(api)
+
+// plan amounts.
+var amounts = map[string]int{
+	"monthly":  2000,
+	"annually": 21600,
+}
+
+// plan amount select options.
+var amountOptions = map[string]string{
+	"Monthly at $20.00 USD":  "monthly",
+	"Annually at 216.00 USD": "annually",
+}
 
 func init() {
 	cmd := root.Command("team", "Manage team members, plans, and billing.")
@@ -207,7 +221,7 @@ func status(cmd *kingpin.Cmd) {
 			util.LogName("coupon", d.Coupon.ID)
 		}
 
-		util.LogName("amount", "$%0.2f/mo USD", float64(p.Amount)/100)
+		util.LogName("amount", "%s USD per %s", currency(p.Amount), p.Interval)
 		util.LogName("owner", team.Owner)
 		util.LogName("created", p.CreatedAt.Format("January 2, 2006"))
 		if p.Canceled {
@@ -301,8 +315,7 @@ func login(cmd *kingpin.Cmd) {
 		// ensure we have a team if already signed-in
 		if t != nil && *team == "" {
 			util.Log("Already signed in as %s on team %s.", t.Email, t.ID)
-			util.Log("Use `up team login --team <id>` to join a team")
-			util.Log("if you have received an invite.")
+			util.Log("Use `up team login --team <id>` to join a team.")
 			return nil
 		}
 
@@ -394,8 +407,21 @@ func subscribe(cmd *kingpin.Cmd) {
 
 		defer util.Pad()()
 
-		// TODO: fetch from plan
-		amount := 2000
+		// plan
+		util.LogTitle("Subscription")
+		util.Log("Choose a monthly billing period, or 10%% off annually.")
+		println()
+
+		var interval string
+		err = survey.AskOne(&survey.Select{
+			Message: "Plan:",
+			Options: keys(amountOptions),
+		}, &interval, survey.Required)
+
+		// amount
+		interval = amountOptions[interval]
+		amount := amounts[interval]
+
 		util.LogTitle("Coupon")
 		util.Log("Enter a coupon, or press enter to skip this step")
 		util.Log("and move on to adding a credit card.")
@@ -424,7 +450,8 @@ func subscribe(cmd *kingpin.Cmd) {
 				util.LogClear("Coupon is invalid")
 			} else {
 				amount = coupon.Discount(amount)
-				util.LogClear("Savings: %s", coupon.Description())
+				msg := colors.Gray(fmt.Sprintf("%s — now %s %s", coupon.Description(), currency(amount), interval))
+				util.LogClear("Savings: %s", msg)
 			}
 		}
 
@@ -455,9 +482,8 @@ func subscribe(cmd *kingpin.Cmd) {
 
 		// confirm
 		var ok bool
-		total := fmt.Sprintf("%0.2f", float64(amount)/100)
 		err = survey.AskOne(&survey.Confirm{
-			Message: fmt.Sprintf("Subscribe to Up Pro for $%s/mo USD?", total),
+			Message: fmt.Sprintf("Subscribe to Up Pro for %s USD %s?", currency(amount), interval),
 		}, &ok, nil)
 
 		if err != nil {
@@ -471,10 +497,11 @@ func subscribe(cmd *kingpin.Cmd) {
 		}
 
 		stats.Track("Subscribe", map[string]interface{}{
-			"coupon": couponID,
+			"coupon":   couponID,
+			"interval": interval,
 		})
 
-		if err := a.AddPlan(t.Token, "up", "pro", couponID); err != nil {
+		if err := a.AddPlan(t.Token, "up", interval, couponID); err != nil {
 			return errors.Wrap(err, "subscribing")
 		}
 
@@ -527,7 +554,7 @@ func unsubscribe(cmd *kingpin.Cmd) {
 
 		stats.Track("Unsubscribe", nil)
 
-		if err := a.RemovePlan(config.Token, "up", "pro"); err != nil {
+		if err := a.RemovePlan(config.Token, "up"); err != nil {
 			return errors.Wrap(err, "unsubscribing")
 		}
 
@@ -700,4 +727,22 @@ func feedback() (string, error) {
 		return "", err
 	}
 	return s, nil
+}
+
+// currency returns formatted currency.
+func currency(n int) string {
+	return fmt.Sprintf("$%0.2f", float64(n)/100)
+}
+
+// keys returns the keys of a string map.
+func keys(m map[string]string) (v []string) {
+	for k := range m {
+		v = append(v, k)
+	}
+
+	sort.Slice(v, func(i int, j int) bool {
+		return v[i] > v[j]
+	})
+
+	return
 }

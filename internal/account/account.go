@@ -88,9 +88,9 @@ type Discount struct {
 // Plan model.
 type Plan struct {
 	ID         string    `json:"id"`
+	Name       string    `json:"name"`
 	Product    string    `json:"product"`
 	Plan       string    `json:"plan"`
-	PlanName   string    `json:"plan_name"`
 	Amount     int       `json:"amount"`
 	Interval   string    `json:"interval"`
 	Status     string    `json:"status"`
@@ -209,15 +209,15 @@ func (c *Client) RemoveCard(token, id string) error {
 }
 
 // AddPlan subscribes to plan.
-func (c *Client) AddPlan(token, product, plan, coupon string) error {
+func (c *Client) AddPlan(token, product, interval, coupon string) error {
 	in := struct {
-		Product string `json:"product"`
-		Plan    string `json:"plan"`
-		Coupon  string `json:"coupon"`
+		Product  string `json:"product"`
+		Interval string `json:"interval"`
+		Coupon   string `json:"coupon"`
 	}{
-		Product: product,
-		Plan:    plan,
-		Coupon:  coupon,
+		Product:  product,
+		Interval: interval,
+		Coupon:   coupon,
 	}
 
 	res, err := c.requestJSON(token, "PUT", "/billing/plans", in)
@@ -283,8 +283,8 @@ func (c *Client) RemoveMember(token, email string) error {
 }
 
 // RemovePlan unsubscribes from a plan.
-func (c *Client) RemovePlan(token, product, plan string) error {
-	path := fmt.Sprintf("/billing/plans/%s/%s", product, plan)
+func (c *Client) RemovePlan(token, product string) error {
+	path := fmt.Sprintf("/billing/plans/%s", product)
 	res, err := c.request(token, "DELETE", path, nil)
 	if err != nil {
 		return err
