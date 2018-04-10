@@ -1,4 +1,11 @@
 
+v0.5.14 / 2018-04-09
+====================
+
+  * add start command --stage flag. Closes #639
+  * fix scenario where JSON logs have invalid .level values
+  * refactor: add note about running `up upgrade` after subscribing
+
 v0.5.16-pro / 2018-04-07
 ========================
 
