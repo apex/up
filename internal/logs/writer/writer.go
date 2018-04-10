@@ -10,7 +10,6 @@ import (
 
 	"github.com/apex/log"
 	"github.com/apex/up/internal/util"
-	"github.com/pkg/errors"
 )
 
 // Writer struct.
@@ -60,7 +59,7 @@ func (w *Writer) writeJSON(s string) error {
 	var e log.Entry
 
 	if err := json.Unmarshal([]byte(s), &e); err != nil {
-		return errors.Wrap(err, "unmarshaling")
+		return w.writeText(s)
 	}
 
 	switch e.Level {
