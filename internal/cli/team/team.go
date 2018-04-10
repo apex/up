@@ -45,8 +45,8 @@ var amounts = map[string]int{
 
 // plan amount select options.
 var amountOptions = map[string]string{
-	"Monthly at $20.00 USD":  "monthly",
-	"Annually at 216.00 USD": "annually",
+	"Monthly at $20.00 USD":   "monthly",
+	"Annually at $216.00 USD": "annually",
 }
 
 func init() {
