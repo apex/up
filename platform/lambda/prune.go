@@ -34,7 +34,7 @@ func (p *Platform) Prune(region string, versions int) error {
 	var count int
 	var size int64
 
-	// we have to fetch them all here, because they were using random unsorted keys
+	// fetch objects
 	err := s.ListObjectsPages(params, func(page *s3.ListObjectsOutput, lastPage bool) bool {
 		for _, o := range page.Contents {
 			objects = append(objects, o)
