@@ -83,6 +83,12 @@ type Platform interface {
 	ShowMetrics(region, stage string, start time.Time) error
 }
 
+// Pruner is the interface used to prune old versions and
+// the artifacts associated such as S3 zip files for Lambda.
+type Pruner interface {
+	Prune(region string, versions int) error
+}
+
 // Runtime is the interface used by a platform to support
 // runtime operations such as initializing environment
 // variables from remote storage.

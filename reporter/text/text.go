@@ -239,6 +239,15 @@ func (r *reporter) Start() {
 				default:
 					r.log(n, humanize.Comma(int64(e.Int("value"))))
 				}
+			case "prune":
+				fmt.Printf("\n")
+				r.pending("prune", "removing old releases")
+			case "prune.complete":
+				n := e.Int("count")
+				b := e.Int64("size")
+				s := fmt.Sprintf("%d old files removed from S3 (%s)", n, humanize.Bytes(uint64(b)))
+				r.complete("prune", s, e.Duration("duration"))
+				fmt.Printf("\n")
 			}
 
 			r.prevTime = time.Now()

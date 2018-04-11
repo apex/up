@@ -846,7 +846,9 @@ func (p *Platform) removeProxy() error {
 
 // getS3Key returns a randomized s3 key.
 func (p *Platform) getS3Key(stage string) string {
-	return fmt.Sprintf("%s/%s/%s.zip", p.config.Name, stage, uniuri.New())
+	ts := time.Now().Unix()
+	uid := uniuri.New()
+	return fmt.Sprintf("%s/%s/%d-%s.zip", p.config.Name, stage, ts, uid)
 }
 
 // getS3BucketName returns the s3 bucket name.
