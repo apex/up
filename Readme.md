@@ -31,8 +31,9 @@ Note that the following Pro features are currently available:
  - Encrypted env variables
  - Alerting (email, sms, slack)
  - S3 upload acceleration (optional)
- - Instant rollback support
- - Active warming
+ - Instant rollback support with Git integration
+ - Active warming to mitigate cold starts
+ - Deployment changelog
 
 ![Pro edition features](assets/features-pro.png)
 
