@@ -28,7 +28,6 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/apex/up"
-	"github.com/apex/up/config"
 	"github.com/apex/up/internal/proxy/bin"
 	"github.com/apex/up/internal/shim"
 	"github.com/apex/up/internal/util"
@@ -515,10 +514,12 @@ func (p *Platform) deploy(region string, d up.Deploy) (version string, err error
 
 // createFunction creates the function.
 func (p *Platform) createFunction(c *lambda.Lambda, a *apigateway.APIGateway, up *s3manager.Uploader, region string, d up.Deploy) (version string, err error) {
+	// ensure bucket exists
 	if err := p.createBucket(region); err != nil && !util.IsBucketExists(err) {
 		return "", errors.Wrap(err, "creating s3 bucket")
 	}
 
+	// upload to s3
 	log.Debug("uploading function")
 	b := aws.String(p.getS3BucketName(region))
 	k := aws.String(p.getS3Key(d.Stage))
@@ -533,6 +534,13 @@ func (p *Platform) createFunction(c *lambda.Lambda, a *apigateway.APIGateway, up
 		return "", errors.Wrap(err, "uploading function")
 	}
 
+	// load environment
+	env, err := p.loadEnvironment(d)
+	if err != nil {
+		return "", errors.Wrap(err, "loading environment variables")
+	}
+
+	// create function
 retry:
 	log.Debug("creating function")
 	res, err := c.CreateFunction(&lambda.CreateFunctionInput{
@@ -543,7 +551,7 @@ retry:
 		MemorySize:   aws.Int64(int64(p.config.Lambda.Memory)),
 		Timeout:      aws.Int64(int64(p.config.Proxy.Timeout + 3)),
 		Publish:      aws.Bool(true),
-		Environment:  toEnv(p.config.Environment, d),
+		Environment:  env,
 		Code: &lambda.FunctionCode{
 			S3Bucket: b,
 			S3Key:    k,
@@ -589,6 +597,12 @@ func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up
 		return "", errors.Wrap(err, "uploading function")
 	}
 
+	// load environment
+	env, err := p.loadEnvironment(d)
+	if err != nil {
+		return "", errors.Wrap(err, "loading environment variables")
+	}
+
 	// update function config
 	log.Debug("updating function")
 	_, err = c.UpdateFunctionConfiguration(&lambda.UpdateFunctionConfigurationInput{
@@ -598,7 +612,7 @@ func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up
 		Role:         &p.config.Lambda.Role,
 		MemorySize:   aws.Int64(int64(p.config.Lambda.Memory)),
 		Timeout:      aws.Int64(int64(p.config.Proxy.Timeout + 3)),
-		Environment:  toEnv(p.config.Environment, d),
+		Environment:  env,
 	})
 
 	if err != nil {
@@ -665,6 +679,17 @@ func (p *Platform) deleteFunction(region string) error {
 	})
 
 	return err
+}
+
+// loadEnvironment loads environment variables.
+func (p *Platform) loadEnvironment(d up.Deploy) (*lambda.Environment, error) {
+	m := aws.StringMap(p.config.Environment)
+	m["UP_STAGE"] = &d.Stage
+	m["UP_COMMIT"] = &d.Commit
+	m["UP_AUTHOR"] = &d.Author
+	return &lambda.Environment{
+		Variables: m,
+	}, nil
 }
 
 // createRole creates the IAM role unless it is present.
@@ -865,17 +890,6 @@ func (p *Platform) getAccountID() string {
 // isCreatingRole returns true if the role has not been created.
 func isCreatingRole(err error) bool {
 	return err != nil && strings.Contains(err.Error(), "role defined for the function cannot be assumed by Lambda")
-}
-
-// toEnv returns a lambda environment.
-func toEnv(env config.Environment, d up.Deploy) *lambda.Environment {
-	m := aws.StringMap(env)
-	m["UP_STAGE"] = &d.Stage
-	m["UP_COMMIT"] = &d.Commit
-	m["UP_AUTHOR"] = &d.Author
-	return &lambda.Environment{
-		Variables: m,
-	}
 }
 
 // getCerts returns the certificates available.
