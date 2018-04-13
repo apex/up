@@ -16,24 +16,15 @@ Check out the [documentation](https://up.docs.apex.sh/) for more instructions an
 
 ![](assets/screen2.png)
 
-## Features
+## OSS Features
 
-Open source community edition.
+Features of the free open-source edition.
 
 ![Open source edition features](assets/features-community.png)
 
 ## Pro Features
 
 Up Pro is **$20/mo USD** for unlimited use within your company. While in development, you may use the `up-early-adopter-325BFABFAFF7` coupon for 50% off forever. Head over to [Subscribing to Up Pro](https://up.docs.apex.sh/#guides.subscribing_to_up_pro) to get started.
-
-Note that the following Pro features are currently available:
-
- - Encrypted env variables
- - Alerting (email, sms, slack)
- - S3 upload acceleration (optional)
- - Instant rollback support with Git integration
- - Active warming to mitigate cold starts
- - Deployment changelog
 
 ![Pro edition features](assets/features-pro.png)
 
