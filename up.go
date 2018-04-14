@@ -100,11 +100,7 @@ func (p *Project) Build() error {
 		return errors.Wrap(err, "building")
 	}
 
-	if err := p.RunHooks("postbuild"); err != nil {
-		return err
-	}
-
-	return nil
+	return p.RunHooks("postbuild")
 }
 
 // Deploy the project.
@@ -139,11 +135,7 @@ func (p *Project) deploy(d Deploy) error {
 		return err
 	}
 
-	if err := p.RunHooks("postdeploy"); err != nil {
-		return err
-	}
-
-	return nil
+	return p.RunHooks("postdeploy")
 }
 
 // Zip returns the zip if supported by the platform.
