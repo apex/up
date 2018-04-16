@@ -38,9 +38,19 @@ func plan(cmd *kingpin.Cmd) {
 		}
 
 		stats.Track("Plan Stack", nil)
+		region := c.Regions[0]
+
+		ok, err := p.Exists(region)
+		if err != nil {
+			return errors.Wrap(err, "checking if app exists")
+		}
+
+		if !ok {
+			return errors.New("Application does not exist, please run `$ up` initially to create it.")
+		}
 
 		// TODO: multi-region
-		return p.PlanStack(c.Regions[0])
+		return p.PlanStack(region)
 	})
 }
 

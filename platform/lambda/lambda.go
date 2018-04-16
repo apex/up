@@ -311,6 +311,26 @@ func (p *Platform) ApplyStack(region string) error {
 	return stack.New(p.config, p.events, nil, region).Apply()
 }
 
+// Exists implementation.
+func (p *Platform) Exists(region string) (bool, error) {
+	log.Debug("checking if application exists")
+	c := lambda.New(session.New(aws.NewConfig().WithRegion(region)))
+
+	_, err := c.GetFunctionConfiguration(&lambda.GetFunctionConfigurationInput{
+		FunctionName: &p.config.Name,
+	})
+
+	if util.IsNotFound(err) {
+		return false, nil
+	}
+
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
 // getAliasVersions returns the function alias versions.
 func (p *Platform) getAliasVersions(region string) (resources.Versions, error) {
 	var g errgroup.Group

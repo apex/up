@@ -74,6 +74,9 @@ type Platform interface {
 	// empty string.
 	URL(region, stage string) (string, error)
 
+	// Exists returns true if the application has been created.
+	Exists(region string) (bool, error)
+
 	CreateStack(region, version string) error
 	DeleteStack(region string, wait bool) error
 	ShowStack(region string) error
