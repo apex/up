@@ -1,4 +1,10 @@
 
+v0.6.1 / 2018-04-16
+===================
+
+  * add guard against `up stack plan` before `up`
+  * add `prune` command to remove old releases from S3. Closes #322
+
 v0.6.0-pro / 2018-04-10
 =======================
 
