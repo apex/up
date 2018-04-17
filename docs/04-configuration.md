@@ -477,6 +477,7 @@ Suppose you have `https://api.myapp.com`, you may want to customize `cors` to pe
 - `exposed_headers` – A list of headers which are safe to expose to the API of a CORS response.
 - `max_age` – A number indicating how long (in seconds) the results of a preflight request can be cached.
 - `allow_credentials` – A boolean indicating whether the request can include user credentials such as cookies, HTTP authentication or client side SSL certificates. (Default: `true`)
+- `debug` - A boolean which will output debug logs (Default: `false`)
 
 Note: You do not need to run `up stack plan` for CORS settings, simply redeploy the stage.
 
