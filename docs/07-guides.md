@@ -414,11 +414,9 @@ The first step is to set up environment variables so that you have access to you
 - `AWS_ACCESS_KEY_ID` – AWS access key
 - `AWS_SECRET_ACCESS_KEY` – AWS secret key
 
-If using running Up Pro you'll need your Up credentials:
+If using running Up Pro you'll need your Up credentials in order to access Up Pro via the `up upgrade` command. To obtain this run `up team ci` or `up team ci --copy` to copy it directly to your clipboard, then paste this as the env var's value.
 
 - `UP_CONFIG` – Up configuration as base64-encoded JSON
-
-To obtain this run `up team ci` or `up team ci --copy` to copy it directly to your clipboard, then paste this as the env var's value.
 
 ### Commands
 
