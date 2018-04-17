@@ -420,29 +420,21 @@ If using running Up Pro you'll need your Up credentials in order to access Up Pr
 
 ### Commands
 
-Now that configuration is prepared, you'll need to install Up using the following two commands:
+You may install Up in the current working directory, and deploy to production with the following commands, omitting the `up upgrade` if you are not an Up Pro subscriber.
+
+```
+$ curl -sf https://up.apex.sh/install | BINDIR=. sh
+$ ./up upgrade
+$ ./up production
+```
+
+Or if you prefer installing globally within `PATH`:
 
 ```
 $ sudo chown -R $(whoami) /usr/local/bin
 $ curl -sf https://up.apex.sh/install | sh
-```
-
-If you're on Up Pro you'll need to upgrade to install the Pro binary:
-
-```
 $ up upgrade
-```
-
-After that all you need to do is deploy to your desired stage!
-
-```
-$ up deploy production
-```
-
-If your provider sets `CI=true` colors will be disabled automatically, however, you may manually specify this using `--format`:
-
-```
-$ up --format=plain deploy production
+$ up production
 ```
 
 ## Mastering Logging
