@@ -301,6 +301,13 @@ func login(cmd *kingpin.Cmd) {
 
 		t := config.GetActiveTeam()
 
+		// both team and email are specified,
+		// so we want to disregard the active team
+		// entirely and sign in using these creds.
+		if *email != "" && *team != "" {
+			t = nil
+		}
+
 		// ensure we have an email
 		if *email == "" {
 			if t == nil {
@@ -312,7 +319,10 @@ func login(cmd *kingpin.Cmd) {
 			}
 		}
 
-		// ensure we have a team if already signed-in
+		// ensure we have a team if already signed-in,
+		// this lets the user specify only --team xxx to
+		// join a team they were invited to, or add one
+		// which they own.
 		if t != nil && *team == "" {
 			util.Log("Already signed in as %s on team %s.", t.Email, t.ID)
 			util.Log("Use `up team login --team <id>` to join a team.")
