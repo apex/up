@@ -89,7 +89,7 @@ type Platform interface {
 // Pruner is the interface used to prune old versions and
 // the artifacts associated such as S3 zip files for Lambda.
 type Pruner interface {
-	Prune(region string, versions int) error
+	Prune(region, stage string, versions int) error
 }
 
 // Runtime is the interface used by a platform to support

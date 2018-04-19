@@ -216,11 +216,11 @@ func (p *Project) ApplyStack(region string) error {
 }
 
 // Prune implementation.
-func (p *Project) Prune(region string, versions int) error {
+func (p *Project) Prune(region, stage string, versions int) error {
 	pruner, ok := p.Platform.(Pruner)
 	if !ok {
 		return errors.Errorf("platform does not support pruning")
 	}
 
-	return pruner.Prune(region, versions)
+	return pruner.Prune(region, stage, versions)
 }

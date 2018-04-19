@@ -36,6 +36,7 @@ Commands:
   logs                 Show log output.
   metrics              Show project metrics.
   rollback             Rollback to a previous deployment.
+  prune                Prune old S3 deployments of a stage.
   run                  Run a hook.
   stack plan           Plan configuration changes.
   stack apply          Apply configuration changes.
@@ -809,4 +810,45 @@ Upgrade to the specified version.
 
 ```
 $ up upgrade -t 0.4.4
+```
+
+
+## Prune
+
+Prune old S3 deployments of a stage.
+
+```
+Usage:
+
+  up prune [<flags>]
+
+Flags:
+
+  -h, --help             Output usage information.
+  -C, --chdir="."        Change working directory.
+  -v, --verbose          Enable verbose log output.
+      --format="text"    Output formatter.
+      --version          Show application version.
+  -s, --stage="staging"  Target stage name.
+  -r, --retain=60        Number of versions to retain.
+```
+
+### Examples
+
+Prune and retain the most recent 15 staging versions.
+
+```
+$ up prune
+```
+
+Prune and retain the most recent 60 production versions.
+
+```
+$ up prune -s production
+```
+
+Prune and retain the most recent 15 production versions.
+
+```
+$ up prune -s production -r 15
 ```

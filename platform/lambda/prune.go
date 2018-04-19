@@ -13,7 +13,7 @@ import (
 )
 
 // Prune implementation.
-func (p *Platform) Prune(region string, versions int) error {
+func (p *Platform) Prune(region, stage string, versions int) error {
 	p.events.Emit("prune", nil)
 
 	if err := p.createRole(); err != nil {
@@ -22,7 +22,7 @@ func (p *Platform) Prune(region string, versions int) error {
 
 	s := s3.New(session.New(aws.NewConfig().WithRegion(region)))
 	b := aws.String(p.getS3BucketName(region))
-	prefix := p.config.Name + "/"
+	prefix := p.config.Name + "/" + stage + "/"
 
 	params := &s3.ListObjectsInput{
 		Bucket: b,

@@ -9,11 +9,13 @@ import (
 )
 
 func init() {
-	cmd := root.Command("prune", "Prune old S3 deployments.")
+	cmd := root.Command("prune", "Prune old S3 deployments of a stage.")
 
-	cmd.Example(`up prune`, "Prune and retain the most recent 60 versions.")
-	cmd.Example(`up prune --retain 15`, "Prune and retain the most recent 15 versions.")
+	cmd.Example(`up prune`, "Prune and retain the most recent 15 staging versions.")
+	cmd.Example(`up prune -s production`, "Prune and retain the most recent 60 production versions.")
+	cmd.Example(`up prune -s production -r 15`, "Prune and retain the most recent 15 production versions.")
 
+	stage := cmd.Flag("stage", "Target stage name.").Short('s').Default("staging").String()
 	versions := cmd.Flag("retain", "Number of versions to retain.").Short('r').Default("60").Int()
 
 	cmd.Action(func(_ *kingpin.ParseContext) error {
@@ -26,8 +28,9 @@ func init() {
 
 		stats.Track("Prune", map[string]interface{}{
 			"versions": *versions,
+			"stage":    *stage,
 		})
 
-		return p.Prune(region, *versions)
+		return p.Prune(region, *stage, *versions)
 	})
 }
