@@ -867,16 +867,9 @@ Upgrade to the specified version.
 $ up upgrade -t 0.4.4
 ```
 
-<<<<<<< HEAD
-
 ## Prune
 
 Prune old S3 deployments of a stage.
-=======
-## Env
-
-Manage encrypted environment variables. Environment variables are scoped to all stages by default, with stage-level overrides. The `up env` command is available in the Pro plan.
->>>>>>> add up pro features
 
 ```
 Usage:
@@ -913,6 +906,14 @@ Prune and retain the most recent 15 production versions.
 ```
 $ up prune -s production -r 15
 ```
+
+## Env
+
+Manage encrypted environment variables. Environment variables are scoped to all stages by default, with stage-level overrides. The `up env` command is available in the Pro plan.
+
+```
+Usage:
+
   up env <command> [<args> ...]
 
 Flags:
