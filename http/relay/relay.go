@@ -192,12 +192,6 @@ retry:
 		return res, err
 	}
 
-	// we got an error response, retry if possible
-	if err == nil && res.StatusCode >= 500 && isIdempotent(r) {
-		ctx.WithField("status", res.StatusCode).Warn("retrying idempotent request")
-		goto retry
-	}
-
 	// we got a response
 	if err == nil {
 		return res, nil

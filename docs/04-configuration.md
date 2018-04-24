@@ -492,7 +492,7 @@ The following settings are available:
   - When `app.js` is detected `node app.js` is used
   - When `app.py` is detected `python app.py` is used
 - `backoff` – Backoff configuration object described in "Crash Recovery"
-- `retry` – Retry idempotent requests upon 5xx or server crashes. (Default `true`)
+- `retry` – Retry idempotent requests upon server crashes. (Default `true`)
 - `timeout` – Timeout in seconds per request (Default `15`, Max `25`)
 - `listen_timeout` – Timeout in seconds Up will wait for your app to boot and listen on `PORT` (Default `15`, Max `25`)
 - `shutdown_timeout` – Timeout in seconds Up will wait after sending a SIGINT to your server, before sending a SIGKILL (Default `15`)
@@ -522,7 +522,7 @@ By default the back-off is configured as:
 - `attempts` – Attempts made before failing (Default `3`)
 - `jitter` – Apply jitter (Default `false`)
 
-A total of 3 consecutive attempts will be made before responding with an error, in the default case this will be a total of 700ms for the three attempts.
+By default a total of 3 consecutive attempts will be made before responding with an error, in the default case this will be a total of 700ms for the three attempts.
 
 Here's an example tweaking the default behaviour:
 
