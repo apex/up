@@ -222,7 +222,7 @@ retry:
 
 	// retry idempotent requests
 	if restartErr == nil && isIdempotent(r) {
-		ctx.Info("retrying idempotent request")
+		ctx.Info("retrying idempotent request due to crash or network issue")
 		goto retry
 	}
 
