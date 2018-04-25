@@ -1,4 +1,12 @@
 
+v0.6.2 / 2018-04-25
+===================
+
+  * add up prune `--stage` flag. Closes #647
+  * add `up` to ignore whitelist by default
+  * remove retries on 5xx. Closes #485
+  * fix login bug preventing `--email` from overriding the active team email
+
 v0.6.1-pro / 2018-04-16
 =======================
 
