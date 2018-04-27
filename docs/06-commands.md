@@ -660,11 +660,13 @@ Usage:
 
 Flags:
 
-  -h, --help           Output usage information.
-  -C, --chdir="."      Change working directory.
-  -v, --verbose        Enable verbose log output.
-      --version        Show application version.
-      --size           Show zip contents size information.
+  -h, --help             Output usage information.
+  -C, --chdir="."        Change working directory.
+  -v, --verbose          Enable verbose log output.
+      --format="text"    Output formatter.
+      --version          Show application version.
+  -s, --stage="staging"  Target stage name.
+      --size             Show zip contents size information.
 ```
 
 ### Examples
