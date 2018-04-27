@@ -5,6 +5,7 @@ import (
 	"strconv"
 
 	"github.com/apex/log"
+	"github.com/apex/up"
 	"github.com/apex/up/internal/colors"
 	"github.com/apex/up/internal/table"
 	"github.com/apex/up/internal/util"
@@ -19,6 +20,11 @@ import (
 func (p *Platform) ShowDeploys(region string) error {
 	s := session.New(aws.NewConfig().WithRegion(region))
 	c := lambda.New(s)
+
+	stages, err := getCurrentVersions(c, p.config)
+	if err != nil {
+		return errors.Wrap(err, "fetching current versions")
+	}
 
 	versions, err := getVersions(c, p.config.Name)
 	if err != nil {
@@ -45,7 +51,7 @@ func (p *Platform) ShowDeploys(region string) error {
 
 	for _, f := range versions {
 		if *f.Version != "$LATEST" {
-			addFunction(t, f)
+			addDeployment(t, f, stages)
 		}
 	}
 
@@ -55,17 +61,18 @@ func (p *Platform) ShowDeploys(region string) error {
 	return nil
 }
 
-// addFunction adds function to table.
-func addFunction(t *table.Table, f *lambda.FunctionConfiguration) {
+// addDeployment adds the release to table.
+func addDeployment(t *table.Table, f *lambda.FunctionConfiguration, stages map[string]string) {
 	commit := f.Environment.Variables["UP_COMMIT"]
 	author := f.Environment.Variables["UP_AUTHOR"]
 	stage := *f.Environment.Variables["UP_STAGE"]
 	created := dateparse.MustParse(*f.LastModified)
 	date := util.RelativeDate(created)
 	version := *f.Version
+	current := stages[stage] == version
 
 	t.AddRow(table.Row{
-		{Text: formatStage(stage)},
+		{Text: formatStage(stage, current)},
 		{Text: colors.Gray(util.DefaultString(commit, version))},
 		{Text: colors.Gray(util.DefaultString(author, "–"))},
 		{Text: date},
@@ -73,13 +80,47 @@ func addFunction(t *table.Table, f *lambda.FunctionConfiguration) {
 }
 
 // formatStage returns the stage string format.
-func formatStage(s string) string {
+func formatStage(s string, current bool) string {
+	var c colors.Func
+
 	switch s {
 	case "production":
-		return colors.Purple(s)
+		c = colors.Purple
 	default:
-		return colors.Gray(s)
+		c = colors.Gray
 	}
+
+	s = c(s)
+
+	if current {
+		s += " " + colors.Purple("*")
+	}
+
+	return s
+}
+
+// getCurrentVersions returns the current stage versions.
+func getCurrentVersions(c *lambda.Lambda, config *up.Config) (map[string]string, error) {
+	m := make(map[string]string)
+
+	for _, s := range config.Stages.List() {
+		if s.IsLocal() {
+			continue
+		}
+
+		res, err := c.GetAlias(&lambda.GetAliasInput{
+			FunctionName: &config.Name,
+			Name:         aws.String(s.Name),
+		})
+
+		if err != nil {
+			return nil, errors.Wrapf(err, "fetching %s alias", s.Name)
+		}
+
+		m[s.Name] = *res.FunctionVersion
+	}
+
+	return m, nil
 }
 
 // getVersions returns all function versions.
