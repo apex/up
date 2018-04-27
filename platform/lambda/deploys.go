@@ -96,7 +96,9 @@ func formatStage(s string, current bool) string {
 	s = c(s)
 
 	if current {
-		s += " " + colors.Purple("*")
+		s = c("*") + " " + s
+	} else {
+		s = colors.Gray("\u0020") + " " + s
 	}
 
 	return s
