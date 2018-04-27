@@ -27,18 +27,19 @@ Commands:
   build                Build zip file.
   config               Show configuration after defaults and validation.
   deploy               Deploy the project.
+  deploys              Show deployment history.
   docs                 Open documentation website in the browser.
   domains ls           List purchased domains.
   domains check        Check availability of a domain.
   domains buy          Purchase a domain.
-  env add              Add a variable.
+  env add              Add variables.
   env get              Get a variable value.
   env ls               List variables.
-  env rm               Remove a variable.
+  env rm               Remove variables.
   logs                 Show log output.
   metrics              Show project metrics.
-  rollback             Rollback to a previous deployment.
   prune                Prune old S3 deployments of a stage.
+  rollback             Rollback to a previous deployment.
   run                  Run a hook.
   stack plan           Plan configuration changes.
   stack apply          Apply configuration changes.
