@@ -215,7 +215,7 @@ Flags:
       --format="text"  Output formatter.
       --version        Show application version.
   -f, --follow         Follow or tail the live logs.
-  -s, --since="1d"     Show logs since duration (30s, 5m, 2h, 1h30m, 3d, 1M).
+  -S, --since="1d"     Show logs since duration (30s, 5m, 2h, 1h30m, 3d, 1M).
   -e, --expand         Show expanded logs.
 
 Args:
@@ -287,13 +287,13 @@ $ up logs
 Show logs from the past 45 minutes.
 
 ```
-$ up -s 45m logs
+$ up -S 45m logs
 ```
 
 Show logs from the past 12 hours.
 
 ```
-$ up -s 12h logs
+$ up -S 12h logs
 ```
 
 Show live log output.
@@ -405,21 +405,18 @@ Show, open, or copy a stage endpoint.
 ```
 Usage:
 
-  up url [<flags>] [<stage>]
+  up url [<flags>]
 
 Flags:
 
-  -h, --help           Output usage information.
-  -C, --chdir="."      Change working directory.
-  -v, --verbose        Enable verbose log output.
-      --format="text"  Output formatter.
-      --version        Show application version.
-  -o, --open           Open endpoint in the browser.
-  -c, --copy           Copy endpoint to the clipboard.
-
-Args:
-
-  [<stage>]  Name of the stage.
+  -h, --help             Output usage information.
+  -C, --chdir="."        Change working directory.
+  -v, --verbose          Enable verbose log output.
+      --format="text"    Output formatter.
+      --version          Show application version.
+  -s, --stage="staging"  Target stage name.
+  -o, --open             Open endpoint in the browser.
+  -c, --copy             Copy endpoint to the clipboard.
 ```
 
 ### Examples
@@ -445,19 +442,19 @@ $ up url --copy
 Show the production endpoint.
 
 ```
-$ up url production
+$ up url -s production
 ```
 
 Open the production endpoint in the browser.
 
 ```
-$ up url -o production
+$ up url -o -s production
 ```
 
 Copy the production endpoint to the clipboard.
 
 ```
-$ up url -c production
+$ up url -c -s production
 ```
 
 ## Metrics
@@ -467,27 +464,23 @@ Show project metrics and estimated cost breakdown for requests, invocation count
 ```
 Usage:
 
-  up metrics [<flags>] [<stage>]
+  up metrics [<flags>]
 
 Flags:
 
-  -h, --help           Output usage information.
-  -C, --chdir="."      Change working directory.
-  -v, --verbose        Enable verbose log output.
-      --format="text"  Output formatter.
-      --version        Show application version.
-  -s, --since="1M"     Show logs since duration (30s, 5m, 2h, 1h30m, 3d, 1M).
-
-Args:
-
-  [<stage>]  Name of the stage.
-
+  -h, --help             Output usage information.
+  -C, --chdir="."        Change working directory.
+  -v, --verbose          Enable verbose log output.
+      --format="text"    Output formatter.
+      --version          Show application version.
+  -s, --stage="staging"  Target stage name.
+  -S, --since="1M"       Show logs since duration (30s, 5m, 2h, 1h30m, 3d, 1M).
 ```
 
 For example:
 
 ```
-$ up metrics production -s 15d
+$ up metrics -s production -S 15d
 
   Requests: 13,653 ($0.01)
   Duration min: 0ms

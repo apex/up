@@ -14,10 +14,10 @@ import (
 func init() {
 	cmd := root.Command("metrics", "Show project metrics.")
 	cmd.Example(`up metrics`, "Show metrics for staging environment.")
-	cmd.Example(`up metrics production`, "Show metrics for production environment.")
+	cmd.Example(`up metrics -s production`, "Show metrics for production environment.")
 
-	stage := cmd.Arg("stage", "Name of the stage.").Default("staging").String()
-	since := cmd.Flag("since", "Show logs since duration (30s, 5m, 2h, 1h30m, 3d, 1M).").Short('s').Default("1M").String()
+	stage := cmd.Flag("stage", "Target stage name.").Short('s').Default("staging").String()
+	since := cmd.Flag("since", "Show logs since duration (30s, 5m, 2h, 1h30m, 3d, 1M).").Short('S').Default("1M").String()
 
 	cmd.Action(func(_ *kingpin.ParseContext) error {
 		c, p, err := root.Init()
