@@ -21,7 +21,6 @@ import (
 
 func init() {
 	cmd := root.Command("build", "Build zip file.")
-	size := cmd.Flag("size", "Show zip contents size information.").Bool()
 	cmd.Example(`up build`, "Build archive and save to ./out.zip")
 	cmd.Example(`up build > /tmp/out.zip`, "Build archive and output to file via stdout.")
 	cmd.Example(`up build --size`, "Build archive and list files by size.")
@@ -38,6 +37,10 @@ func init() {
 		}
 
 		stats.Track("Build", nil)
+
+		if err := p.Init(*stage); err != nil {
+			return errors.Wrap(err, "initializing")
+		}
 
 		if err := p.Build(); err != nil {
 			return errors.Wrap(err, "building")
