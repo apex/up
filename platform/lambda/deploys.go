@@ -13,6 +13,7 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/session"
 	"github.com/aws/aws-sdk-go/service/lambda"
+	humanize "github.com/dustin/go-humanize"
 	"github.com/pkg/errors"
 )
 
@@ -40,12 +41,13 @@ func (p *Platform) ShowDeploys(region string) error {
 		{Text: colors.Bold("Stage")},
 		{Text: colors.Bold("Version")},
 		{Text: colors.Bold("Author")},
+		{Text: colors.Bold("Size")},
 		{Text: colors.Bold("Date")},
 	})
 
 	t.AddRow(table.Row{
 		{
-			Span: 4,
+			Span: 5,
 		},
 	})
 
@@ -75,6 +77,7 @@ func addDeployment(t *table.Table, f *lambda.FunctionConfiguration, stages map[s
 		{Text: formatStage(stage, current)},
 		{Text: colors.Gray(util.DefaultString(commit, version))},
 		{Text: colors.Gray(util.DefaultString(author, "–"))},
+		{Text: humanize.Bytes(uint64(*f.CodeSize))},
 		{Text: date},
 	})
 }
