@@ -14,6 +14,7 @@ func init() {
 	cmd.Example(`up run clean`, "Run clean hook.")
 
 	hook := cmd.Arg("hook", "Name of the hook to run.").Required().String()
+	stage := cmd.Flag("stage", "Target stage name.").Short('s').Default("staging").String()
 
 	cmd.Action(func(_ *kingpin.ParseContext) error {
 		_, p, err := root.Init()
@@ -26,6 +27,10 @@ func init() {
 		stats.Track("Hook", map[string]interface{}{
 			"name": *hook,
 		})
+
+		if err := p.Init(*stage); err != nil {
+			return errors.Wrap(err, "initializing")
+		}
 
 		return p.RunHook(*hook)
 	})
