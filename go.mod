@@ -9,6 +9,7 @@ require (
 	github.com/alecthomas/units v0.0.0-20151022065526-2efee857e7cf // indirect
 	github.com/apex/go-apex v1.0.0
 	github.com/apex/log v1.1.0
+	github.com/araddon/dateparse v0.0.0-20181123171228-21df004e09ca
 	github.com/armon/go-radix v1.0.0 // indirect
 	github.com/atotto/clipboard v0.0.0-20160219034421-bb272b845f11 // indirect
 	github.com/aws/aws-sdk-go v1.19.1
@@ -66,6 +67,7 @@ require (
 	github.com/tj/go-spin v1.1.0
 	github.com/tj/go-update v2.2.4+incompatible
 	github.com/tj/kingpin v2.5.0+incompatible
+	github.com/tj/simpletable v1.0.0
 	github.com/tj/survey v2.0.6+incompatible
 	github.com/ulikunitz/xz v0.5.4 // indirect
 	github.com/xtgo/uuid v0.0.0-20140804021211-a0b114877d4c // indirect
