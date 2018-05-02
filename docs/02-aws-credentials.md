@@ -8,10 +8,10 @@ Before using Up you need to first provide your AWS account credentials so that U
 
 Most AWS tools support the `~/.aws/credentials` file for storing credentials, allowing you to specify `AWS_PROFILE` environment variable so Up knows which one to reference. To read more on configuring these files view [Configuring the AWS CLI](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html).
 
-Here's an example of `~/.aws/credentials`, where `export AWS_PROFILE=myapp` would activate these settings.
+Here's an example of `~/.aws/credentials`, where `export AWS_PROFILE=myaccount` would activate these settings.
 
 ```
-[myapp]
+[myaccount]
 aws_access_key_id = xxxxxxxx
 aws_secret_access_key = xxxxxxxxxxxxxxxxxxxxxxxx
 ```
@@ -23,7 +23,7 @@ You may store the profile name in the `up.json` file itself as shown in the foll
 ```json
 {
   "name": "appname-api",
-  "profile": "companyname"
+  "profile": "myaccount"
 }
 ```
 
