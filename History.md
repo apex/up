@@ -1,4 +1,11 @@
 
+v0.6.3 / 2018-05-02
+===================
+
+  * add `--stage` flag to `up build`
+  * add `--stage` flag to `up run`
+  * change logs, metrics, and url commands to use `-s` flag for stage. Closes #371 (BREAKING)
+
 v0.6.2-pro / 2018-04-25
 =======================
 
