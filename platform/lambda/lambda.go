@@ -80,7 +80,10 @@ var functionPolicy = `{
 				"logs:CreateLogGroup",
 				"logs:CreateLogStream",
 				"logs:PutLogEvents",
-				"ssm:GetParametersByPath"
+				"ssm:GetParametersByPath",
+				"ec2:CreateNetworkInterface",
+				"ec2:DescribeNetworkInterfaces",
+				"ec2:DeleteNetworkInterface"
 			]
 		}
 	]
@@ -717,9 +720,10 @@ func (p *Platform) createRole() error {
 	s := session.New(aws.NewConfig())
 	c := iam.New(s)
 
-	name := fmt.Sprintf("%s-function", p.config.Name)
+	name := p.roleName()
 	desc := util.ManagedByUp("")
 
+	// role is provided
 	if s := p.config.Lambda.Role; s != "" {
 		log.Debugf("using role from config %s", s)
 		return nil
@@ -737,9 +741,13 @@ func (p *Platform) createRole() error {
 
 	// use the existing role
 	if err == nil {
-		arn := *existing.Role.Arn
-		log.Debugf("using existing role %s", arn)
-		p.config.Lambda.Role = arn
+		log.Debug("found existing role")
+
+		if err := p.updateRole(c); err != nil {
+			return errors.Wrap(err, "updating role policy")
+		}
+
+		p.setRoleARN(*existing.Role.Arn)
 		return nil
 	}
 
@@ -754,22 +762,38 @@ func (p *Platform) createRole() error {
 		return errors.Wrap(err, "creating role")
 	}
 
-	log.Debug("attaching policy")
-	_, err = c.PutRolePolicy(&iam.PutRolePolicyInput{
+	if err := p.updateRole(c); err != nil {
+		return errors.Wrap(err, "updating role policy")
+	}
+
+	p.setRoleARN(*role.Role.Arn)
+
+	return nil
+}
+
+// updateRole updates the IAM role.
+func (p *Platform) updateRole(c *iam.IAM) error {
+	name := p.roleName()
+
+	log.Debug("updating role policy")
+	_, err := c.PutRolePolicy(&iam.PutRolePolicyInput{
 		PolicyName:     &name,
 		RoleName:       &name,
 		PolicyDocument: &functionPolicy,
 	})
 
-	if err != nil {
-		return errors.Wrap(err, "attaching policy")
-	}
+	return err
+}
 
-	arn := *role.Role.Arn
+// setRoleARN sets the role ARN.
+func (p *Platform) setRoleARN(arn string) {
 	log.Debugf("set role to %s", arn)
 	p.config.Lambda.Role = arn
+}
 
-	return nil
+// roleName returns the IAM role name.
+func (p *Platform) roleName() string {
+	return fmt.Sprintf("%s-function", p.config.Name)
 }
 
 // deleteRole deletes the role and policy.
