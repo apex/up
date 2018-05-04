@@ -825,18 +825,18 @@ Flags:
       --format="text"    Output formatter.
       --version          Show application version.
   -s, --stage="staging"  Target stage name.
-  -r, --retain=60        Number of versions to retain.
+  -r, --retain=30        Number of versions to retain.
 ```
 
 ### Examples
 
-Prune and retain the most recent 15 staging versions.
+Prune and retain the most recent 30 staging versions.
 
 ```
 $ up prune
 ```
 
-Prune and retain the most recent 60 production versions.
+Prune and retain the most recent 30 production versions.
 
 ```
 $ up prune -s production
