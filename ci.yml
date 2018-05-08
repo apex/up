@@ -8,6 +8,7 @@ phases:
   pre_build:
     commands:
       - ./dep ensure
+      - make install.deps
   build:
     commands:
       - make test.ci
