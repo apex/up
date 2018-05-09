@@ -1,4 +1,12 @@
 
+v0.6.4 / 2018-05-09
+===================
+
+  * add support for customizing the Lambda function IAM role policy. Closes #539
+  * add support for specifying dns zone, and disabling it. Closes #536
+  * add support for updating the role policy upon deploy
+  * change default prune retention to 30 versions
+
 v0.6.3-pro / 2018-05-02
 =======================
 
