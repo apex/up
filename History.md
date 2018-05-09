@@ -1,4 +1,11 @@
 
+v0.6.4-pro / 2018-05-09
+=======================
+
+  * add deployment size to `up deploys` output
+  * add asterisk to denote current version in `up deploys` due to rollbacks
+  * Rebase
+
 v0.6.4 / 2018-05-09
 ===================
 
