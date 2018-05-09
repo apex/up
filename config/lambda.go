@@ -1,6 +1,26 @@
 package config
 
-import "errors"
+import (
+	"errors"
+)
+
+// defaultPolicy is the default function role policy.
+var defaultPolicy = IAMPolicyStatement{
+	"Effect":   "Allow",
+	"Resource": "*",
+	"Action": []string{
+		"logs:CreateLogGroup",
+		"logs:CreateLogStream",
+		"logs:PutLogEvents",
+		"ssm:GetParametersByPath",
+		"ec2:CreateNetworkInterface",
+		"ec2:DescribeNetworkInterfaces",
+		"ec2:DeleteNetworkInterface",
+	},
+}
+
+// IAMPolicyStatement configuration.
+type IAMPolicyStatement map[string]interface{}
 
 // Lambda configuration.
 type Lambda struct {
@@ -15,6 +35,9 @@ type Lambda struct {
 
 	// Runtime of the function.
 	Runtime string `json:"runtime"`
+
+	// Policy of the function role.
+	Policy []IAMPolicyStatement `json:"policy"`
 }
 
 // Default implementation.
@@ -26,6 +49,8 @@ func (l *Lambda) Default() error {
 	if l.Runtime == "" {
 		l.Runtime = "nodejs8.10"
 	}
+
+	l.Policy = append(l.Policy, defaultPolicy)
 
 	return nil
 }

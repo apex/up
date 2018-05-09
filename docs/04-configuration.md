@@ -95,6 +95,7 @@ The following Lambda-specific settings are available:
 - `role` – IAM role ARN, defaulting to the one Up creates for you
 - `memory` – Function memory in mb (Default `512`, Min `128`, Max `1536`)
 - `runtime` – Function runtime (Default `nodejs8.10`)
+- `policy` – IAM function policy statement(s)
 
 For example:
 
@@ -113,6 +114,35 @@ Lambda timeout is implied from the [Reverse Proxy](#configuration.reverse_proxy)
 Lambda `memory` also scales the CPU, if your app is slow, or for cases such as larger Node applications with many `require()`s you may need to increase this value. View the [Lambda Pricing](https://aws.amazon.com/lambda/pricing/) page for more information regarding the `memory` setting.
 
 Note: Changes to Lambda configuration do not require a `up stack apply`, just deploy and these changes are picked up!
+
+### IAM Policy
+
+Up uses IAM policies to grant access to resources within your AWS account such as DynamoDB or S3.
+
+To add additional permissions add one or more IAM policy statements to the `policy` array, in the following example we permit DynamoDB item reading, updating, and deleting.
+
+```json
+{
+  "name": "myapp",
+  "lambda": {
+    "memory": 1024,
+    "policy": [
+      {
+        "Effect": "Allow",
+        "Resource": "*",
+        "Action": [
+          "dynamodb:Get*",
+          "dynamodb:List*",
+          "dynamodb:PutItem",
+          "dynamodb:DeleteItem"
+        ]
+      }
+    ]
+  }
+}
+```
+
+Deploy to update the IAM function role permissions.
 
 ## Hook Scripts
 

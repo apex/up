@@ -3,6 +3,7 @@ package lambda
 
 import (
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"io"
 	"io/ioutil"
@@ -28,6 +29,7 @@ import (
 	"github.com/pkg/errors"
 
 	"github.com/apex/up"
+	"github.com/apex/up/config"
 	"github.com/apex/up/internal/proxy/bin"
 	"github.com/apex/up/internal/shim"
 	"github.com/apex/up/internal/util"
@@ -66,26 +68,6 @@ var apiGatewayAssumePolicy = `{
       },
       "Action": "sts:AssumeRole"
     }
-	]
-}`
-
-// policy for the lambda function.
-var functionPolicy = `{
-	"Version": "2012-10-17",
-	"Statement": [
-		{
-			"Effect": "Allow",
-			"Resource": "*",
-			"Action": [
-				"logs:CreateLogGroup",
-				"logs:CreateLogStream",
-				"logs:PutLogEvents",
-				"ssm:GetParametersByPath",
-				"ec2:CreateNetworkInterface",
-				"ec2:DescribeNetworkInterfaces",
-				"ec2:DeleteNetworkInterface"
-			]
-		}
 	]
 }`
 
@@ -775,11 +757,16 @@ func (p *Platform) createRole() error {
 func (p *Platform) updateRole(c *iam.IAM) error {
 	name := p.roleName()
 
+	policy, err := p.functionPolicy()
+	if err != nil {
+		return errors.Wrap(err, "creating function policy")
+	}
+
 	log.Debug("updating role policy")
-	_, err := c.PutRolePolicy(&iam.PutRolePolicyInput{
+	_, err = c.PutRolePolicy(&iam.PutRolePolicyInput{
 		PolicyName:     &name,
 		RoleName:       &name,
-		PolicyDocument: &functionPolicy,
+		PolicyDocument: &policy,
 	})
 
 	return err
@@ -929,6 +916,24 @@ func (p *Platform) getS3BucketName(region string) string {
 // which is currently always present, implicitly or explicitly.
 func (p *Platform) getAccountID() string {
 	return strings.Split(p.config.Lambda.Role, ":")[4]
+}
+
+// functionPolicy returns the IAM function role policy.
+func (p *Platform) functionPolicy() (string, error) {
+	policy := struct {
+		Version   string
+		Statement []config.IAMPolicyStatement
+	}{
+		Version:   "2012-10-17",
+		Statement: p.config.Lambda.Policy,
+	}
+
+	b, err := json.MarshalIndent(policy, "", "  ")
+	if err != nil {
+		return "", err
+	}
+
+	return string(b), nil
 }
 
 // isCreatingRole returns true if the role has not been created.
