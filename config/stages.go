@@ -16,10 +16,11 @@ var defaultStages = []string{
 
 // Stage config.
 type Stage struct {
-	Domain string `json:"domain"`
-	Path   string `json:"path"`
-	Cert   string `json:"cert"`
-	Name   string `json:"-"`
+	Domain string      `json:"domain"`
+	Zone   interface{} `json:"zone"`
+	Path   string      `json:"path"`
+	Cert   string      `json:"cert"`
+	Name   string      `json:"-"`
 	StageOverrides
 }
 
@@ -37,6 +38,20 @@ func (s *Stage) IsRemote() bool {
 func (s *Stage) Validate() error {
 	if err := validate.Stage(s.Name); err != nil {
 		return errors.Wrap(err, ".name")
+	}
+
+	switch s.Zone.(type) {
+	case bool, string:
+		return nil
+	default:
+		return errors.Errorf(".zone is an invalid type, must be string or boolean")
+	}
+}
+
+// Default implementation.
+func (s *Stage) Default() error {
+	if s.Zone == nil {
+		s.Zone = true
 	}
 
 	return nil
@@ -71,6 +86,13 @@ func (s Stages) Default() error {
 	// assign names
 	for name, s := range s {
 		s.Name = name
+	}
+
+	// defaults
+	for _, s := range s {
+		if err := s.Default(); err != nil {
+			return errors.Wrapf(err, "stage %q", s.Name)
+		}
 	}
 
 	return nil

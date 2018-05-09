@@ -277,7 +277,10 @@ func stageDomain(c *Config, s *config.Stage, m Map, deploymentID string) {
 	}
 
 	stagePathMapping(c, s, m, deploymentID, id)
-	stageDNSRecord(c, s, m, id)
+
+	if s.Zone != false {
+		stageDNSRecord(c, s, m, id)
+	}
 }
 
 // stagePathMapping sets up the stage deployment mapping.
@@ -299,7 +302,14 @@ func stagePathMapping(c *Config, s *config.Stage, m Map, deploymentID, domainID 
 // stageDNSRecord sets up an ALIAS record and zone if necessary for a custom domain.
 func stageDNSRecord(c *Config, s *config.Stage, m Map, domainID string) {
 	id := util.Camelcase("dns_zone_%s_record_%s", util.Domain(s.Domain), s.Domain)
-	zone := dnsZone(c, m, util.Domain(s.Domain))
+	zoneName := util.Domain(s.Domain)
+
+	// explicit .zone was specified
+	if s, ok := s.Zone.(string); ok {
+		zoneName = s
+	}
+
+	zone := dnsZone(c, m, zoneName)
 
 	m[id] = Map{
 		"Type": "AWS::Route53::RecordSet",

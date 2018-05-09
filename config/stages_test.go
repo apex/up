@@ -54,7 +54,7 @@ func TestStages_Default(t *testing.T) {
 	t.Run("no custom stages", func(t *testing.T) {
 		s := Stages{}
 
-		assert.NoError(t, s.Default(), "validate")
+		assert.NoError(t, s.Default(), "default")
 		assert.NoError(t, s.Validate(), "validate")
 
 		assert.Len(t, s, 3)
@@ -67,11 +67,12 @@ func TestStages_Default(t *testing.T) {
 			"beta": &Stage{},
 		}
 
-		assert.NoError(t, s.Default(), "validate")
+		assert.NoError(t, s.Default(), "default")
 		assert.NoError(t, s.Validate(), "validate")
 
 		assert.Len(t, s, 4)
 		assert.Equal(t, "beta", s["beta"].Name)
+		assert.Equal(t, true, s["beta"].Zone)
 	})
 }
 
@@ -91,10 +92,46 @@ func TestStages_Validate(t *testing.T) {
 			},
 		}
 
-		assert.NoError(t, s.Default(), "validate")
+		assert.NoError(t, s.Default(), "default")
 		assert.NoError(t, s.Validate(), "validate")
 		assert.Equal(t, "staging", s["staging"].Name)
 		assert.Equal(t, "production", s["production"].Name)
+	})
+
+	t.Run("valid zone boolean", func(t *testing.T) {
+		s := Stages{
+			"production": &Stage{
+				Domain: "gh-polls.com",
+				Zone:   false,
+			},
+		}
+
+		assert.NoError(t, s.Default(), "default")
+		assert.NoError(t, s.Validate(), "validate")
+	})
+
+	t.Run("valid zone string", func(t *testing.T) {
+		s := Stages{
+			"production": &Stage{
+				Domain: "api.gh-polls.com",
+				Zone:   "api.gh-polls.com",
+			},
+		}
+
+		assert.NoError(t, s.Default(), "default")
+		assert.NoError(t, s.Validate(), "validate")
+	})
+
+	t.Run("invalid zone type", func(t *testing.T) {
+		s := Stages{
+			"production": &Stage{
+				Domain: "api.gh-polls.com",
+				Zone:   123,
+			},
+		}
+
+		assert.NoError(t, s.Default(), "default")
+		assert.EqualError(t, s.Validate(), `stage "production": .zone is an invalid type, must be string or boolean`)
 	})
 }
 
