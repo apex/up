@@ -240,7 +240,7 @@ func ExampleInput_get() {
 	json.Unmarshal([]byte(getEvent), &in)
 	output(in)
 	// Output:
-	//   {
+	// {
 	//   "HTTPMethod": "GET",
 	//   "Headers": {
 	//     "Accept": "*/*",
@@ -273,27 +273,26 @@ func ExampleInput_get() {
 	//     "env": "prod"
 	//   },
 	//   "RequestContext": {
-	//     "APIID": "iwcgwgigca",
-	//     "ResourceID": "jcl9w3",
-	//     "RequestID": "344b184b-5cfc-11e7-8483-27dbb2d30a77",
-	//     "HTTPMethod": "GET",
-	//     "ResourcePath": "/{proxy+}",
-	//     "AccountID": "111111111",
-	//     "Stage": "prod",
-	//     "Identity": {
-	//       "APIKey": "",
-	//       "AccountID": "",
-	//       "UserAgent": "curl/7.48.0",
-	//       "SourceIP": "207.102.57.26",
-	//       "AccessKey": "",
-	//       "Caller": "",
-	//       "User": "",
-	//       "UserARN": "",
-	//       "CognitoIdentityID": "",
-	//       "CognitoIdentityPoolID": "",
-	//       "CognitoAuthenticationType": "",
-	//       "CognitoAuthenticationProvider": ""
-	//     }
+	//     "apiId": "iwcgwgigca",
+	//     "resourceId": "jcl9w3",
+	//     "requestId": "344b184b-5cfc-11e7-8483-27dbb2d30a77",
+	//     "accountId": "111111111",
+	//     "stage": "prod",
+	//     "identity": {
+	//       "apiKey": "",
+	//       "accountId": "",
+	//       "userAgent": "curl/7.48.0",
+	//       "sourceIp": "207.102.57.26",
+	//       "accessKey": "",
+	//       "caller": "",
+	//       "user": "",
+	//       "userARN": "",
+	//       "cognitoIdentityId": "",
+	//       "cognitoIdentityPoolId": "",
+	//       "cognitoAuthenticationType": "",
+	//       "cognitoAuthenticationProvider": ""
+	//     },
+	//     "authorizer": null
 	//   }
 	// }
 }
@@ -333,27 +332,26 @@ func ExampleInput_post() {
 	//   "IsBase64Encoded": false,
 	//   "StageVariables": null,
 	//   "RequestContext": {
-	//     "APIID": "iwcgwgigca",
-	//     "ResourceID": "jcl9w3",
-	//     "RequestID": "50f6e0ce-5cfc-11e7-ada1-4f5cfe727f01",
-	//     "HTTPMethod": "POST",
-	//     "ResourcePath": "/{proxy+}",
-	//     "AccountID": "111111111",
-	//     "Stage": "prod",
-	//     "Identity": {
-	//       "APIKey": "",
-	//       "AccountID": "",
-	//       "UserAgent": "curl/7.48.0",
-	//       "SourceIP": "207.102.57.26",
-	//       "AccessKey": "",
-	//       "Caller": "",
-	//       "User": "",
-	//       "UserARN": "",
-	//       "CognitoIdentityID": "",
-	//       "CognitoIdentityPoolID": "",
-	//       "CognitoAuthenticationType": "",
-	//       "CognitoAuthenticationProvider": ""
-	//     }
+	//     "apiId": "iwcgwgigca",
+	//     "resourceId": "jcl9w3",
+	//     "requestId": "50f6e0ce-5cfc-11e7-ada1-4f5cfe727f01",
+	//     "accountId": "111111111",
+	//     "stage": "prod",
+	//     "identity": {
+	//       "apiKey": "",
+	//       "accountId": "",
+	//       "userAgent": "curl/7.48.0",
+	//       "sourceIp": "207.102.57.26",
+	//       "accessKey": "",
+	//       "caller": "",
+	//       "user": "",
+	//       "userARN": "",
+	//       "cognitoIdentityId": "",
+	//       "cognitoIdentityPoolId": "",
+	//       "cognitoAuthenticationType": "",
+	//       "cognitoAuthenticationProvider": ""
+	//     },
+	//     "authorizer": null
 	//   }
 	// }
 }

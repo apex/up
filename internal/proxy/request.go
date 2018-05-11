@@ -2,6 +2,7 @@ package proxy
 
 import (
 	"encoding/base64"
+	"encoding/json"
 	"net/http"
 	"net/url"
 	"strconv"
@@ -55,6 +56,8 @@ func NewRequest(e *Input) (*http.Request, error) {
 	}
 
 	// custom fields
+	b, _ := json.Marshal(e.RequestContext)
+	req.Header.Set("X-Context", string(b))
 	req.Header.Set("X-Request-Id", e.RequestContext.RequestID)
 	req.Header.Set("X-Stage", e.RequestContext.Stage)
 

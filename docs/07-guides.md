@@ -682,10 +682,46 @@ You may alter this command for `up start` with the development environment. For 
 
 Note that the server must always listen on `PORT` which is provided by `up start`.
 
-## Pre-Warming Lambda's, Monitoring Performance & Uptime
+## Accessing Lambda Context
 
-AWS Lambda works by serving your app on-demand, only when it is receiving traffic. Upon the first request it has to fetch your app's zip from S3 and initialize, this is called a "cold start", which incurs some additional latency. After this the Lambda is considered "warm" while in use, which can last several hours even between requests.
+Traditional AWS Lambda functions a provided a context object which contains runtime information such as API Gateway user identity. This information is exposed as JSON in the `X-Context` header field in Up as shown here:
 
-To mitigate cold starts with "pre-warming" you can schedule requests to your app—one convenient way to do this is to use an uptime monitoring tool such as [Apex Ping](https://apex.sh/ping/) which also monitors performance, so it's a win-win! Use the "up" coupon for 15% off your first year if you choose to use Ping.
+```js
+const http = require('http')
+const { PORT } = process.env
 
-[![Uptime Monitoring Tool](https://apex-software.imgix.net/ping/marketing/overview.png?compress=auto)](https://apex.sh/ping)
+const app = http.createServer((req, res) => {
+  const ctx = JSON.parse(req.headers['x-context'])
+  res.end(JSON.stringify(ctx, null, 2))
+})
+
+console.log('Starting app on %s', PORT)
+app.listen(PORT)
+```
+
+Output will be similar to the following. Visit the [AWS Documentation](https://docs.aws.amazon.com/lambda/latest/dg/nodejs-prog-model-context.html) for details.
+
+```json
+{
+  "apiId": "g4yn392afg",
+  "resourceId": "ez0z8areob",
+  "requestId": "d8314ef1-5543-11e8-a925-21fa0dd01c37",
+  "accountId": "337344593553",
+  "stage": "staging",
+  "identity": {
+    "apiKey": "",
+    "accountId": "",
+    "userAgent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_12_6) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36",
+    "sourceIp": "64.110.31.100",
+    "accessKey": "",
+    "caller": "",
+    "user": "",
+    "userARN": "",
+    "cognitoIdentityId": "",
+    "cognitoIdentityPoolId": "",
+    "cognitoAuthenticationType": "",
+    "cognitoAuthenticationProvider": ""
+  },
+  "authorizer": null
+}
+```
