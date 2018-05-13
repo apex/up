@@ -18,15 +18,15 @@ type Identity struct {
 
 // RequestContext is the contextual information provided by API Gateway.
 type RequestContext struct {
-	APIID        string            `json:"apiId"`
-	ResourceID   string            `json:"resourceId"`
-	RequestID    string            `json:"requestId"`
-	HTTPMethod   string            `json:"-"`
-	ResourcePath string            `json:"-"`
-	AccountID    string            `json:"accountId"`
-	Stage        string            `json:"stage"`
-	Identity     Identity          `json:"identity"`
-	Authorizer   map[string]string `json:"authorizer"`
+	APIID        string                 `json:"apiId"`
+	ResourceID   string                 `json:"resourceId"`
+	RequestID    string                 `json:"requestId"`
+	HTTPMethod   string                 `json:"-"`
+	ResourcePath string                 `json:"-"`
+	AccountID    string                 `json:"accountId"`
+	Stage        string                 `json:"stage"`
+	Identity     Identity               `json:"identity"`
+	Authorizer   map[string]interface{} `json:"authorizer"`
 }
 
 // Input is the input provided by API Gateway.
