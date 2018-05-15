@@ -503,7 +503,7 @@ Suppose you have `https://api.myapp.com`, you may want to customize `cors` to pe
 
 - `allowed_origins` – A list of origins a cross-domain request can be executed from. Use `*` to allow any origin, or a wildcard such as `http://*.domain.com` (Default: `["*"]`)
 - `allowed_methods` – A list of methods the client is allowed to use with cross-domain requests. (Default: `["HEAD", "GET", "POST"]`)
-- `allowed_headers` – A list of headers the client is allowed to use with cross-domain requests. If the special `*` value is present in the list, all headers will be allowed. (Default: `[]`)
+- `allowed_headers` – A list of headers the client is allowed to use with cross-domain requests. If the special `*` value is present in the list, all headers will be allowed. (Default: `["Origin", "Accept", "Content-Type", "X-Requested-With"]`)
 - `exposed_headers` – A list of headers which are safe to expose to the API of a CORS response.
 - `max_age` – A number indicating how long (in seconds) the results of a preflight request can be cached.
 - `allow_credentials` – A boolean indicating whether the request can include user credentials such as cookies, HTTP authentication or client side SSL certificates. (Default: `true`)
