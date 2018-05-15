@@ -738,6 +738,7 @@ Output will be similar to the following. Visit the [AWS Documentation](https://d
   },
   "authorizer": null
 }
+```
 
 ## Git Integration
 
