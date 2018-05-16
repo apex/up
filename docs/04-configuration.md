@@ -525,9 +525,6 @@ const res = await fetch('https://myapp.com', {
   method: 'POST',
   body
 })
-
-console.log(res)
-console.log(await res.json())
 ```
 
 Note: You do not need to run `up stack plan` for CORS settings, simply redeploy the stage.
