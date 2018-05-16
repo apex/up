@@ -16,7 +16,7 @@ import (
 
 var server = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 	if r.URL.Path == "/404" {
-		w.Header().Set("X-Foo", "bar")
+		w.Header().Set("ETag", "something")
 		http.Error(w, http.StatusText(http.StatusNotFound), http.StatusNotFound)
 		return
 	}
@@ -38,7 +38,7 @@ var server = http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	w.Header().Set("X-Foo", "bar")
+	w.Header().Set("ETag", "something")
 	w.Header().Set("Content-Type", "text/plain")
 	fmt.Fprintf(w, "Hello")
 	fmt.Fprintf(w, " ")
@@ -143,7 +143,7 @@ func test(t *testing.T, c *up.Config) {
 		h.ServeHTTP(res, req)
 
 		assert.Equal(t, 404, res.Code)
-		assert.Equal(t, "", res.Header().Get("X-Foo"))
+		assert.Equal(t, "", res.Header().Get("ETag"))
 		assert.Equal(t, "text/html; charset=utf-8", res.Header().Get("Content-Type"))
 		assert.Equal(t, "Sorry! Can't find that.\n", res.Body.String())
 	})
@@ -156,7 +156,7 @@ func test(t *testing.T, c *up.Config) {
 
 		assert.Equal(t, 500, res.Code)
 		assert.Equal(t, "Accept", res.Header().Get("Vary"))
-		assert.Equal(t, "", res.Header().Get("X-Foo"))
+		assert.Equal(t, "", res.Header().Get("ETag"))
 		assert.Equal(t, "text/html; charset=utf-8", res.Header().Get("Content-Type"))
 		assert.Equal(t, "500 – Internal Server Error\n", res.Body.String())
 	})
@@ -170,7 +170,7 @@ func nonError(h http.Handler) func(t *testing.T) {
 		h.ServeHTTP(res, req)
 
 		assert.Equal(t, 200, res.Code)
-		assert.Equal(t, "bar", res.Header().Get("X-Foo"))
+		assert.Equal(t, "bar", res.Header().Get("ETag"))
 		assert.Equal(t, "text/plain", res.Header().Get("Content-Type"))
 		assert.Equal(t, "Hello World", res.Body.String())
 	}
@@ -186,7 +186,7 @@ func acceptsHTML(h http.Handler) func(t *testing.T) {
 
 		assert.Equal(t, 400, res.Code)
 		assert.Equal(t, "Accept", res.Header().Get("Vary"))
-		assert.Equal(t, "", res.Header().Get("X-Foo"))
+		assert.Equal(t, "", res.Header().Get("ETag"))
 		assert.Equal(t, "text/html; charset=utf-8", res.Header().Get("Content-Type"))
 		assert.Contains(t, res.Body.String(), "<title>Bad Request – 400</title>", "title")
 		assert.Contains(t, res.Body.String(), `<span class="status">Bad Request</span>`, "status text")
@@ -204,7 +204,7 @@ func acceptsText(h http.Handler) func(t *testing.T) {
 
 		assert.Equal(t, 400, res.Code)
 		assert.Equal(t, "Accept", res.Header().Get("Vary"))
-		assert.Equal(t, "", res.Header().Get("X-Foo"))
+		assert.Equal(t, "", res.Header().Get("ETag"))
 		assert.Equal(t, "text/html; charset=utf-8", res.Header().Get("Content-Type"))
 		assert.Contains(t, res.Body.String(), "<title>Bad Request – 400</title>", "title")
 		assert.Contains(t, res.Body.String(), `<span class="status">Bad Request</span>`, "status text")
