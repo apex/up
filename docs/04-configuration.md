@@ -509,6 +509,27 @@ Suppose you have `https://api.myapp.com`, you may want to customize `cors` to pe
 - `allow_credentials` – A boolean indicating whether the request can include user credentials such as cookies, HTTP authentication or client side SSL certificates. (Default: `true`)
 - `debug` - A boolean which will output debug logs (Default: `false`)
 
+Here's an example performing a GraphQL query with `fetch()`, note that `Accept` is set to accept only JSON:
+
+```js
+const body = JSON.stringify({
+  query: `query {
+    pet(id: 2) {
+      name
+    }
+  }`
+})
+
+const res = await fetch('http://localhost:3000', {
+  headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
+  method: 'POST',
+  body
+})
+
+console.log(res)
+console.log(await res.json())
+```
+
 Note: You do not need to run `up stack plan` for CORS settings, simply redeploy the stage.
 
 ## Reverse Proxy
