@@ -170,7 +170,7 @@ func nonError(h http.Handler) func(t *testing.T) {
 		h.ServeHTTP(res, req)
 
 		assert.Equal(t, 200, res.Code)
-		assert.Equal(t, "bar", res.Header().Get("ETag"))
+		assert.Equal(t, "something", res.Header().Get("ETag"))
 		assert.Equal(t, "text/plain", res.Header().Get("Content-Type"))
 		assert.Equal(t, "Hello World", res.Body.String())
 	}
