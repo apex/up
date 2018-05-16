@@ -28,20 +28,16 @@ import (
 	"golang.org/x/net/publicsuffix"
 )
 
-// Fields retained when clearing.
-var keepFields = map[string]bool{
-	"X-Powered-By": true,
-}
-
-// ClearHeader removes all header fields.
+// ClearHeader removes all content header fields.
 func ClearHeader(h http.Header) {
-	for k := range h {
-		if keepFields[k] {
-			continue
-		}
-
-		h.Del(k)
-	}
+	h.Del("Content-Type")
+	h.Del("Content-Length")
+	h.Del("Content-Encoding")
+	h.Del("Content-Range")
+	h.Del("Content-MD5")
+	h.Del("Cache-Control")
+	h.Del("ETag")
+	h.Del("Last-Modified")
 }
 
 // ManagedByUp appends "Managed by Up".

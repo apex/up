@@ -45,6 +45,8 @@ func New(c *up.Config, h http.Handler) (http.Handler, error) {
 		return nil, errors.Wrap(err, "headers")
 	}
 
+	h = cors.New(c, h)
+
 	h, err = errorpages.New(c, h)
 	if err != nil {
 		return nil, errors.Wrap(err, "error pages")
@@ -54,8 +56,6 @@ func New(c *up.Config, h http.Handler) (http.Handler, error) {
 	if err != nil {
 		return nil, errors.Wrap(err, "inject")
 	}
-
-	h = cors.New(c, h)
 
 	h, err = redirects.New(c, h)
 	if err != nil {
