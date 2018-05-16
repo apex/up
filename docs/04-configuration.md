@@ -520,7 +520,7 @@ const body = JSON.stringify({
   }`
 })
 
-const res = await fetch('http://localhost:3000', {
+const res = await fetch('https://myapp.com', {
   headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
   method: 'POST',
   body
