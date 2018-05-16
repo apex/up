@@ -1,4 +1,11 @@
 
+v0.6.5 / 2018-05-16
+===================
+
+  * add hidden disable stats command (#659)
+  * add X-Context header field. Closes #657
+  * fix CORS header fields from being clobbered by error pages. Closes #661
+
 v0.6.4-pro / 2018-05-09
 =======================
 
