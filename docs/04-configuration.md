@@ -96,6 +96,7 @@ The following Lambda-specific settings are available:
 - `memory` – Function memory in mb (Default `512`, Min `128`, Max `1536`)
 - `runtime` – Function runtime (Default `nodejs8.10`)
 - `policy` – IAM function policy statement(s)
+- `vpc` - VPC subnets and security groups
 
 For example:
 
@@ -104,7 +105,17 @@ For example:
   "name": "api",
   "lambda": {
     "memory": 512,
-    "runtime": "nodejs6.10"
+    "runtime": "nodejs6.10",
+    "vpc": {
+      "subnets": [
+        "subnet-aaaaaaa",
+        "subnet-bbbbbbb",
+        "subnet-ccccccc",
+      ],
+      "security_groups": [
+        "sg-xxxxxxx"
+      ]
+    }
   }
 }
 ```

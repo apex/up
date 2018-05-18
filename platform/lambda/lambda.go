@@ -561,6 +561,10 @@ retry:
 			S3Bucket: b,
 			S3Key:    k,
 		},
+		VpcConfig: &lambda.VpcConfig{
+			SubnetIds:        aws.StringSlice(p.config.Lambda.VPC.Subnets),
+			SecurityGroupIds: aws.StringSlice(p.config.Lambda.VPC.SecurityGroups),
+		},
 	})
 
 	// IAM is eventually consistent apparently, so we have to keep retrying
@@ -618,6 +622,10 @@ func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up
 		MemorySize:   aws.Int64(int64(p.config.Lambda.Memory)),
 		Timeout:      aws.Int64(int64(p.config.Proxy.Timeout + 3)),
 		Environment:  env,
+		VpcConfig: &lambda.VpcConfig{
+			SubnetIds:        aws.StringSlice(p.config.Lambda.VPC.Subnets),
+			SecurityGroupIds: aws.StringSlice(p.config.Lambda.VPC.SecurityGroups),
+		},
 	})
 
 	if err != nil {

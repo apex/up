@@ -22,6 +22,12 @@ var defaultPolicy = IAMPolicyStatement{
 // IAMPolicyStatement configuration.
 type IAMPolicyStatement map[string]interface{}
 
+// VPC configuration.
+type VPC struct {
+	Subnets        []string `json:"subnets"`
+	SecurityGroups []string `json:"security_groups"`
+}
+
 // Lambda configuration.
 type Lambda struct {
 	// Memory of the function.
@@ -38,6 +44,9 @@ type Lambda struct {
 
 	// Policy of the function role.
 	Policy []IAMPolicyStatement `json:"policy"`
+
+	// VPC configuration.
+	VPC VPC `json:"vpc"`
 }
 
 // Default implementation.
