@@ -65,7 +65,7 @@ When a `main.cr` file is detected, Crystal is the assumed runtime. Note that thi
 The `build` hook becomes:
 
 ```
-$ docker run --rm -v $(PWD):/src -w /src tjholowaychuk/up-crystal crystal build --link-flags -static -o server main.cr
+$ docker run --rm -v $(pwd):/src -w /src tjholowaychuk/up-crystal crystal build --link-flags -static -o server main.cr
 ```
 
 The `clean` hook becomes:
