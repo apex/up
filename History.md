@@ -1,4 +1,10 @@
 
+v0.6.6 / 2018-05-24
+===================
+
+  * add vpc support. Closes #281
+  * fix Crystal build on Linux: PWD => pwd (#664)
+
 v0.6.5 / 2018-05-16
 ===================
 
