@@ -10,7 +10,10 @@
 [[projects]]
   branch = "master"
   name = "github.com/alecthomas/template"
-  packages = [".","parse"]
+  packages = [
+    ".",
+    "parse"
+  ]
   revision = "a0175ee3bccc567396460bf5acd36800cb10c49c"
 
 [[projects]]
@@ -27,7 +30,13 @@
 
 [[projects]]
   name = "github.com/apex/log"
-  packages = [".","handlers/cli","handlers/delta","handlers/discard","handlers/json"]
+  packages = [
+    ".",
+    "handlers/cli",
+    "handlers/delta",
+    "handlers/discard",
+    "handlers/json"
+  ]
   revision = "0296d6eb16bb28f8a0c55668affcf4876dc269be"
   version = "v1.0.0"
 
@@ -39,9 +48,52 @@
 
 [[projects]]
   name = "github.com/aws/aws-sdk-go"
-  packages = ["aws","aws/awserr","aws/awsutil","aws/client","aws/client/metadata","aws/corehandlers","aws/credentials","aws/credentials/ec2rolecreds","aws/credentials/endpointcreds","aws/credentials/stscreds","aws/defaults","aws/ec2metadata","aws/endpoints","aws/request","aws/session","aws/signer/v4","internal/shareddefaults","private/protocol","private/protocol/json/jsonutil","private/protocol/jsonrpc","private/protocol/query","private/protocol/query/queryutil","private/protocol/rest","private/protocol/restjson","private/protocol/restxml","private/protocol/xml/xmlutil","service/acm","service/apigateway","service/cloudformation","service/cloudwatch","service/cloudwatchlogs","service/cloudwatchlogs/cloudwatchlogsiface","service/iam","service/lambda","service/route53","service/route53domains","service/s3","service/s3/s3iface","service/s3/s3manager","service/sts"]
-  revision = "ee1f179877b2daf2aaabf71fa900773bf8842253"
-  version = "v1.12.19"
+  packages = [
+    "aws",
+    "aws/awserr",
+    "aws/awsutil",
+    "aws/client",
+    "aws/client/metadata",
+    "aws/corehandlers",
+    "aws/credentials",
+    "aws/credentials/ec2rolecreds",
+    "aws/credentials/endpointcreds",
+    "aws/credentials/stscreds",
+    "aws/defaults",
+    "aws/ec2metadata",
+    "aws/endpoints",
+    "aws/request",
+    "aws/session",
+    "aws/signer/v4",
+    "internal/sdkio",
+    "internal/sdkrand",
+    "internal/shareddefaults",
+    "private/protocol",
+    "private/protocol/json/jsonutil",
+    "private/protocol/jsonrpc",
+    "private/protocol/query",
+    "private/protocol/query/queryutil",
+    "private/protocol/rest",
+    "private/protocol/restjson",
+    "private/protocol/restxml",
+    "private/protocol/xml/xmlutil",
+    "service/acm",
+    "service/apigateway",
+    "service/cloudformation",
+    "service/cloudwatch",
+    "service/cloudwatchlogs",
+    "service/cloudwatchlogs/cloudwatchlogsiface",
+    "service/iam",
+    "service/lambda",
+    "service/route53",
+    "service/route53domains",
+    "service/s3",
+    "service/s3/s3iface",
+    "service/s3/s3manager",
+    "service/sts"
+  ]
+  revision = "fad131ddc707880428615dc8bc1587b55fb46d74"
+  version = "v1.13.54"
 
 [[projects]]
   branch = "master"
@@ -88,8 +140,15 @@
 [[projects]]
   branch = "master"
   name = "github.com/dsnet/compress"
-  packages = [".","bzip2","bzip2/internal/sais","internal","internal/errors","internal/prefix"]
-  revision = "c4dbed65594871659ea7347a85e1b8dcd97b9990"
+  packages = [
+    ".",
+    "bzip2",
+    "bzip2/internal/sais",
+    "internal",
+    "internal/errors",
+    "internal/prefix"
+  ]
+  revision = "cc9eb1d7ad760af14e8f918698f745e80377af4f"
 
 [[projects]]
   branch = "master"
@@ -152,7 +211,10 @@
 
 [[projects]]
   name = "github.com/klauspost/compress"
-  packages = ["flate","zip"]
+  packages = [
+    "flate",
+    "zip"
+  ]
   revision = "6c8db69c4b49dd4df1fff66996cf556176d0b9bf"
   version = "v1.2.1"
 
@@ -254,7 +316,12 @@
 
 [[projects]]
   name = "github.com/stripe/stripe-go"
-  packages = [".","form","orderitem","token"]
+  packages = [
+    ".",
+    "form",
+    "orderitem",
+    "token"
+  ]
   revision = "8cbbbec08923b0f7d768686bc81f7fc9000c4152"
   version = "v28.5.0"
 
@@ -284,7 +351,13 @@
 
 [[projects]]
   name = "github.com/tj/go"
-  packages = ["clipboard","env","git","http/request","term"]
+  packages = [
+    "clipboard",
+    "env",
+    "git",
+    "http/request",
+    "term"
+  ]
   revision = "37ad5afde4f847e91b96a8c152901153af7a97bb"
   version = "v1.8.4"
 
@@ -320,7 +393,11 @@
 
 [[projects]]
   name = "github.com/tj/go-update"
-  packages = [".","stores/apex","stores/github"]
+  packages = [
+    ".",
+    "stores/apex",
+    "stores/github"
+  ]
   revision = "a963589e45a4db03407f81ef8ae6ec1995a08f62"
   version = "v2.2.1"
 
@@ -332,13 +409,22 @@
 
 [[projects]]
   name = "github.com/tj/survey"
-  packages = [".","core","terminal"]
+  packages = [
+    ".",
+    "core",
+    "terminal"
+  ]
   revision = "c1bf7ee1b7e64ab270097e5221eef48b36a17ef0"
   version = "v2.0.6"
 
 [[projects]]
   name = "github.com/ulikunitz/xz"
-  packages = [".","internal/hash","internal/xlog","lzma"]
+  packages = [
+    ".",
+    "internal/hash",
+    "internal/xlog",
+    "lzma"
+  ]
   revision = "0c6b41e72360850ca4f98dc341fd999726ea007f"
   version = "v0.5.4"
 
@@ -351,7 +437,11 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/net"
-  packages = ["context","idna","publicsuffix"]
+  packages = [
+    "context",
+    "idna",
+    "publicsuffix"
+  ]
   revision = "c73622c77280266305273cb545f54516ced95b93"
 
 [[projects]]
@@ -363,12 +453,27 @@
 [[projects]]
   branch = "master"
   name = "golang.org/x/text"
-  packages = ["collate","collate/build","internal/colltab","internal/gen","internal/tag","internal/triegen","internal/ucd","language","secure/bidirule","transform","unicode/bidi","unicode/cldr","unicode/norm","unicode/rangetable"]
+  packages = [
+    "collate",
+    "collate/build",
+    "internal/colltab",
+    "internal/gen",
+    "internal/tag",
+    "internal/triegen",
+    "internal/ucd",
+    "language",
+    "secure/bidirule",
+    "transform",
+    "unicode/bidi",
+    "unicode/cldr",
+    "unicode/norm",
+    "unicode/rangetable"
+  ]
   revision = "88f656faf3f37f690df1a32515b479415e1a6769"
 
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "f391c6ee1c2deb321d740fbd7e74b19ad4ad97f6ce66695e0b74272f33d38e5b"
+  inputs-digest = "d8187cdf32e8fb4b1aa3c7d3602a98973f9fc78646bacc1a3458555d796924b5"
   solver-name = "gps-cdcl"
   solver-version = 1
