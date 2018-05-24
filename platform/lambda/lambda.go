@@ -582,7 +582,7 @@ func (p *Platform) deploy(region string, d up.Deploy) (version string, err error
 // createFunction creates the function.
 func (p *Platform) createFunction(c *lambda.Lambda, a *apigateway.APIGateway, up *s3manager.Uploader, region string, d up.Deploy) (version string, err error) {
 	// ensure bucket exists
-	if err := p.createBucket(region); err != nil && !util.IsBucketExists(err) {
+	if err := p.createBucket(region); err != nil {
 		return "", errors.Wrap(err, "creating s3 bucket")
 	}
 
@@ -645,6 +645,11 @@ func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up
 	b := aws.String(p.getS3BucketName(region))
 	k := aws.String(p.getS3Key(d.Stage))
 
+	// ensure bucket exists
+	if err := p.createBucket(region); err != nil {
+		return "", errors.Wrap(err, "creating s3 bucket")
+	}
+
 	// upload
 	log.Debug("uploading function")
 	_, err = up.Upload(&s3manager.UploadInput{
@@ -652,14 +657,6 @@ func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up
 		Key:    k,
 		Body:   bytes.NewReader(p.zip.Bytes()),
 	})
-
-	// ensure bucket exists
-	if util.IsNotFound(err) {
-		if err := p.createBucket(region); err != nil {
-			return "", errors.Wrap(err, "creating s3 bucket")
-		}
-		err = nil
-	}
 
 	if err != nil {
 		return "", errors.Wrap(err, "uploading function")
@@ -905,12 +902,12 @@ func (p *Platform) createBucket(region string) error {
 	s := s3.New(session.New(aws.NewConfig().WithRegion(region)))
 	n := p.getS3BucketName(region)
 
-	log.WithField("name", n).Debug("creating s3 bucket")
+	log.WithField("name", n).Debug("ensuring s3 bucket exists")
 	_, err := s.CreateBucket(&s3.CreateBucketInput{
 		Bucket: &n,
 	})
 
-	if err != nil {
+	if err != nil && !util.IsBucketExists(err) {
 		return errors.Wrap(err, "creating bucket")
 	}
 
