@@ -180,7 +180,7 @@ Here's an example using Browserify to bundle a Node application. Use the `-v` ve
 
 Up performs runtime inference to discover what kind of application you're using, and does its best to provide helpful defaults – see the [Runtimes](#runtimes) section.
 
-Multiple commands be provided by using arrays, and are run in separate shells:
+Multiple commands are provided by using arrays, and are run in separate shells:
 
 ```json
 {
