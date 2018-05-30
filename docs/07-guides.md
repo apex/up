@@ -418,6 +418,10 @@ If using running Up Pro you'll need your Up credentials in order to access Up Pr
 
 - `UP_CONFIG` – Up configuration as base64-encoded JSON
 
+If you run into "403 Forbidden" errors this is due to GitHub's low rate limit for unauthenticated users, consider creating a [Personal Access Token](https://github.com/settings/tokens) and adding the following variable to your CI:
+
+- `GITHUB_TOKEN` — Github personal access token
+
 ### Commands
 
 You may install Up in the current working directory, and deploy to production with the following commands, omitting the `up upgrade` if you are not an Up Pro subscriber.

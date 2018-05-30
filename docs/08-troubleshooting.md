@@ -32,3 +32,8 @@ title: Help
   <summary>Unable to associate certificate error</summary>
   <p>If you receive a `Unable to associate certificate` error it is because you have not verified the SSL certificate. Certs for CloudFront when creating a custom domain MUST be in us-east-1, so if you need to manually resend verification emails visit [ACM in US East 1](https://console.aws.amazon.com/acm/home?region=us-east-1).</p>
 </details>
+
+<details>
+  <summary>I'm seeing 403 Forbidden errors in CI</summary>
+  <p>If you run into "403 Forbidden" errors this is due to GitHub's low rate limit for unauthenticated users, consider creating a [Personal Access Token](https://github.com/settings/tokens) and adding `GITHUB_TOKEN` to your CI.</p>
+</details>
