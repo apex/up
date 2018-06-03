@@ -110,22 +110,16 @@ Args:
 
 ### Examples
 
-Deploy the project to the development stage.
+Deploy the project to the staging stage.
 
 ```
 $ up
 ```
 
-Deploy the project to the development stage, this is the same as running `up` without arguments.
+Deploy the project to the staging stage, this is the same as running `up` without arguments.
 
 ```
 $ up deploy
-```
-
-Deploy the project to the staging stage.
-
-```
-$ up deploy staging
 ```
 
 Deploy the project to the production stage.
@@ -134,10 +128,9 @@ Deploy the project to the production stage.
 $ up deploy production
 ```
 
-Note that since `deploy` is the default command the following are also valid:
+Note that since `deploy` is the default command the following is also valid:
 
 ```
-$ up staging
 $ up production
 ```
 
