@@ -130,8 +130,8 @@ func add(cmd *kingpin.Cmd) {
 			return errors.Wrap(err, "config")
 		}
 
-		util.Log("%s is now the active team", *name)
-		util.Log("Use `up team switch` to select teams")
+		util.Log("%s is now the active team.\n", *name)
+		util.Log("Use `up team switch` to change teams.")
 
 		return nil
 	})
