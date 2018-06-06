@@ -37,19 +37,23 @@ Open up the URL in your browser:
 $ up url --open
 ```
 
-Or copy it to the clipboard:
-
-```
-$ up url --copy
-```
-
 Or test with curl:
 
 ```
 $ curl `up url`
 ```
 
-That's it! You've deployed a basic Up application. Note that the first deploy may take a minute to set up the resources required. To delete it and its resources, use the following command:
+That's it! You've deployed a basic Up application. Note that the first deploy may take a minute to set up the resources required.
+
+To view help for commands use:
+
+```
+$ up help
+$ up help COMMAND
+$ up help COMMAND SUBCOMMAND
+```
+
+To delete it and its resources, use the following command:
 
 ```
 $ up stack delete
