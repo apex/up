@@ -479,3 +479,14 @@ func DateSuffix(t time.Time) string {
 		return "th"
 	}
 }
+
+// StripLerna strips the owner portion of a Lerna-based tag. See #670 for
+// details. They are in the form of "@owner/repo@0.5.0".
+func StripLerna(s string) string {
+	if strings.HasPrefix(s, "@") {
+		p := strings.Split(s, "@")
+		return p[len(p)-1]
+	}
+
+	return s
+}
