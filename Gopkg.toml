@@ -108,3 +108,7 @@
 [[constraint]]
   name = "github.com/tj/survey"
   version = "2.0.1"
+
+[[override]]
+  name = "github.com/tj/go"
+  version = "1.8.5"
