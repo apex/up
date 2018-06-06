@@ -587,12 +587,8 @@ func BinaryCase(s string, n int) string {
 // RelativeDate returns a date formatted relative to now.
 func RelativeDate(t time.Time) string {
 	switch d := time.Since(t); {
-	case d <= 12*time.Hour:
+	case d <= time.Hour:
 		return humanize.RelTime(time.Now(), t, "from now", "ago")
-	case d <= 24*time.Hour:
-		return t.Format(`Today at 03:04:05pm`)
-	case d <= 24*time.Hour*2:
-		return t.Format(`Yesterday at 03:04:05pm`)
 	default:
 		return t.Format(`Jan 2` + DateSuffix(t) + ` 03:04:05pm`)
 	}
