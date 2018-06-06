@@ -43,20 +43,12 @@ Or test with curl:
 $ curl `up url`
 ```
 
-That's it! You've deployed a basic Up application. Note that the first deploy may take a minute to set up the resources required.
-
-To view help for commands use:
+That's it! You've deployed a basic Up application. To view further help for commands use:
 
 ```
 $ up help
 $ up help COMMAND
 $ up help COMMAND SUBCOMMAND
-```
-
-To delete it and its resources, use the following command:
-
-```
-$ up stack delete
 ```
 
 If you're not a Node.js developer here are some examples in additional languages.
