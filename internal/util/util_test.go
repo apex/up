@@ -1,7 +1,6 @@
 package util
 
 import (
-	"net/http"
 	"os/exec"
 	"strings"
 	"testing"
@@ -123,39 +122,4 @@ func TestEncodeAlias(t *testing.T) {
 
 func TestDecodeAlias(t *testing.T) {
 	assert.Equal(t, `v1.2.3-beta`, DecodeAlias(EncodeAlias(`v1.2.3-beta`)))
-}
-
-func TestFixMultipleSetCookie(t *testing.T) {
-	h := http.Header{}
-	h.Add("Set-Cookie", "first=tj")
-	h.Add("Set-Cookie", "last=holowaychuk")
-	h.Add("set-cookie", "pet=tobi")
-	FixMultipleSetCookie(h)
-	assert.Len(t, h, 3)
-	assert.Equal(t, []string{"last=holowaychuk"}, h["Set-cookie"])
-	assert.Equal(t, []string{"pet=tobi"}, h["sEt-cookie"])
-	assert.Equal(t, []string{"first=tj"}, h["set-cookie"])
-}
-
-func TestBinaryCase(t *testing.T) {
-	var variations []string
-
-	// create variations
-	for i := 0; i < 50; i++ {
-		variations = append(variations, BinaryCase("set-cookie", i))
-	}
-
-	// ensure none are malformed
-	for _, v := range variations {
-		assert.Equal(t, "set-cookie", strings.ToLower(v))
-	}
-
-	// ensure none are duplicates
-	for i, a := range variations {
-		for j, b := range variations {
-			if i != j {
-				assert.NotEqual(t, a, b)
-			}
-		}
-	}
 }

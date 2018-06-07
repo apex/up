@@ -174,12 +174,6 @@ retry:
 	r.URL.Host = p.target.Host
 	res, err := DefaultTransport.RoundTrip(r)
 
-	// API Gateway does not support multiple set-cookie fields
-	// so we have to stagger the casing in order to support this.
-	if err == nil {
-		util.FixMultipleSetCookie(res.Header)
-	}
-
 	// retries disabled, don't create noise in the logs
 	if p.maxRetries == 0 {
 		return res, err
