@@ -490,3 +490,44 @@ func StripLerna(s string) string {
 
 	return s
 }
+
+// FixMultipleSetCookie staggers the casing of each set-cookie
+// value to trick API Gateway into setting multiple in the response.
+func FixMultipleSetCookie(h http.Header) {
+	cookies := h["Set-Cookie"]
+
+	if len(cookies) == 0 {
+		return
+	}
+
+	h.Del("Set-Cookie")
+
+	for i, v := range cookies {
+		h[BinaryCase("set-cookie", i)] = []string{v}
+	}
+}
+
+// BinaryCase ported from https://github.com/Gi60s/binary-case/blob/master/index.js#L86.
+func BinaryCase(s string, n int) string {
+	var res []rune
+
+	for _, c := range s {
+		if c >= 65 && c <= 90 {
+			if n&1 > 0 {
+				c += 32
+			}
+			res = append(res, c)
+			n >>= 1
+		} else if c >= 97 && c <= 122 {
+			if n&1 > 0 {
+				c -= 32
+			}
+			res = append(res, c)
+			n >>= 1
+		} else {
+			res = append(res, c)
+		}
+	}
+
+	return string(res)
+}
