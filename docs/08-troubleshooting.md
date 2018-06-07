@@ -37,8 +37,3 @@ title: Help
   <summary>I'm seeing 403 Forbidden errors in CI</summary>
   <p>If you run into "403 Forbidden" errors this is due to GitHub's low rate limit for unauthenticated users, consider creating a [Personal Access Token](https://github.com/settings/tokens) and adding `GITHUB_TOKEN` to your CI.</p>
 </details>
-
-<details>
-  <summary>I can't get multiple set-cookie fields to work</summary>
-  <p>API Gateway has a limitation which allows only one field with a given name, and favours the last, so multiple set-cookie fields cannot be supported at the moment. See the [API Gateway Forum](https://forums.aws.amazon.com/thread.jspa?threadID=205782&start=25&tstart=0) for details.</p>
-</details>
