@@ -1,4 +1,12 @@
 
+v0.6.7 / 2018-06-07
+===================
+
+  * add striping of @owner/repo@ portion of Lerna tags. Closes #670
+  * fix multiple set-cookies API Gateway limitation with casing hack
+  * fix deployment with empty Git repo
+  * update AWS SDK versions for assuming roles. (#668)
+
 v0.6.6-pro / 2018-05-24
 =======================
 
