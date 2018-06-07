@@ -1,4 +1,10 @@
 
+v0.6.7-pro / 2018-06-07
+=======================
+
+  * fix s3 acceleration update with existing S3 buckets
+  * Rebase
+
 v0.6.7 / 2018-06-07
 ===================
 
