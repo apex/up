@@ -1,4 +1,9 @@
 
+v0.6.8 / 2018-06-07
+===================
+
+  * fix multiple set-cookie API Gateway limitation for real (previous had a bug)
+
 v0.6.7-pro / 2018-06-07
 =======================
 
