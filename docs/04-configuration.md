@@ -94,7 +94,6 @@ The following Lambda-specific settings are available:
 
 - `role` – IAM role ARN, defaulting to the one Up creates for you
 - `memory` – Function memory in mb (Default `512`, Min `128`, Max `1536`)
-- `runtime` – Function runtime (Default `nodejs8.10`)
 - `policy` – IAM function policy statement(s)
 - `vpc` - VPC subnets and security groups
 
@@ -105,7 +104,6 @@ For example:
   "name": "api",
   "lambda": {
     "memory": 512,
-    "runtime": "nodejs6.10",
     "vpc": {
       "subnets": [
         "subnet-aaaaaaa",
