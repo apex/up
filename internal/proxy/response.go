@@ -6,6 +6,8 @@ import (
 	"mime"
 	"net/http"
 	"strings"
+
+	"github.com/apex/up/internal/util"
 )
 
 // ResponseWriter implements the http.ResponseWriter interface
@@ -55,6 +57,10 @@ func (w *ResponseWriter) WriteHeader(status int) {
 	w.out.StatusCode = status
 
 	h := make(map[string]string)
+
+	// API Gateway does not support multiple set-cookie fields
+	// so we have to stagger the casing in order to support this.
+	util.FixMultipleSetCookie(w.Header())
 
 	for k, v := range w.Header() {
 		if len(v) > 0 {
