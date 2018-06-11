@@ -9,11 +9,11 @@ title: FAQ
 
 <details>
   <summary>How much does Up Pro cost?</summary>
-  <p>Up's subscription fee is currently $20/mo USD. When subscribed your team has access to Up Pro updates until the subscription is cancelled. When cancelled you receive access until the end if your billing period.</p>
+  <p>Up's subscription fee is currently $20/mo USD. When subscribed, your team has access to Up Pro updates until the subscription is cancelled. When cancelled, you receive access until the end of your billing period.</p>
 
-  <p>For the subscription you get unlimited access within your organization, there is no additional fee per team member or "seat". You can deploy any number of applications as you wish.</p>
+  <p>For the subscription, you get unlimited access within your organization; there is no additional fee per team member or "seat". You can deploy any number of applications as you wish.</p>
 
-  <p>Note that AWS charges for use of its resources, however most small to medium applications will fit within the AWS free tier.</p>
+  <p>Note that AWS charges for use of its resources. However, most small to medium applications will fit within the AWS free tier.</p>
 </details>
 
 <details>
