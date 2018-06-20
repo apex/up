@@ -118,9 +118,9 @@ For example:
 }
 ```
 
-Lambda timeout is implied from the [Reverse Proxy](#configuration.reverse_proxy) `timeout` setting.
+The Lambda `memory` setting also scales the CPU, if your app is slow, or for cases such as larger Node applications with many `require()`s you may need to increase this value. View the [Lambda Pricing](https://aws.amazon.com/lambda/pricing/) page for more information regarding the `memory` setting.
 
-Lambda `memory` also scales the CPU, if your app is slow, or for cases such as larger Node applications with many `require()`s you may need to increase this value. View the [Lambda Pricing](https://aws.amazon.com/lambda/pricing/) page for more information regarding the `memory` setting.
+When a VPC is used make sure to use private subnets only, and ensure that you have a NAT for internet access, which will be required to access most AWS APIs.
 
 Note: Changes to Lambda configuration do not require a `up stack apply`, just deploy and these changes are picked up!
 
