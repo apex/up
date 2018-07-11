@@ -1,4 +1,11 @@
 
+v0.7.0 / 2018-07-11
+===================
+
+  * add in-flight request timeouts.
+  * remove retries
+  * refactor crash recovery to be more robust
+
 v0.6.8-pro / 2018-06-07
 =======================
 
