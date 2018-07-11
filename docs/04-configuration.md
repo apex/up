@@ -548,19 +548,15 @@ The following settings are available:
   - When `package.json` is detected `npm start` is used
   - When `app.js` is detected `node app.js` is used
   - When `app.py` is detected `python app.py` is used
-- `backoff` – Backoff configuration object described in "Crash Recovery"
-- `retry` – Retry idempotent requests upon server crashes. (Default `true`)
 - `timeout` – Timeout in seconds per request (Default `15`, Max `25`)
 - `listen_timeout` – Timeout in seconds Up will wait for your app to boot and listen on `PORT` (Default `15`, Max `25`)
-- `shutdown_timeout` – Timeout in seconds Up will wait after sending a SIGINT to your server, before sending a SIGKILL (Default `15`)
 
 ```json
 {
   "proxy": {
     "command": "node app.js",
     "timeout": 10,
-    "listen_timeout": 5,
-    "shutdown_timeout": 5
+    "listen_timeout": 5
   }
 }
 ```
@@ -569,36 +565,7 @@ Lambda's function timeout is implied from the `.proxy.timeout` setting.
 
 ### Crash Recovery
 
-Another benefit of using Up as a reverse proxy is performing crash recovery. Up will retry idempotent requests upon failure, and upon crash it will restart your server and re-attempt before responding to the client.
-
-By default the back-off is configured as:
-
-- `min` – Minimum time before retrying (Default `100ms`)
-- `max` – Maximum time before retrying (Default `500ms`)
-- `factor` – Factor applied to each attempt (Default `2`)
-- `attempts` – Attempts made before failing (Default `3`)
-- `jitter` – Apply jitter (Default `false`)
-
-By default a total of 3 consecutive attempts will be made before responding with an error, in the default case this will be a total of 700ms for the three attempts.
-
-Here's an example tweaking the default behaviour:
-
-```json
-{
-  "proxy": {
-    "command": "node app.js",
-    "backoff": {
-      "min": 500,
-      "max": 1500,
-      "factor": 1.5,
-      "attempts": 5,
-      "jitter": true
-    }
-  }
-}
-```
-
-Since Up's purpose is to proxy your http traffic, Up will treat network errors as a crash.  When Up detects this, it will allow the server to cleanly close by sending a SIGINT, it the server does not close within `proxy.shutdown_timeout` seconds, it will forcibly close it with a SIGKILL.
+Another benefit of using Up as a reverse proxy is performing crash recovery. Up will attempt to restart your application if the process crashes to continue serving subsequent requests.
 
 ## DNS Zones & Records
 

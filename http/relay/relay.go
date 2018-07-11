@@ -27,51 +27,30 @@ import (
 // log context.
 var ctx = logs.Plugin("relay")
 
-// DefaultTransport used by relay.
-var DefaultTransport http.RoundTripper = &http.Transport{
-	DialContext: (&net.Dialer{
-		Timeout:   2 * time.Second,
-		KeepAlive: 2 * time.Second,
-		DualStack: true,
-	}).DialContext,
-	DisableKeepAlives: true,
-}
-
 // Proxy is a reverse proxy and sub-process monitor
 // for ensuring your web server is running.
 type Proxy struct {
 	config *up.Config
 
-	mu       sync.Mutex
-	restarts int
-	port     int
-	target   *url.URL
+	// transport used for the reverse proxy.
+	transport http.RoundTripper
 
-	// cmd is the active running user application sub-process
-	cmd *exec.Cmd
-
-	// stdout is the log writer for structured logging output
+	// stdout is the log writer for structured logging output.
 	stdout *writer.Writer
 
-	// stderr is the log writer for structured logging output
+	// stderr is the log writer for structured logging output.
 	stderr *writer.Writer
 
-	// cmdCleanup is a channel that queues abandoned commands
-	// so they can be cleaned up and resources reclaimed.
-	cmdCleanup chan *exec.Cmd
+	mu sync.Mutex
 
-	// maxRetries is the number of times to retry a single
-	// request before failing altogether.
-	maxRetries int
+	// restarts is the restart count.
+	restarts int
 
-	// shutdownTimeout is the amount of time to wait between sending
-	// a SIGINT and finally killing with a SIGKILL.
-	shutdownTimeout time.Duration
+	// url is the active application url.
+	url *url.URL
 
-	// timeout is the amount of time that a response may take,
-	// including any retry attempts made.
-	timeout time.Duration
-
+	// ReverseProxy is the reverse proxy making the requests
+	// to the user application.
 	*httputil.ReverseProxy
 }
 
@@ -91,40 +70,47 @@ func New(c *up.Config) (http.Handler, error) {
 		return nil, errors.Wrap(err, "invalid stderr log level")
 	}
 
+	timeout := time.Duration(c.Proxy.Timeout) * time.Second
+
+	transport := &http.Transport{
+		DialContext: (&net.Dialer{
+			Timeout:   2 * time.Second,
+			KeepAlive: 2 * time.Second,
+			DualStack: true,
+		}).DialContext,
+		ResponseHeaderTimeout: timeout,
+		DisableKeepAlives:     true,
+	}
+
 	p := &Proxy{
-		config:          c,
-		cmdCleanup:      make(chan *exec.Cmd, 3),
-		maxRetries:      c.Proxy.Backoff.Attempts,
-		timeout:         time.Duration(c.Proxy.Timeout) * time.Second,
-		shutdownTimeout: time.Duration(c.Proxy.ShutdownTimeout) * time.Second,
-		stdout:          writer.New(stdout, ctx),
-		stderr:          writer.New(stderr, ctx),
+		config:    c,
+		stdout:    writer.New(stdout, ctx),
+		stderr:    writer.New(stderr, ctx),
+		transport: transport,
 	}
 
 	if err := p.Start(); err != nil {
 		return nil, err
 	}
 
-	go p.cleanupAbandoned()
-
 	return p, nil
 }
 
 // Start the server.
 func (p *Proxy) Start() error {
-	if err := p.start(); err != nil {
+	if err := p.startServer(); err != nil {
 		return err
 	}
 
-	p.ReverseProxy = httputil.NewSingleHostReverseProxy(p.target)
-	p.ReverseProxy.Transport = p
+	p.ReverseProxy = httputil.NewSingleHostReverseProxy(p.url)
+	p.ReverseProxy.Transport = p.transport
 
 	start := time.Now()
 	timeout := time.Duration(p.config.Proxy.ListenTimeout) * time.Second
 	ctx.Info("waiting for app to listen on PORT")
 
-	if err := util.WaitForListen(p.target, timeout); err != nil {
-		return errors.Wrapf(err, "waiting for %s to be in listening state", p.target.String())
+	if err := util.WaitForListen(p.url, timeout); err != nil {
+		return errors.Wrapf(err, "waiting for %s to be in listening state", p.url.String())
 	}
 
 	ctx.WithField("duration", util.MillisecondsSince(start)).Info("app listening")
@@ -133,6 +119,9 @@ func (p *Proxy) Start() error {
 
 // Restart the server.
 func (p *Proxy) Restart() error {
+	p.mu.Lock()
+	defer p.mu.Unlock()
+
 	ctx.Warn("restarting")
 	p.restarts++
 
@@ -144,107 +133,16 @@ func (p *Proxy) Restart() error {
 	return nil
 }
 
-// ServeHTTP implementation.
-func (p *Proxy) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	p.mu.Lock()
-	defer p.mu.Unlock()
-	p.ReverseProxy.ServeHTTP(w, r)
-}
-
-// RoundTrip implementation.
-func (p *Proxy) RoundTrip(r *http.Request) (*http.Response, error) {
-	b := p.config.Proxy.Backoff.Backoff()
-	start := time.Now()
-	attempts := -1
-
-retry:
-	attempts++
-
-	// Starting on the second attempt, we need to rewind the body if we can
-	// The DefaultTransport.RoundTrip will only rewind it for us in non-err scenarios
-	if attempts > 0 && r.Body != http.NoBody && r.Body != nil && r.GetBody != nil {
-		newBody, err := r.GetBody()
-		if err != nil {
-			return nil, err
-		}
-		r.Body = newBody
-	}
-
-	// replace host as it will change on restart
-	r.URL.Host = p.target.Host
-	res, err := DefaultTransport.RoundTrip(r)
-
-	// retries disabled, don't create noise in the logs
-	if p.maxRetries == 0 {
-		return res, err
-	}
-
-	// attempts exceeded, respond as-is
-	if attempts >= p.maxRetries {
-		ctx.Warn("retry attempts exceeded")
-		return res, err
-	}
-
-	// timeout exceeded, respond as-is
-	if time.Since(start) >= p.timeout {
-		// TODO: timeout in-flight as well
-		ctx.Warn("retry timeout exceeded")
-		return res, err
-	}
-
-	// we got a response
-	if err == nil {
-		return res, nil
-	}
-
-	// temporary error, try again
-	if e, ok := err.(net.Error); ok && e.Temporary() {
-		ctx.WithError(err).Warn("temporary")
-		time.Sleep(b.Duration())
-		goto retry
-	}
-
-	// timeout error, try again
-	if e, ok := err.(net.Error); ok && e.Timeout() {
-		ctx.WithError(err).Warn("timed out")
-		time.Sleep(b.Duration())
-		goto retry
-	}
-
-	// restart the server, try again
-	ctx.WithError(err).Error("network")
-
-	var restartErr error
-	if restartErr = p.Restart(); restartErr != nil {
-		// we want to restart, but not mask the error above
-		ctx.WithError(restartErr).Error("restarting")
-	}
-
-	// retry idempotent requests
-	if restartErr == nil && isIdempotent(r) {
-		ctx.Info("retrying idempotent request due to crash or network issue")
-		goto retry
-	}
-
-	return nil, errors.Wrap(err, "network")
-}
-
 // environment returns the server env variables.
 func (p *Proxy) environment() []string {
 	return []string{
-		env("PORT", p.port),
+		env("PORT", p.url.Port()),
 		env("UP_RESTARTS", p.restarts),
 	}
 }
 
-// start the server on a free port.
-func (p *Proxy) start() error {
-	cmd := p.cmd
-	p.cmd = nil
-
-	// Send this previous command to be cleaned up (Waited on, killed if necessary)
-	p.cmdCleanup <- cmd
-
+// startServer the server on a free port.
+func (p *Proxy) startServer() error {
 	port, err := freeport.Get()
 	if err != nil {
 		return errors.Wrap(err, "getting free port")
@@ -255,51 +153,32 @@ func (p *Proxy) start() error {
 		return errors.Wrap(err, "parsing url")
 	}
 
-	p.port = port
-	p.target = target
+	p.url = target
 
 	ctx.WithField("command", p.config.Proxy.Command).WithField("PORT", port).Info("starting app")
-	cmd = p.command(p.config.Proxy.Command, p.environment())
+	cmd := p.command(p.config.Proxy.Command, p.environment())
 	if err := cmd.Start(); err != nil {
 		return errors.Wrap(err, "running command")
 	}
 
-	// Only remember this if it was successfully started
-	p.cmd = cmd
-	ctx.WithField("pid", cmd.Process.Pid).Info("started app")
+	go p.handleExit(cmd)
+	ctx.Info("started app")
 
 	return nil
 }
 
-// cleanupAbandoned consumes the cmdCleanup channel and signals
-// abandoned processes to shut down and release their resources.
-func (p *Proxy) cleanupAbandoned() {
-	for cmd := range p.cmdCleanup {
-		if cmd == nil {
-			continue
-		}
+// handleExit handles the exit of the application process.
+func (p *Proxy) handleExit(cmd *exec.Cmd) {
+	err := cmd.Wait()
 
-		done := make(chan bool)
+	if err == nil {
+		ctx.Error("app process exited")
+	} else {
+		ctx.WithError(err).Error("app process crashed")
+	}
 
-		go func() {
-			defer close(done)
-			code := util.ExitStatus(cmd, cmd.Wait())
-			ctx.WithField("pid", cmd.Process.Pid).WithField("code", code).Info("proxy exited")
-		}()
-
-		// We have deemed this command suitable for cleanup,
-		// but we aren't positive the reason was because of an actual
-		// process shutdown. First try to nicely send a SIGINT.
-		cmd.Process.Signal(os.Interrupt)
-
-		select {
-		case <-done:
-			continue
-		case <-time.After(p.shutdownTimeout):
-			ctx.WithField("pid", cmd.Process.Pid).Warn("proxy sending SIGKILL")
-			cmd.Process.Kill()
-			<-done
-		}
+	if err := p.Restart(); err != nil {
+		ctx.WithError(err).Error("failed to restart")
 	}
 }
 
@@ -315,14 +194,4 @@ func (p *Proxy) command(s string, env []string) *exec.Cmd {
 // env returns an environment variable.
 func env(name string, val interface{}) string {
 	return fmt.Sprintf("%s=%v", name, val)
-}
-
-// isIdempotent returns true if the request is considered idempotent.
-func isIdempotent(req *http.Request) bool {
-	switch req.Method {
-	case "GET", "HEAD", "OPTIONS":
-		return true
-	default:
-		return false
-	}
 }
