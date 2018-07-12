@@ -1,4 +1,9 @@
 
+v0.7.1 / 2018-07-12
+===================
+
+  * fix initial IAM role creation waiting due to error response change
+
 v0.7.0-pro / 2018-07-11
 =======================
 
