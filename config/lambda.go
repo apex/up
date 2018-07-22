@@ -46,7 +46,7 @@ type Lambda struct {
 	Policy []IAMPolicyStatement `json:"policy"`
 
 	// VPC configuration.
-	VPC VPC `json:"vpc"`
+	VPC *VPC `json:"vpc"`
 }
 
 // Default implementation.
@@ -85,5 +85,9 @@ func (l *Lambda) Override(c *Config) {
 
 	if l.Role != "" {
 		c.Lambda.Role = l.Role
+	}
+
+	if l.VPC != nil {
+		c.Lambda.VPC = l.VPC
 	}
 }
