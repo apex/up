@@ -561,10 +561,7 @@ retry:
 			S3Bucket: b,
 			S3Key:    k,
 		},
-		VpcConfig: &lambda.VpcConfig{
-			SubnetIds:        aws.StringSlice(p.config.Lambda.VPC.Subnets),
-			SecurityGroupIds: aws.StringSlice(p.config.Lambda.VPC.SecurityGroups),
-		},
+		VpcConfig: p.vpc(),
 	})
 
 	// IAM is eventually consistent apparently, so we have to keep retrying
@@ -622,10 +619,7 @@ func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up
 		MemorySize:   aws.Int64(int64(p.config.Lambda.Memory)),
 		Timeout:      aws.Int64(int64(p.config.Proxy.Timeout + 3)),
 		Environment:  env,
-		VpcConfig: &lambda.VpcConfig{
-			SubnetIds:        aws.StringSlice(p.config.Lambda.VPC.Subnets),
-			SecurityGroupIds: aws.StringSlice(p.config.Lambda.VPC.SecurityGroups),
-		},
+		VpcConfig:    p.vpc(),
 	})
 
 	if err != nil {
@@ -658,6 +652,19 @@ func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up
 	}
 
 	return *res.Version, nil
+}
+
+// vpc returns the vpc configuration or nil.
+func (p *Platform) vpc() *lambda.VpcConfig {
+	v := p.config.Lambda.VPC
+	if v == nil {
+		return nil
+	}
+
+	return &lambda.VpcConfig{
+		SubnetIds:        aws.StringSlice(v.Subnets),
+		SecurityGroupIds: aws.StringSlice(v.SecurityGroups),
+	}
 }
 
 // alias creates or updates an alias.
