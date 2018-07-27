@@ -219,7 +219,7 @@ Open both in the browser:
 
 ```
 $ up url -o
-$ up url production -o
+$ up url -s production -o
 ```
 
 You should see "Hello World from production" and "Hello World from staging".
