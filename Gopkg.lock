@@ -287,8 +287,7 @@
 [[projects]]
   name = "github.com/rs/cors"
   packages = ["."]
-  revision = "7af7a1e09ba336d2ea14b1ce73bf693c6837dbf6"
-  version = "v1.2"
+  revision = "02026070ea746d775e2d8dfe1efbea899a42f322"
 
 [[projects]]
   name = "github.com/segmentio/analytics-go"
@@ -474,6 +473,6 @@
 [solve-meta]
   analyzer-name = "dep"
   analyzer-version = 1
-  inputs-digest = "15fb9e1ce67d2c998fcda8342389f8d894d501a7a32ce535be639acf963368df"
+  inputs-digest = "0bac306af828460beeb70ba8f5bef1352ff58f5e41e35efb6e33bf138c77fbb3"
   solver-name = "gps-cdcl"
   solver-version = 1

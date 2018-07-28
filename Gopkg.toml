@@ -63,7 +63,7 @@
 
 [[constraint]]
   name = "github.com/rs/cors"
-  version = "1.2.0"
+  revision = "02026070ea746d775e2d8dfe1efbea899a42f322"
 
 [[constraint]]
   branch = "master"
