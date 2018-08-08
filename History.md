@@ -1,4 +1,10 @@
 
+v0.7.3 / 2018-08-08
+===================
+
+  * fix crash recovery in lambda, bug was introduced in v0.7.0
+  * update cors middleware for security when using allow-origin * and allow-credentials
+
 v0.7.2-pro / 2018-07-23
 =======================
 
