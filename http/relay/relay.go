@@ -49,9 +49,11 @@ type Proxy struct {
 	// url is the active application url.
 	url *url.URL
 
-	// ReverseProxy is the reverse proxy making the requests
-	// to the user application.
+	// ReverseProxy is the reverse proxy making the requests to the app.
 	*httputil.ReverseProxy
+
+	// cmd is the current child process of the app.
+	cmd *exec.Cmd
 }
 
 // New proxy.
@@ -103,7 +105,7 @@ func (p *Proxy) Start() error {
 	}
 
 	p.ReverseProxy = httputil.NewSingleHostReverseProxy(p.url)
-	p.ReverseProxy.Transport = p.transport
+	p.ReverseProxy.Transport = p
 
 	start := time.Now()
 	timeout := time.Duration(p.config.Proxy.ListenTimeout) * time.Second
@@ -125,12 +127,45 @@ func (p *Proxy) Restart() error {
 	ctx.Warn("restarting")
 	p.restarts++
 
+	if p.cmd != nil {
+		if err := p.cmd.Process.Kill(); err != nil {
+			ctx.WithError(err).Error("killing application process")
+		}
+	}
+
 	if err := p.Start(); err != nil {
 		return err
 	}
 
 	ctx.WithField("restarts", p.restarts).Warn("restarted")
 	return nil
+}
+
+// RoundTrip implementation.
+func (p *Proxy) RoundTrip(r *http.Request) (*http.Response, error) {
+	res, err := p.transport.RoundTrip(r)
+
+	// temporary error
+	if e, ok := err.(net.Error); ok && e.Temporary() {
+		ctx.WithError(err).Warn("request temporary error")
+		return res, err
+	}
+
+	// timeout error
+	if e, ok := err.(net.Error); ok && e.Timeout() {
+		ctx.WithError(err).Warn("request timeout")
+		return res, err
+	}
+
+	// network error
+	if err != nil {
+		ctx.WithError(err).Error("request network error")
+		if err := p.Restart(); err != nil {
+			ctx.WithError(err).Error("restarting")
+		}
+	}
+
+	return res, err
 }
 
 // environment returns the server env variables.
@@ -156,30 +191,14 @@ func (p *Proxy) startServer() error {
 	p.url = target
 
 	ctx.WithField("command", p.config.Proxy.Command).WithField("PORT", port).Info("starting app")
-	cmd := p.command(p.config.Proxy.Command, p.environment())
-	if err := cmd.Start(); err != nil {
+	p.cmd = p.command(p.config.Proxy.Command, p.environment())
+
+	if err := p.cmd.Start(); err != nil {
 		return errors.Wrap(err, "running command")
 	}
 
-	go p.handleExit(cmd)
 	ctx.Info("started app")
-
 	return nil
-}
-
-// handleExit handles the exit of the application process.
-func (p *Proxy) handleExit(cmd *exec.Cmd) {
-	err := cmd.Wait()
-
-	if err == nil {
-		ctx.Error("app process exited")
-	} else {
-		ctx.WithError(err).Error("app process crashed")
-	}
-
-	if err := p.Restart(); err != nil {
-		ctx.WithError(err).Error("failed to restart")
-	}
 }
 
 // command returns the command for spawning a server.
