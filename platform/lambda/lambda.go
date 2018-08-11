@@ -658,7 +658,10 @@ func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up
 func (p *Platform) vpc() *lambda.VpcConfig {
 	v := p.config.Lambda.VPC
 	if v == nil {
-		return nil
+		return &lambda.VpcConfig{
+			SubnetIds:        []*string{},
+			SecurityGroupIds: []*string{},
+		}
 	}
 
 	return &lambda.VpcConfig{
