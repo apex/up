@@ -225,6 +225,8 @@ Note that `static.dir` only tells Up which directory to serve – it does not ex
 !public/**
 ```
 
+Note: since the files are still served via the proxy, and hence via AWS Lambda, they need to be < 6mb, which is the limit on AWS Lambda payloads.
+
 ### Dynamic Apps
 
 If your project is not strictly static, for example a Node.js web app, you may omit `type` and add static file serving simply by defining `static` as shown below. With this setup Up will serve the file if it exists, before passing control to your application.
