@@ -225,6 +225,8 @@ Note that `static.dir` only tells Up which directory to serve – it does not ex
 !public/**
 ```
 
+Note: Files are currently served from AWS Lambda as well, so there is a 6MB restriction on the file size.
+
 ### Dynamic Apps
 
 If your project is not strictly static, for example a Node.js web app, you may omit `type` and add static file serving simply by defining `static` as shown below. With this setup Up will serve the file if it exists, before passing control to your application.
