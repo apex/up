@@ -2,14 +2,12 @@
 
 Before contributing to Up you'll need a few things:
 
-- Install [Golang 1.9](https://golang.org/dl/) for that Go thing if you don't have it
-- Install [golang/dep](https://github.com/golang/dep) for dependency management
+- Install [Golang 1.11](https://golang.org/dl/) for that Go thing if you don't have it
 
 The following are optional:
 
 - Install [pointlander/peg](https://github.com/pointlander/peg) if you're working on the log grammar
 - Install [jteeuwen/go-bindata](https://github.com/jteeuwen/go-bindata) if you need to bake `up-proxy` into `up`
-- Or run `make install.deps` to grab these tools
 
 ## Setup
 
@@ -23,18 +21,6 @@ Change into the project:
 
 ```
 $ cd $GOPATH/src/github.com/apex/up
-```
-
-Grab the dependencies:
-
-```
-$ dep ensure
-```
-
-Grab the dev dependencies:
-
-```
-make install.deps
 ```
 
 ## Testing

@@ -1,14 +1,6 @@
 version: 0.2
 
 phases:
-  install:
-    commands:
-      - curl -sL https://github.com/golang/dep/releases/download/v0.4.1/dep-linux-amd64 > dep
-      - chmod +x ./dep
-  pre_build:
-    commands:
-      - ./dep ensure
-      - make install.deps
   build:
     commands:
       - make test.ci
