@@ -120,7 +120,7 @@ For example:
 
 The Lambda `memory` setting also scales the CPU, if your app is slow, or for cases such as larger Node applications with many `require()`s you may need to increase this value. View the [Lambda Pricing](https://aws.amazon.com/lambda/pricing/) page for more information regarding the `memory` setting.
 
-When a VPC is used make sure to use private subnets only, and ensure that you have a NAT for internet access, which will be required to access most AWS APIs.
+Using Up Pro in a VPC requires access to the that the AWS SSM Parameter Store API for environment variables, otherwise the app may appear to "hang" and timeout when loading secrets. Removing VPC configuration must currently be done in the AWS console.
 
 Note: Changes to Lambda configuration do not require a `up stack apply`, just deploy and these changes are picked up!
 
