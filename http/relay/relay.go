@@ -143,6 +143,9 @@ func (p *Proxy) Restart() error {
 
 // RoundTrip implementation.
 func (p *Proxy) RoundTrip(r *http.Request) (*http.Response, error) {
+	id := r.Header.Get("X-Request-Id")
+	ctx = ctx.WithField("id", id)
+
 	res, err := p.transport.RoundTrip(r)
 
 	// timeout error
