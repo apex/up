@@ -145,15 +145,15 @@ func (p *Proxy) Restart() error {
 func (p *Proxy) RoundTrip(r *http.Request) (*http.Response, error) {
 	res, err := p.transport.RoundTrip(r)
 
-	// temporary error
-	if e, ok := err.(net.Error); ok && e.Temporary() {
-		ctx.WithError(err).Warn("request temporary error")
-		return res, err
-	}
-
 	// timeout error
 	if e, ok := err.(net.Error); ok && e.Timeout() {
 		ctx.WithError(err).Warn("request timeout")
+		return res, err
+	}
+
+	// temporary error
+	if e, ok := err.(net.Error); ok && e.Temporary() {
+		ctx.WithError(err).Warn("request temporary error")
 		return res, err
 	}
 
