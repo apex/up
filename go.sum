@@ -14,6 +14,8 @@ github.com/apex/go-apex v1.0.0 h1:Em8+vo4WXEQp7GfNDTr35HRnE5sFYcRpkTODpVjU39A=
 github.com/apex/go-apex v1.0.0/go.mod h1:Hy8WsL4dnQc/bYBxElRQ7xHXLNBAqz0BVxUhHiGwKLA=
 github.com/apex/log v1.0.0 h1:5UWeZC54mWVtOGSCjtuvDPgY/o0QxmjQgvYZ27pLVGQ=
 github.com/apex/log v1.0.0/go.mod h1:yA770aXIDQrhVOIGurT/pVdfCpSq1GQV/auzMN5fzvY=
+github.com/araddon/dateparse v0.0.0-20180729174819-cfd92a431d0e h1:s05JG2GwtJMHaPcXDpo4V35TFgyYZzNsmBlSkHPEbeg=
+github.com/araddon/dateparse v0.0.0-20180729174819-cfd92a431d0e/go.mod h1:SLqhdZcd+dF3TEVL2RMoob5bBP5R1P1qkox+HtCBgGI=
 github.com/armon/go-radix v1.0.0 h1:F4z6KzEeeQIMeLFa97iZU6vupzoecKdU5TX24SNppXI=
 github.com/armon/go-radix v1.0.0/go.mod h1:ufUuZ+zHj4x4TnLV4JWEpy2hxWSpsRywHrMgIH9cCH8=
 github.com/atotto/clipboard v0.0.0-20160219034421-bb272b845f11 h1:Gmm0NreNeu4FgEzX1Ht6ceAf5/wOBG+Gi625BEy9d40=
@@ -141,6 +143,8 @@ github.com/tj/go-update v2.2.2+incompatible h1:qXhW6YE6SfYcIosH5GJP9xWSjA4j7ppcv
 github.com/tj/go-update v2.2.2+incompatible/go.mod h1:waFwwyiAhGey2e+dNoYQ/iLhIcFqhCW7zL/+vDU1WLo=
 github.com/tj/kingpin v2.5.0+incompatible h1:nZWdCABGeebLFX5Ha/rYqxgEQpSXYWh5N9Dx2sGR0Bs=
 github.com/tj/kingpin v2.5.0+incompatible/go.mod h1:/babRmtQneL+pp+Yi24s2gukswokaKCR4gfjGbnjHBk=
+github.com/tj/simpletable v1.0.0 h1:nJ/+ooJcpp1aiQUfrQ0e+UoQXX0SzkWeYtoX1gbNi5A=
+github.com/tj/simpletable v1.0.0/go.mod h1:FHlHz42+9c6uKbGtPGTMcMb6NASkaLnYPQnwvtikQfk=
 github.com/tj/survey v2.0.6+incompatible h1:tVgc1+kmYX9R0CEoHaTczapjdc4GaJla0VAB7O+w1So=
 github.com/tj/survey v2.0.6+incompatible/go.mod h1:vLPzQYAOKWgXqr5jV9luQXJuoXKHOg0ltn5FEw1Nz0c=
 github.com/ulikunitz/xz v0.5.4 h1:zATC2OoZ8H1TZll3FpbX+ikwmadbO699PE06cIkm9oU=
