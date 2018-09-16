@@ -31,6 +31,7 @@ import (
 	"github.com/apex/up"
 	"github.com/apex/up/config"
 	"github.com/apex/up/internal/proxy/bin"
+	"github.com/apex/up/internal/secret"
 	"github.com/apex/up/internal/shim"
 	"github.com/apex/up/internal/util"
 	"github.com/apex/up/internal/zip"
@@ -779,10 +780,51 @@ func (p *Platform) deleteFunction(region string) error {
 
 // loadEnvironment loads environment variables.
 func (p *Platform) loadEnvironment(d up.Deploy) (*lambda.Environment, error) {
+	start := time.Now()
+
 	m := aws.StringMap(p.config.Environment)
+	m["NODE_ENV"] = &d.Stage
 	m["UP_STAGE"] = &d.Stage
 	m["UP_COMMIT"] = &d.Commit
 	m["UP_AUTHOR"] = &d.Author
+
+	log.Debug("loading env vars")
+	defer func() {
+		log.WithField("duration", util.MillisecondsSince(start)).Debug("loaded env vars")
+	}()
+
+	// TODO: all regions
+	secrets, err := p.Secrets(d.Stage).Load()
+	if err != nil {
+		return nil, errors.Wrap(err, "loading secrets")
+	}
+
+	secrets = secret.FilterByApp(secrets, p.config.Name)
+	stages := secret.GroupByStage(secrets)
+
+	precedence := []string{
+		"all",
+		d.Stage,
+	}
+
+	for _, name := range precedence {
+		if secrets := stages[name]; len(secrets) > 0 {
+			log.WithFields(log.Fields{
+				"name":  name,
+				"count": len(secrets),
+			}).Debug("loading env vars from stage")
+
+			for _, s := range secrets {
+				log.WithFields(log.Fields{
+					"name":  s.Name,
+					"value": secret.String(s),
+				}).Debug("set env var")
+
+				m[s.Name] = aws.String(s.Value)
+			}
+		}
+	}
+
 	return &lambda.Environment{
 		Variables: m,
 	}, nil

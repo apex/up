@@ -297,6 +297,8 @@ The following environment variables are provided by Up:
 
 [Up Pro](#guides.subscribing_to_up_pro) offers encrypted environment variables via the [up env](#commands.env) sub-command which supports per-stage environment variable mapping.
 
+Note: Environment variables defined via `up env` take precedence over those defined in up.json.
+
 ## Header Injection
 
 The `headers` object allows you to map HTTP header fields to paths. The most specific pattern takes precedence.
