@@ -53,6 +53,9 @@ require (
 	github.com/segmentio/backo-go v0.0.0-20160424052352-204274ad699c // indirect
 	github.com/segmentio/go-snakecase v1.0.0
 	github.com/sergi/go-diff v1.0.0 // indirect
+	github.com/simplereach/timeutils v1.2.0 // indirect
+	github.com/smartystreets/assertions v0.0.0-20180820201707-7c9eb446e3cf // indirect
+	github.com/smartystreets/goconvey v0.0.0-20180222194500-ef6db91d284a // indirect
 	github.com/stretchr/testify v1.1.4 // indirect
 	github.com/stripe/stripe-go v28.5.0+incompatible
 	github.com/timewasted/go-accept-headers v0.0.0-20130320203746-c78f304b1b09
@@ -75,6 +78,10 @@ require (
 	golang.org/x/sync v0.0.0-20180314180146-1d60e4601c6f // indirect
 	golang.org/x/sys v0.0.0-20171031081856-95c657629925 // indirect
 	golang.org/x/text v0.0.0-20171102192421-88f656faf3f3 // indirect
+	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
+	gopkg.in/ini.v1 v1.38.2 // indirect
+	gopkg.in/mgo.v2 v2.0.0-20180705113604-9856a29383ce // indirect
+	gopkg.in/yaml.v2 v2.2.1 // indirect
 )
 
 go 1.13
