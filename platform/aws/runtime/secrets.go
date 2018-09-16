@@ -33,47 +33,58 @@ func NewSecrets(name, stage, region string) *Secrets {
 
 // List implementation.
 func (s *Secrets) List(decrypt bool) (v []*up.Secret, err error) {
-	res, err := s.client.DescribeParameters(&ssm.DescribeParametersInput{
-		MaxResults: aws.Int64(50),
-		Filters: []*ssm.ParametersFilter{
-			{
-				Key:    aws.String("Name"),
-				Values: aws.StringSlice([]string{"/up/" + s.name + "/"}),
+	var token *string
+
+	for {
+		res, err := s.client.DescribeParameters(&ssm.DescribeParametersInput{
+			MaxResults: aws.Int64(50),
+			Filters: []*ssm.ParametersFilter{
+				{
+					Key:    aws.String("Name"),
+					Values: aws.StringSlice([]string{"/up/" + s.name + "/"}),
+				},
 			},
-		},
-	})
+			NextToken: token,
+		})
 
-	if err != nil {
-		return
-	}
-
-	for _, p := range res.Parameters {
-		var value string
-
-		if *p.Type == "String" || decrypt {
-			p, err := s.client.GetParameter(&ssm.GetParameterInput{
-				Name:           p.Name,
-				WithDecryption: &decrypt,
-			})
-
-			if err != nil {
-				return nil, errors.Wrap(err, "getting parameter")
-			}
-
-			value = *p.Parameter.Value
+		if err != nil {
+			return nil, err
 		}
 
-		app, stage, name := secret.Parse(*p.Name)
-		v = append(v, &up.Secret{
-			App:              app,
-			Name:             name,
-			Stage:            stage,
-			Type:             *p.Type,
-			Description:      util.DefaultString(p.Description, ""),
-			LastModifiedUser: userFromARN(p.LastModifiedUser),
-			LastModified:     *p.LastModifiedDate,
-			Value:            value,
-		})
+		for _, p := range res.Parameters {
+			var value string
+
+			if *p.Type == "String" || decrypt {
+				p, err := s.client.GetParameter(&ssm.GetParameterInput{
+					Name:           p.Name,
+					WithDecryption: &decrypt,
+				})
+
+				if err != nil {
+					return nil, errors.Wrap(err, "getting parameter")
+				}
+
+				value = *p.Parameter.Value
+			}
+
+			app, stage, name := secret.Parse(*p.Name)
+			v = append(v, &up.Secret{
+				App:              app,
+				Name:             name,
+				Stage:            stage,
+				Type:             *p.Type,
+				Description:      util.DefaultString(p.Description, ""),
+				LastModifiedUser: userFromARN(p.LastModifiedUser),
+				LastModified:     *p.LastModifiedDate,
+				Value:            value,
+			})
+		}
+
+		token = res.NextToken
+
+		if token == nil {
+			break
+		}
 	}
 
 	return
