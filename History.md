@@ -1,4 +1,9 @@
 
+v0.7.4-pro / 2018-09-16
+=======================
+
+  * add baked in env vars from SSM, env vars are no longer loaded at runtime. Closes #547
+
 v0.7.4 / 2018-09-16
 ===================
 
