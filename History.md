@@ -1,4 +1,11 @@
 
+v0.7.4 / 2018-09-16
+===================
+
+  * add request id to proxy errors
+  * fix missing lambda configurations costs. (#703)
+  * fix order relay errors so timeouts are returned first (leads to better error messages)
+
 v0.7.3-pro / 2018-08-08
 =======================
 
