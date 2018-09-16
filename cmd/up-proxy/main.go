@@ -13,7 +13,6 @@ import (
 	"github.com/apex/up/internal/logs"
 	"github.com/apex/up/internal/proxy"
 	"github.com/apex/up/internal/util"
-	"github.com/apex/up/platform/aws/runtime"
 )
 
 func main() {
@@ -40,13 +39,13 @@ func main() {
 		"type": c.Type,
 	})
 
-	// init project
-	p := runtime.New(c)
-
-	// init runtime
-	if err := p.Init(stage); err != nil {
-		ctx.Fatalf("error initializing: %s", err)
-	}
+	// // init project
+	// p := runtime.New(c)
+	//
+	// // init runtime
+	// if err := p.Init(stage); err != nil {
+	// 	ctx.Fatalf("error initializing: %s", err)
+	// }
 
 	// overrides
 	if err := c.Override(stage); err != nil {
