@@ -1,4 +1,9 @@
 
+v0.7.5 / 2018-09-17
+===================
+
+  * update go-update dependency for rename() to copy replacement
+
 v0.7.4-pro / 2018-09-16
 =======================
 
