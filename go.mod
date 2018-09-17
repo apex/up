@@ -69,7 +69,7 @@ require (
 	github.com/tj/go-headers v0.0.0-20170630155323-711a635412ca
 	github.com/tj/go-progress v0.0.0-20171031175334-333acdb6fe9f
 	github.com/tj/go-spin v1.1.0
-	github.com/tj/go-update v2.2.1+incompatible
+	github.com/tj/go-update v2.2.2+incompatible
 	github.com/tj/kingpin v2.5.0+incompatible
 	github.com/tj/survey v2.0.6+incompatible
 	github.com/ulikunitz/xz v0.5.4 // indirect
