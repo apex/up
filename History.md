@@ -1,9 +1,8 @@
 
-v0.7.6 / 2018-09-17
+v0.7.7 / 2018-09-17
 ===================
 
   * update go-update dependency for copy regression
-  * Release v0.7.5-pro
 
 v0.7.5-pro / 2018-09-17
 =======================
