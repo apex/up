@@ -137,8 +137,8 @@ github.com/tj/go-progress v0.0.0-20171031175334-333acdb6fe9f h1:adrNJejn+15T3PPv
 github.com/tj/go-progress v0.0.0-20171031175334-333acdb6fe9f/go.mod h1:abH8hpo1+c7MbAa0ZCKvvGOgowFNgaoRQEcY0vsRTh4=
 github.com/tj/go-spin v1.1.0 h1:lhdWZsvImxvZ3q1C5OIB7d72DuOwP4O2NdBg9PyzNds=
 github.com/tj/go-spin v1.1.0/go.mod h1:Mg1mzmePZm4dva8Qz60H2lHwmJ2loum4VIrLgVnKwh4=
-github.com/tj/go-update v2.2.2+incompatible h1:qXhW6YE6SfYcIosH5GJP9xWSjA4j7ppcvdOclXvNhno=
-github.com/tj/go-update v2.2.2+incompatible/go.mod h1:waFwwyiAhGey2e+dNoYQ/iLhIcFqhCW7zL/+vDU1WLo=
+github.com/tj/go-update v2.2.3+incompatible h1:nwhhiMev37PJtBITvLnLYtvJIX+XJNq9WdNc7Pz/UBU=
+github.com/tj/go-update v2.2.3+incompatible/go.mod h1:waFwwyiAhGey2e+dNoYQ/iLhIcFqhCW7zL/+vDU1WLo=
 github.com/tj/kingpin v2.5.0+incompatible h1:nZWdCABGeebLFX5Ha/rYqxgEQpSXYWh5N9Dx2sGR0Bs=
 github.com/tj/kingpin v2.5.0+incompatible/go.mod h1:/babRmtQneL+pp+Yi24s2gukswokaKCR4gfjGbnjHBk=
 github.com/tj/survey v2.0.6+incompatible h1:tVgc1+kmYX9R0CEoHaTczapjdc4GaJla0VAB7O+w1So=
