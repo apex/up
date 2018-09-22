@@ -36,6 +36,7 @@ Commands:
   env get              Get a variable value.
   env ls               List variables.
   env rm               Remove variables.
+  env export           Export variables for the shell.
   logs                 Show log output.
   metrics              Show project metrics.
   prune                Prune old S3 deployments of a stage.
@@ -1008,6 +1009,14 @@ DB_NAME  users  MongoDB collection name  Modified 2 minutes ago by tobi
 DB_PASS  -      MongoDB password         Modified 19 seconds ago by tobi
 DB_URL   -      MongoDB address          Modified 1 second ago by tobi   
 DB_USER  sloth  MongoDB username         Modified 2 minutes ago by tobi  
+```
+
+Another trick is evaluating the env variables in your shell so that other programs have access to them, for example:
+
+```sh
+$ eval "$(up env export)"
+$ echo "name=$DB_NAME user=$DB_USER"
+name=users user=sloth 
 ```
 
 Environment variables are "baked" into the Lambda configuration upon deploy, thus must re-deploy the application stage(s) to see any environment variable changes. This reduces cold starts by roughly 600-800ms compared to loading env vars at runtime.
