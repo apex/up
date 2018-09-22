@@ -32,10 +32,13 @@ func init() {
 	cmd.Example(`up env rm S3_KEY`, "Remove a variable.")
 	cmd.Example(`up env rm S3_KEY -s production`, "Remove a production variable.")
 	cmd.Example(`up env rm FOO BAR BAZ`, "Remove many variables.")
+	cmd.Example(`eval "$(up env export)"`, "Export development variables to the shell.")
+	cmd.Example(`eval "$(up env export --stage production)"`, "Export production variables to the shell.")
 	add(cmd)
 	get(cmd)
 	list(cmd)
 	remove(cmd)
+	export(cmd)
 }
 
 // get variables.
@@ -230,6 +233,51 @@ func rows(t *table.Table, secrets []*up.Secret) {
 			},
 		})
 	}
+}
+
+// export variables.
+func export(cmd *kingpin.Cmd) {
+	c := cmd.Command("export", "Export variables for the shell.")
+	stage := c.Flag("stage", "Target stage name.").Short('s').Default("development").String()
+
+	c.Action(func(_ *kingpin.ParseContext) error {
+		c, p, err := root.Init()
+		if err != nil {
+			return errors.Wrap(err, "initializing")
+		}
+
+		stages := append(c.Stages.Names(), "all")
+		if err := validate.List(*stage, stages); err != nil {
+			return err
+		}
+		normalizeStage(stage)
+
+		stats.Track("Export Secrets", nil)
+
+		secrets, err := p.Secrets("").List(true)
+		if err != nil {
+			return errors.Wrap(err, "listing secrets")
+		}
+
+		grouped := secret.GroupByStage(secrets)
+		exportVariables(grouped["all"], "all")
+		exportVariables(grouped[*stage], *stage)
+
+		return nil
+	})
+}
+
+// exportVariables outputs exported variables for evaluation.
+func exportVariables(secrets []*up.Secret, stage string) {
+		fmt.Printf("# Stage %s:\n", stage)
+		for _, s := range secrets {
+			fmt.Printf("export %s=%q", s.Name, s.Value)
+			if s.Description != "" {
+				fmt.Printf(" # %s", s.Description)
+			}
+			fmt.Printf("\n")
+		}
+		fmt.Printf("\n")
 }
 
 // normalizeStage normalizes "all" which is internally represented as "".
