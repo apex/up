@@ -42,7 +42,7 @@ func GroupByStage(secrets []*up.Secret) map[string][]*up.Secret {
 	return m
 }
 
-// FilterByApp returns secrets filtered by name.
+// FilterByApp returns secrets filtered by app name.
 func FilterByApp(secrets []*up.Secret, name string) (v []*up.Secret) {
 	for _, s := range secrets {
 		if s.App == name {
