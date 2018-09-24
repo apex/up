@@ -1,4 +1,9 @@
 
+v0.7.8-pro / 2018-09-24
+=======================
+
+  * add `up env export` command for exposing env vars to shell scripts
+
 v0.7.7-pro / 2018-09-17
 =======================
 
