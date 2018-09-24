@@ -34,7 +34,7 @@ cloc:
 # Release binaries to GitHub.
 release: build
 	@echo "==> Releasing"
-	@goreleaser -p 1 --rm-dist -config .goreleaser.yml --skip-publish
+	@goreleaser -p 1 --rm-dist --config .goreleaser.yml --skip-publish
 	@echo "==> Renaming"
 	@sh scripts/release.sh
 	@echo "==> Publishing"
