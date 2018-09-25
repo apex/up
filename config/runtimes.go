@@ -150,7 +150,7 @@ func clojureLein(c *Config) {
 // crystal config.
 func crystal(c *Config) {
 	if c.Hooks.Build.IsEmpty() {
-		c.Hooks.Build = Hook{`docker run --rm -v $(pwd):/src -w /src tjholowaychuk/up-crystal crystal build --link-flags -static -o server main.cr`}
+		c.Hooks.Build = Hook{`docker run --rm -v $(pwd):/src -w /src crystallang/crystal crystal build -o server main.cr --release --static`}
 	}
 
 	if c.Hooks.Clean.IsEmpty() {
