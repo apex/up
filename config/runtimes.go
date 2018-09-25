@@ -12,15 +12,16 @@ type Runtime string
 
 // Runtimes available.
 const (
-	RuntimeUnknown    Runtime = "unknown"
-	RuntimeGo                 = "go"
-	RuntimeNode               = "node"
-	RuntimeClojure            = "clojure"
-	RuntimeCrystal            = "crystal"
-	RuntimePython             = "python"
-	RuntimeStatic             = "static"
-	RuntimeJavaMaven          = "java maven"
-	RuntimeJavaGradle         = "java gradle"
+	RuntimeUnknown       Runtime = "unknown"
+	RuntimeGo                    = "go"
+	RuntimeNode                  = "node"
+	RuntimeClojure               = "clojure"
+	RuntimeCrystal               = "crystal"
+	RuntimeCrystalShards         = "crystal shards"
+	RuntimePython                = "python"
+	RuntimeStatic                = "static"
+	RuntimeJavaMaven             = "java maven"
+	RuntimeJavaGradle            = "java gradle"
 )
 
 // inferRuntime returns the runtime based on files present in the CWD.
@@ -30,6 +31,8 @@ func inferRuntime() Runtime {
 		return RuntimeGo
 	case util.Exists("main.cr"):
 		return RuntimeCrystal
+	case util.Exists("shard.yml"):
+		return RuntimeCrystalShards
 	case util.Exists("package.json"):
 		return RuntimeNode
 	case util.Exists("app.js"):
@@ -62,6 +65,8 @@ func runtimeConfig(runtime Runtime, c *Config) error {
 		javaGradle(c)
 	case RuntimeCrystal:
 		crystal(c)
+	case RuntimeCrystalShards:
+		crystalShards(c)
 	case RuntimePython:
 		python(c)
 	case RuntimeStatic:
@@ -161,6 +166,17 @@ func crystal(c *Config) {
 		if s.Proxy.Command == "" {
 			s.Proxy.Command = "crystal run main.cr"
 		}
+	}
+}
+
+// crystal shard config.
+func crystalShards(c *Config) {
+	if c.Hooks.Build.IsEmpty() {
+		c.Hooks.Build = Hook{`docker run --rm -v $(pwd):/src -w /src crystallang/crystal shards build --static --release`}
+	}
+
+	if c.Hooks.Clean.IsEmpty() {
+		c.Hooks.Clean = Hook{`rm bin/*`}
 	}
 }
 
