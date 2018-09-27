@@ -74,6 +74,30 @@ The `clean` hook becomes:
 $ rm server
 ```
 
+When a `shard.yml` file is detected, Crystal is the assumed runtime and `shards` becomes the build command. Note that this runtime requires Docker to be installed.
+
+The `build` hook becomes:
+
+```
+$ docker run --rm -v $(pwd):/src -w /src crystallang/crystal shards build --static --release
+```
+
+The `clean` hook becomes:
+
+```
+$ rm bin/*
+```
+
+Specify a build target `server` in the shards file that will build a `./bin/server`:
+
+```yaml
+targets:
+  server:
+    main: main.cr
+```
+
+Add the `lib` directory to the `.upignore` file to reduce the filesize of the deployment zip.
+
 ## Java
 
 When a `build.gradle` file is detected, Gradle is assumed, otherwise if `pom.xml` is found then Maven is used.

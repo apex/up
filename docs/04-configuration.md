@@ -550,6 +550,7 @@ The following settings are available:
   - When `package.json` is detected `npm start` is used
   - When `app.js` is detected `node app.js` is used
   - When `app.py` is detected `python app.py` is used
+  - When `shard.yml` is detected `./bin/server` is used
 - `timeout` – Timeout in seconds per request (Default `15`, Max `25`)
 - `listen_timeout` – Timeout in seconds Up will wait for your app to boot and listen on `PORT` (Default `15`, Max `25`)
 

@@ -29,10 +29,10 @@ func inferRuntime() Runtime {
 	switch {
 	case util.Exists("main.go"):
 		return RuntimeGo
-	case util.Exists("main.cr"):
-		return RuntimeCrystal
 	case util.Exists("shard.yml"):
 		return RuntimeCrystalShards
+	case util.Exists("main.cr"):
+		return RuntimeCrystal
 	case util.Exists("package.json"):
 		return RuntimeNode
 	case util.Exists("app.js"):
@@ -152,10 +152,12 @@ func clojureLein(c *Config) {
 	}
 }
 
+const dockerCrystalCmd = `docker run --rm -v $(pwd):/src -w /src crystallang/crystal `
+
 // crystal config.
 func crystal(c *Config) {
 	if c.Hooks.Build.IsEmpty() {
-		c.Hooks.Build = Hook{`docker run --rm -v $(pwd):/src -w /src crystallang/crystal crystal build -o server main.cr --release --static`}
+		c.Hooks.Build = Hook{dockerCrystalCmd + `crystal build -o server main.cr --release --static`}
 	}
 
 	if c.Hooks.Clean.IsEmpty() {
@@ -171,12 +173,22 @@ func crystal(c *Config) {
 
 // crystal shard config.
 func crystalShards(c *Config) {
+	if c.Proxy.Command == "" {
+		c.Proxy.Command = "./bin/server"
+	}
+
 	if c.Hooks.Build.IsEmpty() {
-		c.Hooks.Build = Hook{`docker run --rm -v $(pwd):/src -w /src crystallang/crystal shards build --static --release`}
+		c.Hooks.Build = Hook{dockerCrystalCmd + `shards build --static --release`}
 	}
 
 	if c.Hooks.Clean.IsEmpty() {
 		c.Hooks.Clean = Hook{`rm bin/*`}
+	}
+
+	if s := c.Stages.GetByName("development"); s != nil {
+		if s.Proxy.Command == "" {
+			s.Proxy.Command = "shards build && ./bin/server"
+		}
 	}
 }
 
