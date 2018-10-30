@@ -467,7 +467,7 @@ Flags:
       --format="text"    Output formatter.
       --version          Show application version.
   -s, --stage="staging"  Target stage name.
-  -S, --since="1M"       Show logs since duration (30s, 5m, 2h, 1h30m, 3d, 1M).
+  -S, --since="1M"       Show metrics since duration (30s, 5m, 2h, 1h30m, 3d, 1M).
 ```
 
 For example:
