@@ -37,6 +37,7 @@ If you're using Up for a production application it's highly recommended to confi
 
 <details>
   <summary>Show policy</summary>
+  
 ```json
 {
     "Version": "2012-10-17",
@@ -92,4 +93,5 @@ If you're using Up for a production application it's highly recommended to confi
     ]
 }
 ```
+
 </details>
