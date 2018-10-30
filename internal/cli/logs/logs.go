@@ -25,7 +25,6 @@ func init() {
 	cmd.Example(`up logs 'production (warn or error)'`, "Show 4xx and 5xx responses in production.")
 	cmd.Example(`up logs 'production error method in ("POST", "PUT", "DELETE")'`, "Show production 5xx responses with a POST, PUT, or DELETE method.")
 	cmd.Example(`up logs 'error or fatal'`, "Show error and fatal logs.")
-	cmd.Example(`up logs 'not info'`, "Show non-info logs.")
 	cmd.Example(`up logs 'message = "user login"'`, "Show logs with a specific message.")
 	cmd.Example(`up logs 'status = 200 duration > 1.5s'`, "Show 200 responses with latency above 1500ms.")
 	cmd.Example(`up logs 'size > 100kb'`, "Show responses with bodies larger than 100kb.")
