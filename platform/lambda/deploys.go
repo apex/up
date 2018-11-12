@@ -118,6 +118,10 @@ func getCurrentVersions(c *lambda.Lambda, config *up.Config) (map[string]string,
 			Name:         aws.String(s.Name),
 		})
 
+		if util.IsNotFound(err) {
+			continue
+		}
+
 		if err != nil {
 			return nil, errors.Wrapf(err, "fetching %s alias", s.Name)
 		}
@@ -140,6 +144,10 @@ func getVersions(c *lambda.Lambda, name string) (versions []*lambda.FunctionConf
 			Marker:       marker,
 		})
 
+		if util.IsNotFound(err) {
+			goto skip
+		}
+
 		if err != nil {
 			return nil, err
 		}
@@ -147,6 +155,7 @@ func getVersions(c *lambda.Lambda, name string) (versions []*lambda.FunctionConf
 		log.Debugf("fetched %d versions", len(res.Versions))
 		versions = append(versions, res.Versions...)
 
+	skip:
 		marker = res.NextMarker
 		if marker == nil {
 			break
