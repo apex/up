@@ -688,7 +688,7 @@ Note that the server must always listen on `PORT` which is provided by `up start
 
 ## Accessing Lambda Context
 
-Traditional AWS Lambda functions a provided a context object which contains runtime information such as API Gateway user identity. This information is exposed as JSON in the `X-Context` header field in Up as shown here:
+Traditional AWS Lambda functions provided a context object which contains runtime information such as API Gateway user identity. This information is exposed as JSON in the `X-Context` header field in Up as shown here:
 
 ```js
 const http = require('http')
