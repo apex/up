@@ -128,13 +128,13 @@ func (r *reporter) Start() {
 				s := fmt.Sprintf("%s files, %s", humanize.Comma(e.Int64("files")), humanize.Bytes(uint64(e.Int("size_compressed"))))
 				r.complete("build", s, e.Duration("duration"))
 			case "platform.deploy":
-				r.pending("deploy", "")
+				r.pending("deploy", e.String("stage"))
 			case "platform.deploy.complete":
-				s := "complete"
+				s := e.String("stage")
 				if v := e.String("commit"); v != "" {
-					s = "commit " + v
+					s += " (commit " + v + ")"
 				} else if v := e.String("version"); v != "" {
-					s = "version " + v
+					s += " (version " + v + ")"
 				}
 				r.complete("deploy", s, e.Duration("duration"))
 			case "platform.function.create":
