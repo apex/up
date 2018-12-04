@@ -1,4 +1,14 @@
 
+v0.8.0 / 2018-12-04
+===================
+
+  * add endpoint URL to the deployment output
+  * add deploy stage to the deployment output
+  * add msg about Up Pro
+  * remove "not info" log example. Closes #724
+  * fix typo in deploy example. Closes #718
+  * fix: use crystallang/crystal for Crystal builds (#713)
+
 v0.7.8-pro / 2018-09-24
 =======================
 
