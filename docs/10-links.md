@@ -4,6 +4,7 @@ title: Links
 
 - [Changelog](https://github.com/apex/up/blob/master/History.md) for changes
 - [GitHub repository](https://github.com/apex/up)
+- [GitHub Actions](https://github.com/apex/actions) for continuous deployment
 - [@tjholowaychuk](https://twitter.com/tjholowaychuk) on Twitter for updates
 - [Example applications](https://github.com/apex/up-examples) for Up in various languages
 - [Slack](https://chat.apex.sh/) to chat with apex(1) and up(1) community members
