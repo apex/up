@@ -137,6 +137,10 @@ func (r *reporter) Start() {
 					s += " (version " + v + ")"
 				}
 				r.complete("deploy", s, e.Duration("duration"))
+				fmt.Printf(`
+     Please consider subscribing to Up Pro for additional features and to help keep the project alive!
+     Visit https://github.com/apex/up#pro-features for details.
+`)
 			case "platform.function.create":
 				r.inlineProgress = true
 			case "stack.create":
