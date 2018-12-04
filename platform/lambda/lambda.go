@@ -161,7 +161,7 @@ func (p *Platform) Deploy(d up.Deploy) error {
 		g.Go(func() error {
 			version, err := p.deploy(region, d)
 			if err == nil {
-				return nil
+				goto endpoint
 			}
 
 			if err != errFirstDeploy {
@@ -171,6 +171,16 @@ func (p *Platform) Deploy(d up.Deploy) error {
 			if err := p.CreateStack(region, version); err != nil {
 				return errors.Wrap(err, region)
 			}
+
+		endpoint:
+			url, err := p.URL(region, d.Stage)
+			if err != nil {
+				return errors.Wrap(err, "fetching url")
+			}
+
+			p.events.Emit("platform.deploy.url", event.Fields{
+				"url": url,
+			})
 
 			return nil
 		})
