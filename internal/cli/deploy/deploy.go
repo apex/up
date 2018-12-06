@@ -20,15 +20,18 @@ import (
 func init() {
 	cmd := root.Command("deploy", "Deploy the project.").Default()
 	stage := cmd.Arg("stage", "Target stage name.").Default("staging").String()
+	noBuild := cmd.Flag("no-build", "Disable build related hooks.").Bool()
+
 	cmd.Example(`up deploy`, "Deploy to the staging environment.")
 	cmd.Example(`up deploy production`, "Deploy to the production environment.")
+	cmd.Example(`up deploy --no-build`, "Skip build hooks, useful in CI when a separate build step is used.")
 
 	cmd.Action(func(_ *kingpin.ParseContext) error {
-		return deploy(*stage)
+		return deploy(*stage, !*noBuild)
 	})
 }
 
-func deploy(stage string) error {
+func deploy(stage string, build bool) error {
 retry:
 	c, p, err := root.Init()
 
@@ -85,6 +88,7 @@ retry:
 		Stage:  stage,
 		Commit: util.StripLerna(commit.Describe()),
 		Author: commit.Author.Name,
+		Build:  build,
 	}); err != nil {
 		return err
 	}

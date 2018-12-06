@@ -48,6 +48,7 @@ type Deploy struct {
 	Stage  string
 	Commit string
 	Author string
+	Build  bool
 }
 
 // Platform is the interface for platform integration,

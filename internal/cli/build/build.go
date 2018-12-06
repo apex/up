@@ -42,7 +42,7 @@ func init() {
 			return errors.Wrap(err, "initializing")
 		}
 
-		if err := p.Build(); err != nil {
+		if err := p.Build(true); err != nil {
 			return errors.Wrap(err, "building")
 		}
 

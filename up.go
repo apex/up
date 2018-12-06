@@ -89,18 +89,24 @@ func (p *Project) RunHooks(names ...string) error {
 }
 
 // Build the project.
-func (p *Project) Build() error {
+func (p *Project) Build(hooks bool) error {
 	defer p.events.Time("platform.build", nil)()
 
-	if err := p.RunHooks("prebuild", "build"); err != nil {
-		return err
+	if hooks {
+		if err := p.RunHooks("prebuild", "build"); err != nil {
+			return err
+		}
 	}
 
 	if err := p.Platform.Build(); err != nil {
 		return errors.Wrap(err, "building")
 	}
 
-	return p.RunHooks("postbuild")
+	if hooks {
+		return p.RunHooks("postbuild")
+	}
+
+	return nil
 }
 
 // Deploy the project.
@@ -110,7 +116,7 @@ func (p *Project) Deploy(d Deploy) error {
 		"stage":  d.Stage,
 	})()
 
-	if err := p.Build(); err != nil {
+	if err := p.Build(d.Build); err != nil {
 		return errors.Wrap(err, "building")
 	}
 
@@ -118,8 +124,10 @@ func (p *Project) Deploy(d Deploy) error {
 		return errors.Wrap(err, "deploying")
 	}
 
-	if err := p.RunHook("clean"); err != nil {
-		return errors.Wrap(err, "clean hook")
+	if d.Build {
+		if err := p.RunHook("clean"); err != nil {
+			return errors.Wrap(err, "clean hook")
+		}
 	}
 
 	return nil
