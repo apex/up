@@ -254,7 +254,7 @@ func export(cmd *kingpin.Cmd) {
 
 		stats.Track("Export Secrets", nil)
 
-		secrets, err := p.Secrets("").List(true)
+		secrets, err := p.Secrets("").Load()
 		if err != nil {
 			return errors.Wrap(err, "listing secrets")
 		}
@@ -269,15 +269,15 @@ func export(cmd *kingpin.Cmd) {
 
 // exportVariables outputs exported variables for evaluation.
 func exportVariables(secrets []*up.Secret, stage string) {
-		fmt.Printf("# Stage %s:\n", stage)
-		for _, s := range secrets {
-			fmt.Printf("export %s=%q", s.Name, s.Value)
-			if s.Description != "" {
-				fmt.Printf(" # %s", s.Description)
-			}
-			fmt.Printf("\n")
+	fmt.Printf("# Stage %s:\n", stage)
+	for _, s := range secrets {
+		fmt.Printf("export %s=%q", s.Name, s.Value)
+		if s.Description != "" {
+			fmt.Printf(" # %s", s.Description)
 		}
 		fmt.Printf("\n")
+	}
+	fmt.Printf("\n")
 }
 
 // normalizeStage normalizes "all" which is internally represented as "".
