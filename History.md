@@ -1,4 +1,10 @@
 
+v0.8.0-pro / 2018-12-06
+=======================
+
+  * improve `up env export` performance, no longer linear time
+  * fix `up deploys` error when the stage is not deployed. Closes #716
+
 v0.8.0 / 2018-12-04
 ===================
 
