@@ -1,4 +1,11 @@
 
+v0.8.1 / 2018-12-11
+===================
+
+  * update tj/aws for bug preventing all logs from being returned. Closes #733
+  * add deploy --no-build flag for skipping build hooks. Closes #730
+  * Release v0.8.0-pro
+
 v0.8.0-pro / 2018-12-06
 =======================
 
