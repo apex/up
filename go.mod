@@ -8,10 +8,10 @@ require (
 	github.com/alecthomas/template v0.0.0-20160405071501-a0175ee3bccc // indirect
 	github.com/alecthomas/units v0.0.0-20151022065526-2efee857e7cf // indirect
 	github.com/apex/go-apex v1.0.0
-	github.com/apex/log v1.0.0
+	github.com/apex/log v1.1.0
 	github.com/armon/go-radix v1.0.0 // indirect
 	github.com/atotto/clipboard v0.0.0-20160219034421-bb272b845f11 // indirect
-	github.com/aws/aws-sdk-go v1.13.54
+	github.com/aws/aws-sdk-go v1.16.2
 	github.com/aybabtme/rgbterm v0.0.0-20170906152045-cc83f3b3ce59
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
 	github.com/bradfitz/iter v0.0.0-20140124041915-454541ec3da2 // indirect
@@ -25,6 +25,7 @@ require (
 	github.com/dustin/go-humanize v0.0.0-20171012181109-77ed807830b4
 	github.com/facebookgo/freeport v0.0.0-20150612182905-d4adf43b75b9
 	github.com/fanyang01/radix v0.0.0-20160415095728-e1747dd9eeac
+	github.com/fatih/color v1.7.0 // indirect
 	github.com/go-ini/ini v1.30.3 // indirect
 	github.com/golang/sync v0.0.0-20170927054112-8e0aa688b654
 	github.com/google/go-github v14.0.0+incompatible // indirect
@@ -35,7 +36,6 @@ require (
 	github.com/hashicorp/go-uuid v0.0.0-20160717022140-64130c7a86d7 // indirect
 	github.com/hooklift/assert v0.0.0-20170704181755-9d1defd6d214 // indirect
 	github.com/jehiah/go-strftime v0.0.0-20151206194810-2efbe75097a5 // indirect
-	github.com/jmespath/go-jmespath v0.0.0-20160202185014-0b12d6b521d8 // indirect
 	github.com/jtolds/gls v4.2.1+incompatible // indirect
 	github.com/klauspost/compress v1.2.1 // indirect
 	github.com/klauspost/cpuid v0.0.0-20170728055534-ae7887de9fa5 // indirect
@@ -61,7 +61,7 @@ require (
 	github.com/stripe/stripe-go v28.5.0+incompatible
 	github.com/timewasted/go-accept-headers v0.0.0-20130320203746-c78f304b1b09
 	github.com/tj/assert v0.0.0-20170216210512-748ebc778a69
-	github.com/tj/aws v0.1.0
+	github.com/tj/aws v0.1.1
 	github.com/tj/backoff v1.0.0
 	github.com/tj/go v1.8.5
 	github.com/tj/go-archive v1.0.2
