@@ -1,4 +1,11 @@
 
+v0.8.1-pro / 2018-12-11
+=======================
+
+  * improve `up env export` performance, no longer linear time
+  * fix `up deploys` error when the stage is not deployed. Closes #716
+  * Rebase
+
 v0.8.1 / 2018-12-11
 ===================
 
