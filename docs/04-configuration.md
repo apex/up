@@ -66,6 +66,7 @@ The following Lambda-specific settings are available:
 - `policy` – IAM function policy statement(s)
 - `vpc` - VPC subnets and security groups
 - `accelerate` – Enable [S3 Transfer Acceleration](https://docs.aws.amazon.com/AmazonS3/latest/dev/transfer-acceleration.html) (Default `false`)
+- `layers` — [AWS Lambda Layers](https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html) to use in the function (Up Pro only)
 
 For example:
 
@@ -83,16 +84,33 @@ For example:
       "security_groups": [
         "sg-xxxxxxx"
       ]
-    }
+    },
+    "layers": [
+      "arn:aws:lambda:us-west-2:337324593253:layer:nodejs-chrome:1"
+    ]
   }
 }
 ```
 
 The Lambda `memory` setting also scales the CPU, if your app is slow, or for cases such as larger Node applications with many `require()`s you may need to increase this value. View the [Lambda Pricing](https://aws.amazon.com/lambda/pricing/) page for more information regarding the `memory` setting.
 
-Using Up Pro in a VPC requires access to the that the AWS SSM Parameter Store API for environment variables, otherwise the app may appear to "hang" and timeout when loading secrets. Removing VPC configuration must currently be done in the AWS console.
-
 Note: Changes to Lambda configuration do not require a `up stack apply`, just deploy and these changes are picked up!
+
+### Layers
+
+[AWS Lambda Layers](https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html) allow you to store binaries and app dependencies such as node_modules in a common layer which is pulled in to your app's function. For example storing headless Chrome and Puppeteer.
+
+Here's an example of creating a layer:
+
+```
+$ zip -r function.zip .
+$ aws lambda publish-layer-version \
+  --layer-name nodejs-chrome \
+  --description "Node.js Headless Chrome" \
+  --license-info MIT \
+  --zip-file file://function.zip \
+  --compatible-runtimes nodejs6.10 nodejs8.10
+```
 
 ### IAM Policy
 
