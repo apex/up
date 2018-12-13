@@ -62,6 +62,9 @@ type Lambda struct {
 
 	// WarmRate is the schedule for performing worming.
 	WarmRate Duration `json:"warm_rate"`
+
+	// Layers to include.
+	Layers []string `json:"layers"`
 }
 
 // Default implementation.
