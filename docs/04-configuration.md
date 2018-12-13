@@ -98,11 +98,14 @@ Note: Changes to Lambda configuration do not require a `up stack apply`, just de
 
 ### Layers
 
-[AWS Lambda Layers](https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html) allow you to store binaries and app dependencies such as node_modules in a common layer which is pulled in to your app's function. For example storing headless Chrome and Puppeteer.
+[AWS Lambda Layers](https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html) allow you to store binaries and app dependencies such as node_modules in a common layer which is pulled in to your app's function.
 
-Here's an example of creating a layer:
+For example the headless Chrome and Puppeteer dependencies add roughly 35mb to your deployment, these can be stored in a layer and used across any number of Up applications, easing dependency management and speeding up deploys.
 
 ```
+$ mkdir nodejs
+$ npm install chrome-aws-lambda puppeteer-core
+$ mv node_modules nodejs
 $ zip -r function.zip .
 $ aws lambda publish-layer-version \
   --layer-name nodejs-chrome \
