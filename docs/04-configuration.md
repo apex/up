@@ -108,7 +108,7 @@ $ aws lambda publish-layer-version \
   --layer-name nodejs-chrome \
   --description "Node.js Headless Chrome" \
   --license-info MIT \
-  --zip-file file://function.zip \
+  --zip-file fileb://function.zip \
   --compatible-runtimes nodejs6.10 nodejs8.10
 ```
 
