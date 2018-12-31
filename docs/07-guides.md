@@ -228,7 +228,7 @@ You should see "Hello World from production" and "Hello World from staging".
 
 Now that you have an application deployed, you probably want a fancy custom domain for it right? You can map these using the `stages` and `domain` properties.
 
-Here we let Up know that we want `up-example.com` for production and `stage.up-example` for staging.
+Here we let Up know that we want `up-example.com` for production and `stage.up-example.com` for staging.
 
 ```json
 {
