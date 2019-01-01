@@ -228,7 +228,7 @@ You should see "Hello World from production" and "Hello World from staging".
 
 Now that you have an application deployed, you probably want a fancy custom domain for it right? You can map these using the `stages` and `domain` properties.
 
-Here we let Up know that we want `up-example.com` for production and `dev.up-example` for staging.
+Here we let Up know that we want `up-example.com` for production and `stage.up-example.com` for staging.
 
 ```json
 {
@@ -236,7 +236,7 @@ Here we let Up know that we want `up-example.com` for production and `dev.up-exa
   "profile": "up-tobi",
   "stages": {
     "staging": {
-      "domain": "dev.up-example.com"
+      "domain": "stage.up-example.com"
     },
     "production": {
       "domain": "up-example.com"
@@ -303,7 +303,7 @@ $ up stack apply
 
 After the changes have been applied, it can take roughly 10-40 minutes for CloudFront to distribute the configuration and SSL certificate globally, so until then our up-example.com domain won't work.
 
-Once available https://up-example.com will always point to production via `up deploy production`, and https://dev.up-example.com/ will point to the latest deployment via `up`.
+Once available https://up-example.com will always point to production via `up deploy production`, and https://stage.up-example.com/ will point to the latest deployment via `up`.
 
 ### Mapping Domains from External Registrars
 

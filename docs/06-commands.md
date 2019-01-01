@@ -414,19 +414,19 @@ Flags:
 
 ### Examples
 
-Show the development endpoint.
+Show the staging endpoint.
 
 ```
 $ up url
 ```
 
-Open the development endpoint in the browser.
+Open the staging endpoint in the browser.
 
 ```
 $ up url --open
 ```
 
-Copy the development endpoint to the clipboard.
+Copy the staging endpoint to the clipboard.
 
 ```
 $ up url --copy
