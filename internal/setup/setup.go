@@ -112,8 +112,6 @@ func Create() error {
 	}
 
 	// confirm create .upignore
-	term.MoveUp(1)
-	term.ClearLine()
 	err = survey.AskOne(&survey.Confirm{
 		Message: fmt.Sprintf("Would you like to add an .upignore?"),
 		Default: true,
