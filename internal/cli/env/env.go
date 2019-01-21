@@ -2,6 +2,7 @@ package env
 
 import (
 	"fmt"
+	"sort"
 	"strings"
 
 	"github.com/pkg/errors"
@@ -210,6 +211,12 @@ func remove(cmd *kingpin.Cmd) {
 
 // rows helper.
 func rows(t *table.Table, secrets []*up.Secret) {
+	sort.Slice(secrets, func(i, j int) bool {
+		a := secrets[i]
+		b := secrets[j]
+		return a.Name < b.Name
+	})
+
 	for _, s := range secrets {
 		mod := fmt.Sprintf("Modified %s", util.RelativeDate(s.LastModified))
 		if u := s.LastModifiedUser; u != "" {
