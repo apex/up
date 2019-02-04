@@ -24,7 +24,7 @@ Features of the free open-source edition.
 
 ## Pro Features
 
-Up Pro provides additional features for production-ready applications such as encrypted environment variables, error alerting, unlimited team members, unlimited applications and priority [email support](mailto:support@apex.sh) for **$20/mo USD**. Visit [Subscribing to Up Pro](https://up.docs.apex.sh/#guides.subscribing_to_up_pro) to get started.
+Up Pro provides additional features for production-ready applications such as encrypted environment variables, error alerting, unlimited team members, unlimited applications and priority [email support](mailto:support@apex.sh) for **$10/mo USD** (using the coupon "up-early-adopter-177A849FAB7B"). Visit [Subscribing to Up Pro](https://up.docs.apex.sh/#guides.subscribing_to_up_pro) to get started.
 
 ![Pro edition features](assets/features-pro.png)
 
