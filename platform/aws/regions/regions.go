@@ -19,6 +19,7 @@ var IDs = []string{
 	"eu-west-1",
 	"eu-west-2",
 	"eu-west-3",
+	"eu-north-1",
 	"sa-east-1",
 }
 
@@ -38,6 +39,7 @@ var Names = []string{
 	"EU (Ireland)",
 	"EU (London)",
 	"EU (Paris)",
+	"EU (Stockholm)",
 	"South America (São Paulo)",
 }
 
