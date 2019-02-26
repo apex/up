@@ -59,6 +59,11 @@ func Example_api() {
 	//       "*/*"
 	//     ],
 	//     "Description": "Managed by Up.",
+	//     "EndpointConfiguration": {
+	//       "Types": [
+	//         "EDGE"
+	//       ]
+	//     },
 	//     "Name": {
 	//       "Ref": "Name"
 	//     }
@@ -400,7 +405,12 @@ func Example_stageDomain() {
 	// 	{
 	//   "Properties": {
 	//     "CertificateArn": "arn::something",
-	//     "DomainName": "up-example.com"
+	//     "DomainName": "up-example.com",
+	//     "EndpointConfiguration": {
+	//       "Types": [
+	//         "EDGE"
+	//       ]
+	//     }
 	//   },
 	//   "Type": "AWS::ApiGateway::DomainName"
 	// }

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strconv"
 
+	"github.com/apex/up/platform/aws/regions"
+
 	"github.com/apex/up"
 	"github.com/apex/up/config"
 	"github.com/apex/up/internal/util"
@@ -83,6 +85,20 @@ func lambdaArnQualifier(name, qualifier string) Map {
 	return join(":", "arn", "aws", "lambda", ref("AWS::Region"), ref("AWS::AccountId"), "function", join(":", ref(name), qualifier))
 }
 
+// endpointConfiguration returns the endpoint for EDGE or REGIONAL.
+func endpointConfiguration(c *Config) Map {
+	switch c.Lambda.Endpoint {
+	case "regional":
+		return Map{
+			"Types": []string{"REGIONAL"},
+		}
+	default:
+		return Map{
+			"Types": []string{"EDGE"},
+		}
+	}
+}
+
 // getZone returns a zone by domain or nil.
 func getZone(c *Config, domain string) *route53.HostedZone {
 	for _, z := range c.Zones {
@@ -130,6 +146,7 @@ func api(c *Config, m Map) {
 			"BinaryMediaTypes": []string{
 				"*/*",
 			},
+			"EndpointConfiguration": endpointConfiguration(c),
 		},
 	}
 
@@ -270,12 +287,21 @@ func stageDomain(c *Config, s *config.Stage, m Map, deploymentID string) {
 
 	id := util.Camelcase("api_domain_%s", s.Name)
 
+	props := Map{
+		"DomainName":            s.Domain,
+		"EndpointConfiguration": endpointConfiguration(c),
+	}
+
+	if c.Lambda.Endpoint == "regional" {
+		props["RegionalCertificateArn"] = s.Cert
+	} else {
+		props["CertificateArn"] = s.Cert
+
+	}
+
 	m[id] = Map{
-		"Type": "AWS::ApiGateway::DomainName",
-		"Properties": Map{
-			"CertificateArn": s.Cert,
-			"DomainName":     s.Domain,
-		},
+		"Type":       "AWS::ApiGateway::DomainName",
+		"Properties": props,
 	}
 
 	stagePathMapping(c, s, m, deploymentID, id)
@@ -313,6 +339,14 @@ func stageDNSRecord(c *Config, s *config.Stage, m Map, domainID string) {
 
 	zone := dnsZone(c, m, zoneName)
 
+	// cloudfront
+	hostedZoneID := "Z2FDTNDATAQYW2"
+
+	// api gateway
+	if c.Lambda.Endpoint == "regional" {
+		hostedZoneID = regions.GetHostedZoneID(c.Regions[0])
+	}
+
 	m[id] = Map{
 		"Type": "AWS::Route53::RecordSet",
 		"Properties": Map{
@@ -321,11 +355,19 @@ func stageDNSRecord(c *Config, s *config.Stage, m Map, domainID string) {
 			"Comment":      util.ManagedByUp(""),
 			"HostedZoneId": zone,
 			"AliasTarget": Map{
-				"DNSName":      get(domainID, "DistributionDomainName"),
-				"HostedZoneId": "Z2FDTNDATAQYW2",
+				"DNSName":      dnsName(c, domainID),
+				"HostedZoneId": hostedZoneID,
 			},
 		},
 	}
+}
+
+// dnsName returns the endpoint based on the Lambda.Endpoint configuration.
+func dnsName(c *Config, domainID string) Map {
+	if c.Lambda.Endpoint == "regional" {
+		return get(domainID, "RegionalDomainName")
+	}
+	return get(domainID, "DistributionDomainName")
 }
 
 // dns setups the the user-defined DNS zones and records.

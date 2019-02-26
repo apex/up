@@ -1,8 +1,11 @@
 package config
 
 import (
-	"errors"
 	"time"
+
+	"github.com/pkg/errors"
+
+	"github.com/apex/up/internal/validate"
 )
 
 // defaultRuntime is the default runtime.
@@ -66,6 +69,9 @@ type Lambda struct {
 
 	// Layers to include.
 	Layers []string `json:"layers"`
+
+	// Endpoint type, "edge" or "regional", defaults to "edge".
+	Endpoint string `json:"endpoint"`
 }
 
 // Default implementation.
@@ -88,6 +94,10 @@ func (l *Lambda) Default() error {
 		l.WarmCount = 15
 	}
 
+	if l.Endpoint == "" {
+		l.Endpoint = "edge"
+	}
+
 	return nil
 }
 
@@ -95,6 +105,10 @@ func (l *Lambda) Default() error {
 func (l *Lambda) Validate() error {
 	if l.Timeout != 0 {
 		return errors.New(".lambda.timeout is deprecated, use .proxy.timeout")
+	}
+
+	if err := validate.List(l.Endpoint, []string{"edge", "regional"}); err != nil {
+		return errors.Wrap(err, ".endpoint")
 	}
 
 	return nil
@@ -132,5 +146,9 @@ func (l *Lambda) Override(c *Config) {
 
 	if l.WarmRate != 0 {
 		c.Lambda.WarmRate = l.WarmRate
+	}
+
+	if l.Endpoint != "" {
+		c.Lambda.Endpoint = l.Endpoint
 	}
 }
