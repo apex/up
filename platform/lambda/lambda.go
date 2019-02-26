@@ -452,10 +452,17 @@ func (p *Platform) getHostedZone() (zones []*route53.HostedZone, err error) {
 //
 // We perform this task outside of CloudFormation because
 // the certificates currently must be created in the us-east-1
-// region. This also gives us a chance to let the user know
-// that they have to confirm an email.
+// region for edge endpoints. This also gives us a chance to let
+// the user know that they have to confirm an email.
 func (p *Platform) createCerts() error {
-	s := session.New(aws.NewConfig().WithRegion("us-east-1"))
+	region := "us-east-1"
+
+	if p.config.Lambda.Endpoint == "regional" {
+		region = p.config.Regions[0]
+		log.Debugf("using regional endpoint %s", region)
+	}
+
+	s := session.New(aws.NewConfig().WithRegion(region))
 	a := acm.New(s)
 	var domains []string
 
@@ -475,7 +482,7 @@ func (p *Platform) createCerts() error {
 		certDomains := util.CertDomainNames(s.Domain)
 
 		// see if the cert exists
-		log.Debugf("looking up cert for %s", s.Domain)
+		log.Debugf("looking up cert for %s in %s", s.Domain, region)
 		arn := getCert(certs, s.Domain)
 		if arn != "" {
 			log.Debugf("found cert for %s: %s", s.Domain, arn)
@@ -624,7 +631,7 @@ retry:
 			S3Key:    k,
 		},
 		VpcConfig: p.vpc(),
-		Layers: aws.StringSlice(p.config.Lambda.Layers),
+		Layers:    aws.StringSlice(p.config.Lambda.Layers),
 	})
 
 	// IAM is eventually consistent apparently, so we have to keep retrying
@@ -681,7 +688,7 @@ func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up
 		Timeout:      aws.Int64(int64(p.config.Lambda.Timeout)),
 		Environment:  env,
 		VpcConfig:    p.vpc(),
-		Layers: aws.StringSlice(p.config.Lambda.Layers),
+		Layers:       aws.StringSlice(p.config.Lambda.Layers),
 	})
 
 	if err != nil {
