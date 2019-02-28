@@ -46,7 +46,7 @@ func NewDynamic(c *up.Config, next http.Handler) http.Handler {
 			info, err := os.Stat(file)
 
 			// http.ServeFile rewrites Path/index.html to Path/, so play along
-			if !os.IsNotExist(err) && info.IsDir() {
+			if !os.IsNotExist(err) && info.IsDir() && strings.HasSuffix(path, "/") {
 				file = filepath.Join(file, "index.html")
 				info, err = os.Stat(file)
 			}
