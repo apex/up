@@ -89,20 +89,20 @@ func (p *Project) RunHooks(names ...string) error {
 }
 
 // Build the project.
-func (p *Project) Build(hooks bool) error {
+func (p *Project) Build(b Build) error {
 	defer p.events.Time("platform.build", nil)()
 
-	if hooks {
+	if b.Hooks {
 		if err := p.RunHooks("prebuild", "build"); err != nil {
 			return err
 		}
 	}
 
-	if err := p.Platform.Build(); err != nil {
+	if err := p.Platform.Build(b); err != nil {
 		return errors.Wrap(err, "building")
 	}
 
-	if hooks {
+	if b.Hooks {
 		return p.RunHooks("postbuild")
 	}
 
@@ -116,7 +116,12 @@ func (p *Project) Deploy(d Deploy) error {
 		"stage":  d.Stage,
 	})()
 
-	if err := p.Build(d.Build); err != nil {
+	if err := p.Build(Build{
+		Stage:  d.Stage,
+		Commit: d.Commit,
+		Author: d.Author,
+		Hooks:  d.Build,
+	}); err != nil {
 		return errors.Wrap(err, "building")
 	}
 

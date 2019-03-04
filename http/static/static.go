@@ -12,7 +12,15 @@ import (
 
 // New static handler.
 func New(c *up.Config) http.Handler {
-	return http.FileServer(http.Dir(c.Static.Dir))
+	next := http.FileServer(http.Dir(c.Static.Dir))
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if blacklisted(r.URL.Path) {
+			http.NotFound(w, r)
+			return
+		}
+
+		next.ServeHTTP(w, r)
+	})
 }
 
 // NewDynamic static handler for dynamic apps.
@@ -40,6 +48,12 @@ func NewDynamic(c *up.Config, next http.Handler) http.Handler {
 		// convert
 		path = filepath.FromSlash(path)
 
+		// blacklist
+		if blacklisted(r.URL.Path) {
+			http.NotFound(w, r)
+			return
+		}
+
 		// file exists, serve it
 		if !skip {
 			file := filepath.Join(dir, path)
@@ -66,4 +80,9 @@ func normalizePrefix(s string) string {
 	}
 
 	return s
+}
+
+// blacklisted returns true if the path is blacklisted.
+func blacklisted(s string) bool {
+	return strings.Contains(s, "up-env")
 }

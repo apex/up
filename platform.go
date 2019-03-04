@@ -72,12 +72,20 @@ type Deploy struct {
 	Build  bool
 }
 
+// Build config.
+type Build struct {
+	Stage  string
+	Commit string
+	Author string
+	Hooks  bool
+}
+
 // Platform is the interface for platform integration,
 // defining the basic set of functionality required for
 // Up applications.
 type Platform interface {
 	// Build the project.
-	Build() error
+	Build(Build) error
 
 	// Deploy to the given stage, to the
 	// region(s) configured by the user.
