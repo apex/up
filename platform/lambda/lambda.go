@@ -95,11 +95,11 @@ func New(c *up.Config, events event.Events) *Platform {
 }
 
 // Build implementation.
-func (p *Platform) Build() error {
+func (p *Platform) Build(b up.Build) error {
 	start := time.Now()
 	p.zip = new(bytes.Buffer)
 
-	if err := p.injectProxy(); err != nil {
+	if err := p.injectProxy(b); err != nil {
 		return errors.Wrap(err, "injecting proxy")
 	}
 	defer p.removeProxy()
@@ -610,12 +610,6 @@ func (p *Platform) createFunction(c *lambda.Lambda, a *apigateway.APIGateway, up
 		return "", errors.Wrap(err, "uploading function")
 	}
 
-	// load environment
-	env, err := p.loadEnvironment(d)
-	if err != nil {
-		return "", errors.Wrap(err, "loading environment variables")
-	}
-
 	// create function
 retry:
 	log.Debug("creating function")
@@ -627,13 +621,13 @@ retry:
 		MemorySize:   aws.Int64(int64(p.config.Lambda.Memory)),
 		Timeout:      aws.Int64(int64(p.config.Proxy.Timeout + 3)),
 		Publish:      aws.Bool(true),
-		Environment:  env,
 		Code: &lambda.FunctionCode{
 			S3Bucket: b,
 			S3Key:    k,
 		},
-		VpcConfig: p.vpc(),
-		Layers:    aws.StringSlice(p.config.Lambda.Layers),
+		VpcConfig:   p.vpc(),
+		Layers:      aws.StringSlice(p.config.Lambda.Layers),
+		Environment: p.getLambdaEnvironment(d),
 	})
 
 	// IAM is eventually consistent apparently, so we have to keep retrying
@@ -673,12 +667,6 @@ func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up
 		return "", errors.Wrap(err, "uploading function")
 	}
 
-	// load environment
-	env, err := p.loadEnvironment(d)
-	if err != nil {
-		return "", errors.Wrap(err, "loading environment variables")
-	}
-
 	// update function config
 	log.Debug("updating function")
 	_, err = c.UpdateFunctionConfiguration(&lambda.UpdateFunctionConfigurationInput{
@@ -688,9 +676,9 @@ func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up
 		Role:         &p.config.Lambda.Role,
 		MemorySize:   aws.Int64(int64(p.config.Lambda.Memory)),
 		Timeout:      aws.Int64(int64(p.config.Proxy.Timeout + 3)),
-		Environment:  env,
 		VpcConfig:    p.vpc(),
 		Layers:       aws.StringSlice(p.config.Lambda.Layers),
+		Environment:  p.getLambdaEnvironment(d),
 	})
 
 	if err != nil {
@@ -787,15 +775,29 @@ func (p *Platform) deleteFunction(region string) error {
 	return err
 }
 
-// loadEnvironment loads environment variables.
-func (p *Platform) loadEnvironment(d up.Deploy) (*lambda.Environment, error) {
-	start := time.Now()
+// getLambdaEnvironment returns the basic lambda environment. These are stored
+// in the Lambda itself since they are used for `up deploys`.
+func (p *Platform) getLambdaEnvironment(d up.Deploy) *lambda.Environment {
+	return &lambda.Environment{
+		Variables: map[string]*string{
+			"NODE_ENV":  &d.Stage,
+			"UP_STAGE":  &d.Stage,
+			"UP_COMMIT": &d.Commit,
+			"UP_AUTHOR": &d.Author,
+		},
+	}
+}
 
-	m := aws.StringMap(p.config.Environment)
-	m["NODE_ENV"] = &d.Stage
-	m["UP_STAGE"] = &d.Stage
-	m["UP_COMMIT"] = &d.Commit
-	m["UP_AUTHOR"] = &d.Author
+// loadEnvironment loads environment variables. These are stored in a file
+// on disk to avoid size limitations imposed by AWS (4kb).
+func (p *Platform) loadEnvironment(b up.Build) (map[string]string, error) {
+	start := time.Now()
+	m := make(map[string]string)
+
+	// copy up.json environment
+	for k, v := range p.config.Environment {
+		m[k] = v
+	}
 
 	log.Debug("loading env vars")
 	defer func() {
@@ -803,7 +805,7 @@ func (p *Platform) loadEnvironment(d up.Deploy) (*lambda.Environment, error) {
 	}()
 
 	// TODO: all regions
-	secrets, err := p.Secrets(d.Stage).Load()
+	secrets, err := p.Secrets(b.Stage).Load()
 	if err != nil {
 		return nil, errors.Wrap(err, "loading secrets")
 	}
@@ -813,7 +815,7 @@ func (p *Platform) loadEnvironment(d up.Deploy) (*lambda.Environment, error) {
 
 	precedence := []string{
 		"all",
-		d.Stage,
+		b.Stage,
 	}
 
 	for _, name := range precedence {
@@ -829,14 +831,12 @@ func (p *Platform) loadEnvironment(d up.Deploy) (*lambda.Environment, error) {
 					"value": secret.String(s),
 				}).Debug("set env var")
 
-				m[s.Name] = aws.String(s.Value)
+				m[s.Name] = s.Value
 			}
 		}
 	}
 
-	return &lambda.Environment{
-		Variables: m,
-	}, nil
+	return m, nil
 }
 
 // createRole creates the IAM role unless it is present.
@@ -1029,9 +1029,13 @@ func (p *Platform) getAPI(c *apigateway.APIGateway) (api *apigateway.RestApi, er
 	return
 }
 
-// injectProxy injects the Go proxy.
-func (p *Platform) injectProxy() error {
+// injectProxy injects the Go proxy and environment variables.
+func (p *Platform) injectProxy(b up.Build) error {
 	log.Debugf("injecting proxy")
+
+	if err := p.injectEnvironment(b); err != nil {
+		return errors.Wrap(err, "injecting environment")
+	}
 
 	if err := ioutil.WriteFile("main", bin.MustAsset("up-proxy"), 0777); err != nil {
 		return errors.Wrap(err, "writing up-proxy")
@@ -1044,9 +1048,30 @@ func (p *Platform) injectProxy() error {
 	return nil
 }
 
+// injectEnvironment writes a file used to load environment variables at runtime.
+func (p *Platform) injectEnvironment(b up.Build) error {
+	env, err := p.loadEnvironment(b)
+	if err != nil {
+		return errors.Wrap(err, "loading")
+	}
+
+	data, err := json.MarshalIndent(env, "", "  ")
+	if err != nil {
+		return errors.Wrap(err, "marshaling")
+	}
+
+	err = ioutil.WriteFile("up-env.json", data, 0755)
+	if err != nil {
+		return errors.Wrap(err, "writing")
+	}
+
+	return nil
+}
+
 // removeProxy removes the Go proxy.
 func (p *Platform) removeProxy() error {
 	log.Debugf("removing proxy")
+	os.Remove("up-env.json")
 	os.Remove("main")
 	os.Remove("_proxy.js")
 	return nil
