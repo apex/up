@@ -8,7 +8,7 @@ import (
 	"strings"
 
 	"github.com/pkg/errors"
-	"github.com/tj/go-archive"
+	archive "github.com/tj/go-archive"
 )
 
 var transform = archive.TransformFunc(func(r io.Reader, i os.FileInfo) (io.Reader, os.FileInfo) {
@@ -37,7 +37,7 @@ func Build(dir string) (io.ReadCloser, *archive.Stats, error) {
 		strings.NewReader(".*\n"),
 		strings.NewReader("\n!node_modules/**\n!.pypath/**\n"),
 		upignore,
-		strings.NewReader("\n!main\n!server\n!_proxy.js\n!byline.js\n!up.json\n!pom.xml\n!build.gradle\n!project.clj\ngin-bin\nup\n"))
+		strings.NewReader("\n!main\n!server\n!_proxy.js\n!byline.js\n!up.json\n!pom.xml\n!build.gradle\n!project.clj\ngin-bin\nup\n!up-env.json\n"))
 
 	filter, err := archive.FilterPatterns(r)
 	if err != nil {
