@@ -1,4 +1,9 @@
 
+v1.1.0 / 2019-03-04
+===================
+
+  * add file based environment variables, removing the size restrictions
+
 v1.0.0 / 2019-02-26
 ===================
 
