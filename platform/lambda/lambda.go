@@ -24,7 +24,7 @@ import (
 	"github.com/aws/aws-sdk-go/service/s3"
 	"github.com/aws/aws-sdk-go/service/s3/s3manager"
 	"github.com/dchest/uniuri"
-	"github.com/dustin/go-humanize"
+	humanize "github.com/dustin/go-humanize"
 	"github.com/golang/sync/errgroup"
 	"github.com/pkg/errors"
 
@@ -535,14 +535,15 @@ func (p *Platform) createFunction(c *lambda.Lambda, a *apigateway.APIGateway, up
 	}
 
 	// upload to s3
-	log.Debug("uploading function")
 	b := aws.String(p.getS3BucketName(region))
 	k := aws.String(p.getS3Key(d.Stage))
 
+	log.Debugf("uploading function to bucket %s key %s", *b, *k)
 	_, err = up.Upload(&s3manager.UploadInput{
-		Bucket: b,
-		Key:    k,
-		Body:   bytes.NewReader(p.zip.Bytes()),
+		Bucket:               b,
+		Key:                  k,
+		Body:                 bytes.NewReader(p.zip.Bytes()),
+		ServerSideEncryption: aws.String("aws:kms"),
 	})
 
 	if err != nil {
@@ -594,11 +595,12 @@ func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up
 	k := aws.String(p.getS3Key(d.Stage))
 
 	// upload
-	log.Debug("uploading function")
+	log.Debugf("uploading function to bucket %s key %s", *b, *k)
 	_, err = up.Upload(&s3manager.UploadInput{
-		Bucket: b,
-		Key:    k,
-		Body:   bytes.NewReader(p.zip.Bytes()),
+		Bucket:               b,
+		Key:                  k,
+		Body:                 bytes.NewReader(p.zip.Bytes()),
+		ServerSideEncryption: aws.String("aws:kms"),
 	})
 
 	// ensure bucket exists
