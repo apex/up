@@ -1,10 +1,13 @@
 package main
 
 import (
+	stdjson "encoding/json"
+	"io/ioutil"
 	"os"
+	"strings"
 	"time"
 
-	"github.com/apex/go-apex"
+	apex "github.com/apex/go-apex"
 	"github.com/apex/log"
 	"github.com/apex/log/handlers/json"
 
@@ -47,6 +50,11 @@ func main() {
 	// 	ctx.Fatalf("error initializing: %s", err)
 	// }
 
+	// read environment variables
+	if err := loadEnvironment(ctx); err != nil {
+		ctx.Fatalf("error loading environment variables: %s", err)
+	}
+
 	// overrides
 	if err := c.Override(stage); err != nil {
 		ctx.Fatalf("error overriding: %s", err)
@@ -73,4 +81,30 @@ func main() {
 	// serve
 	log.WithField("duration", util.MillisecondsSince(start)).Info("initialized")
 	apex.Handle(proxy.NewHandler(h))
+}
+
+// loadEnvironment loads environment variables.
+func loadEnvironment(ctx log.Interface) error {
+	var m map[string]string
+
+	ctx.Info("loading environment variables")
+	b, err := ioutil.ReadFile("up-env.json")
+	if err != nil {
+		return err
+	}
+
+	err = stdjson.Unmarshal(b, &m)
+	if err != nil {
+		return err
+	}
+
+	for k, v := range m {
+		ctx.WithFields(log.Fields{
+			"name":  k,
+			"value": strings.Repeat("*", len(v)),
+		}).Info("set variable")
+		os.Setenv(k, v)
+	}
+
+	return nil
 }
