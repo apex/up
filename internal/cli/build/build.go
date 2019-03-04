@@ -10,9 +10,11 @@ import (
 
 	humanize "github.com/dustin/go-humanize"
 	"github.com/pkg/errors"
+	"github.com/tj/go/git"
 	"github.com/tj/go/term"
 	"github.com/tj/kingpin"
 
+	"github.com/apex/up"
 	"github.com/apex/up/internal/cli/root"
 	"github.com/apex/up/internal/colors"
 	"github.com/apex/up/internal/stats"
@@ -38,11 +40,22 @@ func init() {
 
 		stats.Track("Build", nil)
 
+		// git information
+		commit, err := getCommit()
+		if err != nil {
+			return errors.Wrap(err, "fetching git commit")
+		}
+
 		if err := p.Init(*stage); err != nil {
 			return errors.Wrap(err, "initializing")
 		}
 
-		if err := p.Build(true); err != nil {
+		if err := p.Build(up.Build{
+			Stage:  *stage,
+			Commit: util.StripLerna(commit.Describe()),
+			Author: commit.Author.Name,
+			Hooks:  true,
+		}); err != nil {
 			return errors.Wrap(err, "building")
 		}
 
@@ -95,4 +108,28 @@ func init() {
 
 		return err
 	})
+}
+
+// getCommit returns the git information when available.
+func getCommit() (git.Commit, error) {
+	c, err := git.GetCommit(".", "HEAD")
+	if err != nil && !isIgnorable(err) {
+		return git.Commit{}, err
+	}
+
+	if c == nil {
+		return git.Commit{}, nil
+	}
+
+	return *c, nil
+}
+
+// isIgnorable returns true if the GIT error is ignorable.
+func isIgnorable(err error) bool {
+	switch err {
+	case git.ErrLookup, git.ErrNoRepo, git.ErrDirty:
+		return true
+	default:
+		return false
+	}
 }
