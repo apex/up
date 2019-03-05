@@ -26,17 +26,14 @@ require (
 	github.com/facebookgo/freeport v0.0.0-20150612182905-d4adf43b75b9
 	github.com/fanyang01/radix v0.0.0-20160415095728-e1747dd9eeac
 	github.com/fatih/color v1.7.0 // indirect
-	github.com/go-ini/ini v1.30.3 // indirect
 	github.com/golang/sync v0.0.0-20170927054112-8e0aa688b654
 	github.com/google/go-github v14.0.0+incompatible // indirect
 	github.com/google/go-querystring v0.0.0-20170111101155-53e6ce116135 // indirect
-	github.com/gopherjs/gopherjs v0.0.0-20180825215210-0210a2f0f73c // indirect
 	github.com/gosuri/uilive v0.0.0-20170323041506-ac356e6e42cd // indirect
 	github.com/gosuri/uiprogress v0.0.0-20170224063937-d0567a9d84a1 // indirect
 	github.com/hashicorp/go-uuid v0.0.0-20160717022140-64130c7a86d7 // indirect
 	github.com/hooklift/assert v0.0.0-20170704181755-9d1defd6d214 // indirect
 	github.com/jehiah/go-strftime v0.0.0-20151206194810-2efbe75097a5 // indirect
-	github.com/jtolds/gls v4.2.1+incompatible // indirect
 	github.com/klauspost/compress v1.2.1 // indirect
 	github.com/klauspost/cpuid v0.0.0-20170728055534-ae7887de9fa5 // indirect
 	github.com/klauspost/crc32 v0.0.0-20161016154125-cb6bfca970f6 // indirect
@@ -55,8 +52,6 @@ require (
 	github.com/segmentio/backo-go v0.0.0-20160424052352-204274ad699c // indirect
 	github.com/segmentio/go-snakecase v1.0.0
 	github.com/sergi/go-diff v1.0.0 // indirect
-	github.com/smartystreets/assertions v0.0.0-20180820201707-7c9eb446e3cf // indirect
-	github.com/smartystreets/goconvey v0.0.0-20180222194500-ef6db91d284a // indirect
 	github.com/stretchr/testify v1.1.4 // indirect
 	github.com/stripe/stripe-go v28.5.0+incompatible
 	github.com/timewasted/go-accept-headers v0.0.0-20130320203746-c78f304b1b09
@@ -78,5 +73,4 @@ require (
 	golang.org/x/sync v0.0.0-20180314180146-1d60e4601c6f // indirect
 	golang.org/x/sys v0.0.0-20171031081856-95c657629925 // indirect
 	golang.org/x/text v0.0.0-20171102192421-88f656faf3f3 // indirect
-	gopkg.in/ini.v1 v1.38.2 // indirect
 )
