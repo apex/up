@@ -1,4 +1,9 @@
 
+v1.1.1-pro / 2019-03-23
+=======================
+
+  * update warming function to nodejs8.10 to prevent EOL warning from AWS
+
 v1.1.0-pro / 2019-03-04
 ===================
 
