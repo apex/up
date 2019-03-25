@@ -11,7 +11,7 @@ require (
 	github.com/apex/log v1.1.0
 	github.com/armon/go-radix v1.0.0 // indirect
 	github.com/atotto/clipboard v0.0.0-20160219034421-bb272b845f11 // indirect
-	github.com/aws/aws-sdk-go v1.16.2
+	github.com/aws/aws-sdk-go v1.19.1
 	github.com/aybabtme/rgbterm v0.0.0-20170906152045-cc83f3b3ce59
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
 	github.com/bradfitz/iter v0.0.0-20140124041915-454541ec3da2 // indirect
@@ -45,7 +45,7 @@ require (
 	github.com/mitchellh/go-homedir v0.0.0-20161203194507-b8bc1bf76747
 	github.com/pascaldekloe/name v0.0.0-20170812100307-81013e77fe79
 	github.com/pkg/browser v0.0.0-20170505125900-c90ca0c84f15
-	github.com/pkg/errors v0.8.0
+	github.com/pkg/errors v0.8.1
 	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rs/cors v0.0.0-20180726230524-02026070ea74
 	github.com/segmentio/analytics-go v0.0.0-20160426181448-2d840d861c32 // indirect
@@ -56,7 +56,7 @@ require (
 	github.com/stripe/stripe-go v28.5.0+incompatible
 	github.com/timewasted/go-accept-headers v0.0.0-20130320203746-c78f304b1b09
 	github.com/tj/assert v0.0.0-20170216210512-748ebc778a69
-	github.com/tj/aws v0.1.1
+	github.com/tj/aws v0.1.3
 	github.com/tj/backoff v1.0.0
 	github.com/tj/go v1.8.5
 	github.com/tj/go-archive v1.0.2

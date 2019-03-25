@@ -20,6 +20,8 @@ github.com/atotto/clipboard v0.0.0-20160219034421-bb272b845f11 h1:Gmm0NreNeu4FgE
 github.com/atotto/clipboard v0.0.0-20160219034421-bb272b845f11/go.mod h1:ZY9tmq7sm5xIbd9bOK4onWV4S6X0u6GY7Vn0Yu86PYI=
 github.com/aws/aws-sdk-go v1.16.2 h1:nlD5jfFLa/EN/Ag1B2UAI2YtE0oFSN+YJWh1uicKGss=
 github.com/aws/aws-sdk-go v1.16.2/go.mod h1:KmX6BPdI08NWTb3/sm4ZGu5ShLoqVDhKgpiN924inxo=
+github.com/aws/aws-sdk-go v1.19.1 h1:8kOP0/XGJwXIFlYoD1DAtA39cAjc15Iv/QiDMKitD9U=
+github.com/aws/aws-sdk-go v1.19.1/go.mod h1:KmX6BPdI08NWTb3/sm4ZGu5ShLoqVDhKgpiN924inxo=
 github.com/aybabtme/rgbterm v0.0.0-20170906152045-cc83f3b3ce59 h1:WWB576BN5zNSZc/M9d/10pqEx5VHNhaQ/yOVAkmj5Yo=
 github.com/aybabtme/rgbterm v0.0.0-20170906152045-cc83f3b3ce59/go.mod h1:q/89r3U2H7sSsE2t6Kca0lfwTK8JdoNGS/yzM/4iH5I=
 github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 h1:DDGfHa7BWjL4YnC6+E63dPcxHo2sUxDIu8g3QgEJdRY=
@@ -93,6 +95,8 @@ github.com/pkg/browser v0.0.0-20170505125900-c90ca0c84f15 h1:mrI+6Ae64Wjt+uahGe5
 github.com/pkg/browser v0.0.0-20170505125900-c90ca0c84f15/go.mod h1:4OwLy04Bl9Ef3GJJCoec+30X3LQs/0/m4HFRt/2LUSA=
 github.com/pkg/errors v0.8.0 h1:WdK/asTD0HN+q6hsWO3/vpuAkAr+tw6aNJNDFFf0+qw=
 github.com/pkg/errors v0.8.0/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
+github.com/pkg/errors v0.8.1 h1:iURUrRGxPUNPdy5/HRSm+Yj6okJ6UtLINN0Q9M4+h3I=
+github.com/pkg/errors v0.8.1/go.mod h1:bwawxfHBFNV+L2hUp1rHADufV3IMtnDRdf1r5NINEl0=
 github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZbAQM=
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/rs/cors v0.0.0-20180726230524-02026070ea74 h1:2UqoDqa4MGBAM2/DsHlZEvzpubV5s4jcMi8tXkLtSvE=
@@ -115,6 +119,10 @@ github.com/tj/assert v0.0.0-20170216210512-748ebc778a69 h1:yjFMw2bnmM1YJSZn/aHiJ
 github.com/tj/assert v0.0.0-20170216210512-748ebc778a69/go.mod h1:mZ9/Rh9oLWpLLDRpvE+3b7gP/C2YyLFYxNmcLnPTMe0=
 github.com/tj/aws v0.1.1 h1:73C6pnObhAsJuLwMjGKFnY5fYX1DfNh0oaMjWDmwR5M=
 github.com/tj/aws v0.1.1/go.mod h1:rjt3Hq1nOUwUHV1Nh1kGLu8SZjXmE44e5jCUlIQRaD8=
+github.com/tj/aws v0.1.2 h1:rka5CUvKng5C/IZoduc26AL6OmR9V7SNNWS16asX+dg=
+github.com/tj/aws v0.1.2/go.mod h1:jQ4qlBpWs5ZvDsakvVF3t2lAcUV+nABJ3dYDD+x7d00=
+github.com/tj/aws v0.1.3 h1:KdYbbQ0C6cnXCrSGag7doZuTMvhoellkWZDpaiWxZ7Y=
+github.com/tj/aws v0.1.3/go.mod h1:kG2Lk+22zcwmIKGMfSCcKDrqbVklm6AqVwQ/3BwbFec=
 github.com/tj/backoff v1.0.0 h1:Zi5jr//0f/ZtFXzXA2sx4pd/n3KTMK6b3xO2D1y50I4=
 github.com/tj/backoff v1.0.0/go.mod h1:opbA1vtO/vdNR4wI5izntg38viykxrVNMku6WVSWU/k=
 github.com/tj/go v1.8.5 h1:QbRCjQp1v308lsdHe+x/XYJ2U+WdSxY9tWiduvOFsPU=
