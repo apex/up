@@ -1,4 +1,9 @@
 
+v1.1.2 / 2019-03-29
+===================
+
+  * fix: update tj/aws dependency for ThrottlingException logs exception
+
 v1.1.1-pro / 2019-03-23
 =======================
 
