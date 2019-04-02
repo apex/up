@@ -1,4 +1,9 @@
 
+v1.1.3 / 2019-04-02
+===================
+
+  * update tj/aws dependency for duplicate logs fix
+
 v1.1.2-pro / 2019-03-29
 =======================
 
