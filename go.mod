@@ -56,7 +56,7 @@ require (
 	github.com/stripe/stripe-go v28.5.0+incompatible
 	github.com/timewasted/go-accept-headers v0.0.0-20130320203746-c78f304b1b09
 	github.com/tj/assert v0.0.0-20170216210512-748ebc778a69
-	github.com/tj/aws v0.1.3
+	github.com/tj/aws v0.1.4
 	github.com/tj/backoff v1.0.0
 	github.com/tj/go v1.8.5
 	github.com/tj/go-archive v1.0.2
