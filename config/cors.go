@@ -30,7 +30,7 @@ type CORS struct {
 
 	// MaxAge indicates how long (in seconds) the results of a preflight request
 	// can be cached.
-	MaxAge int `json:"max_int"`
+	MaxAge int `json:"max_age"`
 
 	// Debugging flag adds additional output to debug server side CORS issues
 	Debug bool `json:"debug"`
