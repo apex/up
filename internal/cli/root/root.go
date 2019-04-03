@@ -41,6 +41,7 @@ func init() {
 	workdir := Cmd.Flag("chdir", "Change working directory.").Default(".").Short('C').String()
 	verbose := Cmd.Flag("verbose", "Enable verbose log output.").Short('v').Bool()
 	format := Cmd.Flag("format", "Output formatter.").Default("text").String()
+	region := Cmd.Flag("region", "Target region id.").String()
 
 	Cmd.PreAction(func(ctx *kingpin.ParseContext) error {
 		os.Chdir(*workdir)
@@ -55,6 +56,10 @@ func init() {
 			c, err := up.ReadConfig("up.json")
 			if err != nil {
 				return nil, nil, errors.Wrap(err, "reading config")
+			}
+
+			if *region != "" {
+				c.Regions = []string{*region}
 			}
 
 			events := make(event.Events)
