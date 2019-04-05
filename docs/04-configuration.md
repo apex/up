@@ -86,6 +86,7 @@ Currently Lambda supports the following regions:
 - **eu-west-1** – EU (Ireland)
 - **eu-west-2** – EU (London)
 - **eu-west-3** – EU (Paris)
+- **eu-north-1** – EU (Stockholm)
 - **sa-east-1** – South America (São Paulo)
 
 ## Lambda Settings
