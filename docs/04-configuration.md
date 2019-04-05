@@ -69,7 +69,7 @@ The following Lambda-specific settings are available:
 - `vpc` - VPC subnets and security groups
 - `accelerate` – Enable [S3 Transfer Acceleration](https://docs.aws.amazon.com/AmazonS3/latest/dev/transfer-acceleration.html) (Default `false`)
 - `layers` — [AWS Lambda Layers](https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html) to use in the function (Up Pro only)
-- `endpoint` — Type of endpoint, "edge" or "regional", defaults to "edge" (Up Pro only)
+- `endpoint` — Type of endpoint, "edge" or "regional", defaults to "edge"
 
 For example:
 
@@ -97,6 +97,8 @@ For example:
 ```
 
 The Lambda `memory` setting also scales the CPU, if your app is slow, or for cases such as larger Node applications with many `require()`s you may need to increase this value. View the [Lambda Pricing](https://aws.amazon.com/lambda/pricing/) page for more information regarding the `memory` setting.
+
+Up Pro users can utilize the "regional" endpoint to create globally distributed APIs and applications, take a look at the [Global Serverless Apps](https://medium.com/@tjholowaychuk/global-serverless-apps-with-aws-lambda-api-gateway-4642ef1f221d) guide for more information.
 
 Note: Changes to Lambda configuration do not require a `up stack apply`, just deploy and these changes are picked up!
 
