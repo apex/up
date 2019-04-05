@@ -4,11 +4,10 @@ import (
 	"fmt"
 	"strconv"
 
-	"github.com/apex/up/platform/aws/regions"
-
 	"github.com/apex/up"
 	"github.com/apex/up/config"
 	"github.com/apex/up/internal/util"
+	"github.com/apex/up/platform/aws/regions"
 	"github.com/aws/aws-sdk-go/service/route53"
 )
 
@@ -329,6 +328,48 @@ func stagePathMapping(c *Config, s *config.Stage, m Map, deploymentID, domainID 
 
 // stageDNSRecord sets up an ALIAS record and zone if necessary for a custom domain.
 func stageDNSRecord(c *Config, s *config.Stage, m Map, domainID string) {
+	if c.Lambda.Endpoint == "regional" {
+		stageDNSRecordRegional(c, s, m, domainID)
+	} else {
+		stageDNSRecordEdge(c, s, m, domainID)
+	}
+}
+
+// stageDNSRecordRegional sets up an A record with latency routing policy.
+func stageDNSRecordRegional(c *Config, s *config.Stage, m Map, domainID string) {
+	id := util.Camelcase("dns_zone_%s_record_%s", util.Domain(s.Domain), s.Domain)
+	zoneName := util.Domain(s.Domain)
+
+	// explicit .zone was specified
+	if s, ok := s.Zone.(string); ok {
+		zoneName = s
+	}
+
+	zone := dnsZone(c, m, zoneName)
+	region := c.Regions[0]
+
+	// api gateway
+	hostedZoneID := regions.GetHostedZoneID(region)
+
+	m[id] = Map{
+		"Type": "AWS::Route53::RecordSet",
+		"Properties": Map{
+			"Name":          s.Domain,
+			"Type":          "A",
+			"Comment":       util.ManagedByUp(""),
+			"Region":        region,
+			"SetIdentifier": region,
+			"HostedZoneId":  zone,
+			"AliasTarget": Map{
+				"DNSName":      dnsName(c, domainID),
+				"HostedZoneId": hostedZoneID,
+			},
+		},
+	}
+}
+
+// stageDNSRecordEdge sets up an A record.
+func stageDNSRecordEdge(c *Config, s *config.Stage, m Map, domainID string) {
 	id := util.Camelcase("dns_zone_%s_record_%s", util.Domain(s.Domain), s.Domain)
 	zoneName := util.Domain(s.Domain)
 
@@ -339,14 +380,6 @@ func stageDNSRecord(c *Config, s *config.Stage, m Map, domainID string) {
 
 	zone := dnsZone(c, m, zoneName)
 
-	// cloudfront
-	hostedZoneID := "Z2FDTNDATAQYW2"
-
-	// api gateway
-	if c.Lambda.Endpoint == "regional" {
-		hostedZoneID = regions.GetHostedZoneID(c.Regions[0])
-	}
-
 	m[id] = Map{
 		"Type": "AWS::Route53::RecordSet",
 		"Properties": Map{
@@ -356,7 +389,7 @@ func stageDNSRecord(c *Config, s *config.Stage, m Map, domainID string) {
 			"HostedZoneId": zone,
 			"AliasTarget": Map{
 				"DNSName":      dnsName(c, domainID),
-				"HostedZoneId": hostedZoneID,
+				"HostedZoneId": "Z2FDTNDATAQYW2", // Cloudfront
 			},
 		},
 	}
