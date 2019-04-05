@@ -67,7 +67,7 @@ The following Lambda-specific settings are available:
 - `vpc` - VPC subnets and security groups
 - `accelerate` – Enable [S3 Transfer Acceleration](https://docs.aws.amazon.com/AmazonS3/latest/dev/transfer-acceleration.html) (Default `false`)
 - `layers` — [AWS Lambda Layers](https://docs.aws.amazon.com/lambda/latest/dg/configuration-layers.html) to use in the function (Up Pro only)
-- `endpoint` — Type of endpoint, "edge" or "regional", defaults to "edge"
+- `endpoint` — Type of endpoint, "edge" or "regional", defaults to "edge" (Up Pro only)
 
 For example:
 
