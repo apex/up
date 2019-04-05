@@ -1,4 +1,10 @@
 
+v1.2.0-pro / 2019-04-05
+=======================
+
+  * add regional DNS with latency-based routing
+  * add `--region` flag for every command to override region id
+
 v1.1.3-pro / 2019-04-02
 =======================
 
