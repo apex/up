@@ -1,6 +1,7 @@
 package deploy
 
 import (
+	"fmt"
 	"os"
 	"time"
 
@@ -84,6 +85,8 @@ retry:
 		return errors.Wrap(err, "initializing")
 	}
 
+	showDiscountMessage()
+
 	if err := p.Deploy(up.Deploy{
 		Stage:  stage,
 		Commit: util.StripLerna(commit.Describe()),
@@ -147,5 +150,18 @@ func isIgnorable(err error) bool {
 		return true
 	default:
 		return false
+	}
+}
+
+// showDiscountMessage displays a discount message.
+func showDiscountMessage() {
+	fmt.Println(`     Use the coupon "up-7B350E8FEF53" to subscribe to Up Pro for $8/mo.
+     Get additional features, remove this pause, and support the project.
+     Visit https://github.com/apex/up#pro-features for details.
+	`)
+
+	for i := 15; i > 0; i-- {
+		fmt.Printf("\r     Waiting: %d ", i)
+		time.Sleep(time.Second)
 	}
 }
