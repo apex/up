@@ -104,6 +104,7 @@ Flags:
   -C, --chdir="."      Change working directory.
   -v, --verbose        Enable verbose log output.
       --format="text"  Output formatter.
+      --region=REGION  Target region id.
       --version        Show application version.
 
 Args:
