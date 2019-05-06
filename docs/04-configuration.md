@@ -26,47 +26,15 @@ The `profile` property is equivalent to setting `AWS_PROFILE` for referencing AW
 
 ## Regions
 
-You may specify one or more target regions for deployment using the `regions` array. Glob style patterns may be used to match region ids. By default "us-west-2" is used unless the `AWS_REGION` environment variable is defined.
+You may specify a target region for deployments using the `regions` array. By default "us-west-2" is used unless the `AWS_REGION` environment variable is defined.
 
-Note: Currently only a single region is supported until the issue https://github.com/apex/up/issues/134 is closed.
+Note: Currently only a single region is supported, however you can deploy to many regions one at a time for global deploys, see https://medium.com/@tjholowaychuk/global-serverless-apps-with-aws-lambda-api-gateway-4642ef1f221d for details.
 
 A single region:
 
 ```json
 {
   "regions": ["us-west-2"]
-}
-```
-
-Several regions:
-
-```json
-{
-  "regions": ["us-west-2", "us-east-1", "ca-central-1"]
-}
-```
-
-USA and Canada only:
-
-```json
-{
-  "regions": ["us-*", "ca-*"]
-}
-```
-
-Western USA only:
-
-```json
-{
-  "regions": ["us-west-*"]
-}
-```
-
-All regions like a boss:
-
-```json
-{
-  "regions": ["*"]
 }
 ```
 
