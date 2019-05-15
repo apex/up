@@ -155,7 +155,7 @@ func isIgnorable(err error) bool {
 
 // showDiscountMessage displays a discount message.
 func showDiscountMessage() {
-	fmt.Println(`     Get Up Pro for $8/mo using the coupon "up-7B350E8FEF53".
+	fmt.Println(`     Up Pro is $20/mo for unlimited use.
      Get additional features, remove this pause, and support the project.
      Visit https://github.com/apex/up#pro-features for details.
 	`)
