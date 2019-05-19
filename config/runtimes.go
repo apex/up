@@ -15,6 +15,7 @@ const (
 	RuntimeUnknown    Runtime = "unknown"
 	RuntimeGo                 = "go"
 	RuntimeNode               = "node"
+	RuntimeRust               = "rust"
 	RuntimeClojure            = "clojure"
 	RuntimeCrystal            = "crystal"
 	RuntimePython             = "python"
@@ -28,6 +29,8 @@ func inferRuntime() Runtime {
 	switch {
 	case util.Exists("main.go"):
 		return RuntimeGo
+	case util.Exists("Cargo.toml"):
+		return RuntimeRust
 	case util.Exists("main.cr"):
 		return RuntimeCrystal
 	case util.Exists("package.json"):
@@ -54,6 +57,8 @@ func runtimeConfig(runtime Runtime, c *Config) error {
 	switch runtime {
 	case RuntimeGo:
 		golang(c)
+	case RuntimeRust:
+		rust(c)
 	case RuntimeClojure:
 		clojureLein(c)
 	case RuntimeJavaMaven:
@@ -87,6 +92,23 @@ func golang(c *Config) {
 	if s := c.Stages.GetByName("development"); s != nil {
 		if s.Proxy.Command == "" {
 			s.Proxy.Command = "go run *.go"
+		}
+	}
+}
+
+// rust config.
+func rust(c *Config) {
+	if c.Hooks.Build.IsEmpty() {
+		c.Hooks.Build = Hook{`cargo build --release --target x86_64-unknown-linux-gnu`}
+	}
+
+	if c.Hooks.Clean.IsEmpty() {
+		c.Hooks.Clean = Hook{`rm -rf target`}
+	}
+
+	if s := c.Stages.GetByName("development"); s != nil {
+		if s.Proxy.Command == "" {
+			s.Proxy.Command = "cargo run"
 		}
 	}
 }
