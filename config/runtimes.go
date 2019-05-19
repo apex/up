@@ -1,6 +1,7 @@
 package config
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/apex/up/internal/util"
@@ -99,11 +100,14 @@ func golang(c *Config) {
 // rust config.
 func rust(c *Config) {
 	if c.Hooks.Build.IsEmpty() {
-		c.Hooks.Build = Hook{`cargo build --release --target x86_64-unknown-linux-gnu`}
+		c.Hooks.Build = Hook{
+			`cargo build --release --target x86_64-unknown-linux-musl`,
+			fmt.Sprintf("cp target/x86_64-unknown-linux-musl/release/%s ./server", c.Name),
+		}
 	}
 
 	if c.Hooks.Clean.IsEmpty() {
-		c.Hooks.Clean = Hook{`rm -rf target`}
+		c.Hooks.Clean = Hook{`rm -rf target && rm server`}
 	}
 
 	if s := c.Stages.GetByName("development"); s != nil {

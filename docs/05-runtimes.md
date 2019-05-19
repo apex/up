@@ -58,6 +58,22 @@ The `clean` hook becomes:
 $ rm server
 ```
 
+## Rust
+
+When a `Cargo.toml` file is detected, Rust is the assumed runtime. You must have cross-compilation setup to be able to compile targeting `x86_64-unknown-linux-musl`.
+
+The `build` hook becomes:
+
+```
+$ cargo build --release --target x86_64-unknown-linux-musl && cp target/x86_64-unknown-linux-musl/release/<project-name> ./server
+```
+
+The `clean` hook becomes:
+
+```
+$ rm -rf target && rm server
+```
+
 ## Crystal
 
 When a `main.cr` file is detected, Crystal is the assumed runtime. Note that this runtime requires Docker to be installed.
