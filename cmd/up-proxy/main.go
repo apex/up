@@ -42,16 +42,8 @@ func main() {
 		"type": c.Type,
 	})
 
-	// // init project
-	// p := runtime.New(c)
-	//
-	// // init runtime
-	// if err := p.Init(stage); err != nil {
-	// 	ctx.Fatalf("error initializing: %s", err)
-	// }
-
 	// read environment variables
-	if err := loadEnvironment(ctx); err != nil {
+	if err := loadEnvironment(ctx, c); err != nil {
 		ctx.Fatalf("error loading environment variables: %s", err)
 	}
 
@@ -72,22 +64,18 @@ func main() {
 		ctx.Fatalf("error initializing handler: %s", err)
 	}
 
-	// metrics
-	// err = p.Metric("initialize", float64(util.MillisecondsSince(start)))
-	// if err != nil {
-	// 	ctx.WithError(err).Warn("putting metric")
-	// }
-
 	// serve
 	log.WithField("duration", util.MillisecondsSince(start)).Info("initialized")
 	apex.Handle(proxy.NewHandler(h))
 }
 
 // loadEnvironment loads environment variables.
-func loadEnvironment(ctx log.Interface) error {
+func loadEnvironment(ctx log.Interface, c *up.Config) error {
 	var m map[string]string
 
-	ctx.Info("loading environment variables")
+	if !c.Logs.Disable {
+		ctx.Info("loading environment variables")
+	}
 	b, err := ioutil.ReadFile("up-env.json")
 	if err != nil {
 		return err
@@ -99,10 +87,12 @@ func loadEnvironment(ctx log.Interface) error {
 	}
 
 	for k, v := range m {
-		ctx.WithFields(log.Fields{
-			"name":  k,
-			"value": strings.Repeat("*", len(v)),
-		}).Info("set variable")
+		if !c.Logs.Disable {
+			ctx.WithFields(log.Fields{
+				"name":  k,
+				"value": strings.Repeat("*", len(v)),
+			}).Info("set variable")
+		}
 		os.Setenv(k, v)
 	}
 
