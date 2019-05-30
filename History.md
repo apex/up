@@ -1,4 +1,9 @@
 
+v1.3.0-pro / 2019-05-30
+=======================
+
+  * add wrapping of env var logs with `logs.disable` check
+  
 v1.3.0 / 2019-05-30
 ===================
 
