@@ -1,4 +1,11 @@
 
+v1.3.0 / 2019-05-30
+===================
+
+  * add ./vendor to excluded directories by default
+  * refactor: regenerate parser with updated peg
+  * remove discount message, it didn't work
+
 v1.2.0 / 2019-04-20
 ===================
 
