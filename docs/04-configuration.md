@@ -766,6 +766,16 @@ By default Up treats stdout as `info` level logs, and stderr as `error` level. I
 }
 ```
 
+You can disable Up's logs entirely by using the "disable" option:
+
+```json
+{
+  "logs": {
+    "disable": true
+  }
+}
+```
+
 ## Ignoring Files
 
 Up supports gitignore style pattern matching for omitting files from deployment via the `.upignore` file.
