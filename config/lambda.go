@@ -56,7 +56,7 @@ func (l *Lambda) Default() error {
 	}
 
 	if l.Runtime == "" {
-		l.Runtime = "nodejs8.10"
+		l.Runtime = "nodejs10.x"
 	}
 
 	l.Policy = append(l.Policy, defaultPolicy)
