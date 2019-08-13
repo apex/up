@@ -1,5 +1,6 @@
 ---
-title: Installation
+title: Setup
+slug: setup
 ---
 
 Up is distributed in a binary form and can be installed manually via the [tarball releases](https://github.com/apex/up/releases) or one of the options below.

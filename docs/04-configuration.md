@@ -1,5 +1,6 @@
 ---
 title: Configuration
+slug: configuration
 ---
 
 Configuration for your app lives in the `up.json` within your project's directory. This section details each of the options available.

@@ -1,5 +1,6 @@
 ---
 title: FAQ
+slug: faq
 ---
 
 <details>

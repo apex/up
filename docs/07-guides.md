@@ -1,5 +1,6 @@
 ---
 title: Guides
+slug: guides
 ---
 
 ## Subscribing to Up Pro

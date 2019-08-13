@@ -1,5 +1,6 @@
 ---
 title: Getting Started
+slug: getting-started
 ---
 
 The simplest Up application is a single file for the application itself, with zero dependencies, and an `up.json` file which requires only a `name`.

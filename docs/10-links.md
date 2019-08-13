@@ -1,5 +1,6 @@
 ---
 title: Links
+slug: links
 ---
 
 - [Changelog](https://github.com/apex/up/blob/master/History.md) for changes

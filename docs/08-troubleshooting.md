@@ -1,5 +1,6 @@
 ---
 title: Help
+slug: troubleshooting
 ---
 
 <details>
