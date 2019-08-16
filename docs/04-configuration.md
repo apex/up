@@ -195,7 +195,9 @@ Run `up stack plan` and `up stack apply` to make the changes to your stack! You 
 
 Another way to mitigate cold starts is to use an uptime monitoring tool, such as [Apex Ping](https://apex.sh/ping/) which also monitors global performance, so it's a win-win! Use the "up" coupon for 15% off your first year.
 
-[![Uptime Monitoring Tool](https://apex-software.imgix.net/ping/marketing/overview.png?compress=auto)](https://apex.sh/ping)
+<div class="Image">
+  <img alt="Uptime monitoring for applications and APIs" src="https://apex-software.imgix.net/ping/site/histogram.png?auto=format&w=1100">
+</div>
 
 ## Hook scripts
 
