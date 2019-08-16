@@ -1,5 +1,6 @@
 ---
-title: FAQ
+title: Questions
+menu: FAQ
 slug: faq
 ---
 

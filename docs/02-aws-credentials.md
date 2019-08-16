@@ -36,9 +36,6 @@ Below is a policy for [AWS Identity and Access Management](https://aws.amazon.co
 
 If you're using Up for a production application it's highly recommended to configure an IAM role and user(s) for your team, restricting the access to the account and its resources.
 
-<details>
-  <summary>Show policy</summary>
-  
 ```json
 {
     "Version": "2012-10-17",
@@ -94,5 +91,3 @@ If you're using Up for a production application it's highly recommended to confi
     ]
 }
 ```
-
-</details>

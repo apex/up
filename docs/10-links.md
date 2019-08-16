@@ -3,6 +3,8 @@ title: Links
 slug: links
 ---
 
+Links to helpful resources such as the Up community, changelog, examples, articles, videos and more.
+
 - [Changelog](https://github.com/apex/up/blob/master/History.md) for changes
 - [GitHub repository](https://github.com/apex/up)
 - [GitHub Actions](https://github.com/apex/actions) for continuous deployment
