@@ -56,7 +56,7 @@ $ up team switch
      tj@apex.sh
 ```
 
-## Inviting Team Members
+## Inviting team membmers
 
 To invite members use the following command:
 
@@ -90,7 +90,7 @@ Your team members will receive an email with installation instructions, where th
 $ up team login --email tobi@apex.sh --team apex
 ```
 
-## Development to Production Workflow
+## Development to production workflow
 
 This section guides you through taking a small application from development, to production, complete with purchasing and mapping a custom domain.
 
@@ -133,7 +133,7 @@ $ curl `up url`
 Hello World
 ```
 
-### Purchasing a Domain
+### Purchasing a domain
 
 Domains can be mapped from existing services, or purchased directly from AWS via Route53. First check if the domain you'd like is available:
 
@@ -225,7 +225,7 @@ $ up url -s production -o
 
 You should see "Hello World from production" and "Hello World from staging".
 
-### Mapping Custom Domains to Stages
+### Mapping custom domains to stages
 
 Now that you have an application deployed, you probably want a fancy custom domain for it right? You can map these using the `stages` and `domain` properties.
 
@@ -306,7 +306,7 @@ After the changes have been applied, it can take roughly 10-40 minutes for Cloud
 
 Once available https://up-example.com will always point to production via `up deploy production`, and https://stage.up-example.com/ will point to the latest deployment via `up`.
 
-### Mapping Domains from External Registrars
+### Mapping domains from external registrars
 
 If you purchased a domain via `up domains buy` you can skip this step, however if you used an external registrar such as Godaddy you will need to delegate to AWS for DNS management.
 
@@ -333,7 +333,7 @@ Production
 
 Save those four values in your registrar's interface, and you should be good to go! Note that altering DNS records can take some time to propagate.
 
-### Mapping with Third-party DNS
+### Mapping with third-party DNS
 
 If you manage DNS with a third-party such as Cloudflare, and wish to use Up only for deployment you will need to manually edit or add DNS records.
 
@@ -363,7 +363,7 @@ Production
 
 In your DNS provider – Cloudflare in this example – you should create a `CNAME` record pointing to the production `endpoint`. Make sure that the `domain` you use matches the domain in Cloudflare.
 
-### Stack Changes
+### Stack changes
 
 The "stack" is all of the resources associated with your app. You plan changes via `up stack plan` and perform them with `up stack apply`.
 
@@ -396,7 +396,7 @@ Review the output, it should be all "Add"s in this case, then apply:
 $ up stack apply
 ```
 
-### Deleting the App
+### Deleting the application
 
 After you're done messing around, you may want to remove all the resources and the app itself. To do so simply run:
 
@@ -404,11 +404,11 @@ After you're done messing around, you may want to remove all the resources and t
 $ up stack delete
 ```
 
-## Deploying Applications from Continuous Integration
+## Deploying applications from continuous integration
 
 Up makes it easy to deploy your applications from CI, thanks to its Go binaries you can install Up in seconds in any CI provider such as Travis, Circle, Semaphore among others.
 
-### Environment Variables
+### Environment variables
 
 The first step is to set up environment variables so that you have access to your AWS account. You can get these values from `cat ~/.aws/credentials`:
 
@@ -442,11 +442,11 @@ $ up upgrade
 $ up production
 ```
 
-## Mastering Logging
+## Mastering logging
 
 This section describes how you can log from your application in a way that Up will recognize. In the future Up will support forwarding your logs to services such as Loggly, Papertrail or ELK.
 
-### Plain Text
+### Plain text
 
 The first option is plain-text logs to stdout or stderr. Currently writes to stderr are considered ERROR-level logs, and stdout becomes INFO.
 
@@ -464,7 +464,7 @@ Would be collected as:
 ERROR: Failed to sign in: something broke
 ```
 
-### JSON
+### JSON structured logs
 
 The second option is structured logging with JSON events, which is preferred as it allows you to query against specific fields and treat logs like events.
 
@@ -515,11 +515,11 @@ function log(level, message, fields = {}) {
 
 For example, with the Go [apex/log](https://github.com/apex/log) package you'd use the `json` handler, which outputs this format.
 
-## Log Query Language
+## Log query language
 
 Up supports a comprehensive query language, allowing you to perform complex filters against structured data, supporting operators, equality, substring tests and so on. This section details the options available when querying.
 
-### AND Operator
+### AND operator
 
 The `and` operator is implied, and entirely optional to specify, since this is the common case.
 
@@ -535,7 +535,7 @@ The parser will inject `and`, effectively compiling to:
 production and error and ip = "207.194.38.50"
 ```
 
-### Or Operator
+### Or operator
 
 There is of course also an `or` operator, for example showing warnings or errors.
 
@@ -549,7 +549,7 @@ These may of course be nested as you require:
 (production or staging) (warn or error) method = "GET"
 ```
 
-### Equality Operators
+### Equality operators
 
 The `=` and `!=` equality operators allow you to filter on the contents of a field.
 
@@ -565,7 +565,7 @@ Or for example `!=` may be used to show anything except GET:
 method != "GET"
 ```
 
-### Relational Operators
+### Relational operators
 
 The `>`, `>=`, `<`, and `<=` relational operators are useful for comparing numeric values, for example response status codes:
 
@@ -595,7 +595,7 @@ Is the same as:
 stage = "production" duration >= 1s
 ```
 
-### Severity Levels
+### Severity levels
 
 Up provides request level logging with severity levels applied automatically. For example, a 5xx response is an ERROR level, while 4xx is a WARN, and 3xx or 2xx are the INFO level.
 
@@ -644,7 +644,7 @@ Duration units are:
 - `ms` milliseconds (`100ms` or `100` are equivalent)
 - `s` seconds (`1.5s`, `5s`)
 
-### Substring Matches
+### Substring matches
 
 When filtering on strings, such as the log message, you may use the `*` character for substring matches.
 
@@ -666,7 +666,7 @@ There is also a special keyword for this case:
 message contains "login"
 ```
 
-## Hot Reloading in Development
+## Hot reloading in development
 
 The `up start` command uses your `proxy.command` by default, which may be inferred based on your application type, such as `node app.js` for Node.js or `./server` for Golang.
 
@@ -687,7 +687,7 @@ You may alter this command for `up start` with the development environment. For 
 
 Note that the server must always listen on `PORT` which is provided by `up start`.
 
-## Accessing Lambda Context
+## Accessing lambda context
 
 Traditional AWS Lambda functions provided a context object which contains runtime information such as API Gateway user identity. This information is exposed as JSON in the `X-Context` header field in Up as shown here:
 

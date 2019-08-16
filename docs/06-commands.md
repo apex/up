@@ -217,7 +217,7 @@ Args:
   [<query>]  Query pattern for filtering logs.
 ```
 
-### Expanded Output
+### Expanded output
 
 Use the `-e` or `--expand` flag to expand log fields:
 
@@ -252,7 +252,7 @@ $ up -e 'path = "/static/*"'
       version: 5
 ```
 
-### JSON Output
+### JSON output
 
 When stdout is not a terminal Up will output the logs as JSON, which can be useful for further processing with tools such as [jq](https://stedolan.github.io/jq/).
 

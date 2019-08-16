@@ -58,7 +58,7 @@ Currently Lambda supports the following regions:
 - **eu-north-1** – EU (Stockholm)
 - **sa-east-1** – South America (São Paulo)
 
-## Lambda Settings
+## Lambda settings
 
 The following Lambda-specific settings are available:
 
@@ -94,7 +94,7 @@ Using Up Pro in a VPC requires access to the that the AWS SSM Parameter Store AP
 
 Note: Changes to Lambda configuration do not require a `up stack apply`, just deploy and these changes are picked up!
 
-### IAM Policy
+### IAM policy
 
 Up uses IAM policies to grant access to resources within your AWS account such as DynamoDB or S3.
 
@@ -123,7 +123,7 @@ To add additional permissions add one or more IAM policy statements to the `poli
 
 Deploy to update the IAM function role permissions.
 
-## Hook Scripts
+## Hook scripts
 
 Up provides "hooks" which are commands invoked at certain points within the deployment workflow for automating builds, linting and so on. The following hooks are available:
 
@@ -166,7 +166,7 @@ Multiple commands are provided by using arrays, and are run in separate shells:
 
 To get a better idea of when hooks run, and how long the command(s) take, you may want to deploy with `-v` for verbose debug logs.
 
-## Static File Serving
+## Static file serving
 
 Up ships with a robust static file server, to enable it specify the app `type` as `"static"`.
 
@@ -197,7 +197,7 @@ Note that `static.dir` only tells Up which directory to serve – it does not ex
 
 Note: Files are currently served from AWS Lambda as well, so there is a 6MB restriction on the file size.
 
-### Dynamic Apps
+### Dynamic applications
 
 If your project is not strictly static, for example a Node.js web app, you may omit `type` and add static file serving simply by defining `static` as shown below. With this setup Up will serve the file if it exists, before passing control to your application.
 
@@ -224,7 +224,7 @@ By default there is no prefix, so `GET /index.css` will resolve to `./public/ind
 
 Note: Static file serving for dynamic apps does not automatically resolve `index.html` files. The presence of a file is checked before passing control to your application.
 
-## Environment Variables
+## Environment variables
 
 The `environment` object may be used for plain-text environment variables. Note that these are not encrypted, and are stored in up.json which is typically committed to GIT, so do not store secrets here.
 
@@ -245,7 +245,7 @@ The following environment variables are provided by Up:
 - `PORT` – port number such as "3000"
 - `UP_STAGE` – stage name such as "staging" or "production"
 
-## Header Injection
+## Header injection
 
 The `headers` object allows you to map HTTP header fields to paths. The most specific pattern takes precedence.
 
@@ -292,7 +292,7 @@ X-Something-Else: I am applied to styles
 Date: Mon, 31 Jul 2017 20:49:35 GMT
 ```
 
-## Error Pages
+## Error pages
 
 By default Up will serve a minimalistic error page for requests accepting `text/html`. The following settings are available:
 
@@ -343,7 +343,7 @@ Variables specified via `variables`, as well as `.StatusText` and `.StatusCode` 
 </html>
 ```
 
-## Script Injection
+## Script injection
 
 Scripts, styles, and other tags may be injected to HTML pages before the closing `</head>` tag or closing `</body>` tag.
 
@@ -398,7 +398,7 @@ All of these require a `value`, which sets the `src`, `href`, or inline content.
 - `{ "type": "google analytics", "value": "API_KEY" }`
 - `{ "type": "segment", "value": "API_KEY" }`
 
-## Redirects and Rewrites
+## Redirects and rewrites
 
 Up supports redirects and URL rewriting via the `redirects` object, which maps path patterns to a new location. If `status` is omitted (or 200) then it is a rewrite, otherwise it is a redirect.
 
@@ -510,7 +510,7 @@ const res = await fetch('https://myapp.com', {
 
 Note: You do not need to run `up stack plan` for CORS settings, simply redeploy the stage.
 
-## Reverse Proxy
+## Reverse proxy
 
 Up acts as a reverse proxy in front of your server, this is how CORS, redirection, script injection and other middleware style features are provided.
 
@@ -535,11 +535,11 @@ The following settings are available:
 
 Lambda's function timeout is implied from the `.proxy.timeout` setting.
 
-### Crash Recovery
+### Crash recovery
 
 Another benefit of using Up as a reverse proxy is performing crash recovery. Up will attempt to restart your application if the process crashes to continue serving subsequent requests.
 
-## DNS Zones & Records
+## DNS zones & records
 
 Up allows you to configure DNS zones and records. One or more zones may be provided as keys in the `dns` object ("myapp.com" here), with a number of records defined within it.
 
@@ -628,7 +628,7 @@ To delete a stage, simply remove it from the `up.json` configuration and run `up
 
 You may of course assign a custom domain to these stages as well, let's take a look at that next!
 
-## Stages & Custom Domains
+## Stages & custom domains
 
 By defining a stage and its `domain`, Up knows it will need to create a free SSL certificate—`gh-polls.com` in the following example—setup the DNS records, and map the domain to API Gateway. SSL certificates are managed via [AWS ACM](https://aws.amazon.com/certificate-manager/) which automatically renew for you, there's no additional work or cost associated with them.
 
@@ -675,7 +675,7 @@ Plan the changes via `up stack plan` and `up stack apply` to perform the changes
 
 Note: CloudFront can take up to ~40 minutes to distribute this configuration the first time, so grab a coffee while these changes are applied. Also note that ACM certificates are always created in the Virginia (us-east-1) region due to how API Gateway interoperates with CloudFront.
 
-### DNS Zones
+### DNS zones
 
 By default when you specify a stage `domain` — such as "api.example.com" — a DNS zone is created in Route53 for the top level domain "example.com", and an ALIAS record "api.example.com" is added to this zone.
 
@@ -705,7 +705,7 @@ You may also explicitly specify the zone by providing a string. In the following
 }
 ```
 
-## Stage Overrides
+## Stage overrides
 
 Up allows some configuration properties to be overridden at the stage level. The following example illustrates how you can tune lambda memory and hooks per-stage.
 
@@ -777,7 +777,7 @@ You can disable Up's logs entirely by using the "disable" option:
 }
 ```
 
-## Ignoring Files
+## Ignoring files 
 
 Up supports gitignore style pattern matching for omitting files from deployment via the `.upignore` file.
 

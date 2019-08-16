@@ -5,7 +5,7 @@ slug: credentials
 
 Before using Up you need to first provide your AWS account credentials so that Up is allowed to create resources on your behalf.
 
-## AWS Credential Profiles
+## AWS credential profiles
 
 Most AWS tools support the `~/.aws/credentials` file for storing credentials, allowing you to specify `AWS_PROFILE` environment variable so Up knows which one to reference. To read more on configuring these files view [Configuring the AWS CLI](http://docs.aws.amazon.com/cli/latest/userguide/cli-chap-getting-started.html).
 
@@ -17,7 +17,7 @@ aws_access_key_id = xxxxxxxx
 aws_secret_access_key = xxxxxxxxxxxxxxxxxxxxxxxx
 ```
 
-### Best Practices
+### Best practices
 
 You may store the profile name in the `up.json` file itself as shown in the following snippet:
 
@@ -30,7 +30,7 @@ You may store the profile name in the `up.json` file itself as shown in the foll
 
 This is ideal as it ensures you will not accidentally deploy to a different AWS account.
 
-## IAM Policy for Up CLI
+## IAM policy for Up CLI
 
 Below is a policy for [AWS Identity and Access Management](https://aws.amazon.com/iam/) which provides Up access to manage your resources. Note that the policy may change as features are added to Up, so you may have to adjust the policy.
 

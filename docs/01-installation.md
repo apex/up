@@ -1,5 +1,5 @@
 ---
-title: Setup
+title: Installation
 slug: setup
 ---
 
