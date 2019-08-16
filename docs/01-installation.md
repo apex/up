@@ -3,15 +3,13 @@ title: Installation
 slug: setup
 ---
 
-Up is distributed in a binary form and can be installed manually via the [tarball releases](https://github.com/apex/up/releases) or one of the options below.
-
-The quickest way to get `up` is to run the following command, which installs to `/usr/local/bin` by default.
+Up is distributed in a binary form and can be installed manually via the [tarball releases](https://github.com/apex/up/releases) or one of the options below. The quickest way to get `up` is to run the following command:
 
 ```
 $ curl -sf https://up.apex.sh/install | sh
 ```
 
-To install `up` to a specific directory, use `BINDIR`. Here's an example installing to the current directory:
+By default Up is installed to `/usr/local/bin`, to specify a directory use `BINDIR`, this can be useful in CI where you may not have access to `/usr/local/bin`. Here's an example installing to the current directory:
 
 ```
 $ curl -sf https://up.apex.sh/install | BINDIR=. sh
