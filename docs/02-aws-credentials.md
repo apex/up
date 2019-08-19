@@ -1,6 +1,7 @@
 ---
 title: AWS Credentials
 slug: credentials
+teaser: Learn how to set up AWS credentials to provide Up access to your account.
 ---
 
 Before using Up you need to first provide your AWS account credentials so that Up is allowed to create resources on your behalf.
