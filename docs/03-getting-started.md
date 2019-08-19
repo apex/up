@@ -1,6 +1,7 @@
 ---
 title: Getting Started
 slug: getting-started
+teaser: Learn how to get started with Up deployments.
 ---
 
 The simplest Up application is a single file for the application itself, with zero dependencies, and an `up.json` file which requires only a `name`.
