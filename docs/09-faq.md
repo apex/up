@@ -2,6 +2,7 @@
 title: Questions
 menu: FAQ
 slug: faq
+teaser: Up frequently asked questions.
 ---
 
 <details>
