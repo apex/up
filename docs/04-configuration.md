@@ -1,6 +1,7 @@
 ---
 title: Configuration
 slug: configuration
+teaser: Learn how to configure Up serverless applications.
 ---
 
 Configuration for your app lives in the `up.json` within your project's directory. This section details each of the options available.

@@ -1,6 +1,7 @@
 ---
 title: Installation
 slug: setup
+teaser: Learn how to install Up locally on your machine and in continuous integration servers.
 ---
 
 Up is distributed in a binary form and can be installed manually via the [tarball releases](https://github.com/apex/up/releases) or one of the options below. The quickest way to get `up` is to run the following command:

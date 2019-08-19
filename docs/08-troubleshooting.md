@@ -2,6 +2,7 @@
 title: Troubleshooting
 menu: Help
 slug: troubleshooting
+teaser: Up toubleshooting problems and solutions.
 ---
 
 This section contains self-help troubleshooting information. If you're running into an issue you can't resolve, try the [Slack](https://chat.apex.sh/) chat, or [submit an issue](https://github.com/apex/up).
