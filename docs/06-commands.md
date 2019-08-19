@@ -1,6 +1,7 @@
 ---
 title: Commands
 slug: commands
+teaser: Learn the details of each Up command.
 ---
 
 
