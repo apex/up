@@ -1,6 +1,7 @@
 ---
 title: Links
 slug: links
+teaser: Links to helpful resources such as the Up community, changelog, examples, articles, videos and more.
 ---
 
 Links to helpful resources such as the Up community, changelog, examples, articles, videos and more.

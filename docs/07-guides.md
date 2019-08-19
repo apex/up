@@ -1,6 +1,7 @@
 ---
 title: Guides
 slug: guides
+teaser: Learn how to use Up, from subscribing to the Pro version, mapping custom domains, to deploying in continuous integration platforms.
 ---
 
 ## Subscribing to Up Pro
