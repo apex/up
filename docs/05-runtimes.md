@@ -15,7 +15,7 @@ Up supports a number of interpreted languages, and virtually any language which 
 
 ## Node.js
 
-When a `package.json` file is detected, Node.js is the assumed runtime. By default the latest version supported by Lambda is used (nodejs8.10), see [Lambda Settings](#configuration.lambda_settings) for details.
+When a `package.json` file is detected, Node.js is the assumed runtime. By default the latest version supported by Lambda is used (nodejs10.x), see [Lambda Settings](#configuration.lambda_settings) for details.
 
 The `build` hook becomes:
 

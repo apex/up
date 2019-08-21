@@ -1,25 +1,24 @@
-
-var child = require('child_process');
-var byline = require('./byline');
+const child = require('child_process');
 
 /**
  * Debug env var.
  */
 
 const debug = process.env.DEBUG_SHIM;
+const NEWLINE = '\n'.charCodeAt(0);
 
 /**
- * A map of string(id) to callback function, used for when
+ * A map of number(id) to callback function, used for when
  * many concurrent requests are outstanding.
  */
 
-var callbacks = {};
+const callbacks = new Map();
 
 /**
  * The last id attached to a request / callback pair
  */
 
-var lastId = (Date.now() / 1000) | 0;
+let lastId = (Date.now() / 1000) | 0;
 
 /**
  * nextId generates ids which will only be repeated every 2^52 times being generated
@@ -32,15 +31,52 @@ function nextId(){
   if (id === lastId) {
     id = 1;
   }
+
   lastId = id;
-  return String(id);
+  return id;
+}
+
+/**
+ * handleLine is responsible for taking a line of output from the child process
+ * and calling the appropiate callbacks.
+ */
+function handleLine(line) {
+  if (debug) {
+    console.log('[shim] parsing: `%s`', line);
+  }
+
+  let msg;
+  try {
+    msg = JSON.parse(line);
+  } catch (err) {
+    console.log('[shim] unexpected non-json line: `%s`', line);
+    return
+  }
+
+  if (typeof msg.id !== 'number') {
+    console.log('[shim] unexpected line - do not use stdout: `%s`', line);
+    return;
+  }
+
+  const c = callbacks.get(msg.id);
+  callbacks.delete(msg.id)
+
+  if (!c) {
+    if (debug) {
+      console.log('[shim] unexpected duplicate response: `%s`', line);
+    }
+
+    return;
+  }
+
+  c(msg.error, msg.value);
 }
 
 /**
  * Child process for binary I/O.
  */
 
-var proc = child.spawn('./main', { stdio: ['pipe', 'pipe', process.stderr] });
+const proc = child.spawn('./main', { stdio: ['pipe', 'pipe', process.stderr] });
 
 proc.on('error', function(err){
   console.error('[shim] error: %s', err);
@@ -56,35 +92,49 @@ proc.on('exit', function(code, signal){
  * Newline-delimited JSON stdout.
  */
 
-var out = byline(proc.stdout)
+const out = proc.stdout;
 
-out.on('data', function(line){
-  if (debug) console.log('[shim] parsing: `%s`', line)
+// Chunks holds onto partial chunks received in the absense of a newline.
+// invariant: an array of Buffer objects, all of which do not have any newline characters
+let chunks = [];
 
-  var msg;
-  try {
-    msg = JSON.parse(line);
-  } catch (err) {
-    console.log('[shim] unexpected non-json line: `%s`', line);
-    return
+function handleChunk(chunk) {
+  let startPos = 0;
+  for (;;) {
+    const pos = chunk.indexOf(NEWLINE, startPos);
+    if (pos === -1) {
+      chunks.push(chunk.slice(startPos));
+      break;
+    }
+
+    // We have found a line
+    if (pos >= 0) {
+      const start = chunk.slice(startPos, pos);
+
+      let line = start;
+      if (chunks.length > 0) {
+        chunks.push(start);
+        line = Buffer.concat(chunks);
+        chunks = [];
+      }
+
+      startPos = pos + 1;
+      handleLine(line)
+    }
   }
+}
 
-  if (typeof msg.id !== 'string') {
-    console.log('[shim] unexpected line - do not use stdout: `%s`', line);
-    return
+// Pump all data chunks into chunk handler
+out.on('readable', () => {
+  for (;;) {
+    const chunk = out.read();
+    if (chunk === null) {
+      break;
+    }
+
+    handleChunk(chunk);
   }
-
-  const c = callbacks[msg.id];
-  delete callbacks[msg.id];
-
-  if (!c) {
-    if (debug) console.log('[shim] unexpected duplicate response: `%s`', line)
-    return
-  }
-
-  c(msg.error, msg.value);
 });
-
 
 /**
  * Handle events.
@@ -93,7 +143,7 @@ exports.handle = function(event, ctx, cb) {
   ctx.callbackWaitsForEmptyEventLoop = false;
 
   const id = nextId();
-  callbacks[id] = cb;
+  callbacks.set(id, cb);
 
   proc.stdin.write(JSON.stringify({
     "id": id,
