@@ -92,39 +92,38 @@ proc.on('exit', function(code, signal){
  * Newline-delimited JSON stdout.
  */
 
-const out = proc.stdout;
-
 // Chunks holds onto partial chunks received in the absense of a newline.
 // invariant: an array of Buffer objects, all of which do not have any newline characters
 let chunks = [];
 
+// Find successive newlines in this chunk, and pass them along to `handleChunk`
 function handleChunk(chunk) {
   let startPos = 0;
   for (;;) {
     const pos = chunk.indexOf(NEWLINE, startPos);
+
+    // We were not able to find any more newline characters in this chunk,
+    // save the remaineder in `chunks` for later processing
     if (pos === -1) {
       chunks.push(chunk.slice(startPos));
       break;
     }
 
-    // We have found a line
-    if (pos >= 0) {
-      const start = chunk.slice(startPos, pos);
+    // We have found a whole line
+    const start = chunk.slice(startPos, pos);
 
-      let line = start;
-      if (chunks.length > 0) {
-        chunks.push(start);
-        line = Buffer.concat(chunks);
-        chunks = [];
-      }
+    chunks.push(start);
+    const line = Buffer.concat(chunks);
+    chunks = [];
 
-      startPos = pos + 1;
-      handleLine(line)
-    }
+    // set the new start position to one _after_ the last newline seen, so we don't see it again
+    startPos = pos + 1;
+    handleLine(line)
   }
 }
 
-// Pump all data chunks into chunk handler
+const out = proc.stdout;
+
 out.on('readable', () => {
   for (;;) {
     const chunk = out.read();
@@ -132,6 +131,7 @@ out.on('readable', () => {
       break;
     }
 
+    // Pump all data chunks into chunk handler
     handleChunk(chunk);
   }
 });
