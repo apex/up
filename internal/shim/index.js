@@ -98,26 +98,31 @@ let chunks = [];
 
 // Find successive newlines in this chunk, and pass them along to `handleChunk`
 function handleChunk(chunk) {
-  let startPos = 0;
+  // since this current chunk can have multple lines inside of it
+  // keep track of how much of the current chunk we've consumed
+  let chunkPos = 0;
   for (;;) {
-    const pos = chunk.indexOf(NEWLINE, startPos);
+    // Find the first newline in the current, in the part of the current chunk we have not
+    // looked yet.
+    const newlinePos = chunk.indexOf(NEWLINE, chunkPos);
 
     // We were not able to find any more newline characters in this chunk,
     // save the remaineder in `chunks` for later processing
-    if (pos === -1) {
-      chunks.push(chunk.slice(startPos));
+    if (newlinePos === -1) {
+      chunks.push(chunk.slice(chunkPos));
       break;
     }
 
-    // We have found a whole line
-    const start = chunk.slice(startPos, pos);
+    // We have found an end of a whole line, the beginning of the line will be the combination
+    // of all Buffers currently buffered in the `chunks` array (if any)
+    const start = chunk.slice(chunkPos, newlinePos);
 
     chunks.push(start);
     const line = Buffer.concat(chunks);
     chunks = [];
 
-    // set the new start position to one _after_ the last newline seen, so we don't see it again
-    startPos = pos + 1;
+    // increase the chunk position, to skip over the last line we just found
+    chunkPos = newlinePos + 1;
     handleLine(line)
   }
 }
