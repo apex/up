@@ -8,7 +8,7 @@ const debug = process.env.DEBUG_SHIM;
 const NEWLINE = '\n'.charCodeAt(0);
 
 /**
- * A map of number(id) to callback function, used for when
+ * A map of string(id) to callback function, used for when
  * many concurrent requests are outstanding.
  */
 
@@ -33,7 +33,7 @@ function nextId(){
   }
 
   lastId = id;
-  return id;
+  return String(id);
 }
 
 /**
@@ -53,7 +53,7 @@ function handleLine(line) {
     return
   }
 
-  if (typeof msg.id !== 'number') {
+  if (typeof msg.id !== 'string') {
     console.log('[shim] unexpected line - do not use stdout: `%s`', line);
     return;
   }
