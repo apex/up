@@ -907,10 +907,6 @@ func (p *Platform) injectProxy() error {
 		return errors.Wrap(err, "writing up-proxy")
 	}
 
-	if err := ioutil.WriteFile("byline.js", shim.MustAsset("byline.js"), 0755); err != nil {
-		return errors.Wrap(err, "writing byline.js")
-	}
-
 	if err := ioutil.WriteFile("_proxy.js", shim.MustAsset("index.js"), 0755); err != nil {
 		return errors.Wrap(err, "writing _proxy.js")
 	}
@@ -923,7 +919,6 @@ func (p *Platform) removeProxy() error {
 	log.Debugf("removing proxy")
 	os.Remove("main")
 	os.Remove("_proxy.js")
-	os.Remove("byline.js")
 	return nil
 }
 
