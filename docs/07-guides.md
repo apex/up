@@ -56,7 +56,7 @@ $ up team switch
      tj@apex.sh
 ```
 
-## Inviting team membmers
+## Inviting team members
 
 To invite members use the following command:
 
