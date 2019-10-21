@@ -45,7 +45,7 @@ var functionJSON = `{
         "Arn"
       ]
     },
-    "Runtime": "nodejs8.10",
+    "Runtime": "nodejs10.x",
     "Timeout": 300
   },
   "Type": "AWS::Lambda::Function"
