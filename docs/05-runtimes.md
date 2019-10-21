@@ -29,20 +29,6 @@ The server run by the proxy becomes:
 $ npm start
 ```
 
-## Python
-
-When requirements.txt is present the build command becomes:
-
-```
-$ mkdir -p .pypath/ && pip install -r requirements.txt -t .pypath/
-```
-
-The server run by the proxy becomes:
-
-```
-$ python app.py
-```
-
 ## Golang
 
 When a `main.go` file is detected, Golang is the assumed runtime.
