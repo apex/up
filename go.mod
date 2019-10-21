@@ -74,3 +74,5 @@ require (
 	golang.org/x/sys v0.0.0-20171031081856-95c657629925 // indirect
 	golang.org/x/text v0.0.0-20171102192421-88f656faf3f3 // indirect
 )
+
+go 1.13
