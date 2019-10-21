@@ -109,7 +109,7 @@ func warmingFunction(c *Config, m Map) {
 		"Properties": Map{
 			"FunctionName": fmt.Sprintf("%s-warming", c.Name),
 			"Description":  util.ManagedByUp("Warming function"),
-			"Runtime":      "nodejs8.10",
+			"Runtime":      "nodejs10.x",
 			"Handler":      "index.handle",
 			"Role":         get("WarmingFunctionRole", "Arn"),
 			"MemorySize":   512,
