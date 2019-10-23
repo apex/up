@@ -1,4 +1,9 @@
 
+v1.4.1-pro / 2019-10-23
+=======================
+
+  * fix: add blacklisting of up-env.json so it cannot be .upignored
+
 v1.4.0-pro / 2019-10-23
 =======================
 
