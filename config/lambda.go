@@ -90,4 +90,8 @@ func (l *Lambda) Override(c *Config) {
 	if l.VPC != nil {
 		c.Lambda.VPC = l.VPC
 	}
+
+	if l.Runtime != "" {
+		c.Lambda.Runtime = l.Runtime
+	}
 }
