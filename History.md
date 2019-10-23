@@ -1,4 +1,11 @@
 
+v1.4.0-pro / 2019-10-23
+=======================
+
+  * change warming functions to nodejs10.x, existing ones will be fine, as AWS doesn't
+  actually stop these functions, they just discontinue updating/creation
+  * Rebase
+
 v1.4.0 / 2019-10-23
 ===================
 
