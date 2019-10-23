@@ -37,7 +37,7 @@ func Build(dir string) (io.ReadCloser, *archive.Stats, error) {
 		strings.NewReader(".*\n"),
 		strings.NewReader("\n!vendor\n!node_modules/**\n!.pypath/**\n"),
 		upignore,
-		strings.NewReader("\n!main\n!server\n!_proxy.js\n!up.json\n!pom.xml\n!build.gradle\n!project.clj\ngin-bin\nup\n"))
+		strings.NewReader("\n!main\n!up-env.json\n!server\n!_proxy.js\n!up.json\n!pom.xml\n!build.gradle\n!project.clj\ngin-bin\nup\n"))
 
 	filter, err := archive.FilterPatterns(r)
 	if err != nil {
