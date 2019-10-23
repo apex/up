@@ -6,6 +6,9 @@ import (
 	"github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/service/acm"
 	"github.com/tj/assert"
+	
+	"github.com/apex/up/config"
+	"github.com/apex/up/platform/event"
 )
 
 func TestGetCert(t *testing.T) {
@@ -54,4 +57,30 @@ func TestGetCert(t *testing.T) {
 
 	arn = getCert(certs, "staging.v1.api.example.com")
 	assert.Empty(t, arn)
+}
+
+func TestCreateRole(t *testing.T) {
+	t.Run("doesn't attempt to create configured role", func(t *testing.T) {
+		c := &config.Config{
+			Lambda: config.Lambda{
+				Role: "custom-role-name",
+			},
+		}
+		events := make(event.Events)
+		p := New(c, events)
+		assert.NoError(t, p.createRole(), "createRole")
+	})
+}
+
+func TestDeleteRole(t *testing.T) {
+	t.Run("doesn't attempt to delete configured role", func(t *testing.T) {
+		c := &config.Config{
+			Lambda: config.Lambda{
+				Role: "custom-role-name",
+			},
+		}
+		events := make(event.Events)
+		p := New(c, events)
+		assert.NoError(t, p.deleteRole("us-west-2"), "deleteRole")
+	})
 }
