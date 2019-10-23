@@ -5,17 +5,14 @@ slug: runtimes
 
 Up supports a number of interpreted languages, and virtually any language which can be compiled to a binary such as Golang. Up does its best to provide idiomatic and useful out-of-the-box experiences tailored to each language. Currently first-class support is provided for:
 
-- Python
 - Golang
 - Node.js
 - Crystal
-- Clojure
-- Java
 - Static sites
 
 ## Node.js
 
-When a `package.json` file is detected, Node.js is the assumed runtime. By default Nodejs8.10 is used, see [Lambda Settings](https://apex.sh/docs/up/configuration/#lambda_settings) for details.
+When a `package.json` file is detected, Node.js is the assumed runtime. By default `nodejs10.x` is used, see [Lambda Settings](https://apex.sh/docs/up/configuration/#lambda_settings) for details.
 
 The `build` hook becomes:
 
@@ -60,10 +57,6 @@ The `clean` hook becomes:
 ```
 $ rm server
 ```
-
-## Java
-
-When a `build.gradle` file is detected, Gradle is assumed, otherwise if `pom.xml` is found then Maven is used.
 
 ## Static
 
