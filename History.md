@@ -1,4 +1,10 @@
 
+v1.4.0 / 2019-10-23
+===================
+
+  * refactor nodejs shim to work on node8 or node10
+  * change default runtime to nodejs10.x (potentially breaking change, depends on your application). Closes #784
+
 v1.3.0-pro / 2019-05-30
 =======================
 
