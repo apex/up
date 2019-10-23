@@ -7,7 +7,7 @@ Before contributing to Up you'll need a few things:
 The following are optional:
 
 - Install [pointlander/peg](https://github.com/pointlander/peg) if you're working on the log grammar
-- Install [jteeuwen/go-bindata](https://github.com/jteeuwen/go-bindata) if you need to bake `up-proxy` into `up`
+- Install [shuLhan/go-bindata](https://github.com/shuLhan/go-bindata) if you need to bake `up-proxy` into `up`
 
 ## Setup
 
@@ -43,7 +43,7 @@ Although Up is not provided as a library it is structured as if it was, for orga
 - [config](config) – Configuration structures and validation for `up.json`
 - [cmd](cmd) – Commands, where `up` is the CLI and `up-proxy` is serving requests in production
 
-Note that this is just a first past, and the code / layout will be refactored. View [Godoc](http://godoc.org/github.com/apex/up) for more details of the internals.
+Note that this is just a first pass, and the code / layout will be refactored. View [Godoc](http://godoc.org/github.com/apex/up) for more details of the internals.
 
 ## Proxy
 
