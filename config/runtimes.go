@@ -107,7 +107,11 @@ func javaGradle(c *Config) {
 	}
 
 	if c.Hooks.Clean.IsEmpty() {
-		c.Hooks.Clean = Hook{`rm server.jar && gradle clean`}
+		if util.Exists("gradlew") {
+			c.Hooks.Clean = Hook{`rm server.jar && ./gradlew clean`}
+		} else {
+			c.Hooks.Clean = Hook{`rm server.jar && gradle clean`}
+		}
 	}
 }
 
