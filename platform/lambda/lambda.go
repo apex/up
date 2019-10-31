@@ -971,7 +971,9 @@ func (p *Platform) createBucket(region string) error {
 		},
 	})
 
-	if err != nil {
+	// some regions do not support this option, such as eu-north-1,
+	// so we have to check for this particular error and ignore it.
+	if err != nil && !strings.Contains(err.Error(), "MethodNotAllowed: The specified method is not allowed") {
 		return errors.Wrap(err, "updating acceleration status")
 	}
 
