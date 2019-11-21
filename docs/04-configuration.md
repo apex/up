@@ -296,9 +296,9 @@ Date: Mon, 31 Jul 2017 20:49:35 GMT
 
 ## Error pages
 
-By default Up will serve a minimalistic error page for requests accepting `text/html`. The following settings are available:
+When enabled Up will serve a minimalistic error page for requests accepting `text/html`. The following settings are available:
 
-- `disable` — remove the error page feature and default pages
+- `enable` — enable the error page feature
 - `dir` — the directory where the error pages are located
 - `variables` — vars available to the pages
 

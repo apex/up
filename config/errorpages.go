@@ -2,8 +2,8 @@ package config
 
 // ErrorPages configuration.
 type ErrorPages struct {
-	// Disable default error pages.
-	Disable bool `json:"disable"`
+	// Enable error pages.
+	Enable bool `json:"enable"`
 
 	// Dir containing error pages.
 	Dir string `json:"dir"`

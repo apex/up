@@ -110,7 +110,7 @@ retry:
 		"has_cors":             c.CORS != nil,
 		"has_logs":             !c.Logs.Disable,
 		"has_profile":          c.Profile != "",
-		"has_error_pages":      !c.ErrorPages.Disable,
+		"has_error_pages":      c.ErrorPages.Enable,
 		"app_name_hash":        util.Md5(c.Name),
 		"is_git":               commit.Author.Name != "",
 	})

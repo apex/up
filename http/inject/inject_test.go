@@ -10,6 +10,7 @@ import (
 	"github.com/apex/up"
 	"github.com/tj/assert"
 
+	"github.com/apex/up/config"
 	"github.com/apex/up/http/errorpages"
 	"github.com/apex/up/http/static"
 	"github.com/apex/up/internal/inject"
@@ -21,6 +22,9 @@ func TestInject(t *testing.T) {
 
 	c := &up.Config{
 		Name: "app",
+		ErrorPages: config.ErrorPages{
+			Enable: true,
+		},
 		Inject: inject.Rules{
 			"head": []*inject.Rule{
 				{

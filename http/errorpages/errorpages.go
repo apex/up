@@ -84,14 +84,15 @@ func (r *response) Write(b []byte) (int, error) {
 
 // New error pages handler.
 func New(c *up.Config, next http.Handler) (http.Handler, error) {
+	// disabled
+	if !c.ErrorPages.Enable {
+		return next, nil
+	}
+
+	// load pages
 	pages, err := errorpage.Load(c.ErrorPages.Dir)
 	if err != nil {
 		return nil, errors.Wrap(err, "loading error pages")
-	}
-
-	// we always have one "default" page, but it can be disabled
-	if len(pages) == 1 && c.ErrorPages.Disable {
-		return next, nil
 	}
 
 	h := http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {

@@ -49,7 +49,12 @@ func TestErrors_templates(t *testing.T) {
 	os.Chdir("testdata/templates")
 	defer os.Chdir("../..")
 
-	c := &up.Config{Name: "app"}
+	c := &up.Config{
+		Name: "app",
+		ErrorPages: config.ErrorPages{
+			Enable: true,
+		},
+	}
 	assert.NoError(t, c.Default(), "default")
 	assert.NoError(t, c.Validate(), "validate")
 
@@ -60,7 +65,8 @@ func TestErrors_dir(t *testing.T) {
 	c := &up.Config{
 		Name: "app",
 		ErrorPages: config.ErrorPages{
-			Dir: "testdata/templates",
+			Dir:    "testdata/templates",
+			Enable: true,
 		},
 	}
 
@@ -74,7 +80,12 @@ func TestErrors_defaults(t *testing.T) {
 	os.Chdir("testdata/defaults")
 	defer os.Chdir("../..")
 
-	c := &up.Config{Name: "app"}
+	c := &up.Config{
+		Name: "app",
+		ErrorPages: config.ErrorPages{
+			Enable: true,
+		},
+	}
 	assert.NoError(t, c.Default(), "default")
 	assert.NoError(t, c.Validate(), "validate")
 
@@ -90,9 +101,6 @@ func TestErrors_defaults(t *testing.T) {
 func TestErrors_disabled(t *testing.T) {
 	c := &up.Config{
 		Name: "app",
-		ErrorPages: config.ErrorPages{
-			Disable: true,
-		},
 	}
 
 	assert.NoError(t, c.Default(), "default")
