@@ -309,6 +309,7 @@ The default template's `color` and optionally provide a `support_email` to allow
   "name": "site",
   "type": "static",
   "error_pages": {
+    "enable": true,
     "variables": {
       "support_email": "support@apex.sh",
       "color": "#228ae6"
