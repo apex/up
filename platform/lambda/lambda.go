@@ -814,6 +814,12 @@ func (p *Platform) roleName() string {
 func (p *Platform) deleteRole(region string) error {
 	name := fmt.Sprintf("%s-function", p.config.Name)
 	c := iam.New(session.New(aws.NewConfig().WithRegion(region)))
+	
+	// role is provided
+	if s := p.config.Lambda.Role; s != "" {
+		log.Debugf("using role from config %s; not deleting", s)
+		return nil
+	}
 
 	_, err := c.DeleteRolePolicy(&iam.DeleteRolePolicyInput{
 		RoleName:   &name,
