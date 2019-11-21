@@ -1,4 +1,10 @@
 
+v1.5.0 / 2019-11-21
+===================
+
+  * change error_pages to be disabled by default, use `enable: true` to add them
+  * fix stack delete behavior to not attempt to delete configured lambda roles. (Closes #787) (#788)
+
 v1.4.1-pro / 2019-10-23
 =======================
 
