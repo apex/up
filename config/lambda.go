@@ -4,6 +4,9 @@ import (
 	"errors"
 )
 
+// defaultRuntime is the default runtime.
+var defaultRuntime = "nodejs10.x"
+
 // defaultPolicy is the default function role policy.
 var defaultPolicy = IAMPolicyStatement{
 	"Effect":   "Allow",
@@ -56,7 +59,7 @@ func (l *Lambda) Default() error {
 	}
 
 	if l.Runtime == "" {
-		l.Runtime = "nodejs10.x"
+		l.Runtime = defaultRuntime
 	}
 
 	l.Policy = append(l.Policy, defaultPolicy)

@@ -77,7 +77,6 @@ var apiGatewayAssumePolicy = `{
 // Platform implementation.
 type Platform struct {
 	config  *up.Config
-	runtime string
 	handler string
 	zip     *bytes.Buffer
 	events  event.Events
@@ -87,7 +86,6 @@ type Platform struct {
 func New(c *up.Config, events event.Events) *Platform {
 	return &Platform{
 		config:  c,
-		runtime: c.Lambda.Runtime,
 		handler: "_proxy.handle",
 		events:  events,
 	}
@@ -562,7 +560,7 @@ retry:
 	res, err := c.CreateFunction(&lambda.CreateFunctionInput{
 		FunctionName: &p.config.Name,
 		Handler:      &p.handler,
-		Runtime:      &p.runtime,
+		Runtime:      &p.config.Lambda.Runtime,
 		Role:         &p.config.Lambda.Role,
 		MemorySize:   aws.Int64(int64(p.config.Lambda.Memory)),
 		Timeout:      aws.Int64(int64(p.config.Proxy.Timeout + 3)),
@@ -626,7 +624,7 @@ func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up
 	_, err = c.UpdateFunctionConfiguration(&lambda.UpdateFunctionConfigurationInput{
 		FunctionName: &p.config.Name,
 		Handler:      &p.handler,
-		Runtime:      &p.runtime,
+		Runtime:      &p.config.Lambda.Runtime,
 		Role:         &p.config.Lambda.Role,
 		MemorySize:   aws.Int64(int64(p.config.Lambda.Memory)),
 		Timeout:      aws.Int64(int64(p.config.Proxy.Timeout + 3)),
@@ -814,7 +812,7 @@ func (p *Platform) roleName() string {
 func (p *Platform) deleteRole(region string) error {
 	name := fmt.Sprintf("%s-function", p.config.Name)
 	c := iam.New(session.New(aws.NewConfig().WithRegion(region)))
-	
+
 	// role is provided
 	if s := p.config.Lambda.Role; s != "" {
 		log.Debugf("using role from config %s; not deleting", s)
