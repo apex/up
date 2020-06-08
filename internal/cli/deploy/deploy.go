@@ -45,7 +45,7 @@ retry:
 		err := setup.Create()
 
 		if err == setup.ErrNoCredentials {
-			return errors.New("Cannot find credentials, visit https://up.docs.apex.sh/#aws_credentials for help.")
+			return errors.New("Cannot find credentials, visit https://apex.sh/docs/up/credentials/ for help.")
 		}
 
 		if err != nil {
