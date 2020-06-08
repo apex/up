@@ -1,4 +1,10 @@
 
+v1.5.2 / 2020-06-08
+===================
+
+  * add Hong Kong region. Closes #804
+  * fix `up stack` panic due to missing res.DistributionDomainName. Closes #809
+
 v1.5.1-pro / 2019-12-17
 =======================
 
