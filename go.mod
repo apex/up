@@ -25,7 +25,6 @@ require (
 	github.com/dustin/go-humanize v0.0.0-20171012181109-77ed807830b4
 	github.com/facebookgo/freeport v0.0.0-20150612182905-d4adf43b75b9
 	github.com/fanyang01/radix v0.0.0-20160415095728-e1747dd9eeac
-	github.com/fatih/color v1.7.0 // indirect
 	github.com/golang/sync v0.0.0-20170927054112-8e0aa688b654
 	github.com/google/go-github v14.0.0+incompatible // indirect
 	github.com/google/go-querystring v0.0.0-20170111101155-53e6ce116135 // indirect
@@ -49,10 +48,8 @@ require (
 	github.com/segmentio/analytics-go v0.0.0-20160426181448-2d840d861c32 // indirect
 	github.com/segmentio/backo-go v0.0.0-20160424052352-204274ad699c // indirect
 	github.com/segmentio/go-snakecase v1.0.0
-	github.com/sergi/go-diff v1.0.0 // indirect
 	github.com/simplereach/timeutils v1.2.0 // indirect
-	github.com/stretchr/testify v1.1.4 // indirect
-	github.com/stripe/stripe-go v28.5.0+incompatible
+	github.com/stripe/stripe-go v70.15.0+incompatible
 	github.com/timewasted/go-accept-headers v0.0.0-20130320203746-c78f304b1b09
 	github.com/tj/assert v0.0.1
 	github.com/tj/aws v0.1.4
@@ -76,7 +73,6 @@ require (
 	golang.org/x/text v0.0.0-20171102192421-88f656faf3f3 // indirect
 	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
 	gopkg.in/mgo.v2 v2.0.0-20180705113604-9856a29383ce // indirect
-	gopkg.in/yaml.v2 v2.2.1 // indirect
 )
 
 go 1.13
