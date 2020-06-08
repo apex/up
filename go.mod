@@ -58,7 +58,7 @@ require (
 	github.com/tj/assert v0.0.0-20170216210512-748ebc778a69
 	github.com/tj/aws v0.1.4
 	github.com/tj/backoff v1.0.0
-	github.com/tj/go v1.8.5
+	github.com/tj/go v1.8.7
 	github.com/tj/go-archive v1.0.2
 	github.com/tj/go-cli-analytics v1.0.0
 	github.com/tj/go-headers v0.0.0-20170630155323-711a635412ca
