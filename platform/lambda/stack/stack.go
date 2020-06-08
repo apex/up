@@ -428,6 +428,10 @@ func (s *Stack) showCloudfront(stage *config.Stage) error {
 		return errors.Wrap(err, "getting domain mapping")
 	}
 
+	if res.DistributionDomainName == nil {
+		return nil
+	}
+
 	s.events.Emit("platform.stack.show.domain", event.Fields{
 		"domain":   stage.Domain,
 		"endpoint": *res.DistributionDomainName,
