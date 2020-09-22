@@ -144,6 +144,15 @@ func TestRelay(t *testing.T) {
 
 		assert.Equal(t, 200, res.Code)
 		assertString(t, "Hello World", res.Body.String())
+
+		// third
+		res = httptest.NewRecorder()
+		req = httptest.NewRequest("GET", "/timeout", nil)
+		req.Header.Add("UP-TIMEOUT", "0");
+		h.ServeHTTP(res, req)
+
+		assert.Equal(t, 200, res.Code)
+		assertString(t, "Hello", res.Body.String())
 	})
 }
 

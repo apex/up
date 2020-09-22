@@ -11,6 +11,7 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
+	"strconv"
 	"sync"
 	"time"
 
@@ -145,7 +146,11 @@ func (p *Proxy) Restart() error {
 func (p *Proxy) RoundTrip(r *http.Request) (*http.Response, error) {
 	id := r.Header.Get("X-Request-Id")
 	ctx = ctx.WithField("id", id)
-
+	if timeout, err := strconv.ParseInt(r.Header.Get("UP-TIMEOUT"), 10, 64); err == nil {
+		p.transport = &http.Transport{
+			ResponseHeaderTimeout: time.Duration(timeout) * time.Second,
+		}
+	}
 	res, err := p.transport.RoundTrip(r)
 
 	// timeout error
