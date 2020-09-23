@@ -1,4 +1,10 @@
 
+v1.6.0 / 2020-09-23
+===================
+
+  * add support for X-Up-Timeout header field. Closes #815
+  * change id field to request_id
+
 v1.5.2 / 2020-06-08
 ===================
 
