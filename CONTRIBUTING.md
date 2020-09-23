@@ -61,7 +61,7 @@ Up uses GitHub issue tracking and milestones for its loose roadmap. I highly rec
 
 Notes for myself:
 
-- Run `make build` if necessary to re-build the proxy
+- Run `make clean build` if necessary to re-build the proxy
 - Run `git changelog`
 - Run `git release`
 - Run `make release`
