@@ -38,12 +38,10 @@ require (
 	github.com/klauspost/crc32 v0.0.0-20161016154125-cb6bfca970f6 // indirect
 	github.com/klauspost/pgzip v0.0.0-20170402124221-0bf5dcad4ada // indirect
 	github.com/mattn/go-isatty v0.0.9 // indirect
-	github.com/mgutz/ansi v0.0.0-20170206155736-9520e82c474b // indirect
 	github.com/mitchellh/go-homedir v0.0.0-20161203194507-b8bc1bf76747
 	github.com/pascaldekloe/name v0.0.0-20170812100307-81013e77fe79
 	github.com/pkg/browser v0.0.0-20180916011732-0a3d74bf9ce4
 	github.com/pkg/errors v0.9.1
-	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rs/cors v0.0.0-20180726230524-02026070ea74
 	github.com/segmentio/analytics-go v0.0.0-20160426181448-2d840d861c32 // indirect
 	github.com/segmentio/backo-go v0.0.0-20160424052352-204274ad699c // indirect
@@ -67,12 +65,8 @@ require (
 	github.com/ulikunitz/xz v0.5.4 // indirect
 	github.com/xtgo/uuid v0.0.0-20140804021211-a0b114877d4c // indirect
 	golang.org/x/net v0.0.0-20200202094626-16171245cfb2
-	golang.org/x/sync v0.0.0-20180314180146-1d60e4601c6f // indirect
-	gopkg.in/yaml.v3 v3.0.0-20200602174320-3e3e88ca92fa // indirect
-	golang.org/x/sys v0.0.0-20171031081856-95c657629925 // indirect
-	golang.org/x/text v0.0.0-20171102192421-88f656faf3f3 // indirect
-	gopkg.in/check.v1 v1.0.0-20180628173108-788fd7840127 // indirect
 	gopkg.in/mgo.v2 v2.0.0-20180705113604-9856a29383ce // indirect
+	gopkg.in/yaml.v3 v3.0.0-20200602174320-3e3e88ca92fa // indirect
 )
 
 go 1.13
