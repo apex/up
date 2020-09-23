@@ -11,6 +11,9 @@ build:
   goarch:
     - amd64
     - 386
+  ignore:
+    - goos: darwin
+      goarch: 386
 changelog:
   sort: asc
   filters:
