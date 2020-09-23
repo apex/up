@@ -1,4 +1,9 @@
 
+v1.6.2-pro / 2020-09-23
+=======================
+
+  * Rebuild to decrease the binary filesize bloat
+
 v1.6.1-pro / 2020-09-23
 =======================
 
