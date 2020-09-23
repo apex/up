@@ -10,10 +10,12 @@ require (
 	github.com/apex/go-apex v1.0.0
 	github.com/apex/log v1.3.0
 	github.com/armon/go-radix v1.0.0 // indirect
+	github.com/atotto/clipboard v0.1.2 // indirect
 	github.com/aws/aws-sdk-go v1.31.9
 	github.com/aybabtme/rgbterm v0.0.0-20170906152045-cc83f3b3ce59
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
 	github.com/bradfitz/iter v0.0.0-20140124041915-454541ec3da2 // indirect
+	github.com/buger/goterm v0.0.0-20181115115552-c206103e1f37 // indirect
 	github.com/c4milo/unpackit v0.0.0-20170704181138-4ed373e9ef1c // indirect
 	github.com/danwakefield/fnmatch v0.0.0-20160403171240-cbb64ac3d964 // indirect
 	github.com/dchest/uniuri v0.0.0-20160212164326-8902c56451e9
@@ -35,6 +37,7 @@ require (
 	github.com/klauspost/cpuid v0.0.0-20170728055534-ae7887de9fa5 // indirect
 	github.com/klauspost/crc32 v0.0.0-20161016154125-cb6bfca970f6 // indirect
 	github.com/klauspost/pgzip v0.0.0-20170402124221-0bf5dcad4ada // indirect
+	github.com/mattn/go-isatty v0.0.9 // indirect
 	github.com/mgutz/ansi v0.0.0-20170206155736-9520e82c474b // indirect
 	github.com/mitchellh/go-homedir v0.0.0-20161203194507-b8bc1bf76747
 	github.com/pascaldekloe/name v0.0.0-20170812100307-81013e77fe79
@@ -46,12 +49,12 @@ require (
 	github.com/segmentio/backo-go v0.0.0-20160424052352-204274ad699c // indirect
 	github.com/segmentio/go-snakecase v1.0.0
 	github.com/sergi/go-diff v1.0.0 // indirect
-	github.com/stripe/stripe-go v70.15.0+incompatible
+	github.com/stripe/stripe-go v28.5.0+incompatible
 	github.com/timewasted/go-accept-headers v0.0.0-20130320203746-c78f304b1b09
 	github.com/tj/assert v0.0.1
 	github.com/tj/aws v0.1.4
 	github.com/tj/backoff v1.0.0
-	github.com/tj/go v1.8.7
+	github.com/tj/go v1.8.6
 	github.com/tj/go-archive v1.0.2
 	github.com/tj/go-cli-analytics v1.0.0
 	github.com/tj/go-headers v0.0.0-20170630155323-711a635412ca
@@ -64,6 +67,7 @@ require (
 	github.com/xtgo/uuid v0.0.0-20140804021211-a0b114877d4c // indirect
 	golang.org/x/net v0.0.0-20200202094626-16171245cfb2
 	golang.org/x/sync v0.0.0-20180314180146-1d60e4601c6f // indirect
+	gopkg.in/yaml.v3 v3.0.0-20200602174320-3e3e88ca92fa // indirect
 )
 
 go 1.13
