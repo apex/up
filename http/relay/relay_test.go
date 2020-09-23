@@ -145,6 +145,29 @@ func TestRelay(t *testing.T) {
 		assert.Equal(t, 200, res.Code)
 		assertString(t, "Hello World", res.Body.String())
 	})
+
+	t.Run("timeout header field", func(t *testing.T) {
+		newHandler(t)
+
+		// first
+		start := time.Now()
+		res := httptest.NewRecorder()
+		req := httptest.NewRequest("GET", "/timeout", nil)
+		req.Header.Set("X-Up-Timeout", "1")
+		h.ServeHTTP(res, req)
+
+		assert.True(t, time.Since(start) < time.Second*2)
+		assert.Equal(t, 502, res.Code)
+		assertString(t, "", res.Body.String())
+
+		// second
+		res = httptest.NewRecorder()
+		req = httptest.NewRequest("GET", "/hello", nil)
+		h.ServeHTTP(res, req)
+
+		assert.Equal(t, 200, res.Code)
+		assertString(t, "Hello World", res.Body.String())
+	})
 }
 
 func assertString(t testing.TB, want, got string) {

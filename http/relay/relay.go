@@ -11,6 +11,7 @@ import (
 	"net/url"
 	"os"
 	"os/exec"
+	"strconv"
 	"sync"
 	"time"
 
@@ -74,21 +75,11 @@ func New(c *up.Config) (http.Handler, error) {
 
 	timeout := time.Duration(c.Proxy.Timeout) * time.Second
 
-	transport := &http.Transport{
-		DialContext: (&net.Dialer{
-			Timeout:   2 * time.Second,
-			KeepAlive: 2 * time.Second,
-			DualStack: true,
-		}).DialContext,
-		ResponseHeaderTimeout: timeout,
-		DisableKeepAlives:     true,
-	}
-
 	p := &Proxy{
 		config:    c,
 		stdout:    writer.New(stdout, ctx),
 		stderr:    writer.New(stderr, ctx),
-		transport: transport,
+		transport: newTransport(timeout),
 	}
 
 	if err := p.Start(); err != nil {
@@ -145,8 +136,16 @@ func (p *Proxy) Restart() error {
 func (p *Proxy) RoundTrip(r *http.Request) (*http.Response, error) {
 	id := r.Header.Get("X-Request-Id")
 	ctx = ctx.WithField("id", id)
+	transport := p.transport
 
-	res, err := p.transport.RoundTrip(r)
+	// timeout header
+	if s := r.Header.Get("X-Up-Timeout"); s != "" {
+		if n, err := strconv.ParseInt(s, 10, 64); err == nil {
+			transport = newTransport(time.Duration(n) * time.Second)
+		}
+	}
+
+	res, err := transport.RoundTrip(r)
 
 	// timeout error
 	if e, ok := err.(net.Error); ok && e.Timeout() {
@@ -211,6 +210,19 @@ func (p *Proxy) command(s string, env []string) *exec.Cmd {
 	cmd.Stderr = p.stderr
 	cmd.Env = append(os.Environ(), append(env, "PATH=node_modules/.bin:"+os.Getenv("PATH"))...)
 	return cmd
+}
+
+// newTransport returns a new http.Transport with the given timeout.
+func newTransport(timeout time.Duration) *http.Transport {
+	return &http.Transport{
+		DialContext: (&net.Dialer{
+			Timeout:   2 * time.Second,
+			KeepAlive: 2 * time.Second,
+			DualStack: true,
+		}).DialContext,
+		ResponseHeaderTimeout: timeout,
+		DisableKeepAlives:     true,
+	}
 }
 
 // env returns an environment variable.
