@@ -462,7 +462,8 @@ func Example_stageDNSZone() {
 	//   "Properties": {
 	//     "Name": "up-example.com"
 	//   },
-	//   "Type": "AWS::Route53::HostedZone"
+	//   "Type": "AWS::Route53::HostedZone",
+	//   "UpdateReplacePolicy": "Retain"
 	// }
 }
 
@@ -527,7 +528,8 @@ func Example_dnsZone() {
 	//   "Properties": {
 	//     "Name": "up-example.com"
 	//   },
-	//   "Type": "AWS::Route53::HostedZone"
+	//   "Type": "AWS::Route53::HostedZone",
+	//   "UpdateReplacePolicy": "Retain"
 	// }
 }
 

@@ -109,8 +109,9 @@ func dnsZone(c *Config, m Map, domain string) interface{} {
 
 	// new zone
 	m[id] = Map{
-		"Type":           "AWS::Route53::HostedZone",
-		"DeletionPolicy": "Retain",
+		"Type":                "AWS::Route53::HostedZone",
+		"DeletionPolicy":      "Retain",
+		"UpdateReplacePolicy": "Retain",
 		"Properties": Map{
 			"Name": domain,
 		},
