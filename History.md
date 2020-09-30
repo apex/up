@@ -5,6 +5,11 @@ v1.7.0 / 2020-10-07
   * add `lambda.timeout` back, defaulting to 60s. Closes #814
   * change LICENSE, commercial use requires a subscription
 
+v1.6.3-pro / 2020-09-30
+=======================
+
+  * add DeletionPolicy Retain to DNS zones
+
 v1.6.2 / 2020-09-23
 ===================
 
