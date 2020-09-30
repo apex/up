@@ -1,4 +1,9 @@
 
+v1.6.4-pro / 2020-09-30
+=======================
+
+  * add UpdateReplacePolicy Retain to DNS zones
+
 v1.6.3-pro / 2020-09-30
 =======================
 
