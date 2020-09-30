@@ -458,6 +458,7 @@ func Example_stageDNSZone() {
 	dump(c, "DnsZoneUpExampleCom")
 	// Output:
 	// {
+	//   "DeletionPolicy": "Retain",
 	//   "Properties": {
 	//     "Name": "up-example.com"
 	//   },
@@ -522,6 +523,7 @@ func Example_dnsZone() {
 	dump(c, "DnsZoneUpExampleCom")
 	// Output:
 	// {
+	//   "DeletionPolicy": "Retain",
 	//   "Properties": {
 	//     "Name": "up-example.com"
 	//   },
