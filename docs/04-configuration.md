@@ -59,6 +59,20 @@ Currently Lambda supports the following regions:
 - **eu-north-1** – EU (Stockholm)
 - **sa-east-1** – South America (São Paulo)
 
+## Tags
+
+[Up Pro](/docs/up/guides/#subscribing_to_up_pro) supports tagging of resources created by Up for billing and management purposes. For example you may wish to tag the app with your product name and the type of application, in this case the API.
+
+```json
+{
+  "name": "api",
+  "tags": {
+    "ProductName": "netflix",
+    "AppName": "api"
+  }
+}
+```
+
 ## Lambda settings
 
 The following Lambda-specific settings are available:
@@ -150,22 +164,6 @@ To add additional permissions add one or more IAM policy statements to the `poli
 ```
 
 Deploy to update the IAM function role permissions.
-
-### Tags
-
-[Up Pro](/docs/up/guides/#subscribing_to_up_pro) supports tagging of resources created by Up for billing and management purposes. For example:
-
-```json
-{
-  "name": "api",
-  "tags": {
-    "ProductName": "netflix",
-    "AppName": "api",
-  }
-}
-```
-
-Note: Due to AWS limitations it's not possible to define stage-specific tags.
 
 ### Active warming
 
