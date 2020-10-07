@@ -1,9 +1,5 @@
 package config
 
-import (
-	"errors"
-)
-
 // defaultRuntime is the default runtime.
 var defaultRuntime = "nodejs10.x"
 
@@ -54,6 +50,10 @@ type Lambda struct {
 
 // Default implementation.
 func (l *Lambda) Default() error {
+	if l.Timeout == 0 {
+		l.Timeout = 60
+	}
+
 	if l.Memory == 0 {
 		l.Memory = 512
 	}
@@ -69,10 +69,6 @@ func (l *Lambda) Default() error {
 
 // Validate implementation.
 func (l *Lambda) Validate() error {
-	if l.Timeout != 0 {
-		return errors.New(".lambda.timeout is deprecated, use .proxy.timeout")
-	}
-
 	return nil
 }
 
