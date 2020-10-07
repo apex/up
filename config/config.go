@@ -28,24 +28,25 @@ type validator interface {
 
 // Config for the project.
 type Config struct {
-	Name        string         `json:"name"`
-	Description string         `json:"description"`
-	Type        string         `json:"type"`
-	Headers     header.Rules   `json:"headers"`
-	Redirects   redirect.Rules `json:"redirects"`
-	Hooks       Hooks          `json:"hooks"`
-	Environment Environment    `json:"environment"`
-	Regions     []string       `json:"regions"`
-	Profile     string         `json:"profile"`
-	Inject      inject.Rules   `json:"inject"`
-	Lambda      Lambda         `json:"lambda"`
-	CORS        *CORS          `json:"cors"`
-	ErrorPages  ErrorPages     `json:"error_pages"`
-	Proxy       Relay          `json:"proxy"`
-	Static      Static         `json:"static"`
-	Logs        Logs           `json:"logs"`
-	Stages      Stages         `json:"stages"`
-	DNS         DNS            `json:"dns"`
+	Name        string            `json:"name"`
+	Description string            `json:"description"`
+	Type        string            `json:"type"`
+	Headers     header.Rules      `json:"headers"`
+	Redirects   redirect.Rules    `json:"redirects"`
+	Hooks       Hooks             `json:"hooks"`
+	Environment Environment       `json:"environment"`
+	Regions     []string          `json:"regions"`
+	Profile     string            `json:"profile"`
+	Inject      inject.Rules      `json:"inject"`
+	Lambda      Lambda            `json:"lambda"`
+	CORS        *CORS             `json:"cors"`
+	ErrorPages  ErrorPages        `json:"error_pages"`
+	Proxy       Relay             `json:"proxy"`
+	Static      Static            `json:"static"`
+	Logs        Logs              `json:"logs"`
+	Stages      Stages            `json:"stages"`
+	DNS         DNS               `json:"dns"`
+	Tags        map[string]string `json:"tags"`
 	Alerting
 }
 

@@ -42,6 +42,22 @@ func New(c *Config) map[string]interface{} {
 	}
 }
 
+// tags returns tags from a map.
+func tags(m map[string]string) (tags []Map) {
+	for k, v := range m {
+		tags = append(tags, tag(k, v))
+	}
+	return
+}
+
+// tag returns a tag.
+func tag(key, value string) Map {
+	return Map{
+		"Key":   key,
+		"Value": value,
+	}
+}
+
 // ref of id.
 func ref(id string) Map {
 	return Map{
@@ -67,6 +83,14 @@ func join(delim string, s ...interface{}) Map {
 			s,
 		},
 	}
+}
+
+// withTags returns a map with Tags if present.
+func withTags(c *Config, m Map) Map {
+	if len(c.Tags) > 0 {
+		m["Tags"] = tags(c.Tags)
+	}
+	return m
 }
 
 // stageVariable by name.
@@ -139,14 +163,14 @@ func dnsZone(c *Config, m Map, domain string) interface{} {
 func api(c *Config, m Map) {
 	m["Api"] = Map{
 		"Type": "AWS::ApiGateway::RestApi",
-		"Properties": Map{
+		"Properties": withTags(c, Map{
 			"Name":        ref("Name"),
 			"Description": util.ManagedByUp(c.Description),
 			"BinaryMediaTypes": []string{
 				"*/*",
 			},
 			"EndpointConfiguration": endpointConfiguration(c),
-		},
+		}),
 	}
 
 	integration := Map{
@@ -286,10 +310,10 @@ func stageDomain(c *Config, s *config.Stage, m Map, deploymentID string) {
 
 	id := util.Camelcase("api_domain_%s", s.Name)
 
-	props := Map{
+	props := withTags(c, Map{
 		"DomainName":            s.Domain,
 		"EndpointConfiguration": endpointConfiguration(c),
-	}
+	})
 
 	if c.Lambda.Endpoint == "regional" {
 		props["RegionalCertificateArn"] = s.Cert

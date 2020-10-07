@@ -106,7 +106,7 @@ func warmingStageEvent(c *Config, s *config.Stage, l *config.Lambda, m Map) stri
 func warmingFunction(c *Config, m Map) {
 	m["WarmingFunction"] = Map{
 		"Type": "AWS::Lambda::Function",
-		"Properties": Map{
+		"Properties": withTags(c, Map{
 			"FunctionName": fmt.Sprintf("%s-warming", c.Name),
 			"Description":  util.ManagedByUp("Warming function"),
 			"Runtime":      "nodejs10.x",
@@ -117,7 +117,7 @@ func warmingFunction(c *Config, m Map) {
 			"Code": Map{
 				"ZipFile": warmingFunctionSource,
 			},
-		},
+		}),
 	}
 }
 

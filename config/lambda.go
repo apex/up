@@ -111,6 +111,10 @@ func (l *Lambda) Validate() error {
 		return errors.Wrap(err, ".endpoint")
 	}
 
+	if err := validate.List(l.Endpoint, []string{"edge", "regional"}); err != nil {
+		return errors.Wrap(err, ".endpoint")
+	}
+
 	return nil
 }
 

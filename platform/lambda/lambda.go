@@ -625,6 +625,7 @@ retry:
 		},
 		VpcConfig:   p.vpc(),
 		Layers:      aws.StringSlice(p.config.Lambda.Layers),
+		Tags:        aws.StringMap(p.config.Tags),
 		Environment: p.getLambdaEnvironment(d),
 	})
 

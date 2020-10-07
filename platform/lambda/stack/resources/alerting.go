@@ -56,9 +56,9 @@ func action(c *Config, a *config.AlertAction, m Map) {
 
 	m[id] = Map{
 		"Type": "AWS::SNS::Topic",
-		"Properties": Map{
+		"Properties": withTags(c, Map{
 			"DisplayName": a.Name,
-		},
+		}),
 	}
 
 	v := url.Values{}
