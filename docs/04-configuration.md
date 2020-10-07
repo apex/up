@@ -151,6 +151,22 @@ To add additional permissions add one or more IAM policy statements to the `poli
 
 Deploy to update the IAM function role permissions.
 
+### Tags
+
+[Up Pro](/docs/up/guides/#subscribing_to_up_pro) supports tagging of resources created by Up for billing and management purposes. For example:
+
+```json
+{
+  "name": "api",
+  "tags": {
+    "ProductName": "netflix",
+    "AppName": "api",
+  }
+}
+```
+
+Note: Due to AWS limitations it's not possible to define stage-specific tags.
+
 ### Active warming
 
 [Up Pro](/docs/up/guides/#subscribing_to_up_pro) supports active warming to mitigate cold starts. A "cold start" occurs in AWS Lambda when there are no idle containers available to serve a request—Lambda must fetch your code and create a new container, after this it is "warm" and remains in the Lambda cluster to serve subsequent requests for roughly an hour.
