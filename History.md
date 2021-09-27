@@ -1,3 +1,9 @@
+
+v1.7.1 / 2021-09-27
+===================
+
+  * fix Lambda state issue by waiting for an Active state. Closes #833
+
 v1.7.0-pro / 2020-10-07
 =======================
 
