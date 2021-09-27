@@ -75,7 +75,7 @@ func Create() error {
 
 	println()
 
-	// confirm
+	// confirm create new project
 	var ok bool
 	err := survey.AskOne(&survey.Confirm{
 		Message: fmt.Sprintf("No up.json found, create a new project?"),
@@ -106,7 +106,28 @@ func Create() error {
 	}
 
 	b, _ := json.MarshalIndent(c, "", "  ")
-	return ioutil.WriteFile("up.json", b, 0644)
+	err = ioutil.WriteFile("up.json", b, 0644)
+	if err != nil {
+		return err
+	}
+
+	// confirm create .upignore
+	err = survey.AskOne(&survey.Confirm{
+		Message: fmt.Sprintf("Would you like to add an .upignore?"),
+		Default: true,
+	}, &ok, nil)
+
+	if err != nil {
+		return nil
+	}
+
+	if !ok {
+		return errors.New("aborted")
+	}
+
+	defaultIgnore := ".*\n"
+	b = []byte(defaultIgnore)
+	return ioutil.WriteFile(".upignore", b, 0644)
 }
 
 // defaultName returns the default app name.
