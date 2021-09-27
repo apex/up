@@ -621,6 +621,9 @@ func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up
 
 	// update function config
 	log.Debug("updating function")
+	if err := p.isPending(c); err != nil {
+		return "", err
+	}
 	_, err = c.UpdateFunctionConfiguration(&lambda.UpdateFunctionConfigurationInput{
 		FunctionName: &p.config.Name,
 		Handler:      &p.handler,
@@ -638,6 +641,9 @@ func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up
 
 	// update function code
 	log.Debug("updating function code")
+	if err := p.isPending(c); err != nil {
+		return "", err
+	}
 	res, err := c.UpdateFunctionCode(&lambda.UpdateFunctionCodeInput{
 		FunctionName: &p.config.Name,
 		Publish:      aws.Bool(true),
@@ -662,6 +668,38 @@ func (p *Platform) updateFunction(c *lambda.Lambda, a *apigateway.APIGateway, up
 	}
 
 	return *res.Version, nil
+}
+
+// isPending implementation.
+func (p *Platform) isPending(c *lambda.Lambda) error {
+	var attempt int
+	maxAttempts := 30       // TODO: ideally max attempts is configurable
+	wait := time.Second * 5 // TODO: ideally some backoff
+
+retry:
+	attempt++
+
+	log.Debugf("checking if function is pending (attempt %d of %d)", attempt, maxAttempts)
+	conf, err := c.GetFunctionConfiguration(&lambda.GetFunctionConfigurationInput{
+		FunctionName: &p.config.Name,
+	})
+	if err != nil {
+		return errors.Wrapf(err, "getting function config")
+	}
+
+	if *conf.State == "Active" && *conf.LastUpdateStatus != "InProgress" {
+		log.Debugf("function is in state %q / %q", *conf.State, *conf.LastUpdateStatus)
+		return nil
+	}
+
+	if attempt >= maxAttempts {
+		log.Debugf("max attempts exceeded")
+		return errors.Errorf("function is stuck in the state %q / %q", *conf.State, *conf.LastUpdateStatus)
+	}
+
+	log.Debugf("function is in state %q / %q, trying again in %s", *conf.State, *conf.LastUpdateStatus, wait)
+	time.Sleep(wait)
+	goto retry
 }
 
 // vpc returns the vpc configuration or nil.
