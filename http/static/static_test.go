@@ -98,6 +98,17 @@ func TestStatic_dynamic(t *testing.T) {
 		fmt.Fprintln(w, ":)")
 	}))
 
+	t.Run("index.html", func(t *testing.T) {
+		res := httptest.NewRecorder()
+		req := httptest.NewRequest("GET", "/", nil)
+
+		h.ServeHTTP(res, req)
+
+		assert.Equal(t, 200, res.Code)
+		assert.Equal(t, "text/html; charset=utf-8", res.Header().Get("Content-Type"))
+		assert.Equal(t, "Index HTML\n", res.Body.String())
+	})
+
 	t.Run("file", func(t *testing.T) {
 		res := httptest.NewRecorder()
 		req := httptest.NewRequest("GET", "/css/style.css", nil)
