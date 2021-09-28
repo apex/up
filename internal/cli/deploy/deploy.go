@@ -19,7 +19,7 @@ import (
 
 func init() {
 	cmd := root.Command("deploy", "Deploy the project.").Default()
-	stage := cmd.Arg("stage", "Target stage name.").Default("staging").String()
+	stage := cmd.Arg("stage", "Target stage name.").Default("production").String()
 	noBuild := cmd.Flag("no-build", "Disable build related hooks.").Bool()
 
 	cmd.Example(`up deploy`, "Deploy to the staging environment.")
