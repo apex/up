@@ -59,4 +59,4 @@ $ up url -o
 $ up url -c
 ```
 
-<a href="https://apex.sh"><img src="http://tjholowaychuk.com:6000/svg/sponsor"></a>
+<a href="https://apex.sh"><img src="http://tjholowaychuk.com/svg/sponsor"></a>
