@@ -11,7 +11,7 @@ require (
 	github.com/apex/log v1.3.0
 	github.com/armon/go-radix v1.0.0 // indirect
 	github.com/atotto/clipboard v0.1.2 // indirect
-	github.com/aws/aws-sdk-go v1.31.9
+	github.com/aws/aws-sdk-go v1.34.0
 	github.com/aybabtme/rgbterm v0.0.0-20170906152045-cc83f3b3ce59
 	github.com/bmizerany/assert v0.0.0-20160611221934-b7ed37b82869 // indirect
 	github.com/bradfitz/iter v0.0.0-20140124041915-454541ec3da2 // indirect
@@ -24,7 +24,6 @@ require (
 	github.com/dustin/go-humanize v0.0.0-20171012181109-77ed807830b4
 	github.com/facebookgo/freeport v0.0.0-20150612182905-d4adf43b75b9
 	github.com/fanyang01/radix v0.0.0-20160415095728-e1747dd9eeac
-	github.com/fatih/color v1.7.0 // indirect
 	github.com/golang/sync v0.0.0-20170927054112-8e0aa688b654
 	github.com/google/go-github v14.0.0+incompatible // indirect
 	github.com/google/go-querystring v0.0.0-20170111101155-53e6ce116135 // indirect
@@ -38,17 +37,14 @@ require (
 	github.com/klauspost/crc32 v0.0.0-20161016154125-cb6bfca970f6 // indirect
 	github.com/klauspost/pgzip v0.0.0-20170402124221-0bf5dcad4ada // indirect
 	github.com/mattn/go-isatty v0.0.9 // indirect
-	github.com/mgutz/ansi v0.0.0-20170206155736-9520e82c474b // indirect
 	github.com/mitchellh/go-homedir v0.0.0-20161203194507-b8bc1bf76747
 	github.com/pascaldekloe/name v0.0.0-20170812100307-81013e77fe79
 	github.com/pkg/browser v0.0.0-20180916011732-0a3d74bf9ce4
 	github.com/pkg/errors v0.9.1
-	github.com/pmezard/go-difflib v1.0.0 // indirect
 	github.com/rs/cors v0.0.0-20180726230524-02026070ea74
 	github.com/segmentio/analytics-go v0.0.0-20160426181448-2d840d861c32 // indirect
 	github.com/segmentio/backo-go v0.0.0-20160424052352-204274ad699c // indirect
 	github.com/segmentio/go-snakecase v1.0.0
-	github.com/sergi/go-diff v1.0.0 // indirect
 	github.com/stripe/stripe-go v28.5.0+incompatible
 	github.com/timewasted/go-accept-headers v0.0.0-20130320203746-c78f304b1b09
 	github.com/tj/assert v0.0.1
@@ -66,7 +62,6 @@ require (
 	github.com/ulikunitz/xz v0.5.4 // indirect
 	github.com/xtgo/uuid v0.0.0-20140804021211-a0b114877d4c // indirect
 	golang.org/x/net v0.0.0-20200202094626-16171245cfb2
-	golang.org/x/sync v0.0.0-20180314180146-1d60e4601c6f // indirect
 	gopkg.in/yaml.v3 v3.0.0-20200602174320-3e3e88ca92fa // indirect
 )
 
