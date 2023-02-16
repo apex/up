@@ -1,3 +1,5 @@
+> Effective December 31, 2022, all Apex Software products are officially end-of-life. Thanks to everyone who supported us over the years!
+
 ![](assets/title.png)
 
 Up deploys infinitely scalable serverless apps, APIs, and static websites in seconds, so you can get back to working on what makes your product unique.
