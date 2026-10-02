@@ -1,0 +1,47 @@
+name: Installer compatibility
+
+on:
+  pull_request:
+    paths:
+      - install.sh
+      - .github/workflows/installer-compatibility.yml
+  push:
+    branches: [master]
+    paths:
+      - install.sh
+      - .github/workflows/installer-compatibility.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  shell-compatibility:
+    name: Test installer across Linux distributions
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Run installer compatibility gate
+        uses: Mresyzz/opsscript-gate@v0.8.0
+        with:
+          script-path: install.sh
+          shell: auto
+          network: bridge
+          packages: |
+            curl
+            ca-certificates
+            tar
+          format: json
+          output: reports/installer-compatibility.json
+
+      - name: Upload compatibility report
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: installer-compatibility-report
+          path: reports/installer-compatibility.json
+          if-no-files-found: ignore
