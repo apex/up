@@ -173,8 +173,10 @@ uname_arch_check() {
 untar() {
   tarball=$1
   case "${tarball}" in
-    *.tar.gz | *.tgz) tar -xzf "${tarball}" ;;
-    *.tar) tar -xf "${tarball}" ;;
+    # Release archives may carry build-machine ownership; do not restore it
+    # when installing as an unprivileged user or inside a rootless container.
+    *.tar.gz | *.tgz) tar --no-same-owner -xzf "${tarball}" ;;
+    *.tar) tar --no-same-owner -xf "${tarball}" ;;
     *.zip) unzip "${tarball}" ;;
     *)
       echo "Unknown archive format for ${tarball}"
